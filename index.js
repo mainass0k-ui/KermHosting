@@ -59,7 +59,7 @@ const EMAIL_CONFIG = {
     secure: false,
     auth: {
         user: 'bookmakerp@gmail',
-        pass: 'azro trwn krdv octx'
+        pass: 'msng ymnb face huwa'
     },
     from: 'KermHosting <noreply@kermhosting.com>'
 };
