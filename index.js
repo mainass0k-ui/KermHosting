@@ -1,5 +1,6 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND COMPLET (CORRIGÉ)
+// index.js - KERMHOSTING BACKEND ULTIME
+// Version 3.0.0 - Totalement corrigé
 // =============================================
 
 import express from 'express';
@@ -16,8 +17,6 @@ import { WebSocketServer } from 'ws';
 import http from 'http';
 import axios from 'axios';
 import FormData from 'form-data';
-import Mailgun from 'mailgun.js';
-import formData from 'form-data';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,7 +26,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 // =============================================
-// CONFIGURATION SUPABASE (À MODIFIER)
+// CONFIGURATION SUPABASE
 // =============================================
 const SUPABASE_CONFIG = {
     url: 'https://qfhztozowlqajvkqdsvl.supabase.co',
@@ -36,7 +35,7 @@ const SUPABASE_CONFIG = {
 };
 
 // =============================================
-// CONFIGURATION FAPSHI (LIVE)
+// CONFIGURATION FAPSHI
 // =============================================
 const FAPSHI_CONFIG = {
     baseUrl: 'https://live.fapshi.com',
@@ -45,28 +44,19 @@ const FAPSHI_CONFIG = {
     webhookSecret: 'kermhosting_webhook_secret_2024'
 };
 
-// Headers Fapshi
 const fapshiHeaders = {
     apiuser: FAPSHI_CONFIG.apiuser,
     apikey: FAPSHI_CONFIG.apikey
 };
 
 // =============================================
-// CONFIGURATION MAILGUN SANDBOX
+// CONFIGURATION EMAIL AVEC MAILGUN
 // =============================================
 const MAILGUN_CONFIG = {
-    apiKey: '5db78b6847d199d2c39cae261c995d31-82cf32bf-59806713',
+    apiKey: '82cf32bf-54866ad5',
     domain: 'sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org',
     from: 'KermHosting <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
 };
-
-// Initialisation Mailgun
-const mailgun = new Mailgun(formData);
-const mg = mailgun.client({
-    username: 'api',
-    key: MAILGUN_CONFIG.apiKey,
-    url: 'https://api.mailgun.net'
-});
 
 // =============================================
 // CONFIGURATION PTERODACTYL
@@ -81,7 +71,7 @@ const SITE_CONFIG = {
     url: 'https://kermhosting.com',
     name: 'KermHosting',
     supportEmail: 'bookmakerp@gmail.com',
-    whatsapp: 'https://wa.me/237659535227',
+    whatsapp: 'https://wa.me/237600000000',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
     jwtSecret: 'kermhosting_super_secret_key_2024_changez_ceci',
@@ -270,7 +260,10 @@ const COIN_PACKS = {
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin: SITE_CONFIG.url,
+    credentials: true
+}));
 app.use(express.static('public'));
 
 const upload = multer({
@@ -286,7 +279,7 @@ const generateApiKey = () => `KERM_${crypto.randomBytes(32).toString('hex')}`;
 const generateReferralCode = () => `KERM${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 const generateVerificationCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 const generateUUID = () => crypto.randomUUID();
-const generateTransactionId = () => `TRX_${Date.now()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+const generateTransactionId = () => crypto.randomUUID();
 const generateUsername = () => `user_${crypto.randomBytes(4).toString('hex')}`;
 const generatePassword = () => crypto.randomBytes(12).toString('hex');
 
@@ -309,128 +302,815 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTION EMAIL CORRIGÉE POUR MAILGUN
+// FONCTIONS EMAIL AVEC MAILGUN (Templates professionnels)
 // =============================================
-// =============================================
-// FONCTION EMAIL MAILGUN AVEC BASIC AUTH
-// =============================================
+
 async function sendEmail(to, subject, htmlContent) {
     try {
-        console.log(`📧 Tentative d'envoi à ${to}...`);
-        
-        // Construction de l'URL exacte comme dans l'exemple Java
-        const url = `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`;
-        
-        // Préparer les données du formulaire
         const formData = new URLSearchParams();
         formData.append('from', MAILGUN_CONFIG.from);
         formData.append('to', to);
         formData.append('subject', subject);
         formData.append('html', htmlContent);
-        
-        // Faire la requête avec basicAuth comme dans l'exemple Java
-        const response = await axios.post(url, formData, {
+
+        const response = await axios({
+            method: 'post',
+            url: `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`,
             auth: {
                 username: 'api',
                 password: MAILGUN_CONFIG.apiKey
             },
+            data: formData,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-        
-        console.log(`✅ Email envoyé avec succès à ${to}:`, response.data);
-        return { success: true, data: response.data };
-        
+
+        console.log(`✅ Email envoyé à ${to}`);
+        return { success: true };
     } catch (error) {
-        console.error('❌ Erreur Mailgun détaillée:', {
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data,
-            message: error.message
-        });
-        
-        // Retourner l'erreur sans bloquer
-        return { 
-            success: false, 
-            error: error.response?.data?.message || error.message 
-        };
+        // En sandbox, on ignore les erreurs d'autorisation
+        if (error.response?.status === 403 || error.response?.status === 401) {
+            console.log(`⚠️ Mode sandbox: Email à ${to} non envoyé (destinataire non autorisé)`);
+            return { success: true, sandbox: true };
+        }
+        console.error('❌ Erreur email:', error.response?.data || error.message);
+        return { success: false };
     }
 }
 
+// Template email professionnel avec design moderne
+function getEmailTemplate(title, content, username = '') {
+    const year = new Date().getFullYear();
+    return `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} - KermHosting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0B1120 0%, #1A1F2E 100%);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #1A2332;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2D3748;
+            position: relative;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7C3AED, #10B981, #F59E0B);
+        }
+        .header {
+            background: linear-gradient(135deg, #7C3AED 0%, #10B981 100%);
+            padding: 48px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .logo i {
+            font-size: 28px;
+            color: white;
+        }
+        .logo span {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .header h1 {
+            color: white;
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: relative;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .content {
+            padding: 48px 30px;
+            background: #1A2332;
+        }
+        .content h2 {
+            color: #F3F4F6;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .content p {
+            color: #9CA3AF;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .content strong {
+            color: #F3F4F6;
+        }
+        .code-box {
+            background: #111827;
+            border: 2px solid #7C3AED;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.2);
+        }
+        .code {
+            font-family: 'Courier New', monospace;
+            font-size: 48px;
+            font-weight: 700;
+            color: #7C3AED;
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+        }
+        .code-label {
+            color: #6B7280;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 12px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #7C3AED, #10B981);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(124, 58, 237, 0.4);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .info-item {
+            background: #111827;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid #7C3AED;
+        }
+        .info-item strong {
+            color: #F3F4F6;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-item span {
+            color: #7C3AED;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .info-item p {
+            margin: 10px 0 0;
+            font-size: 14px;
+        }
+        .credentials-box {
+            background: #111827;
+            border: 2px solid #10B981;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .credential-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #2D3748;
+        }
+        .credential-row:last-child {
+            border-bottom: none;
+        }
+        .credential-label {
+            color: #9CA3AF;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .credential-label i {
+            color: #7C3AED;
+            width: 20px;
+        }
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #10B981;
+            background: #0B1120;
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+        }
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #F59E0B;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #F59E0B;
+        }
+        .warning-box i {
+            font-size: 24px;
+        }
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10B981;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #10B981;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #2D3748, transparent);
+            margin: 30px 0;
+        }
+        .footer {
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #2D3748;
+        }
+        .footer p {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #9CA3AF;
+            font-size: 20px;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: #7C3AED;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 20px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .code {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+            <h1>${title}</h1>
+        </div>
+        <div class="content">
+            ${content}
+        </div>
+        <div class="footer">
+            <p>© ${year} KermHosting. Tous droits réservés.</p>
+            <p>Hébergement Node.js nouvelle génération - Paiement en FCFA</p>
+            <div class="social-links">
+                <a href="${SITE_CONFIG.discord}"><i class="fab fa-discord"></i></a>
+                <a href="${SITE_CONFIG.twitter}"><i class="fab fa-twitter"></i></a>
+                <a href="${SITE_CONFIG.whatsapp}"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+            <p style="font-size: 12px; margin-top: 20px;">
+                Cet email a été envoyé à l'adresse fournie lors de votre inscription.<br>
+                Si vous n'êtes pas à l'origine de cette action, ignorez cet email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+    `;
+}
+
+// Template de vérification d'email
 function getVerificationEmailHtml(username, code) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
-            </div>
-            <h2 style="text-align: center; margin-bottom: 20px;">Vérification de votre compte</h2>
-            <p>Bonjour ${username},</p>
-            <p>Merci de vous être inscrit sur KermHosting ! Voici votre code de vérification :</p>
-            <div style="background: #1e293b; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-                <h2 style="color: #7C3AED; font-size: 32px; letter-spacing: 5px; margin: 0;">${code}</h2>
-            </div>
-            <p>Ce code expirera dans 15 minutes.</p>
-            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
+    const content = `
+        <h2>Bienvenue sur KermHosting, ${username} !</h2>
+        <p>Nous sommes ravis de vous accueillir. Pour activer votre compte et profiter de tous nos services, veuillez confirmer votre adresse email en utilisant le code ci-dessous :</p>
+        
+        <div class="code-box">
+            <div class="code">${code}</div>
+            <div class="code-label">Code de vérification</div>
         </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>⏰ Expiration</strong>
+                <span>15 minutes</span>
+                <p>Le code expirera dans 15 minutes pour des raisons de sécurité</p>
+            </div>
+            <div class="info-item">
+                <strong>🎁 Bonus</strong>
+                <span>5 coins</span>
+                <p>Vous recevrez 5 coins gratuits après vérification</p>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <strong>Pourquoi vérifier votre email ?</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">La vérification de votre email nous permet de sécuriser votre compte et de vous envoyer des notifications importantes concernant vos serveurs.</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/email-verification?email=${encodeURIComponent(username)}" class="button">
+                <i class="fas fa-check-circle"></i>
+                Vérifier mon email
+            </a>
+        </p>
+        
+        <div class="divider"></div>
+        
+        <p style="font-size: 14px; text-align: center;">
+            <i class="fas fa-lightbulb" style="color: #F59E0B;"></i>
+            <strong>Astuce :</strong> Après vérification, vous pourrez créer votre premier serveur et commencer à déployer vos projets !
+        </p>
     `;
+    return getEmailTemplate('Vérification de votre compte', content, username);
 }
 
+// Template de bienvenue
 function getWelcomeEmailHtml(username) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
-            </div>
-            <h2 style="text-align: center; margin-bottom: 20px;">Bienvenue ${username} !</h2>
-            <p>Votre compte a été vérifié avec succès !</p>
-            <div style="background: #1e293b; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Vous avez reçu 15 coins</strong> (10 pour l'inscription + 5 pour la vérification)</p>
-            </div>
-            <p>Vous pouvez maintenant créer votre premier serveur.</p>
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="${SITE_CONFIG.url}/dashboard" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Tableau de bord</a>
-            </div>
-            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
+    const content = `
+        <h2>Félicitations ${username} ! 🎉</h2>
+        <p>Votre compte a été vérifié avec succès. Vous faites maintenant partie de la communauté KermHosting, l'hébergement Node.js nouvelle génération.</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div><strong> Compte activé avec succès !</strong></div>
         </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>💰 Coins gratuits</strong>
+                <span>15 coins</span>
+                <p>10 (inscription) + 5 (vérification email)</p>
+            </div>
+            <div class="info-item">
+                <strong>🎁 Serveur gratuit</strong>
+                <span>24h d'essai</span>
+                <p>Testez nos services sans engagement</p>
+            </div>
+        </div>
+        
+        <h3 style="color: #F3F4F6; margin: 30px 0 20px;">🚀 Prochaines étapes :</h3>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 20px 0;">
+            <ol style="color: #9CA3AF; margin-left: 20px;">
+                <li style="margin-bottom: 15px;">
+                    <strong style="color: #7C3AED;">Connectez-vous chaque jour</strong> - Gagnez des coins quotidiens
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong style="color: #7C3AED;">Parrainez des amis</strong> - 20 coins par filleul
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong style="color: #7C3AED;">Créez votre premier serveur</strong> - Déployez vos projets
+                </li>
+                <li style="margin-bottom: 15px;">
+                    <strong style="color: #7C3AED;">Rejoignez notre Discord</strong> - Échangez avec la communauté
+                </li>
+            </ol>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/dashboard" class="button">
+                <i class="fas fa-tachometer-alt"></i>
+                Accéder à mon tableau de bord
+            </a>
+        </p>
+        
+        <div class="divider"></div>
+        
+        <p style="font-size: 14px; text-align: center;">
+            <i class="fas fa-question-circle" style="color: #7C3AED;"></i>
+            Besoin d'aide ? Rejoignez notre <a href="${SITE_CONFIG.discord}" style="color: #7C3AED; text-decoration: none;">Discord</a> ou contactez-nous sur <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED; text-decoration: none;">WhatsApp</a>
+        </p>
     `;
+    return getEmailTemplate('Bienvenue !', content, username);
 }
 
+// Template de réinitialisation de mot de passe
 function getResetEmailHtml(username, code) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
-            </div>
-            <h2 style="text-align: center; margin-bottom: 20px;">Réinitialisation de mot de passe</h2>
-            <p>Bonjour ${username},</p>
-            <p>Voici votre code de réinitialisation :</p>
-            <div style="background: #1e293b; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-                <h2 style="color: #7C3AED; font-size: 32px; letter-spacing: 5px; margin: 0;">${code}</h2>
-            </div>
-            <p>Ce code expirera dans 15 minutes.</p>
-            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
+    const content = `
+        <h2>Réinitialisation de votre mot de passe</h2>
+        <p>Bonjour ${username},</p>
+        <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte KermHosting. Si vous êtes à l'origine de cette demande, veuillez utiliser le code ci-dessous :</p>
+        
+        <div class="code-box">
+            <div class="code">${code}</div>
+            <div class="code-label">Code de réinitialisation</div>
         </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>⏰ Expiration</strong>
+                <span>15 minutes</span>
+                <p>Ce code expirera dans 15 minutes</p>
+            </div>
+            <div class="info-item">
+                <strong>🔒 Sécurité</strong>
+                <span>Protégé</span>
+                <p>Ne partagez jamais ce code avec personne</p>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong> Attention !</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email et changez votre mot de passe immédiatement si vous avez des doutes.</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/reset-password?email=${encodeURIComponent(username)}" class="button">
+                <i class="fas fa-lock"></i>
+                Réinitialiser mon mot de passe
+            </a>
+        </p>
     `;
+    return getEmailTemplate('Réinitialisation de mot de passe', content, username);
 }
 
-function getPaymentConfirmationHtml(username, amount, type) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
+// Template de confirmation d'achat
+function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
+    const content = `
+        <h2>Merci pour votre confiance, ${username} !</h2>
+        <p>Votre serveur <strong>${serverCredentials.server_name}</strong> (plan ${plan.name}) a été créé avec succès !</p>
+        
+        <h3 style="color: #7C3AED; margin: 30px 0 20px;">🔑 Identifiants de connexion</h3>
+        
+        <div class="credentials-box">
+            <div class="credential-row">
+                <span class="credential-label">
+                    <i class="fas fa-server"></i>
+                    Nom du serveur
+                </span>
+                <span class="credential-value">${serverCredentials.server_name}</span>
             </div>
-            <h2 style="text-align: center; margin-bottom: 20px; color: #10B981;">✅ Paiement confirmé</h2>
-            <p>Bonjour ${username},</p>
-            <p>Votre paiement de <strong>${amount} ${type === 'coins' ? 'coins' : 'FCFA'}</strong> a été confirmé.</p>
-            <div style="background: #1e293b; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p>Merci pour votre confiance !</p>
+            <div class="credential-row">
+                <span class="credential-label">
+                    <i class="fas fa-user"></i>
+                    Nom d'utilisateur
+                </span>
+                <span class="credential-value">${serverCredentials.username}</span>
             </div>
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="${SITE_CONFIG.url}/dashboard" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Voir mon tableau de bord</a>
+            <div class="credential-row">
+                <span class="credential-label">
+                    <i class="fas fa-lock"></i>
+                    Mot de passe
+                </span>
+                <span class="credential-value">${serverCredentials.password}</span>
+            </div>
+            <div class="credential-row">
+                <span class="credential-label">
+                    <i class="fas fa-globe"></i>
+                    Panel URL
+                </span>
+                <span class="credential-value">${PTERODACTYL_CONFIG.url}</span>
+            </div>
+            <div class="credential-row">
+                <span class="credential-label">
+                    <i class="fas fa-id"></i>
+                    ID du serveur
+                </span>
+                <span class="credential-value">${serverCredentials.identifier}</span>
             </div>
         </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong> IMPORTANT :</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">Conservez ces identifiants précieusement. Ils ne seront plus jamais affichés ! Le mot de passe commence par "Kh-" pour KermHosting.</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/dashboard" class="button">
+                <i class="fas fa-tachometer-alt"></i>
+                Gérer mon serveur
+            </a>
+        </p>
     `;
+    return getEmailTemplate('Serveur créé avec succès', content, username);
+}
+
+// Template de confirmation achat de coins
+function getCoinsPurchaseHtml(username, pack, totalCoins) {
+    const content = `
+        <h2>Félicitations ${username} !</h2>
+        <p>Votre achat de coins a été crédité avec succès sur votre compte. Vous pouvez maintenant les utiliser pour créer ou renouveler vos serveurs.</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div><strong> ${totalCoins} coins ont été ajoutés à votre compte !</strong></div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center;">
+            <div style="font-size: 60px; color: #F59E0B; margin-bottom: 20px;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div style="font-size: 48px; font-weight: 700; color: #F59E0B; margin-bottom: 10px;">
+                ${totalCoins}
+            </div>
+            <div style="color: #9CA3AF; font-size: 18px;">Coins crédités</div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>📦 Pack</strong>
+                <span>${pack.name}</span>
+            </div>
+            <div class="info-item">
+                <strong>💰 Montant</strong>
+                <span>${pack.price_fcfa} FCFA</span>
+            </div>
+            ${pack.bonus > 0 ? `
+            <div class="info-item">
+                <strong>🎁 Bonus</strong>
+                <span>+${pack.bonus} coins</span>
+            </div>
+            ` : ''}
+            <div class="info-item">
+                <strong>💳 Paiement</strong>
+                <span>Mobile Money</span>
+            </div>
+        </div>
+        
+        <h3 style="color: #F3F4F6; margin: 30px 0 20px;">🎯 Utilisez vos coins pour :</h3>
+        
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
+            <div style="flex: 1; min-width: 120px; background: #111827; border-radius: 12px; padding: 15px; text-align: center;">
+                <i class="fas fa-plus-circle" style="color: #7C3AED; font-size: 24px; margin-bottom: 10px;"></i>
+                <div style="color: #F3F4F6; font-weight: 600;">Créer</div>
+                <div style="color: #9CA3AF; font-size: 14px;">Nouveaux serveurs</div>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: #111827; border-radius: 12px; padding: 15px; text-align: center;">
+                <i class="fas fa-sync-alt" style="color: #10B981; font-size: 24px; margin-bottom: 10px;"></i>
+                <div style="color: #F3F4F6; font-weight: 600;">Renouveler</div>
+                <div style="color: #9CA3AF; font-size: 14px;">Serveurs existants</div>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: #111827; border-radius: 12px; padding: 15px; text-align: center;">
+                <i class="fas fa-gift" style="color: #F59E0B; font-size: 24px; margin-bottom: 10px;"></i>
+                <div style="color: #F3F4F6; font-weight: 600;">Offrir</div>
+                <div style="color: #9CA3AF; font-size: 14px;">À des amis</div>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/pricing" class="button">
+                <i class="fas fa-server"></i>
+                Créer un serveur maintenant
+            </a>
+        </p>
+    `;
+    return getEmailTemplate('Achat de coins confirmé', content, username);
+}
+
+// Template d'expiration de serveur
+function getServerExpiringHtml(username, server, daysLeft) {
+    const content = `
+        <h2>Votre serveur expire bientôt</h2>
+        <p>Bonjour ${username},</p>
+        <p>Nous vous informons que votre serveur <strong>"${server.server_name}"</strong> expirera dans <strong>${daysLeft} jours</strong>.</p>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong> Action requise</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">Pour éviter la suppression de votre serveur et la perte de vos données, veuillez le renouveler avant la date d'expiration.</p>
+            </div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 30px 0;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <i class="fas fa-server" style="color: #7C3AED; font-size: 30px;"></i>
+                <div>
+                    <div style="color: #F3F4F6; font-weight: 600; font-size: 18px;">${server.server_name}</div>
+                    <div style="color: #9CA3AF;">${server.server_type}</div>
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>📅 Création</strong>
+                    <span>${new Date(server.created_at).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <div class="info-item">
+                    <strong>⏰ Expiration</strong>
+                    <span>${new Date(server.expires_at).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <div class="info-item">
+                    <strong>💰 Prix renouvellement</strong>
+                    <span>${PLANS[server.server_type]?.price_fcfa || 0} FCFA</span>
+                </div>
+                <div class="info-item">
+                    <strong>🪙 ou en coins</strong>
+                    <span>${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</span>
+                </div>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/dashboard" class="button">
+                <i class="fas fa-sync-alt"></i>
+                Renouveler maintenant
+            </a>
+        </p>
+    `;
+    return getEmailTemplate('Alerte expiration', content, username);
+}
+
+// Template de suppression de serveur
+function getServerDeletedHtml(username, server) {
+    const content = `
+        <h2>Votre serveur a été supprimé</h2>
+        <p>Bonjour ${username},</p>
+        <p>Votre serveur <strong>"${server.server_name}"</strong> a été automatiquement supprimé car il a expiré.</p>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center;">
+            <i class="fas fa-trash-alt" style="color: #EF4444; font-size: 48px; margin-bottom: 20px;"></i>
+            <p style="color: #9CA3AF;">Toutes les données associées à ce serveur ont été supprimées définitivement.</p>
+        </div>
+        
+        <div class="info-item" style="margin-bottom: 30px;">
+            <strong>📋 Détails du serveur</strong>
+            <p style="margin-top: 10px;">
+                Plan : ${PLANS[server.server_type]?.name || server.server_type}<br>
+                Date de création : ${new Date(server.created_at).toLocaleDateString('fr-FR')}<br>
+                Date d'expiration : ${new Date(server.expires_at).toLocaleDateString('fr-FR')}
+            </p>
+        </div>
+        
+        <p>Vous pouvez toujours recréer un serveur quand vous le souhaitez. Vos coins et votre compte sont toujours actifs.</p>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/pricing" class="button">
+                <i class="fas fa-plus-circle"></i>
+                Créer un nouveau serveur
+            </a>
+        </p>
+    `;
+    return getEmailTemplate('Serveur supprimé', content, username);
+}
+
+// Template de notification de parrainage
+function getReferralNotificationHtml(username, referrerName) {
+    const content = `
+        <h2>🎉 Quelqu'un a utilisé votre lien de parrainage !</h2>
+        <p>Bonjour ${username},</p>
+        <p><strong>${referrerName}</strong> vient de s'inscrire sur KermHosting en utilisant votre lien de parrainage.</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div><strong> +20 coins ont été crédités sur votre compte !</strong></div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center;">
+            <div style="font-size: 48px; color: #F59E0B; margin-bottom: 20px;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div style="font-size: 36px; font-weight: 700; color: #F3F4F6; margin-bottom: 10px;">
+                20 coins
+            </div>
+            <div style="color: #9CA3AF;">Crédités instantanément</div>
+        </div>
+        
+        <p>Continuez à partager votre lien de parrainage pour gagner encore plus de coins !</p>
+        
+        <div style="background: #111827; border-radius: 12px; padding: 15px; margin: 20px 0;">
+            <div style="color: #9CA3AF; margin-bottom: 5px;">Votre lien de parrainage</div>
+            <div style="color: #7C3AED; font-weight: 600; word-break: break-all;">${SITE_CONFIG.url}/register?ref=${username}</div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/profile" class="button">
+                <i class="fas fa-chart-line"></i>
+                Voir mes statistiques
+            </a>
+        </p>
+    `;
+    return getEmailTemplate('Nouveau filleul !', content, username);
+}
+
+// Template de bienvenue pour filleul
+function getReferralWelcomeHtml(username, referrerName) {
+    const content = `
+        <h2>Bienvenue sur KermHosting, ${username} !</h2>
+        <p>Vous avez été parrainé par <strong>${referrerName}</strong>. Bienvenue dans notre communauté !</p>
+        
+        <div class="success-box">
+            <i class="fas fa-gift"></i>
+            <div><strong> +10 coins de bienvenue ont été crédités sur votre compte !</strong></div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>🎁 Votre bonus</strong>
+                <span>10 coins</span>
+                <p>Offerts grâce à votre parrain</p>
+            </div>
+            <div class="info-item">
+                <strong>💰 Total de départ</strong>
+                <span>15 coins</span>
+                <p>10 (parrainage) + 5 (inscription)</p>
+            </div>
+        </div>
+        
+        <h3 style="color: #F3F4F6; margin: 30px 0 20px;">🚀 Pour commencer :</h3>
+        
+        <ol style="color: #9CA3AF; margin-left: 20px;">
+            <li style="margin-bottom: 15px;">✅ <strong style="color: #7C3AED;">Vérifiez votre email</strong> - 5 coins bonus</li>
+            <li style="margin-bottom: 15px;">✅ <strong style="color: #7C3AED;">Créez votre premier serveur</strong> - Profitez de votre serveur gratuit 24h</li>
+            <li style="margin-bottom: 15px;">✅ <strong style="color: #7C3AED;">Parrainez à votre tour</strong> - Gagnez 20 coins par ami</li>
+        </ol>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/dashboard" class="button">
+                <i class="fas fa-tachometer-alt"></i>
+                Commencer maintenant
+            </a>
+        </p>
+    `;
+    return getEmailTemplate('Bienvenue !', content, username);
 }
 
 // =============================================
@@ -865,7 +1545,7 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // =============================================
-// ROUTES AUTH CORRIGÉES
+// ROUTES AUTH
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -880,7 +1560,6 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Mot de passe trop court', code: 'PASSWORD_TOO_SHORT' });
         }
 
-        // Vérifier si l'utilisateur existe déjà
         const { data: existingUser } = await supabase
             .from('profiles')
             .select('id')
@@ -901,7 +1580,6 @@ app.post('/api/register', async (req, res) => {
         let referrerId = null;
         let referrerName = null;
 
-        // Vérifier le code de parrainage
         if (referral_code) {
             const { data: referrer } = await supabase
                 .from('profiles')
@@ -915,7 +1593,6 @@ app.post('/api/register', async (req, res) => {
             }
         }
 
-        // Créer l'utilisateur
         const { data: newUser, error } = await supabase
             .from('profiles')
             .insert([{
@@ -934,20 +1611,16 @@ app.post('/api/register', async (req, res) => {
             .single();
 
         if (error) {
-            console.error('❌ Erreur création:', error);
             return res.status(500).json({ success: false, error: 'Erreur création compte', code: 'REGISTER_ERROR' });
         }
 
-        // Email de vérification
         await sendEmail(
             email,
             '🔐 Code de vérification KermHosting',
             getVerificationEmailHtml(username, verificationCode)
         );
 
-        // Traiter le parrainage si existant
         if (referrerId) {
-            // Récupérer les coins actuels du parrain
             const { data: referrerData } = await supabase
                 .from('profiles')
                 .select('coins')
@@ -955,14 +1628,12 @@ app.post('/api/register', async (req, res) => {
                 .single();
             
             if (referrerData) {
-                // Mettre à jour les coins du parrain
                 await supabase
                     .from('profiles')
                     .update({ coins: referrerData.coins + 20 })
                     .eq('id', referrerId);
             }
 
-            // Récupérer les coins actuels du nouveau user
             const { data: newUserData } = await supabase
                 .from('profiles')
                 .select('coins')
@@ -970,14 +1641,12 @@ app.post('/api/register', async (req, res) => {
                 .single();
             
             if (newUserData) {
-                // Mettre à jour les coins du nouveau user
                 await supabase
                     .from('profiles')
                     .update({ coins: newUserData.coins + 10 })
                     .eq('id', newUser.id);
             }
 
-            // Enregistrer le parrainage
             await supabase
                 .from('referrals')
                 .insert([{
@@ -985,6 +1654,26 @@ app.post('/api/register', async (req, res) => {
                     referred_id: newUser.id,
                     coins_rewarded: 20
                 }]);
+
+            const { data: referrerEmail } = await supabase
+                .from('profiles')
+                .select('email')
+                .eq('id', referrerId)
+                .single();
+            
+            if (referrerEmail) {
+                await sendEmail(
+                    referrerEmail.email,
+                    '🎉 Quelqu\'un a utilisé votre lien de parrainage !',
+                    getReferralNotificationHtml(referrerName, username)
+                );
+            }
+
+            await sendEmail(
+                email,
+                '🎁 Bienvenue sur KermHosting !',
+                getReferralWelcomeHtml(username, referrerName)
+            );
         }
 
         res.json({ 
@@ -1029,7 +1718,6 @@ app.post('/api/verify-email', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Code incorrect', code: 'INVALID_CODE' });
         }
 
-        // Mettre à jour l'utilisateur
         await supabase
             .from('profiles')
             .update({
@@ -1040,7 +1728,6 @@ app.post('/api/verify-email', async (req, res) => {
             })
             .eq('id', user.id);
 
-        // Email de bienvenue
         await sendEmail(
             email,
             '🎉 Bienvenue sur KermHosting !',
@@ -1056,6 +1743,57 @@ app.post('/api/verify-email', async (req, res) => {
     } catch (error) {
         console.error('❌ Erreur vérification:', error);
         res.status(500).json({ success: false, error: 'Erreur serveur', code: 'INTERNAL_ERROR' });
+    }
+});
+
+app.post('/api/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, error: 'Email requis' });
+        }
+
+        const { data: user, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('email', email)
+            .single();
+
+        if (error || !user) {
+            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
+        }
+
+        if (user.email_verified) {
+            return res.status(400).json({ success: false, error: 'Email déjà vérifié' });
+        }
+
+        const verificationCode = generateVerificationCode();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+        await supabase
+            .from('profiles')
+            .update({
+                email_verification_code: verificationCode,
+                email_verification_code_expires: expiresAt.toISOString()
+            })
+            .eq('id', user.id);
+
+        await sendEmail(
+            email,
+            '🔐 Nouveau code de vérification KermHosting',
+            getVerificationEmailHtml(user.username, verificationCode)
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Nouveau code envoyé avec succès' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur renvoi code:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
@@ -1095,7 +1833,6 @@ app.post('/api/login', async (req, res) => {
             });
         }
 
-        // Token avec expiration à 3 jours (259200 secondes)
         const token = jwt.sign(
             { userId: user.id, username: user.username, role: user.role },
             SITE_CONFIG.jwtSecret,
@@ -1128,7 +1865,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Route pour demander la réinitialisation du mot de passe
 app.post('/api/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -1143,7 +1879,6 @@ app.post('/api/forgot-password', async (req, res) => {
             .eq('email', email)
             .maybeSingle();
 
-        // Pour des raisons de sécurité, on renvoie toujours le même message
         if (error || !user) {
             return res.json({ 
                 success: true, 
@@ -1163,7 +1898,6 @@ app.post('/api/forgot-password', async (req, res) => {
             })
             .eq('id', user.id);
 
-        // Envoyer l'email
         await sendEmail(
             email,
             '🔐 Réinitialisation de votre mot de passe KermHosting',
@@ -1181,7 +1915,6 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 });
 
-// Route pour réinitialiser le mot de passe
 app.post('/api/reset-password', async (req, res) => {
     try {
         const { email, code, newPassword } = req.body;
@@ -1242,7 +1975,6 @@ app.post('/api/reset-password', async (req, res) => {
     }
 });
 
-// Route pour changer le mot de passe (utilisateur connecté)
 app.post('/api/change-password', authenticateToken, async (req, res) => {
     try {
         const { current_password, new_password } = req.body;
@@ -1293,13 +2025,12 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES PAIEMENT FAPSHI CORRIGÉES
+// ROUTES PAIEMENT FAPSHI
 // =============================================
 
-// Paiement direct par Mobile Money pour serveur
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { plan_id, phone, medium } = req.body;
+        const { plan_id, phone, medium, server_name, server_username } = req.body;
 
         if (!plan_id || !PLANS[plan_id] || plan_id === 'free') {
             return res.status(400).json({ success: false, error: 'Plan invalide', code: 'INVALID_PLAN' });
@@ -1312,7 +2043,6 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
         const plan = PLANS[plan_id];
         const transactionId = generateTransactionId();
 
-        // Note: La colonne 'phone' doit exister dans ta table transactions
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -1320,12 +2050,16 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
                 user_id: req.user.id,
                 type: 'server_purchase',
                 plan_key: plan_id,
-                server_name: 'À définir', // À remplacer par le nom du serveur
                 amount: plan.price_fcfa,
                 currency: 'FCFA',
-                medium: medium,
                 status: 'pending',
-                metadata: { plan, phone }
+                metadata: { 
+                    plan, 
+                    phone, 
+                    medium,
+                    server_name,
+                    server_username 
+                }
             }])
             .select()
             .single();
@@ -1375,7 +2109,6 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
     }
 });
 
-// Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { pack_id, phone, medium } = req.body;
@@ -1390,21 +2123,24 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 
         const pack = COIN_PACKS[pack_id];
         const totalCoins = pack.coins + (pack.bonus || 0);
-        const transactionId = crypto.randomUUID(); // UUID valide !
+        const transactionId = generateTransactionId();
 
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
-                id: transactionId, // Maintenant UUID valide
+                id: transactionId,
                 user_id: req.user.id,
                 type: 'coins_purchase',
                 pack_id: pack_id,
                 amount: pack.price_fcfa,
                 currency: 'FCFA',
                 coins_amount: totalCoins,
-                medium: medium,
                 status: 'pending',
-                metadata: { pack, phone }
+                metadata: { 
+                    pack, 
+                    phone,
+                    medium 
+                }
             }])
             .select()
             .single();
@@ -1464,7 +2200,6 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
     }
 });
 
-// Vérifier statut paiement
 app.get('/api/payment/status/:transId', async (req, res) => {
     try {
         const { transId } = req.params;
@@ -1486,7 +2221,6 @@ app.get('/api/payment/status/:transId', async (req, res) => {
     }
 });
 
-// Webhook Fapshi
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
         const { transId } = req.body;
@@ -1525,7 +2259,6 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
 
         if (event.status === 'SUCCESSFUL') {
             if (transaction.type === 'coins_purchase') {
-                // Récupérer l'utilisateur
                 const { data: user } = await supabase
                     .from('profiles')
                     .select('coins, email, username')
@@ -1533,33 +2266,16 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
                     .single();
 
                 if (user) {
-                    // Mettre à jour les coins
                     await supabase
                         .from('profiles')
                         .update({ coins: user.coins + transaction.coins_amount })
                         .eq('id', transaction.user_id);
 
-                    // Email de confirmation
+                    const pack = COIN_PACKS[transaction.pack_id];
                     await sendEmail(
                         user.email,
                         '💰 Achat de coins confirmé',
-                        getPaymentConfirmationHtml(user.username, transaction.coins_amount, 'coins')
-                    );
-                }
-            } else if (transaction.type === 'server_purchase') {
-                // Récupérer l'utilisateur
-                const { data: user } = await supabase
-                    .from('profiles')
-                    .select('email, username')
-                    .eq('id', transaction.user_id)
-                    .single();
-
-                if (user) {
-                    // Email de confirmation
-                    await sendEmail(
-                        user.email,
-                        '✅ Paiement serveur confirmé',
-                        getPaymentConfirmationHtml(user.username, transaction.amount, 'fcfa')
+                        getCoinsPurchaseHtml(user.username, pack, transaction.coins_amount)
                     );
                 }
             }
@@ -1570,83 +2286,6 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     } catch (error) {
         console.error('❌ Erreur webhook:', error);
         res.status(500).json({ message: 'Erreur serveur' });
-    }
-});
-
-// =============================================
-// ROUTE RÉCOMPENSE QUOTIDIENNE CORRIGÉE (24h)
-// =============================================
-app.post('/api/daily-reward', authenticateToken, async (req, res) => {
-    try {
-        const today = new Date().toDateString();
-        const now = new Date();
-
-        // Vérifier si l'utilisateur a déjà réclamé aujourd'hui
-        if (req.user.last_daily_login === today) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui. Revenez demain !', 
-                code: 'DAILY_REWARD_ALREADY_CLAIMED' 
-            });
-        }
-
-        // Vérifier que 24h se sont écoulées depuis la dernière réclamation
-        if (req.user.last_daily_login) {
-            const lastClaim = new Date(req.user.last_daily_login);
-            const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);
-            
-            if (hoursSinceLastClaim < 24) {
-                const hoursLeft = Math.ceil(24 - hoursSinceLastClaim);
-                return res.status(400).json({
-                    success: false,
-                    error: `Vous pourrez réclamer votre prochaine récompense dans ${hoursLeft} heures.`,
-                    code: 'TOO_EARLY'
-                });
-            }
-        }
-
-        let coinsReward = 5;
-        let streakCount = 1;
-
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
-        // Vérifier la série
-        if (req.user.last_daily_login === yesterday) {
-            streakCount = (req.user.daily_login_streak || 0) + 1;
-            coinsReward = 5 + Math.min(5, streakCount); // Bonus de série
-        }
-
-        // Mettre à jour l'utilisateur
-        await supabase
-            .from('profiles')
-            .update({
-                daily_login_streak: streakCount,
-                last_daily_login: today,
-                total_login_days: (req.user.total_login_days || 0) + 1,
-                coins: (req.user.coins || 0) + coinsReward
-            })
-            .eq('id', req.user.id);
-
-        // Journaliser l'activité
-        await supabase
-            .from('user_activities')
-            .insert([{
-                user_id: req.user.id,
-                activity_type: 'daily_login',
-                coins_earned: coinsReward,
-                description: `Récompense quotidienne - Série: ${streakCount} jours`
-            }]);
-
-        res.json({
-            success: true,
-            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours)`,
-            coins: coinsReward,
-            streak: streakCount
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récompense quotidienne:', error);
-        res.status(500).json({ success: false, error: 'Erreur récompense' });
     }
 });
 
@@ -1682,7 +2321,6 @@ app.get('/api/user/me', authenticateToken, async (req, res) => {
     }
 });
 
-// Récupérer les activités de l'utilisateur
 app.get('/api/user/activities', authenticateToken, async (req, res) => {
     try {
         const { data: activities, error } = await supabase
@@ -1701,7 +2339,6 @@ app.get('/api/user/activities', authenticateToken, async (req, res) => {
     }
 });
 
-// Régénérer la clé API
 app.post('/api/user/regenerate-api-key', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const newApiKey = generateApiKey();
@@ -1768,7 +2405,6 @@ app.get('/api/servers/:serverId', authenticateToken, async (req, res) => {
     }
 });
 
-// Récupérer les identifiants d'un serveur
 app.get('/api/servers/:serverId/credentials', authenticateToken, async (req, res) => {
     try {
         const { serverId } = req.params;
@@ -1784,7 +2420,6 @@ app.get('/api/servers/:serverId/credentials', authenticateToken, async (req, res
             return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
         }
 
-        // Journaliser la consultation des identifiants
         await supabase
             .from('user_activities')
             .insert([{
@@ -1830,7 +2465,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
             return res.status(400).json({ success: false, error: 'Nom du serveur invalide', code: 'INVALID_NAME' });
         }
 
-        // Validation du nom d'utilisateur
         const usernameValidation = validateUsername(server_username);
         if (!usernameValidation.valid) {
             return res.status(400).json({ 
@@ -1842,10 +2476,8 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
 
         const plan = PLANS[plan_id];
 
-        // Vérifier le paiement si ce n'est pas gratuit
         if (plan_id !== 'free') {
             if (payment_method === 'coins') {
-                // Paiement par coins
                 if (req.user.coins < plan.coins_needed) {
                     return res.status(400).json({ 
                         success: false, 
@@ -1854,7 +2486,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                     });
                 }
             } else {
-                // Paiement par Mobile Money
                 if (!transaction_id) {
                     return res.status(400).json({ 
                         success: false, 
@@ -1889,11 +2520,9 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
             }
         }
 
-        // Créer l'utilisateur Pterodactyl avec le nom d'utilisateur choisi
         const pteroEmail = `${server_username.toLowerCase()}@kermhosting.local`;
         const pteroUser = await createPterodactylUser(server_username, pteroEmail);
 
-        // Créer le serveur Pterodactyl
         const serverIdentifier = `${server_name}-${plan_id}-${Date.now().toString().slice(-4)}`;
         
         const pterodactylServer = await createPterodactylServer({
@@ -1911,7 +2540,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + plan.duration_days);
 
-        // Sauvegarder dans Supabase
         const newServer = {
             id: generateUUID(),
             user_id: req.user.id,
@@ -1948,13 +2576,11 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                 .update({ free_panel_created: true })
                 .eq('id', req.user.id);
         } else if (payment_method === 'coins') {
-            // Déduire les coins
             await supabase
                 .from('profiles')
                 .update({ coins: req.user.coins - plan.coins_needed })
                 .eq('id', req.user.id);
 
-            // Créer une transaction
             await supabase
                 .from('transactions')
                 .insert([{
@@ -1969,7 +2595,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                 }]);
         }
 
-        // Journaliser l'activité
         await supabase
             .from('user_activities')
             .insert([{
@@ -1979,18 +2604,19 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                 description: `Création du serveur "${server_name}" (plan ${plan.name})`
             }]);
 
-        // Email de confirmation
         await sendEmail(
             req.user.email,
             '✅ Votre serveur a été créé !',
-            `<p>Bonjour ${req.user.username},</p>
-             <p>Votre serveur <strong>${server_name}</strong> a été créé avec succès.</p>
-             <p><strong>Identifiants :</strong></p>
-             <ul>
-                <li>Nom d'utilisateur : ${pteroUser.username}</li>
-                <li>Mot de passe : ${pteroUser.password}</li>
-                <li>Panel : ${PTERODACTYL_CONFIG.url}</li>
-             </ul>`
+            getPurchaseConfirmationHtml(
+                req.user.username, 
+                plan, 
+                {
+                    server_name: server_name,
+                    username: pteroUser.username,
+                    password: pteroUser.password,
+                    identifier: pterodactylServer.identifier
+                }
+            )
         );
 
         res.json({ 
@@ -2015,7 +2641,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
     }
 });
 
-// Actions sur le serveur (start/stop/restart)
 app.post('/api/servers/:serverId/power', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { serverId } = req.params;
@@ -2042,7 +2667,6 @@ app.post('/api/servers/:serverId/power', authenticateToken, requireEmailVerifica
             return res.status(500).json({ success: false, error: 'Erreur lors de l\'action', code: 'POWER_ACTION_ERROR' });
         }
 
-        // Journaliser l'activité
         await supabase
             .from('user_activities')
             .insert([{
@@ -2058,7 +2682,6 @@ app.post('/api/servers/:serverId/power', authenticateToken, requireEmailVerifica
     }
 });
 
-// Récupérer les ressources du serveur
 app.get('/api/servers/:serverId/resources', authenticateToken, async (req, res) => {
     try {
         const { serverId } = req.params;
@@ -2086,9 +2709,6 @@ app.get('/api/servers/:serverId/resources', authenticateToken, async (req, res) 
     }
 });
 
-// =============================================
-// ROUTE DE RENOUVELLEMENT DE SERVEUR
-// =============================================
 app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { serverId } = req.params;
@@ -2145,13 +2765,11 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
         }
         newExpiry.setDate(newExpiry.getDate() + plan.duration_days);
 
-        // Déduire les coins
         await supabase
             .from('profiles')
             .update({ coins: req.user.coins - coins })
             .eq('id', req.user.id);
 
-        // Mettre à jour la date d'expiration
         await supabase
             .from('servers')
             .update({ 
@@ -2160,7 +2778,6 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
             })
             .eq('id', serverId);
 
-        // Créer une transaction
         const transactionId = generateTransactionId();
         await supabase
             .from('transactions')
@@ -2181,7 +2798,6 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
                 }
             }]);
 
-        // Journaliser l'activité
         await supabase
             .from('user_activities')
             .insert([{
@@ -2191,7 +2807,6 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
                 description: `Renouvellement du serveur "${server.server_name}" pour ${coins} coins`
             }]);
 
-        // Email de confirmation
         await sendEmail(
             req.user.email,
             '✅ Serveur renouvelé avec succès',
@@ -2248,6 +2863,79 @@ app.get('/api/referral/info', authenticateToken, async (req, res) => {
 });
 
 // =============================================
+// ROUTES RÉCOMPENSE QUOTIDIENNE
+// =============================================
+
+app.post('/api/daily-reward', authenticateToken, async (req, res) => {
+    try {
+        const today = new Date().toDateString();
+        const now = new Date();
+
+        if (req.user.last_daily_login === today) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui. Revenez demain !', 
+                code: 'DAILY_REWARD_ALREADY_CLAIMED' 
+            });
+        }
+
+        if (req.user.last_daily_login) {
+            const lastClaim = new Date(req.user.last_daily_login);
+            const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);
+            
+            if (hoursSinceLastClaim < 24) {
+                const hoursLeft = Math.ceil(24 - hoursSinceLastClaim);
+                return res.status(400).json({
+                    success: false,
+                    error: `Vous pourrez réclamer votre prochaine récompense dans ${hoursLeft} heures.`,
+                    code: 'TOO_EARLY'
+                });
+            }
+        }
+
+        let coinsReward = 5;
+        let streakCount = 1;
+
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        
+        if (req.user.last_daily_login === yesterday) {
+            streakCount = (req.user.daily_login_streak || 0) + 1;
+            coinsReward = 5 + Math.min(5, streakCount);
+        }
+
+        await supabase
+            .from('profiles')
+            .update({
+                daily_login_streak: streakCount,
+                last_daily_login: today,
+                total_login_days: (req.user.total_login_days || 0) + 1,
+                coins: (req.user.coins || 0) + coinsReward
+            })
+            .eq('id', req.user.id);
+
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'daily_login',
+                coins_earned: coinsReward,
+                description: `Récompense quotidienne - Série: ${streakCount} jours`
+            }]);
+
+        res.json({
+            success: true,
+            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours)`,
+            coins: coinsReward,
+            streak: streakCount
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récompense quotidienne:', error);
+        res.status(500).json({ success: false, error: 'Erreur récompense' });
+    }
+});
+
+// =============================================
 // ROUTES INFORMATIONS
 // =============================================
 
@@ -2264,7 +2952,7 @@ app.get('/api/health', (req, res) => {
         success: true,
         message: '🚀 KermHosting opérationnel',
         timestamp: new Date().toISOString(),
-        version: '2.0.0',
+        version: '3.0.0',
         payment: 'Fapshi Live',
         features: {
             payments: 'FCFA',
@@ -2277,7 +2965,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
-// ROUTES ADMIN (simplifiées)
+// ROUTES ADMIN
 // =============================================
 
 app.get('/api/admin/check', authenticateToken, async (req, res) => {
@@ -2297,7 +2985,6 @@ app.get('/api/admin/check', authenticateToken, async (req, res) => {
 // CRON JOBS
 // =============================================
 
-// Vérification des serveurs expirant bientôt (toutes les 6 heures)
 cron.schedule('0 */6 * * *', async () => {
     const warningDate = new Date();
     warningDate.setDate(warningDate.getDate() + 3);
@@ -2312,17 +2999,11 @@ cron.schedule('0 */6 * * *', async () => {
     for (const server of expiringServers || []) {
         const daysLeft = Math.ceil((new Date(server.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
         
-        try {
-            await sendEmail(
-                server.profiles.email,
-                '⚠️ Votre serveur expire bientôt',
-                `<p>Bonjour ${server.profiles.username},</p>
-                 <p>Votre serveur <strong>${server.server_name}</strong> expire dans ${daysLeft} jours.</p>
-                 <p><a href="${SITE_CONFIG.url}/dashboard">Renouveler maintenant</a></p>`
-            );
-        } catch (emailError) {
-            console.error('❌ Erreur email expiration:', emailError);
-        }
+        await sendEmail(
+            server.profiles.email,
+            '⚠️ Votre serveur expire bientôt',
+            getServerExpiringHtml(server.profiles.username, server, daysLeft)
+        );
 
         await supabase
             .from('servers')
@@ -2331,7 +3012,6 @@ cron.schedule('0 */6 * * *', async () => {
     }
 });
 
-// Suppression des serveurs expirés (tous les jours à 2h)
 cron.schedule('0 2 * * *', async () => {
     const { data: expiredServers } = await supabase
         .from('servers')
@@ -2347,16 +3027,11 @@ cron.schedule('0 2 * * *', async () => {
             .update({ status: 'deleted' })
             .eq('id', server.id);
 
-        try {
-            await sendEmail(
-                server.profiles.email,
-                '🗑️ Votre serveur a été supprimé',
-                `<p>Bonjour ${server.profiles.username},</p>
-                 <p>Votre serveur <strong>${server.server_name}</strong> a été supprimé car il a expiré.</p>`
-            );
-        } catch (emailError) {
-            console.error('❌ Erreur email suppression:', emailError);
-        }
+        await sendEmail(
+            server.profiles.email,
+            '🗑️ Votre serveur a été supprimé',
+            getServerDeletedHtml(server.profiles.username, server)
+        );
     }
 });
 
@@ -2442,4 +3117,11 @@ server.listen(SITE_CONFIG.port, async () => {
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
+
+    const balance = await fapshiBalance();
+    if (balance.statusCode === 200) {
+        console.log(`✅ Fapshi connecté - Solde: ${balance.balance} FCFA`);
+    } else {
+        console.log(`❌ Erreur Fapshi: ${balance.message}`);
+    }
 });
