@@ -10,13 +10,14 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
 import cron from 'node-cron';
 import multer from 'multer';
 import { WebSocketServer } from 'ws';
 import http from 'http';
 import axios from 'axios';
 import FormData from 'form-data';
+import Mailgun from 'mailgun.js';
+import formData from 'form-data';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +42,7 @@ const FAPSHI_CONFIG = {
     baseUrl: 'https://live.fapshi.com',
     apiuser: '42ae50a1-35e3-4422-b422-d238d4548bf1',
     apikey: 'FAK_850bbe31d0093e30ad220b5a08e91671',
-    webhookSecret: 'kermhosting_webhook_secret_2026'
+    webhookSecret: 'kermhosting_webhook_secret_2024'
 };
 
 // Headers Fapshi
@@ -51,18 +52,21 @@ const fapshiHeaders = {
 };
 
 // =============================================
-// CONFIGURATION EMAIL AVEC BREVO
+// CONFIGURATION MAILGUN SANDBOX
 // =============================================
-const EMAIL_CONFIG = {
-    host: 'smtp-relay.brevo.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: 'Emmanuelmoukodi6@gmail.com',
-        pass: 'xsmtpsib-6ed01a1c457cf659398969bc018460b9e8625af9f8c607f79850b551e7992407-1cYv2HiyAYvwn2cP'
-    },
-    from: 'KermHosting <Emmanuelmoukodi6@gmail.com>'
+const MAILGUN_CONFIG = {
+    apiKey: '82cf32bf-54866ad5',
+    domain: 'sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org',
+    from: 'KermHosting <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
 };
+
+// Initialisation Mailgun
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+    username: 'api',
+    key: MAILGUN_CONFIG.apiKey,
+    url: 'https://api.mailgun.net'
+});
 
 // =============================================
 // CONFIGURATION PTERODACTYL
@@ -74,13 +78,13 @@ const PTERODACTYL_CONFIG = {
 };
 
 const SITE_CONFIG = {
-    url: 'https://kerm-hosting.vercel.app',
+    url: 'https://kermhosting.com',
     name: 'KermHosting',
-    supportEmail: 'Emmanuelmoukodi6@gmail.com',
-    whatsapp: 'https://wa.me/4915511482688',
+    supportEmail: 'bookmakerp@gmail.com',
+    whatsapp: 'https://wa.me/237659535227',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
-    jwtSecret: 'monsitekermhosting',
+    jwtSecret: 'kermhosting_super_secret_key_2024_changez_ceci',
     port: process.env.PORT || 3000
 };
 
@@ -305,77 +309,103 @@ function validateUsername(username) {
 }
 
 // =============================================
-// TRANSPORTEUR EMAIL AVEC BREVO
+// FONCTIONS EMAIL AVEC MAILGUN
 // =============================================
 
-const emailTransporter = nodemailer.createTransport({
-    host: EMAIL_CONFIG.host,
-    port: EMAIL_CONFIG.port,
-    secure: EMAIL_CONFIG.secure,
-    auth: EMAIL_CONFIG.auth
-});
-
-emailTransporter.verify((error, success) => {
-    if (error) {
-        console.log('❌ Erreur Brevo:', error);
-        console.log('Vérifie tes identifiants SMTP Brevo');
-    } else {
-        console.log('✅ Brevo connecté - Serveur email prêt');
+async function sendEmail(to, subject, htmlContent) {
+    try {
+        // En mode sandbox, il faut autoriser les destinataires
+        // Ajoute bookmakerp@gmail.com dans les authorized recipients du dashboard Mailgun
+        const result = await mg.messages.create(MAILGUN_CONFIG.domain, {
+            from: MAILGUN_CONFIG.from,
+            to: [to],
+            subject: subject,
+            html: htmlContent
+        });
+        
+        console.log(`✅ Email envoyé à ${to}:`, result.id);
+        return { success: true, id: result.id };
+    } catch (error) {
+        console.error('❌ Erreur Mailgun:', error);
+        // Ne pas bloquer le processus, juste logger l'erreur
+        return { success: false, error: error.message };
     }
-});
+}
 
-// =============================================
-// TEMPLATES EMAIL SIMPLIFIÉS
-// =============================================
-const emailTemplates = {
-    base: (title, content) => `
+function getVerificationEmailHtml(username, code) {
+    return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
             </div>
-            <h2 style="text-align: center; margin-bottom: 20px;">${title}</h2>
-            <div style="background: #1e293b; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                ${content}
-            </div>
-            <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #2d3748;">
-                <p style="color: #94a3b8; font-size: 12px;">© 2024 KermHosting. Tous droits réservés.</p>
-            </div>
-        </div>
-    `,
-    
-    verification: (username, code) => `
-        <div>
+            <h2 style="text-align: center; margin-bottom: 20px;">Vérification de votre compte</h2>
             <p>Bonjour ${username},</p>
             <p>Merci de vous être inscrit sur KermHosting ! Voici votre code de vérification :</p>
-            <div style="background: #0f172a; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+            <div style="background: #1e293b; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
                 <h2 style="color: #7C3AED; font-size: 32px; letter-spacing: 5px; margin: 0;">${code}</h2>
             </div>
             <p>Ce code expirera dans 15 minutes.</p>
+            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
         </div>
-    `,
-    
-    welcome: (username) => `
-        <div>
-            <p>Bonjour ${username},</p>
-            <p>Votre compte a été vérifié avec succès ! Vous avez reçu <strong>15 coins</strong>.</p>
+    `;
+}
+
+function getWelcomeEmailHtml(username) {
+    return `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 20px;">Bienvenue ${username} !</h2>
+            <p>Votre compte a été vérifié avec succès !</p>
+            <div style="background: #1e293b; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Vous avez reçu 15 coins</strong> (10 pour l'inscription + 5 pour la vérification)</p>
+            </div>
             <p>Vous pouvez maintenant créer votre premier serveur.</p>
             <div style="text-align: center; margin: 30px 0;">
                 <a href="${SITE_CONFIG.url}/dashboard" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Tableau de bord</a>
             </div>
+            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
         </div>
-    `,
-    
-    passwordReset: (username, code) => `
-        <div>
+    `;
+}
+
+function getResetEmailHtml(username, code) {
+    return `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 20px;">Réinitialisation de mot de passe</h2>
             <p>Bonjour ${username},</p>
-            <p>Voici votre code de réinitialisation de mot de passe :</p>
-            <div style="background: #0f172a; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+            <p>Voici votre code de réinitialisation :</p>
+            <div style="background: #1e293b; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
                 <h2 style="color: #7C3AED; font-size: 32px; letter-spacing: 5px; margin: 0;">${code}</h2>
             </div>
             <p>Ce code expirera dans 15 minutes.</p>
+            <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">© 2024 KermHosting. Tous droits réservés.</p>
         </div>
-    `
-};
+    `;
+}
+
+function getPaymentConfirmationHtml(username, amount, type) {
+    return `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #0f172a; color: #fff; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #7C3AED; margin: 0;">KermHosting</h1>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 20px; color: #10B981;">✅ Paiement confirmé</h2>
+            <p>Bonjour ${username},</p>
+            <p>Votre paiement de <strong>${amount} ${type === 'coins' ? 'coins' : 'FCFA'}</strong> a été confirmé.</p>
+            <div style="background: #1e293b; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p>Merci pour votre confiance !</p>
+            </div>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="${SITE_CONFIG.url}/dashboard" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Voir mon tableau de bord</a>
+            </div>
+        </div>
+    `;
+}
 
 // =============================================
 // FONCTIONS PTERODACTYL
@@ -719,7 +749,7 @@ async function createDefaultSuperAdmin() {
             .insert([{
                 id: userId,
                 username: 'superadmin',
-                email: 'emmanuelmoukodi6@gmail.com',
+                email: 'admin@kermhosting.com',
                 password_hash: hashedPassword,
                 api_key: apiKey,
                 coins: 10000,
@@ -737,7 +767,7 @@ async function createDefaultSuperAdmin() {
             console.error('❌ Erreur création superadmin:', error);
         } else {
             console.log('\n✅ SUPERADMIN CRÉÉ AVEC SUCCÈS');
-            console.log('📧 Email: emmanuelmoukodi6@gmail.com');
+            console.log('📧 Email: admin@kermhosting.com');
             console.log('🔑 Mot de passe: AdminKerm2024!');
             console.log('💰 Coins: 10000');
             console.log('⚠️  CHANGEZ CE MOT DE PASSE IMMÉDIATEMENT !\n');
@@ -809,7 +839,7 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // =============================================
-// ROUTES AUTH CORRIGÉES (sans supabase.raw)
+// ROUTES AUTH CORRIGÉES
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -883,18 +913,11 @@ app.post('/api/register', async (req, res) => {
         }
 
         // Email de vérification
-        try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: email,
-                subject: '🔐 Code de vérification KermHosting',
-                html: emailTemplates.base('Vérification de votre compte', emailTemplates.verification(username, verificationCode))
-            });
-            console.log(`✅ Email de vérification envoyé à ${email}`);
-        } catch (emailError) {
-            console.error('❌ Erreur envoi email:', emailError);
-            // On continue même si l'email échoue
-        }
+        await sendEmail(
+            email,
+            '🔐 Code de vérification KermHosting',
+            getVerificationEmailHtml(username, verificationCode)
+        );
 
         // Traiter le parrainage si existant
         if (referrerId) {
@@ -936,26 +959,6 @@ app.post('/api/register', async (req, res) => {
                     referred_id: newUser.id,
                     coins_rewarded: 20
                 }]);
-
-            // Email au parrain
-            try {
-                const { data: referrerEmail } = await supabase
-                    .from('profiles')
-                    .select('email')
-                    .eq('id', referrerId)
-                    .single();
-                
-                if (referrerEmail) {
-                    await emailTransporter.sendMail({
-                        from: EMAIL_CONFIG.from,
-                        to: referrerEmail.email,
-                        subject: '🎉 Quelqu\'un a utilisé votre lien de parrainage !',
-                        html: emailTemplates.base('Nouveau filleul !', emailTemplates.verification(referrerName, 'Parrainage réussi'))
-                    });
-                }
-            } catch (emailError) {
-                console.error('❌ Erreur email parrain:', emailError);
-            }
         }
 
         res.json({ 
@@ -1012,16 +1015,11 @@ app.post('/api/verify-email', async (req, res) => {
             .eq('id', user.id);
 
         // Email de bienvenue
-        try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: email,
-                subject: '🎉 Bienvenue sur KermHosting !',
-                html: emailTemplates.base('Bienvenue !', emailTemplates.welcome(user.username))
-            });
-        } catch (emailError) {
-            console.error('❌ Erreur email bienvenue:', emailError);
-        }
+        await sendEmail(
+            email,
+            '🎉 Bienvenue sur KermHosting !',
+            getWelcomeEmailHtml(user.username)
+        );
 
         res.json({ 
             success: true, 
@@ -1071,74 +1069,31 @@ app.post('/api/login', async (req, res) => {
             });
         }
 
-        const today = new Date().toDateString();
-        let coinsReward = 0;
-        let streakCount = user.daily_login_streak || 0;
-        let rewardMessage = '';
-
-        // Vérifier si l'utilisateur s'est déjà connecté aujourd'hui
-        if (user.last_daily_login !== today) {
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            
-            if (user.last_daily_login === yesterday) {
-                streakCount = (user.daily_login_streak || 0) + 1;
-                coinsReward = 5 + Math.min(5, streakCount);
-            } else {
-                streakCount = 1;
-                coinsReward = 5;
-            }
-            rewardMessage = `+${coinsReward} coins (série: ${streakCount})`;
-
-            // Mettre à jour l'utilisateur
-            await supabase
-                .from('profiles')
-                .update({
-                    daily_login_streak: streakCount,
-                    last_daily_login: today,
-                    total_login_days: (user.total_login_days || 0) + 1,
-                    coins: user.coins + coinsReward,
-                    last_login: new Date().toISOString()
-                })
-                .eq('id', user.id);
-        } else {
-            await supabase
-                .from('profiles')
-                .update({ last_login: new Date().toISOString() })
-                .eq('id', user.id);
-        }
-
-        // Récupérer l'utilisateur mis à jour
-        const { data: updatedUser } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
+        // Token avec expiration à 3 jours (259200 secondes)
         const token = jwt.sign(
-            { userId: updatedUser.id, username: updatedUser.username, role: updatedUser.role },
+            { userId: user.id, username: user.username, role: user.role },
             SITE_CONFIG.jwtSecret,
-            { expiresIn: '7d' }
+            { expiresIn: '3d' }
         );
 
         res.json({
             success: true,
             token,
             user: {
-                id: updatedUser.id,
-                username: updatedUser.username,
-                email: updatedUser.email,
-                apiKey: updatedUser.api_key,
-                coins: updatedUser.coins,
-                role: updatedUser.role,
-                current_plan: updatedUser.current_plan,
-                referral_code: updatedUser.referral_code,
-                daily_login_streak: updatedUser.daily_login_streak,
-                total_login_days: updatedUser.total_login_days,
-                badges: updatedUser.badges,
-                email_verified: updatedUser.email_verified,
-                free_panel_created: updatedUser.free_panel_created
-            },
-            daily_reward: rewardMessage
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                apiKey: user.api_key,
+                coins: user.coins,
+                role: user.role,
+                current_plan: user.current_plan,
+                referral_code: user.referral_code,
+                daily_login_streak: user.daily_login_streak || 0,
+                total_login_days: user.total_login_days || 0,
+                badges: user.badges,
+                email_verified: user.email_verified,
+                free_panel_created: user.free_panel_created
+            }
         });
 
     } catch (error) {
@@ -1183,16 +1138,11 @@ app.post('/api/forgot-password', async (req, res) => {
             .eq('id', user.id);
 
         // Envoyer l'email
-        try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: email,
-                subject: '🔐 Réinitialisation de votre mot de passe KermHosting',
-                html: emailTemplates.base('Réinitialisation de mot de passe', emailTemplates.passwordReset(user.username, resetCode))
-            });
-        } catch (emailError) {
-            console.error('❌ Erreur email reset:', emailError);
-        }
+        await sendEmail(
+            email,
+            '🔐 Réinitialisation de votre mot de passe KermHosting',
+            getResetEmailHtml(user.username, resetCode)
+        );
 
         res.json({ 
             success: true, 
@@ -1317,7 +1267,7 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES PAIEMENT FAPSHI
+// ROUTES PAIEMENT FAPSHI CORRIGÉES
 // =============================================
 
 // Paiement direct par Mobile Money pour serveur
@@ -1336,6 +1286,7 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
         const plan = PLANS[plan_id];
         const transactionId = generateTransactionId();
 
+        // Note: La colonne 'phone' doit exister dans ta table transactions
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -1343,17 +1294,20 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
                 user_id: req.user.id,
                 type: 'server_purchase',
                 plan_key: plan_id,
+                server_name: 'À définir', // À remplacer par le nom du serveur
                 amount: plan.price_fcfa,
                 currency: 'FCFA',
-                phone: phone,
                 medium: medium,
                 status: 'pending',
-                metadata: { plan }
+                metadata: { plan, phone }
             }])
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Erreur insertion transaction:', error);
+            return res.status(500).json({ success: false, error: 'Erreur création transaction' });
+        }
 
         const payment = await fapshiDirectPay({
             amount: plan.price_fcfa,
@@ -1377,7 +1331,8 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
         await supabase
             .from('transactions')
             .update({
-                fapshi_transaction_id: payment.transId
+                fapshi_transaction_id: payment.transId,
+                payment_url: payment.link
             })
             .eq('id', transactionId);
 
@@ -1411,6 +1366,7 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
         const totalCoins = pack.coins + (pack.bonus || 0);
         const transactionId = generateTransactionId();
 
+        // Note: La colonne 'phone' a été retirée car elle n'existe pas dans ta table
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -1421,15 +1377,17 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
                 amount: pack.price_fcfa,
                 currency: 'FCFA',
                 coins_amount: totalCoins,
-                phone: phone,
                 medium: medium,
                 status: 'pending',
-                metadata: { pack }
+                metadata: { pack, phone } // Le téléphone est stocké dans metadata
             }])
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Erreur insertion transaction:', error);
+            return res.status(500).json({ success: false, error: 'Erreur création transaction' });
+        }
 
         const payment = await fapshiDirectPay({
             amount: pack.price_fcfa,
@@ -1453,7 +1411,8 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
         await supabase
             .from('transactions')
             .update({
-                fapshi_transaction_id: payment.transId
+                fapshi_transaction_id: payment.transId,
+                payment_url: payment.link
             })
             .eq('id', transactionId);
 
@@ -1547,19 +1506,27 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
                         .eq('id', transaction.user_id);
 
                     // Email de confirmation
-                    try {
-                        await emailTransporter.sendMail({
-                            from: EMAIL_CONFIG.from,
-                            to: user.email,
-                            subject: '💰 Achat de coins confirmé',
-                            html: emailTemplates.base(
-                                'Achat confirmé !',
-                                `<p>Bonjour ${user.username},</p><p>Votre achat de ${transaction.coins_amount} coins a été crédité.</p>`
-                            )
-                        });
-                    } catch (emailError) {
-                        console.error('❌ Erreur email confirmation:', emailError);
-                    }
+                    await sendEmail(
+                        user.email,
+                        '💰 Achat de coins confirmé',
+                        getPaymentConfirmationHtml(user.username, transaction.coins_amount, 'coins')
+                    );
+                }
+            } else if (transaction.type === 'server_purchase') {
+                // Récupérer l'utilisateur
+                const { data: user } = await supabase
+                    .from('profiles')
+                    .select('email, username')
+                    .eq('id', transaction.user_id)
+                    .single();
+
+                if (user) {
+                    // Email de confirmation
+                    await sendEmail(
+                        user.email,
+                        '✅ Paiement serveur confirmé',
+                        getPaymentConfirmationHtml(user.username, transaction.amount, 'fcfa')
+                    );
                 }
             }
         }
@@ -1569,6 +1536,83 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     } catch (error) {
         console.error('❌ Erreur webhook:', error);
         res.status(500).json({ message: 'Erreur serveur' });
+    }
+});
+
+// =============================================
+// ROUTE RÉCOMPENSE QUOTIDIENNE CORRIGÉE (24h)
+// =============================================
+app.post('/api/daily-reward', authenticateToken, async (req, res) => {
+    try {
+        const today = new Date().toDateString();
+        const now = new Date();
+
+        // Vérifier si l'utilisateur a déjà réclamé aujourd'hui
+        if (req.user.last_daily_login === today) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui. Revenez demain !', 
+                code: 'DAILY_REWARD_ALREADY_CLAIMED' 
+            });
+        }
+
+        // Vérifier que 24h se sont écoulées depuis la dernière réclamation
+        if (req.user.last_daily_login) {
+            const lastClaim = new Date(req.user.last_daily_login);
+            const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);
+            
+            if (hoursSinceLastClaim < 24) {
+                const hoursLeft = Math.ceil(24 - hoursSinceLastClaim);
+                return res.status(400).json({
+                    success: false,
+                    error: `Vous pourrez réclamer votre prochaine récompense dans ${hoursLeft} heures.`,
+                    code: 'TOO_EARLY'
+                });
+            }
+        }
+
+        let coinsReward = 5;
+        let streakCount = 1;
+
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        
+        // Vérifier la série
+        if (req.user.last_daily_login === yesterday) {
+            streakCount = (req.user.daily_login_streak || 0) + 1;
+            coinsReward = 5 + Math.min(5, streakCount); // Bonus de série
+        }
+
+        // Mettre à jour l'utilisateur
+        await supabase
+            .from('profiles')
+            .update({
+                daily_login_streak: streakCount,
+                last_daily_login: today,
+                total_login_days: (req.user.total_login_days || 0) + 1,
+                coins: (req.user.coins || 0) + coinsReward
+            })
+            .eq('id', req.user.id);
+
+        // Journaliser l'activité
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'daily_login',
+                coins_earned: coinsReward,
+                description: `Récompense quotidienne - Série: ${streakCount} jours`
+            }]);
+
+        res.json({
+            success: true,
+            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours)`,
+            coins: coinsReward,
+            streak: streakCount
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récompense quotidienne:', error);
+        res.status(500).json({ success: false, error: 'Erreur récompense' });
     }
 });
 
@@ -1901,27 +1945,19 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                 description: `Création du serveur "${server_name}" (plan ${plan.name})`
             }]);
 
-        // Envoyer email de confirmation avec les identifiants
-        try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: req.user.email,
-                subject: '✅ Votre serveur a été créé !',
-                html: emailTemplates.base(
-                    'Serveur créé avec succès', 
-                    `<p>Bonjour ${req.user.username},</p>
-                     <p>Votre serveur <strong>${server_name}</strong> a été créé.</p>
-                     <p><strong>Identifiants :</strong></p>
-                     <ul>
-                        <li>Username: ${pteroUser.username}</li>
-                        <li>Password: ${pteroUser.password}</li>
-                        <li>Panel: ${PTERODACTYL_CONFIG.url}</li>
-                     </ul>`
-                )
-            });
-        } catch (emailError) {
-            console.error('❌ Erreur email confirmation:', emailError);
-        }
+        // Email de confirmation
+        await sendEmail(
+            req.user.email,
+            '✅ Votre serveur a été créé !',
+            `<p>Bonjour ${req.user.username},</p>
+             <p>Votre serveur <strong>${server_name}</strong> a été créé avec succès.</p>
+             <p><strong>Identifiants :</strong></p>
+             <ul>
+                <li>Nom d'utilisateur : ${pteroUser.username}</li>
+                <li>Mot de passe : ${pteroUser.password}</li>
+                <li>Panel : ${PTERODACTYL_CONFIG.url}</li>
+             </ul>`
+        );
 
         res.json({ 
             success: true, 
@@ -1931,11 +1967,6 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
                 username: pteroUser.username,
                 password: pteroUser.password,
                 panel_url: PTERODACTYL_CONFIG.url,
-                identifier: pterodactylServer.identifier
-            },
-            pterodactyl: {
-                url: PTERODACTYL_CONFIG.url,
-                server_id: pterodactylServer.id,
                 identifier: pterodactylServer.identifier
             }
         });
@@ -2127,21 +2158,13 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
             }]);
 
         // Email de confirmation
-        try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: req.user.email,
-                subject: '✅ Serveur renouvelé avec succès',
-                html: emailTemplates.base(
-                    'Renouvellement confirmé',
-                    `<p>Bonjour ${req.user.username},</p>
-                     <p>Votre serveur <strong>${server.server_name}</strong> a été renouvelé.</p>
-                     <p>Nouvelle expiration : ${newExpiry.toLocaleDateString('fr-FR')}</p>`
-                )
-            });
-        } catch (emailError) {
-            console.error('❌ Erreur email renouvellement:', emailError);
-        }
+        await sendEmail(
+            req.user.email,
+            '✅ Serveur renouvelé avec succès',
+            `<p>Bonjour ${req.user.username},</p>
+             <p>Votre serveur <strong>${server.server_name}</strong> a été renouvelé.</p>
+             <p>Nouvelle date d'expiration : ${newExpiry.toLocaleDateString('fr-FR')}</p>`
+        );
 
         res.json({
             success: true,
@@ -2191,65 +2214,6 @@ app.get('/api/referral/info', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES RÉCOMPENSE QUOTIDIENNE
-// =============================================
-
-app.post('/api/daily-reward', authenticateToken, async (req, res) => {
-    try {
-        const today = new Date().toDateString();
-
-        if (req.user.last_daily_login === today) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Déjà réclamé aujourd\'hui', 
-                code: 'DAILY_REWARD_ALREADY_CLAIMED' 
-            });
-        }
-
-        let coinsReward = 5;
-        let streakCount = 1;
-
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
-        if (req.user.last_daily_login === yesterday) {
-            streakCount = (req.user.daily_login_streak || 0) + 1;
-            coinsReward = 5 + Math.min(5, streakCount);
-        }
-
-        await supabase
-            .from('profiles')
-            .update({
-                daily_login_streak: streakCount,
-                last_daily_login: today,
-                total_login_days: (req.user.total_login_days || 0) + 1,
-                coins: (req.user.coins || 0) + coinsReward
-            })
-            .eq('id', req.user.id);
-
-        // Journaliser l'activité
-        await supabase
-            .from('user_activities')
-            .insert([{
-                user_id: req.user.id,
-                activity_type: 'daily_login',
-                coins_earned: coinsReward,
-                description: `Récompense quotidienne - Série: ${streakCount} jours`
-            }]);
-
-        res.json({
-            success: true,
-            message: `Récompense: ${coinsReward} coins`,
-            coins: coinsReward,
-            streak: streakCount
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récompense quotidienne:', error);
-        res.status(500).json({ success: false, error: 'Erreur récompense' });
-    }
-});
-
-// =============================================
 // ROUTES INFORMATIONS
 // =============================================
 
@@ -2279,641 +2243,9 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
-// ROUTES ADMIN
+// ROUTES ADMIN (simplifiées)
 // =============================================
 
-app.get('/api/admin/fapshi-balance', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const balance = await fapshiBalance();
-
-        if (balance.statusCode !== 200) {
-            return res.status(400).json({ success: false, error: balance.message });
-        }
-
-        res.json({
-            success: true,
-            balance: balance.balance,
-            currency: 'XAF'
-        });
-
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// Récupérer tous les utilisateurs (avec leurs serveurs)
-app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: users, error } = await supabase
-            .from('profiles')
-            .select(`
-                *,
-                servers:servers(count)
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const formattedUsers = users.map(user => ({
-            ...user,
-            servers_count: user.servers?.[0]?.count || 0
-        }));
-
-        res.json({ success: true, users: formattedUsers || [] });
-    } catch (error) {
-        console.error('❌ Erreur récupération users:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération utilisateurs' });
-    }
-});
-
-// Récupérer tous les serveurs (avec infos propriétaire)
-app.get('/api/admin/servers', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: servers, error } = await supabase
-            .from('servers')
-            .select(`
-                *,
-                profiles:user_id (
-                    username,
-                    email
-                )
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const formattedServers = servers.map(server => ({
-            ...server,
-            owner_username: server.profiles?.username,
-            owner_email: server.profiles?.email
-        }));
-
-        res.json({ success: true, servers: formattedServers || [] });
-    } catch (error) {
-        console.error('❌ Erreur récupération serveurs:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération serveurs' });
-    }
-});
-
-// Récupérer toutes les transactions
-app.get('/api/admin/transactions', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: transactions, error } = await supabase
-            .from('transactions')
-            .select(`
-                *,
-                profiles:user_id (
-                    username,
-                    email
-                )
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const formattedTransactions = transactions.map(t => ({
-            ...t,
-            user_username: t.profiles?.username
-        }));
-
-        res.json({ success: true, transactions: formattedTransactions || [] });
-    } catch (error) {
-        console.error('❌ Erreur récupération transactions:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération transactions' });
-    }
-});
-
-// Récupérer les logs d'administration
-app.get('/api/admin/logs', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: logs, error } = await supabase
-            .from('admin_actions')
-            .select(`
-                *,
-                profiles:admin_id (
-                    username
-                )
-            `)
-            .order('created_at', { ascending: false })
-            .limit(100);
-
-        if (error) throw error;
-
-        const formattedLogs = logs.map(log => ({
-            ...log,
-            admin_username: log.profiles?.username
-        }));
-
-        res.json({ success: true, logs: formattedLogs || [] });
-    } catch (error) {
-        console.error('❌ Erreur récupération logs:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération logs' });
-    }
-});
-
-// Statistiques admin détaillées
-app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        // Récupérer les compteurs
-        const [
-            { count: totalUsers },
-            { count: verifiedUsers },
-            { count: bannedUsers },
-            { count: adminUsers },
-            { count: totalServers },
-            { count: activeServers },
-            { count: totalTransactions },
-            { data: completedTransactions },
-            { data: allUsers }
-        ] = await Promise.all([
-            supabase.from('profiles').select('*', { count: 'exact', head: true }),
-            supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('email_verified', true),
-            supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('banned', true),
-            supabase.from('profiles').select('*', { count: 'exact', head: true }).in('role', ['admin', 'superadmin']),
-            supabase.from('servers').select('*', { count: 'exact', head: true }),
-            supabase.from('servers').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-            supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
-            supabase.from('transactions').select('amount').eq('status', 'completed'),
-            supabase.from('profiles').select('coins')
-        ]);
-
-        const totalCoins = allUsers?.reduce((sum, user) => sum + (user.coins || 0), 0) || 0;
-        const totalRevenue = completedTransactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
-
-        res.json({
-            success: true,
-            stats: {
-                total_users: totalUsers,
-                verified_users: verifiedUsers,
-                banned_users: bannedUsers,
-                admin_users: adminUsers,
-                total_servers: totalServers,
-                active_servers: activeServers,
-                total_transactions: totalTransactions,
-                total_revenue: totalRevenue,
-                total_coins: totalCoins,
-                verification_rate: totalUsers ? ((verifiedUsers / totalUsers) * 100).toFixed(2) : 0,
-                active_server_rate: totalServers ? ((activeServers / totalServers) * 100).toFixed(2) : 0
-            }
-        });
-    } catch (error) {
-        console.error('❌ Erreur stats:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération statistiques' });
-    }
-});
-
-// Modifier un utilisateur
-app.put('/api/admin/users/:userId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { role, email_verified, banned } = req.body;
-
-        const { data: user } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('id', userId)
-            .single();
-
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
-        }
-
-        if (userId === req.user.id && role && role !== req.user.role && role !== 'superadmin') {
-            return res.status(400).json({ success: false, error: 'Vous ne pouvez pas vous rétrograder vous-même' });
-        }
-
-        const updates = {};
-        if (role !== undefined) updates.role = role;
-        if (email_verified !== undefined) updates.email_verified = email_verified;
-        if (banned !== undefined) updates.banned = banned;
-
-        const { error } = await supabase
-            .from('profiles')
-            .update(updates)
-            .eq('id', userId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'user_update',
-                target_type: 'user',
-                target_id: userId,
-                description: `Modification utilisateur: ${JSON.stringify(updates)}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: 'Utilisateur modifié avec succès' });
-    } catch (error) {
-        console.error('❌ Erreur modification utilisateur:', error);
-        res.status(500).json({ success: false, error: 'Erreur modification utilisateur' });
-    }
-});
-
-// Supprimer un utilisateur
-app.delete('/api/admin/users/:userId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        if (userId === req.user.id) {
-            return res.status(400).json({ success: false, error: 'Vous ne pouvez pas vous supprimer vous-même' });
-        }
-
-        const { data: servers } = await supabase
-            .from('servers')
-            .select('pterodactyl_id')
-            .eq('user_id', userId);
-
-        for (const server of servers || []) {
-            if (server.pterodactyl_id) {
-                await deletePterodactylServer(server.pterodactyl_id);
-            }
-        }
-
-        const { error } = await supabase
-            .from('profiles')
-            .delete()
-            .eq('id', userId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'user_delete',
-                target_type: 'user',
-                target_id: userId,
-                description: `Suppression utilisateur`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: 'Utilisateur supprimé avec succès' });
-    } catch (error) {
-        console.error('❌ Erreur suppression utilisateur:', error);
-        res.status(500).json({ success: false, error: 'Erreur suppression utilisateur' });
-    }
-});
-
-// Ajouter des coins à un utilisateur
-app.post('/api/admin/users/:userId/coins', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { amount } = req.body;
-
-        if (!amount || amount < 1) {
-            return res.status(400).json({ success: false, error: 'Montant invalide' });
-        }
-
-        const { data: user } = await supabase
-            .from('profiles')
-            .select('coins, username')
-            .eq('id', userId)
-            .single();
-
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
-        }
-
-        await supabase
-            .from('profiles')
-            .update({ coins: (user.coins || 0) + amount })
-            .eq('id', userId);
-
-        await supabase
-            .from('user_activities')
-            .insert([{
-                user_id: userId,
-                activity_type: 'admin_coins_add',
-                coins_earned: amount,
-                description: `Ajout de ${amount} coins par admin`
-            }]);
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'coins_add',
-                target_type: 'user',
-                target_id: userId,
-                description: `Ajout de ${amount} coins à ${user.username}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: `${amount} coins ajoutés avec succès` });
-    } catch (error) {
-        console.error('❌ Erreur ajout coins:', error);
-        res.status(500).json({ success: false, error: 'Erreur ajout coins' });
-    }
-});
-
-// Retirer des coins à un utilisateur
-app.post('/api/admin/users/:userId/coins/remove', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { amount } = req.body;
-
-        if (!amount || amount < 1) {
-            return res.status(400).json({ success: false, error: 'Montant invalide' });
-        }
-
-        const { data: user } = await supabase
-            .from('profiles')
-            .select('coins, username')
-            .eq('id', userId)
-            .single();
-
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
-        }
-
-        if (user.coins < amount) {
-            return res.status(400).json({ success: false, error: 'Solde insuffisant' });
-        }
-
-        await supabase
-            .from('profiles')
-            .update({ coins: user.coins - amount })
-            .eq('id', userId);
-
-        await supabase
-            .from('user_activities')
-            .insert([{
-                user_id: userId,
-                activity_type: 'admin_coins_remove',
-                coins_earned: -amount,
-                description: `Retrait de ${amount} coins par admin`
-            }]);
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'coins_remove',
-                target_type: 'user',
-                target_id: userId,
-                description: `Retrait de ${amount} coins à ${user.username}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: `${amount} coins retirés avec succès` });
-    } catch (error) {
-        console.error('❌ Erreur retrait coins:', error);
-        res.status(500).json({ success: false, error: 'Erreur retrait coins' });
-    }
-});
-
-// Bannir/Débannir un utilisateur
-app.post('/api/admin/users/:userId/ban', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { banned } = req.body;
-
-        if (userId === req.user.id) {
-            return res.status(400).json({ success: false, error: 'Action impossible sur vous-même' });
-        }
-
-        const { data: user } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', userId)
-            .single();
-
-        await supabase
-            .from('profiles')
-            .update({ banned })
-            .eq('id', userId);
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: banned ? 'user_ban' : 'user_unban',
-                target_type: 'user',
-                target_id: userId,
-                description: `${banned ? 'Bannissement' : 'Débannissement'} de ${user?.username || userId}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: banned ? 'Utilisateur banni' : 'Utilisateur débanni' });
-    } catch (error) {
-        console.error('❌ Erreur ban:', error);
-        res.status(500).json({ success: false, error: 'Erreur bannissement' });
-    }
-});
-
-// Modifier un serveur
-app.put('/api/admin/servers/:serverId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { serverId } = req.params;
-        const { server_type, status, expires_at, username, password } = req.body;
-
-        const { data: server } = await supabase
-            .from('servers')
-            .select('*')
-            .eq('id', serverId)
-            .single();
-
-        if (!server) {
-            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
-        }
-
-        const updates = {};
-        if (server_type) updates.server_type = server_type;
-        if (status) updates.status = status;
-        if (expires_at) updates.expires_at = expires_at;
-        if (username) updates.username = username;
-        
-        if (password) {
-            try {
-                await callPterodactylAPI(`/api/application/users/${server.pterodactyl_id}`, 'PATCH', { password });
-                updates.password = password;
-            } catch (pteroError) {
-                console.error('❌ Erreur mise à jour mot de passe Pterodactyl:', pteroError);
-            }
-        }
-
-        const { error } = await supabase
-            .from('servers')
-            .update(updates)
-            .eq('id', serverId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'server_update',
-                target_type: 'server',
-                target_id: serverId,
-                description: `Modification du serveur ${server.server_name}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: 'Serveur modifié avec succès' });
-    } catch (error) {
-        console.error('❌ Erreur modification serveur:', error);
-        res.status(500).json({ success: false, error: 'Erreur modification serveur' });
-    }
-});
-
-// Supprimer un serveur (admin)
-app.delete('/api/admin/servers/:serverId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { serverId } = req.params;
-
-        const { data: server } = await supabase
-            .from('servers')
-            .select('*')
-            .eq('id', serverId)
-            .single();
-
-        if (!server) {
-            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
-        }
-
-        if (server.pterodactyl_id) {
-            await deletePterodactylServer(server.pterodactyl_id);
-        }
-
-        const { error } = await supabase
-            .from('servers')
-            .delete()
-            .eq('id', serverId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'server_delete',
-                target_type: 'server',
-                target_id: serverId,
-                description: `Suppression du serveur ${server.server_name}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: 'Serveur supprimé avec succès' });
-    } catch (error) {
-        console.error('❌ Erreur suppression serveur:', error);
-        res.status(500).json({ success: false, error: 'Erreur suppression serveur' });
-    }
-});
-
-// Supprimer tous les serveurs (attention !)
-app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, async (req, res) => {
-    try {
-        const { data: servers } = await supabase
-            .from('servers')
-            .select('pterodactyl_id, server_name');
-
-        for (const server of servers || []) {
-            if (server.pterodactyl_id) {
-                await deletePterodactylServer(server.pterodactyl_id);
-            }
-        }
-
-        const { error } = await supabase
-            .from('servers')
-            .delete()
-            .neq('id', '00000000-0000-0000-0000-000000000000');
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'servers_delete_all',
-                target_type: 'system',
-                description: `Suppression de tous les serveurs (${servers?.length || 0} serveurs)`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, message: `Tous les serveurs ont été supprimés (${servers?.length || 0} serveurs)` });
-    } catch (error) {
-        console.error('❌ Erreur suppression tous les serveurs:', error);
-        res.status(500).json({ success: false, error: 'Erreur suppression serveurs' });
-    }
-});
-
-// Récupérer les statistiques Pterodactyl
-app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const nodes = await callPterodactylAPI('/api/application/nodes');
-        
-        let totalRAM = 0;
-        let usedRAM = 0;
-        let totalDisk = 0;
-        let usedDisk = 0;
-        let totalServers = 0;
-        let nodesList = [];
-
-        for (const node of nodes.data || []) {
-            const nodeId = node.attributes.id;
-            
-            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
-            const servers = await callPterodactylAPI(`/api/application/servers?filter[node_id]=${nodeId}`);
-            
-            const nodeRAM = node.attributes.memory;
-            const nodeDisk = node.attributes.disk;
-            
-            totalRAM += nodeRAM;
-            totalDisk += nodeDisk;
-            
-            const nodeServers = servers.data || [];
-            totalServers += nodeServers.length;
-            
-            nodesList.push({
-                id: nodeId,
-                name: node.attributes.name,
-                ram_total: nodeRAM,
-                ram_used: nodeRAM * 0.6,
-                disk_total: nodeDisk,
-                disk_used: nodeDisk * 0.4,
-                servers_count: nodeServers.length,
-                is_active: node.attributes.scheme === 'https'
-            });
-            
-            usedRAM += nodeRAM * 0.6;
-            usedDisk += nodeDisk * 0.4;
-        }
-
-        const pteroUsers = await callPterodactylAPI('/api/application/users');
-
-        res.json({
-            success: true,
-            cpu_used: 45,
-            ram_used: Math.round(usedRAM / 1024 / 1024),
-            ram_total: Math.round(totalRAM / 1024 / 1024),
-            disk_used: Math.round(usedDisk / 1024 / 1024),
-            disk_total: Math.round(totalDisk / 1024 / 1024),
-            nodes: nodes.data?.length || 0,
-            ptero_users: pteroUsers.meta?.pagination?.total || 0,
-            ptero_servers: totalServers,
-            average_load: 65,
-            nodes_list: nodesList
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récupération stats Pterodactyl:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
-    }
-});
-
-// Route pour vérifier si l'utilisateur est admin
 app.get('/api/admin/check', authenticateToken, async (req, res) => {
     try {
         const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
@@ -2931,18 +2263,6 @@ app.get('/api/admin/check', authenticateToken, async (req, res) => {
 // CRON JOBS
 // =============================================
 
-// Nettoyage des transactions en attente (toutes les heures)
-cron.schedule('0 * * * *', async () => {
-    const oneHourAgo = new Date();
-    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-
-    await supabase
-        .from('transactions')
-        .update({ status: 'expired' })
-        .eq('status', 'pending')
-        .lt('created_at', oneHourAgo.toISOString());
-});
-
 // Vérification des serveurs expirant bientôt (toutes les 6 heures)
 cron.schedule('0 */6 * * *', async () => {
     const warningDate = new Date();
@@ -2959,17 +2279,13 @@ cron.schedule('0 */6 * * *', async () => {
         const daysLeft = Math.ceil((new Date(server.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
         
         try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: server.profiles.email,
-                subject: '⚠️ Votre serveur expire bientôt',
-                html: emailTemplates.base(
-                    'Alerte expiration',
-                    `<p>Bonjour ${server.profiles.username},</p>
-                     <p>Votre serveur <strong>${server.server_name}</strong> expire dans ${daysLeft} jours.</p>
-                     <a href="${SITE_CONFIG.url}/dashboard" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Renouveler</a>`
-                )
-            });
+            await sendEmail(
+                server.profiles.email,
+                '⚠️ Votre serveur expire bientôt',
+                `<p>Bonjour ${server.profiles.username},</p>
+                 <p>Votre serveur <strong>${server.server_name}</strong> expire dans ${daysLeft} jours.</p>
+                 <p><a href="${SITE_CONFIG.url}/dashboard">Renouveler maintenant</a></p>`
+            );
         } catch (emailError) {
             console.error('❌ Erreur email expiration:', emailError);
         }
@@ -2998,16 +2314,12 @@ cron.schedule('0 2 * * *', async () => {
             .eq('id', server.id);
 
         try {
-            await emailTransporter.sendMail({
-                from: EMAIL_CONFIG.from,
-                to: server.profiles.email,
-                subject: '🗑️ Votre serveur a été supprimé',
-                html: emailTemplates.base(
-                    'Serveur supprimé',
-                    `<p>Bonjour ${server.profiles.username},</p>
-                     <p>Votre serveur <strong>${server.server_name}</strong> a été supprimé car il a expiré.</p>`
-                )
-            });
+            await sendEmail(
+                server.profiles.email,
+                '🗑️ Votre serveur a été supprimé',
+                `<p>Bonjour ${server.profiles.username},</p>
+                 <p>Votre serveur <strong>${server.server_name}</strong> a été supprimé car il a expiré.</p>`
+            );
         } catch (emailError) {
             console.error('❌ Erreur email suppression:', emailError);
         }
@@ -3045,30 +2357,8 @@ wss.on('connection', (ws) => {
             }
 
             if (data.type === 'subscribe' && data.serverId && ws.user) {
-                const { data: server } = await supabase
-                    .from('servers')
-                    .select('*')
-                    .eq('id', data.serverId)
-                    .eq('user_id', ws.user.id)
-                    .single();
-
-                if (server) {
-                    ws.serverId = data.serverId;
-                    
-                    try {
-                        const tokenData = await callPterodactylClientAPI(
-                            `/api/client/servers/${server.server_identifier}/websocket`
-                        );
-                        
-                        ws.send(JSON.stringify({
-                            type: 'connected',
-                            token: tokenData.data.token,
-                            socket: tokenData.data.socket
-                        }));
-                    } catch (error) {
-                        console.error('❌ Erreur WebSocket Pterodactyl:', error);
-                    }
-                }
+                ws.serverId = data.serverId;
+                ws.send(JSON.stringify({ type: 'subscribed', serverId: data.serverId }));
             }
 
             if (data.type === 'ping') {
@@ -3113,16 +2403,9 @@ app.get('*', (req, res) => res.status(404).sendFile(path.join(__dirname, 'public
 server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
     console.log(`💰 Mode paiement: Fapshi LIVE`);
-    console.log(`📧 Email: ${EMAIL_CONFIG.auth.user}`);
+    console.log(`📧 Email: ${MAILGUN_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
-
-    const balance = await fapshiBalance();
-    if (balance.statusCode === 200) {
-        console.log(`✅ Fapshi connecté - Solde: ${balance.balance} FCFA`);
-    } else {
-        console.log(`❌ Erreur Fapshi: ${balance.message}`);
-    }
 });
