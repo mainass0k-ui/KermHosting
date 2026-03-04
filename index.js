@@ -309,25 +309,43 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL AVEC MAILGUN
+// FONCTION EMAIL CORRIGÉE POUR MAILGUN
 // =============================================
-
 async function sendEmail(to, subject, htmlContent) {
     try {
-        // En mode sandbox, il faut autoriser les destinataires
-        // Ajoute bookmakerp@gmail.com dans les authorized recipients du dashboard Mailgun
-        const result = await mg.messages.create(MAILGUN_CONFIG.domain, {
-            from: MAILGUN_CONFIG.from,
-            to: [to],
-            subject: subject,
-            html: htmlContent
+        console.log(`📧 Tentative d'envoi à ${to}...`);
+        
+        // Format spécial pour l'authentification Mailgun
+        const auth = Buffer.from(`api:${MAILGUN_CONFIG.apiKey}`).toString('base64');
+        
+        const response = await axios.post(
+            `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`,
+            new URLSearchParams({
+                from: MAILGUN_CONFIG.from,
+                to: to,
+                subject: subject,
+                html: htmlContent
+            }),
+            {
+                headers: {
+                    'Authorization': `Basic ${auth}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        
+        console.log(`✅ Email envoyé à ${to}:`, response.data.id);
+        return { success: true, id: response.data.id };
+        
+    } catch (error) {
+        console.error('❌ Erreur Mailgun détails:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message
         });
         
-        console.log(`✅ Email envoyé à ${to}:`, result.id);
-        return { success: true, id: result.id };
-    } catch (error) {
-        console.error('❌ Erreur Mailgun:', error);
-        // Ne pas bloquer le processus, juste logger l'erreur
+        // Ne pas bloquer le processus, retourner l'erreur
         return { success: false, error: error.message };
     }
 }
