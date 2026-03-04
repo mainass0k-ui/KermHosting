@@ -311,42 +311,50 @@ function validateUsername(username) {
 // =============================================
 // FONCTION EMAIL CORRIGÉE POUR MAILGUN
 // =============================================
+// =============================================
+// FONCTION EMAIL MAILGUN AVEC BASIC AUTH
+// =============================================
 async function sendEmail(to, subject, htmlContent) {
     try {
         console.log(`📧 Tentative d'envoi à ${to}...`);
         
-        // Format spécial pour l'authentification Mailgun
-        const auth = Buffer.from(`api:${MAILGUN_CONFIG.apiKey}`).toString('base64');
+        // Construction de l'URL exacte comme dans l'exemple Java
+        const url = `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`;
         
-        const response = await axios.post(
-            `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`,
-            new URLSearchParams({
-                from: MAILGUN_CONFIG.from,
-                to: to,
-                subject: subject,
-                html: htmlContent
-            }),
-            {
-                headers: {
-                    'Authorization': `Basic ${auth}`,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+        // Préparer les données du formulaire
+        const formData = new URLSearchParams();
+        formData.append('from', MAILGUN_CONFIG.from);
+        formData.append('to', to);
+        formData.append('subject', subject);
+        formData.append('html', htmlContent);
+        
+        // Faire la requête avec basicAuth comme dans l'exemple Java
+        const response = await axios.post(url, formData, {
+            auth: {
+                username: 'api',
+                password: MAILGUN_CONFIG.apiKey
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        );
+        });
         
-        console.log(`✅ Email envoyé à ${to}:`, response.data.id);
-        return { success: true, id: response.data.id };
+        console.log(`✅ Email envoyé avec succès à ${to}:`, response.data);
+        return { success: true, data: response.data };
         
     } catch (error) {
-        console.error('❌ Erreur Mailgun détails:', {
+        console.error('❌ Erreur Mailgun détaillée:', {
             status: error.response?.status,
             statusText: error.response?.statusText,
             data: error.response?.data,
             message: error.message
         });
         
-        // Ne pas bloquer le processus, retourner l'erreur
-        return { success: false, error: error.message };
+        // Retourner l'erreur sans bloquer
+        return { 
+            success: false, 
+            error: error.response?.data?.message || error.message 
+        };
     }
 }
 
