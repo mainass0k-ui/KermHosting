@@ -1,0 +1,9 @@
+{
+  "watch": ["index.js", "public"],
+  "ignore": ["node_modules"],
+  "ext": "js,html,css",
+  "exec": "node index.js",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

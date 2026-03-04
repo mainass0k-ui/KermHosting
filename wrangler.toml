@@ -1,0 +1,11 @@
+// wrangler.toml (fichier de configuration Cloudflare)
+name = "kermhosting"
+type = "webpack"
+account_id = "votre-account-id"
+workers_dev = true
+route = ""
+zone_id = ""
+
+[site]
+bucket = "./public"
+entry-point = "."
