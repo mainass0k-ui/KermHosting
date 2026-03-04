@@ -65,7 +65,7 @@ const mailgun = new Mailgun(formData);
 const mg = mailgun.client({
     username: 'api',
     key: MAILGUN_CONFIG.apiKey,
-    url: 'https://api.mailgun.net/v3'
+    url: 'https://api.mailgun.net'
 });
 
 // =============================================
@@ -1364,13 +1364,12 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 
         const pack = COIN_PACKS[pack_id];
         const totalCoins = pack.coins + (pack.bonus || 0);
-        const transactionId = generateTransactionId();
+        const transactionId = crypto.randomUUID(); // UUID valide !
 
-        // Note: La colonne 'phone' a été retirée car elle n'existe pas dans ta table
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
-                id: transactionId,
+                id: transactionId, // Maintenant UUID valide
                 user_id: req.user.id,
                 type: 'coins_purchase',
                 pack_id: pack_id,
@@ -1379,14 +1378,18 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
                 coins_amount: totalCoins,
                 medium: medium,
                 status: 'pending',
-                metadata: { pack, phone } // Le téléphone est stocké dans metadata
+                metadata: { pack, phone }
             }])
             .select()
             .single();
 
         if (error) {
             console.error('❌ Erreur insertion transaction:', error);
-            return res.status(500).json({ success: false, error: 'Erreur création transaction' });
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur création transaction',
+                details: error.message 
+            });
         }
 
         const payment = await fapshiDirectPay({
@@ -1426,7 +1429,12 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 
     } catch (error) {
         console.error('❌ Erreur achat coins:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur', code: 'PAYMENT_ERROR' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur', 
+            details: error.message,
+            code: 'PAYMENT_ERROR' 
+        });
     }
 });
 
