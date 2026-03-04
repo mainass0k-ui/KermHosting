@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Tableau de bord KermHosting - Gérez vos serveurs Node.js">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Tableau de bord - KermHosting</title>
+    
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            --orange: #FF6B00;
+            --mtn: #FFCC00;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 4px 8px;
+        }
+
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav li.active a {
+            color: white;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+        }
+
+        .sidebar-nav .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            margin-left: 0;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: none;
+        }
+
+        .top-bar-logo {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i {
+            color: var(--primary);
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.625rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-sidebar);
+        }
+
+        .user-menu {
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== WELCOME BANNER ===== */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .welcome-subtitle {
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .welcome-stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .welcome-stat i {
+            font-size: 2rem;
+            opacity: 0.9;
+        }
+
+        .welcome-stat-info h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .welcome-stat-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        /* ===== SECTION HEADERS ===== */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .section-header h2 i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0d9668;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background: #e08e0b;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* ===== SERVERS GRID ===== */
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .server-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .server-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .server-card.expiring {
+            border-left: 4px solid var(--warning);
+        }
+
+        .server-card.expired {
+            border-left: 4px solid var(--danger);
+            opacity: 0.7;
+        }
+
+        .server-header {
+            padding: 16px;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .server-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .server-name i {
+            color: var(--primary);
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .status-running {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-stopped {
+            background: var(--text-muted);
+        }
+
+        .status-error {
+            background: var(--danger);
+        }
+
+        .server-body {
+            padding: 16px;
+        }
+
+        .server-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .server-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .server-info-item i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .server-progress {
+            margin: 16px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .server-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .server-expiry {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .server-expiry.warning {
+            color: var(--warning);
+        }
+
+        .server-expiry.danger {
+            color: var(--danger);
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .server-action-btn {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .server-action-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .server-action-btn.stop:hover {
+            background: var(--danger);
+        }
+
+        .server-action-btn.start:hover {
+            background: var(--success);
+        }
+
+        .server-console {
+            margin-top: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .console-line {
+            padding: 2px 0;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .console-line:last-child {
+            border-bottom: none;
+        }
+
+        .console-line.input {
+            color: var(--success);
+        }
+
+        .console-line.output {
+            color: var(--text-secondary);
+        }
+
+        .console-line.error {
+            color: var(--danger);
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .quick-action {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .quick-action:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .quick-action i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .quick-action h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .quick-action p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== RECENT ACTIVITY ===== */
+        .activity-list {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .activity-item {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .activity-coins {
+            font-weight: 600;
+        }
+
+        .activity-coins.positive {
+            color: var(--success);
+        }
+
+        .activity-coins.negative {
+            color: var(--danger);
+        }
+
+        /* ===== LOADING & EMPTY STATES ===== */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading-state i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        /* ===== MODALS ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .modal-info {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .modal-info-label {
+            color: var(--text-secondary);
+        }
+
+        .modal-info-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .modal-info-value.warning {
+            color: var(--warning);
+        }
+
+        .modal-info-value.danger {
+            color: var(--danger);
+        }
+
+        .modal-info-value.success {
+            color: var(--success);
+        }
+
+        .modal-select, .modal-input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-select:focus, .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-select option {
+            background: var(--bg-card);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* ===== SERVER DETAILS MODAL ===== */
+        .credentials-box {
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .credential-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credential-label i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--bg-input);
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
+            letter-spacing: 0.5px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            margin-left: 8px;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .warning-message {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--warning);
+        }
+
+        .warning-message i {
+            font-size: 1.2rem;
+        }
+
+        /* ===== NOTIFICATIONS PANEL ===== */
+        .notifications-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notifications-panel.active {
+            transform: translateX(0);
+        }
+
+        .notifications-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notifications-header h3 {
+            font-size: 1.2rem;
+        }
+
+        .notifications-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background: var(--bg-hover);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .notification-item.unread {
+            border-left-color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-glow), transparent);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+
+        .toast.success {
+            background: rgba(16, 185, 129, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+
+        .toast.info {
+            background: rgba(59, 130, 246, 0.95);
+        }
+
+        .toast.warning {
+            background: rgba(245, 158, 11, 0.95);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        /* ===== RENEWAL BADGE ===== */
+        .renewal-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .renewal-badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .renewal-badge.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .top-bar-logo {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .welcome-banner {
+                padding: 24px;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .welcome-stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .servers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notifications-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Chargement...</div>
+                    <div class="user-email" id="sidebarUserEmail">...</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">...</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>Tarifs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="navLogout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                    <div class="user-menu" id="userMenu">
+                        <img src="https://ui-avatars.com/api/?name=User&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notifications Panel -->
+            <div class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-header">
+                    <h3>Notifications</h3>
+                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="notifications-list" id="notificationsList">
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <div class="welcome-content">
+                        <h1 class="welcome-title" id="welcomeMessage">Bonjour !</h1>
+                        <p class="welcome-subtitle" id="welcomeSubtitle">Bienvenue sur votre tableau de bord</p>
+                        <div class="welcome-stats">
+                            <div class="welcome-stat">
+                                <i class="fas fa-coins"></i>
+                                <div class="welcome-stat-info">
+                                    <h4 id="welcomeCoins">0</h4>
+                                    <p>Coins disponibles</p>
+                                </div>
+                            </div>
+                            <div class="welcome-stat">
+                                <i class="fas fa-server"></i>
+                                <div class="welcome-stat-info">
+                                    <h4 id="welcomeServers">0</h4>
+                                    <p>Serveurs actifs</p>
+                                </div>
+                            </div>
+                            <div class="welcome-stat">
+                                <i class="fas fa-calendar"></i>
+                                <div class="welcome-stat-info">
+                                    <h4 id="welcomeStreak">0</h4>
+                                    <p>Jours de série</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statCoins">0</div>
+                        <div class="stat-label">Coins total</div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="coinChange">+0 aujourd'hui</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statServers">0</div>
+                        <div class="stat-label">Serveurs actifs</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock"></i>
+                            <span id="serversExpiring">0 bientôt expirés</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statStreak">0</div>
+                        <div class="stat-label">Série de connexion</div>
+                        <div class="stat-change">
+                            <i class="fas fa-gift"></i>
+                            <span id="nextReward">5 coins demain</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-gem"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statLevel">1</div>
+                        <div class="stat-label">Niveau</div>
+                        <div class="stat-change">
+                            <i class="fas fa-star"></i>
+                            <span id="xpProgress">0/100 XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="/pricing" class="quick-action">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Nouveau serveur</h3>
+                        <p>Créez un serveur immédiatement</p>
+                    </a>
+                    <a href="/buy-coins" class="quick-action">
+                        <i class="fas fa-coins"></i>
+                        <h3>Acheter des coins</h3>
+                        <p>Rechargez votre solde en FCFA</p>
+                    </a>
+                    <a href="#" class="quick-action" id="dailyRewardBtn">
+                        <i class="fas fa-gift"></i>
+                        <h3>Récompense quotidienne</h3>
+                        <p>Cliquez pour réclamer</p>
+                    </a>
+                    <a href="/profile" class="quick-action">
+                        <i class="fas fa-user"></i>
+                        <h3>Mon profil</h3>
+                        <p>Gérez votre compte</p>
+                    </a>
+                </div>
+
+                <!-- Servers Section -->
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-server"></i>
+                        Mes serveurs
+                    </h2>
+                    <a href="/pricing" class="btn btn-primary btn-small">
+                        <i class="fas fa-plus"></i>
+                        Nouveau serveur
+                    </a>
+                </div>
+
+                <div id="serversContainer">
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement de vos serveurs...</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        Activité récente
+                    </h2>
+                </div>
+
+                <div class="activity-list" id="activityContainer">
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement des activités...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de création de serveur -->
+    <div class="modal" id="serverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Créer un nouveau serveur</h2>
+                <button class="modal-close" onclick="closeModal('serverModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <select id="planSelect" class="modal-select">
+                    <option value="">Sélectionnez un plan</option>
+                </select>
+                <input type="text" id="serverName" class="modal-input" placeholder="Nom du serveur (ex: MonBot)" maxlength="30">
+                <input type="text" id="serverUsername" class="modal-input" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                <small style="color: var(--text-secondary);">3-20 caractères, lettres et chiffres uniquement</small>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('serverModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="createServer()">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de détails du serveur -->
+    <div class="modal" id="serverDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailsServerName">Détails du serveur</h2>
+                <button class="modal-close" onclick="closeModal('serverDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan</span>
+                        <span class="modal-info-value" id="detailsPlan">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Statut</span>
+                        <span class="modal-info-value" id="detailsStatus">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Date d'expiration</span>
+                        <span class="modal-info-value" id="detailsExpiry">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Temps restant</span>
+                        <span class="modal-info-value" id="detailsTimeLeft">-</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px;">🔑 Identifiants de connexion</h3>
+                <div class="credentials-box" id="detailsCredentials">
+                    <!-- Les identifiants seront injectés ici -->
+                </div>
+
+                <div class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Conservez ces identifiants précieusement. En cas de perte, vous devrez régénérer un mot de passe.</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button>
+                <button class="btn btn-success" onclick="renewServer()" id="renewBtn">Renouveler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'action sur serveur (power) -->
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="actionTitle">Action sur le serveur</h2>
+                <button class="modal-close" onclick="closeModal('actionModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="actionMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button>
+                <button class="btn btn-danger" id="actionConfirmBtn" onclick="confirmAction()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de renouvellement -->
+    <div class="modal" id="renewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Renouveler le serveur</h2>
+                <button class="modal-close" onclick="closeModal('renewModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Serveur</span>
+                        <span class="modal-info-value" id="renewServerName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan</span>
+                        <span class="modal-info-value" id="renewPlan">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="renewPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix en coins</span>
+                        <span class="modal-info-value" id="renewCoins">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Votre solde</span>
+                        <span class="modal-info-value" id="renewBalance">- coins</span>
+                    </div>
+                </div>
+
+                <p style="color: var(--text-secondary); margin: 20px 0;">
+                    <i class="fas fa-info-circle"></i>
+                    Le renouvellement prolongera la durée de votre serveur de 30 jours.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('renewModal')">Annuler</button>
+                <button class="btn btn-success" onclick="confirmRenew()" id="renewConfirmBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    Renouveler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        // ===== CONSTANTES =====
+        const PLANS = {
+            'free': { name: 'Free', memory: 256, disk: 5120, cpu: 50, price: 0, coins: 0, duration: 1 },
+            '1gb': { name: 'Starter', memory: 1024, disk: 10240, cpu: 100, price: 500, coins: 100, duration: 30 },
+            '2gb': { name: 'Basic', memory: 2048, disk: 20480, cpu: 200, price: 800, coins: 160, duration: 30 },
+            '4gb': { name: 'Pro', memory: 4096, disk: 40960, cpu: 400, price: 1300, coins: 260, duration: 30 },
+            '8gb': { name: 'Business', memory: 8192, disk: 81920, cpu: 800, price: 1700, coins: 340, duration: 30 }
+        };
+
+        // ===== VARIABLES GLOBALES =====
+        let userData = null;
+        let userServers = [];
+        let currentAction = null;
+        let currentServerId = null;
+        let currentServer = null;
+
+        // ===== SIDEBAR FUNCTIONS =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== NOTIFICATIONS PANEL =====
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+
+        notificationBtn.addEventListener('click', () => {
+            notificationsPanel.classList.toggle('active');
+            loadNotifications();
+        });
+
+        closeNotifications.addEventListener('click', () => {
+            notificationsPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ===== TOAST NOTIFICATION =====
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ===== COPY TO CLIPBOARD =====
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            showToast('success', 'Copié dans le presse-papiers');
+        }
+
+        // ===== LOAD USER DATA =====
+        async function loadUserData() {
+            try {
+                const res = await fetch('/api/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    userData = data.user;
+                    userServers = data.servers || [];
+
+                    updateUI();
+                    
+                    // Vérifier les paramètres d'URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const createPlan = urlParams.get('create');
+                    
+                    if (createPlan === 'free') {
+                        prepareFreeServer();
+                    }
+                    
+                    loadServerResources();
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Erreur chargement:', error);
+                showToast('error', 'Erreur de chargement des données');
+            }
+        }
+
+        function updateUI() {
+            if (!userData) return;
+
+            // Sidebar
+            document.getElementById('sidebarUserName').textContent = userData.username;
+            document.getElementById('sidebarUserEmail').textContent = userData.email;
+            document.getElementById('sidebarUserBadge').textContent = userData.role;
+            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
+            document.getElementById('sidebarCoins').textContent = userData.coins;
+            document.getElementById('sidebarServers').textContent = userServers.length;
+
+            // Welcome banner
+            document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username} !`;
+            document.getElementById('welcomeCoins').textContent = userData.coins;
+            document.getElementById('welcomeServers').textContent = userServers.length;
+            document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
+
+            // Stats
+            document.getElementById('statCoins').textContent = userData.coins;
+            document.getElementById('statServers').textContent = userServers.length;
+            document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
+            document.getElementById('statLevel').textContent = userData.level || 1;
+
+            // Calculer les serveurs expirant bientôt
+            const expiringCount = userServers.filter(s => {
+                const daysLeft = calculateDaysLeft(s.expires_at);
+                return daysLeft > 0 && daysLeft <= 3;
+            }).length;
+            
+            document.getElementById('serversExpiring').textContent = expiringCount + ' bientôt expirés';
+
+            displayServers();
+            loadActivities();
+        }
+
+        function calculateDaysLeft(expiresAt) {
+            const now = new Date();
+            const expiry = new Date(expiresAt);
+            const diffTime = expiry - now;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function formatTimeLeft(expiresAt) {
+            const now = new Date();
+            const expiry = new Date(expiresAt);
+            const diffTime = expiry - now;
+            
+            if (diffTime < 0) return 'Expiré';
+            
+            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (days > 0) {
+                return `${days} jour${days > 1 ? 's' : ''} ${hours}h`;
+            } else {
+                return `${hours} heure${hours > 1 ? 's' : ''}`;
+            }
+        }
+
+        // ===== LOAD SERVER RESOURCES =====
+        async function loadServerResources() {
+            for (const server of userServers) {
+                if (server.status === 'active') {
+                    try {
+                        const res = await fetch(`/api/servers/${server.id}/resources`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+
+                        if (data.success && data.resources) {
+                            updateServerResources(server.id, data.resources);
+                        }
+                    } catch (error) {
+                        console.error('Erreur chargement ressources:', error);
+                    }
+                }
+            }
+        }
+
+        function updateServerResources(serverId, resources) {
+            const diskUsage = document.getElementById(`diskUsage-${serverId}`);
+            const diskBar = document.getElementById(`diskBar-${serverId}`);
+            const statusDot = document.getElementById(`status-${serverId}`);
+            const statusText = document.getElementById(`statusText-${serverId}`);
+
+            if (diskUsage && diskBar && resources) {
+                const diskUsed = Math.round(resources.resources.disk_bytes / 1024 / 1024);
+                const diskLimit = Math.round(resources.resources.disk_limit_bytes / 1024 / 1024);
+                const diskPercent = Math.min(100, Math.round((diskUsed / diskLimit) * 100));
+                
+                diskUsage.textContent = diskPercent + '% utilisé';
+                diskBar.style.width = diskPercent + '%';
+                
+                const state = resources.state;
+                if (state === 'running') {
+                    statusDot.className = 'status-dot status-running';
+                    statusText.textContent = 'En ligne';
+                } else if (state === 'stopped') {
+                    statusDot.className = 'status-dot status-stopped';
+                    statusText.textContent = 'Arrêté';
+                } else {
+                    statusDot.className = 'status-dot status-error';
+                    statusText.textContent = 'Erreur';
+                }
+            }
+        }
+
+        // ===== DISPLAY SERVERS =====
+        function displayServers() {
+            const container = document.getElementById('serversContainer');
+
+            if (!userServers || userServers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-server"></i>
+                        <h3>Aucun serveur</h3>
+                        <p>Vous n'avez pas encore créé de serveur. Commencez dès maintenant !</p>
+                        <a href="/pricing" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Créer un serveur
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="servers-grid">';
+
+            userServers.forEach(server => {
+                const daysLeft = calculateDaysLeft(server.expires_at);
+                const timeLeft = formatTimeLeft(server.expires_at);
+                
+                let statusClass = 'status-running';
+                let statusText = 'En ligne';
+                
+                if (server.status === 'stopped') {
+                    statusClass = 'status-stopped';
+                    statusText = 'Arrêté';
+                } else if (daysLeft < 0) {
+                    statusClass = 'status-error';
+                    statusText = 'Expiré';
+                }
+
+                let cardClass = '';
+                if (daysLeft < 0) {
+                    cardClass = 'expired';
+                } else if (daysLeft <= 3) {
+                    cardClass = 'expiring';
+                }
+
+                const plan = PLANS[server.server_type] || { 
+                    name: server.server_type, 
+                    memory: '?', 
+                    disk: 0, 
+                    cpu: '?' 
+                };
+
+                html += `
+                    <div class="server-card ${cardClass}" id="server-${server.id}">
+                        <div class="server-header">
+                            <div class="server-name">
+                                <i class="fas fa-cloud"></i>
+                                ${server.server_name}
+                                ${daysLeft <= 3 && daysLeft > 0 ? '<span class="renewal-badge warning">⚠️ Expire bientôt</span>' : ''}
+                                ${daysLeft < 0 ? '<span class="renewal-badge danger">❌ Expiré</span>' : ''}
+                            </div>
+                            <div class="server-status">
+                                <span class="status-dot ${statusClass}" id="status-${server.id}"></span>
+                                <span id="statusText-${server.id}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div class="server-body">
+                            <div class="server-info">
+                                <div class="server-info-item">
+                                    <i class="fas fa-microchip"></i>
+                                    <span>${plan.memory} MB RAM</span>
+                                </div>
+                                <div class="server-info-item">
+                                    <i class="fas fa-hdd"></i>
+                                    <span>${plan.disk / 1024} GB SSD</span>
+                                </div>
+                                <div class="server-info-item">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <span>${plan.cpu}% CPU</span>
+                                </div>
+                                <div class="server-info-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span>${plan.name}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="server-progress">
+                                <div class="progress-label">
+                                    <span>Espace disque</span>
+                                    <span id="diskUsage-${server.id}">0% utilisé</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="diskBar-${server.id}" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="server-info-item" style="margin-top: 10px;">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Expire le: ${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${timeLeft})</span>
+                            </div>
+                        </div>
+                        <div class="server-footer">
+                            <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}">
+                                <i class="fas fa-clock"></i>
+                                ${daysLeft < 0 ? 'Expiré' : daysLeft === 0 ? 'Expire aujourd\'hui' : `${daysLeft} jours restants`}
+                            </div>
+                            <div class="server-actions">
+                                <button class="server-action-btn" title="Détails" onclick="showServerDetails('${server.id}')">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="server-action-btn" title="Console" onclick="toggleConsole('${server.id}')">
+                                    <i class="fas fa-terminal"></i>
+                                </button>
+                                <button class="server-action-btn" title="Redémarrer" onclick="powerAction('${server.id}', 'restart')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" 
+                                        title="${statusText === 'En ligne' ? 'Arrêter' : 'Démarrer'}" 
+                                        onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')">
+                                    <i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="server-console" id="console-${server.id}" style="display: none;">
+                            <div class="console-line">> Connexion au serveur...</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ===== SERVER DETAILS =====
+        async function showServerDetails(serverId) {
+            const server = userServers.find(s => s.id === serverId);
+            if (!server) return;
+
+            currentServer = server;
+            const plan = PLANS[server.server_type] || { name: server.server_type };
+            const daysLeft = calculateDaysLeft(server.expires_at);
+            
+            document.getElementById('detailsServerName').textContent = server.server_name;
+            document.getElementById('detailsPlan').textContent = plan.name;
+            document.getElementById('detailsStatus').textContent = server.status === 'active' ? 'Actif' : 'Inactif';
+            document.getElementById('detailsExpiry').textContent = new Date(server.expires_at).toLocaleDateString('fr-FR');
+            document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
+
+            // Charger les identifiants
+            try {
+                const res = await fetch(`/api/servers/${serverId}/credentials`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const creds = data.credentials;
+                    document.getElementById('detailsCredentials').innerHTML = `
+                        <div class="credential-item">
+                            <span class="credential-label">
+                                <i class="fas fa-user"></i>
+                                Nom d'utilisateur
+                            </span>
+                            <span class="credential-value">${creds.username}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.username}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">
+                                <i class="fas fa-lock"></i>
+                                Mot de passe
+                            </span>
+                            <span class="credential-value">${creds.password}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.password}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">
+                                <i class="fas fa-globe"></i>
+                                Panel URL
+                            </span>
+                            <span class="credential-value">${creds.panel_url}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.panel_url}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="credential-item">
+                            <span class="credential-label">
+                                <i class="fas fa-id"></i>
+                                ID du serveur
+                            </span>
+                            <span class="credential-value">${creds.identifier}</span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur chargement identifiants:', error);
+            }
+
+            // Activer/désactiver le bouton de renouvellement
+            const renewBtn = document.getElementById('renewBtn');
+            if (daysLeft < 0) {
+                renewBtn.textContent = 'Réactiver';
+                renewBtn.className = 'btn btn-warning';
+            } else {
+                renewBtn.textContent = 'Renouveler';
+                renewBtn.className = 'btn btn-success';
+            }
+
+            openModal('serverDetailsModal');
+        }
+
+        // ===== RENEW SERVER =====
+        function renewServer() {
+            closeModal('serverDetailsModal');
+            
+            const plan = PLANS[currentServer.server_type];
+            document.getElementById('renewServerName').textContent = currentServer.server_name;
+            document.getElementById('renewPlan').textContent = plan.name;
+            document.getElementById('renewPrice').textContent = plan.price + ' FCFA';
+            document.getElementById('renewCoins').textContent = plan.coins + ' coins';
+            document.getElementById('renewBalance').textContent = userData.coins + ' coins';
+
+            openModal('renewModal');
+        }
+
+        async function confirmRenew() {
+            if (!currentServer) return;
+
+            const plan = PLANS[currentServer.server_type];
+            
+            if (userData.coins < plan.coins) {
+                showToast('error', 'Coins insuffisants. Veuillez acheter des coins.');
+                closeModal('renewModal');
+                return;
+            }
+
+            const renewBtn = document.getElementById('renewConfirmBtn');
+            renewBtn.disabled = true;
+            renewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+
+            try {
+                const res = await fetch(`/api/servers/${currentServer.id}/renew`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ coins: plan.coins })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', 'Serveur renouvelé avec succès !');
+                    closeModal('renewModal');
+                    loadUserData();
+                } else {
+                    showToast('error', data.error || 'Erreur lors du renouvellement');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            } finally {
+                renewBtn.disabled = false;
+                renewBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler';
+            }
+        }
+
+        // ===== POWER ACTIONS =====
+        function powerAction(serverId, action) {
+            currentServerId = serverId;
+            currentAction = action;
+            
+            const actionTitles = {
+                'start': 'Démarrer le serveur',
+                'stop': 'Arrêter le serveur',
+                'restart': 'Redémarrer le serveur'
+            };
+            
+            document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action sur le serveur';
+            document.getElementById('actionMessage').textContent = `Êtes-vous sûr de vouloir ${actionTitles[action].toLowerCase()} ?`;
+            
+            const confirmBtn = document.getElementById('actionConfirmBtn');
+            confirmBtn.className = action === 'stop' ? 'btn btn-danger' : 'btn btn-warning';
+            
+            openModal('actionModal');
+        }
+
+        async function confirmAction() {
+            if (!currentServerId || !currentAction) return;
+
+            closeModal('actionModal');
+            showToast('info', `${currentAction === 'start' ? 'Démarrage' : currentAction === 'stop' ? 'Arrêt' : 'Redémarrage'} en cours...`);
+
+            try {
+                const res = await fetch(`/api/servers/${currentServerId}/power`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: currentAction })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', `Serveur ${currentAction === 'start' ? 'démarré' : currentAction === 'stop' ? 'arrêté' : 'redémarré'} avec succès`);
+                    setTimeout(() => loadUserData(), 2000);
+                } else {
+                    showToast('error', data.error || 'Erreur lors de l\'action');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+
+            currentServerId = null;
+            currentAction = null;
+        }
+
+        // ===== CONSOLE =====
+        function toggleConsole(serverId) {
+            const console = document.getElementById(`console-${serverId}`);
+            if (console.style.display === 'none') {
+                console.style.display = 'block';
+                connectWebSocket(serverId);
+            } else {
+                console.style.display = 'none';
+            }
+        }
+
+        // ===== WEBSOCKET =====
+        let ws = null;
+
+        function connectWebSocket(serverId) {
+            if (ws) ws.close();
+
+            ws = new WebSocket(`ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}`);
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    token: token
+                }));
+                
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    serverId: serverId
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'console') {
+                    const console = document.getElementById(`console-${serverId}`);
+                    if (console) {
+                        const line = document.createElement('div');
+                        line.className = 'console-line output';
+                        line.textContent = '> ' + data.message;
+                        console.appendChild(line);
+                        console.scrollTop = console.scrollHeight;
+                    }
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        // ===== DAILY REWARD =====
+        document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const res = await fetch('/api/daily-reward', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', `+${data.coins} coins (Série: ${data.streak})`);
+                    loadUserData();
+                } else {
+                    showToast('error', data.error || 'Déjà réclamé aujourd\'hui');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        });
+
+        // ===== NOTIFICATIONS =====
+        async function loadNotifications() {
+            try {
+                const notificationsList = document.getElementById('notificationsList');
+                
+                // Simuler des notifications pour l'instant
+                const expiringServers = userServers.filter(s => {
+                    const daysLeft = calculateDaysLeft(s.expires_at);
+                    return daysLeft > 0 && daysLeft <= 3;
+                });
+
+                let notifications = [];
+
+                if (expiringServers.length > 0) {
+                    notifications.push({
+                        title: '⚠️ Serveurs bientôt expirés',
+                        message: `${expiringServers.length} serveur(s) expirent bientôt`,
+                        time: 'À l\'instant',
+                        unread: true
+                    });
+                }
+
+                notifications.push({
+                    title: 'Bienvenue sur KermHosting !',
+                    message: 'N\'oubliez pas de réclamer votre récompense quotidienne',
+                    time: 'Il y a 2 heures',
+                    unread: false
+                });
+
+                if (notifications.length === 0) {
+                    notificationsList.innerHTML = `
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Aucune notification</div>
+                                <div class="notification-message">Vous êtes à jour</div>
+                                <div class="notification-time">Maintenant</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    let html = '';
+                    notifications.forEach(notif => {
+                        html += `
+                            <div class="notification-item ${notif.unread ? 'unread' : ''}">
+                                <div class="notification-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title">${notif.title}</div>
+                                    <div class="notification-message">${notif.message}</div>
+                                    <div class="notification-time">${notif.time}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    notificationsList.innerHTML = html;
+                }
+
+                document.getElementById('notificationBadge').textContent = expiringServers.length;
+            } catch (error) {
+                console.error('Erreur chargement notifications:', error);
+            }
+        }
+
+        // ===== ACTIVITIES =====
+        async function loadActivities() {
+            try {
+                const container = document.getElementById('activityContainer');
+                
+                // Simuler des activités pour l'instant
+                const activities = [
+                    { 
+                        type: 'daily_login', 
+                        description: 'Connexion quotidienne', 
+                        time: 'Il y a 2 heures', 
+                        coins: 5,
+                        icon: 'fa-calendar-check'
+                    }
+                ];
+
+                if (userServers.length > 0) {
+                    activities.unshift({
+                        type: 'server_creation',
+                        description: `Création du serveur "${userServers[0].server_name}"`,
+                        time: 'Il y a 1 jour',
+                        coins: -userServers[0].server_type === 'free' ? 0 : PLANS[userServers[0].server_type]?.coins || 0,
+                        icon: 'fa-plus-circle'
+                    });
+                }
+
+                let html = '';
+
+                activities.forEach(activity => {
+                    const icon = activity.icon || 'fa-info-circle';
+                    const coinsClass = activity.coins > 0 ? 'positive' : activity.coins < 0 ? 'negative' : '';
+
+                    html += `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${activity.description}</div>
+                                <div class="activity-time">${activity.time}</div>
+                            </div>
+                            ${activity.coins !== 0 ? `
+                                <div class="activity-coins ${coinsClass}">
+                                    ${activity.coins > 0 ? '+' : ''}${activity.coins} coins
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Erreur chargement activités:', error);
+            }
+        }
+
+        // ===== CREATE SERVER (from modal) =====
+        function prepareFreeServer() {
+            if (userData.free_panel_created) {
+                showToast('error', 'Vous avez déjà utilisé votre serveur gratuit');
+                return;
+            }
+
+            document.getElementById('planSelect').innerHTML = `
+                <option value="free">Free - Gratuit (256 MB RAM, 24h)</option>
+            `;
+            document.getElementById('serverName').value = '';
+            document.getElementById('serverUsername').value = '';
+            openModal('serverModal');
+        }
+
+        // ===== CREATE SERVER =====
+        async function createServer() {
+            const plan = document.getElementById('planSelect').value;
+            const name = document.getElementById('serverName').value;
+            const username = document.getElementById('serverUsername').value;
+
+            if (!plan || !name || !username) {
+                showToast('error', 'Veuillez remplir tous les champs');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 30) {
+                showToast('error', 'Le nom du serveur doit faire entre 3 et 30 caractères');
+                return;
+            }
+
+            if (username.length < 3 || username.length > 20) {
+                showToast('error', "Le nom d'utilisateur doit faire entre 3 et 20 caractères");
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                showToast('error', "Le nom d'utilisateur ne peut contenir que des lettres, chiffres et underscores");
+                return;
+            }
+
+            closeModal('serverModal');
+            showToast('info', 'Création du serveur en cours...');
+
+            try {
+                const res = await fetch('/api/create-server', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plan_id: plan,
+                        server_name: name,
+                        server_username: username,
+                        payment_method: plan === 'free' ? 'free' : 'coins'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', 'Serveur créé avec succès !');
+                    
+                    // Afficher les identifiants dans un modal de succès
+                    if (data.credentials) {
+                        setTimeout(() => {
+                            showServerDetails(data.server.id);
+                        }, 1000);
+                    }
+                    
+                    loadUserData();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la création');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        // ===== LOGOUT =====
+        document.getElementById('navLogout').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+
+        // ===== INIT =====
+        loadUserData();
+
+        // Remplir le select du modal de création
+        const planSelect = document.getElementById('planSelect');
+        if (planSelect) {
+            Object.entries(PLANS).forEach(([key, plan]) => {
+                if (key !== 'free') {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = `${plan.name} - ${plan.price} FCFA/mois (${plan.coins} coins) - ${plan.memory} MB RAM`;
+                    planSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Exposer les fonctions globalement
+        window.closeModal = closeModal;
+        window.showServerDetails = showServerDetails;
+        window.powerAction = powerAction;
+        window.confirmAction = confirmAction;
+        window.toggleConsole = toggleConsole;
+        window.renewServer = renewServer;
+        window.confirmRenew = confirmRenew;
+        window.copyToClipboard = copyToClipboard;
+        window.createServer = createServer;
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebarFunc();
+            }
+        });
+    </script>
+</body>
+</html>

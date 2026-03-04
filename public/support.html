@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Support et FAQ - KermHosting">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Support et FAQ - KermHosting</title>
+    
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 4px 8px;
+        }
+
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav li.active a {
+            color: white;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+        }
+
+        .sidebar-nav .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            margin-left: 0;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: none;
+        }
+
+        .top-bar-logo {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i {
+            color: var(--primary);
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.625rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-sidebar);
+        }
+
+        .user-menu {
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            margin-bottom: 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .header-badge i {
+            font-size: 1rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== SEARCH SECTION ===== */
+        .search-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .search-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .search-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: var(--radius-full);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* ===== CONTACT GRID ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .contact-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 30px 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .contact-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .contact-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .contact-detail {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .contact-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* ===== FAQ SECTION ===== */
+        .faq-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 20px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s;
+            color: var(--primary);
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        /* ===== CATEGORIES SECTION ===== */
+        .categories-section {
+            margin-bottom: 60px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .category-links {
+            list-style: none;
+        }
+
+        .category-links li {
+            margin-bottom: 8px;
+        }
+
+        .category-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-links a:hover {
+            color: var(--primary);
+        }
+
+        .category-links i {
+            font-size: 0.7rem;
+        }
+
+        /* ===== TICKET FORM ===== */
+        .ticket-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 60px;
+        }
+
+        .ticket-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .ticket-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .ticket-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: var(--primary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .ticket-btn {
+            grid-column: span 2;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: var(--radius-full);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .ticket-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* ===== STATUS PAGE ===== */
+        .status-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-hover);
+        }
+
+        .status-name {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-value i {
+            font-size: 0.8rem;
+        }
+
+        .status-up {
+            color: var(--success);
+        }
+
+        .status-down {
+            color: var(--danger);
+        }
+
+        .status-warning {
+            color: var(--warning);
+        }
+
+        /* ===== DOCS SECTION ===== */
+        .docs-section {
+            margin-top: 60px;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .doc-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .doc-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .doc-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .doc-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .top-bar-logo {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .contact-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .docs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .ticket-btn {
+                grid-column: span 1;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Invité</div>
+                    <div class="user-email" id="sidebarUserEmail">Non connecté</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>Tarifs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard" id="navDashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile" id="navProfile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="navLogin">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="navRegister">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Inscription</span>
+                        </a>
+                    </li>
+                    <li class="divider" id="logoutDivider" style="display: none;"></li>
+                    <li id="navLogout" style="display: none;">
+                        <a href="#">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value">24/7</span>
+                        <span class="stat-label">Support</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">≤ 1h</span>
+                        <span class="stat-label">Réponse</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="user-menu" id="userMenu">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Header -->
+                <div class="page-header">
+                    <div class="header-badge">
+                        <i class="fas fa-headset"></i>
+                        <span>Support 24/7</span>
+                    </div>
+                    <h1 class="page-title">
+                        Comment pouvons-nous <span class="gradient-text">vous aider</span> ?
+                    </h1>
+                    <p class="page-subtitle">
+                        Trouvez des réponses à vos questions ou contactez notre équipe de support
+                    </p>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <h2 class="search-title">Rechercher dans notre base de connaissances</h2>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Ex: comment créer un serveur, paiement, renouvellement...">
+                        <button class="search-btn" onclick="searchFAQ()">
+                            <i class="fas fa-search"></i>
+                            Rechercher
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contact Grid -->
+                <div class="contact-grid">
+                    <a href="mailto:bookmakerp@gmail.com" class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-name">Email</div>
+                        <div class="contact-detail">bookmakerp@gmail.com</div>
+                        <div class="contact-note">Réponse sous 24h</div>
+                    </a>
+
+                    <a href="https://wa.me/+4915511482688" class="contact-card" target="_blank">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-name">WhatsApp</div>
+                        <div class="contact-detail">+49 15511 482688</div>
+                        <div class="contact-note">Réponse instantanée</div>
+                    </a>
+
+                    <a href="https://discord.gg/pDyM3Du3h" class="contact-card" target="_blank">
+                        <div class="contact-icon">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <div class="contact-name">Discord</div>
+                        <div class="contact-detail">KermHosting Community</div>
+                        <div class="contact-note">Support communautaire</div>
+                    </a>
+
+                    <a href="#" class="contact-card" onclick="openTicketModal(); return false;">
+                        <div class="contact-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="contact-name">Ticket</div>
+                        <div class="contact-detail">Ouvrir un ticket</div>
+                        <div class="contact-note">Support prioritaire</div>
+                    </a>
+                </div>
+
+                <!-- Status Section -->
+                <div class="status-section">
+                    <h2 style="margin-bottom: 20px;">État des services</h2>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-name">Panel principal</div>
+                            <div class="status-value status-up">
+                                <i class="fas fa-check-circle"></i>
+                                Opérationnel
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-name">API</div>
+                            <div class="status-value status-up">
+                                <i class="fas fa-check-circle"></i>
+                                Opérationnel
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-name">Paiements</div>
+                            <div class="status-value status-up">
+                                <i class="fas fa-check-circle"></i>
+                                Opérationnel
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-name">Base de données</div>
+                            <div class="status-value status-up">
+                                <i class="fas fa-check-circle"></i>
+                                Opérationnel
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h2 class="section-title">Questions <span class="gradient-text">fréquentes</span></h2>
+                    
+                    <div class="faq-grid" id="faqList">
+                        <!-- Général -->
+                        <div class="faq-item" data-category="general">
+                            <button class="faq-question">
+                                <span>📋 Qu'est-ce que KermHosting ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>KermHosting est une plateforme d'hébergement de serveurs Node.js spécialement conçue pour les développeurs africains. Nous proposons des serveurs haute performance avec paiement en FCFA via Mobile Money (Orange Money, MTN Money).</p>
+                                <p>Notre objectif est de rendre l'hébergement accessible à tous avec des tarifs adaptés et un support réactif.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="general">
+                            <button class="faq-question">
+                                <span>💰 Comment fonctionne le système de coins ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Les coins sont notre monnaie virtuelle. Voici comment ça marche :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li>1 coin = 5 FCFA</li>
+                                    <li>Vous pouvez acheter des packs de coins avec des réductions</li>
+                                    <li>Gagnez des coins chaque jour en vous connectant (5 coins/jour)</li>
+                                    <li>Parrainez des amis et gagnez 20 coins par filleul</li>
+                                    <li>Utilisez vos coins pour payer vos serveurs</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Paiements -->
+                        <div class="faq-item" data-category="payment">
+                            <button class="faq-question">
+                                <span>💳 Comment payer en FCFA ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Nous acceptons plusieurs moyens de paiement en FCFA :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li><strong>Orange Money :</strong> Entrez votre numéro Orange Money, vous recevrez une demande de confirmation sur votre téléphone</li>
+                                    <li><strong>MTN Money :</strong> Même principe, entrez votre numéro MTN et confirmez sur votre mobile</li>
+                                    <li><strong>Cartes bancaires :</strong> Visa, Mastercard (via notre partenaire)</li>
+                                </ul>
+                                <p style="margin-top: 10px;">Le paiement est instantané et sécurisé via Fapshi.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="payment">
+                            <button class="faq-question">
+                                <span>💳 Que faire si mon paiement échoue ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Si votre paiement échoue, voici quelques étapes à suivre :</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Vérifiez que vous avez suffisamment de fonds sur votre compte Mobile Money</li>
+                                    <li>Assurez-vous que votre numéro de téléphone est correct</li>
+                                    <li>Attendez quelques minutes et réessayez</li>
+                                    <li>Si le problème persiste, contactez notre support avec l'ID de la transaction</li>
+                                </ol>
+                                <p>Aucun montant ne sera débité en cas d'échec.</p>
+                            </div>
+                        </div>
+
+                        <!-- Serveurs -->
+                        <div class="faq-item" data-category="server">
+                            <button class="faq-question">
+                                <span>🚀 Comment créer un serveur ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Pour créer un serveur :</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Connectez-vous à votre compte</li>
+                                    <li>Allez dans la section "Tarifs"</li>
+                                    <li>Choisissez le plan qui vous convient</li>
+                                    <li>Sélectionnez votre mode de paiement (coins ou Mobile Money)</li>
+                                    <li>Choisissez un nom pour votre serveur (3-30 caractères)</li>
+                                    <li>Choisissez un nom d'utilisateur (3-20 caractères, lettres/chiffres/_)</li>
+                                    <li>Confirmez le paiement</li>
+                                </ol>
+                                <p>Votre serveur sera créé en moins d'une minute !</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="server">
+                            <button class="faq-question">
+                                <span>🔑 Où trouver mes identifiants de connexion ?</button>
+                                </span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Vos identifiants sont :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li><strong>Envoyés par email</strong> immédiatement après la création</li>
+                                    <li><strong>Affichés à l'écran</strong> juste après le paiement</li>
+                                    <li><strong>Accessibles dans le tableau de bord</strong> en cliquant sur les détails du serveur</li>
+                                </ul>
+                                <p style="margin-top: 10px;">Le mot de passe commence toujours par <strong>Kh-</strong> (ex: Kh-a3f2).</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="server">
+                            <button class="faq-question">
+                                <span>⏰ Que se passe-t-il quand mon serveur expire ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Gestion de l'expiration :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li><strong>3 jours avant :</strong> Vous recevez un email d'avertissement</li>
+                                    <li><strong>Jour J :</strong> Le serveur est arrêté mais pas supprimé</li>
+                                    <li><strong>J+7 :</strong> Le serveur est définitivement supprimé si non renouvelé</li>
+                                </ul>
+                                <p>Vous pouvez renouveler à tout moment depuis le tableau de bord.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="server">
+                            <button class="faq-question">
+                                <span>🔄 Comment renouveler un serveur ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Pour renouveler un serveur :</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Allez dans votre tableau de bord</li>
+                                    <li>Cliquez sur les détails du serveur à renouveler</li>
+                                    <li>Cliquez sur le bouton "Renouveler"</li>
+                                    <li>Confirmez avec vos coins</li>
+                                </ol>
+                                <p>Le renouvellement prolonge la durée de 30 jours.</p>
+                            </div>
+                        </div>
+
+                        <!-- Compte -->
+                        <div class="faq-item" data-category="account">
+                            <button class="faq-question">
+                                <span>👤 Comment vérifier mon email ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Lors de votre inscription, un code de vérification à 6 chiffres vous est envoyé par email. Entrez ce code sur la page de vérification pour activer votre compte.</p>
+                                <p>Si vous n'avez pas reçu le code :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Vérifiez vos spams</li>
+                                    <li>Attendez 2 minutes et cliquez sur "Renvoyer le code"</li>
+                                    <li>Vérifiez que l'adresse email est correcte</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="account">
+                            <button class="faq-question">
+                                <span>🔐 J'ai oublié mon mot de passe</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Pas de panique !</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Allez sur la page "Mot de passe oublié"</li>
+                                    <li>Entrez votre adresse email</li>
+                                    <li>Vous recevrez un code de réinitialisation à 6 chiffres</li>
+                                    <li>Entrez ce code et choisissez un nouveau mot de passe</li>
+                                </ol>
+                                <p>Le code expire après 15 minutes.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="account">
+                            <button class="faq-question">
+                                <span>🎁 Comment fonctionne le parrainage ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Notre système de parrainage :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li><strong>Pour le parrain :</strong> 20 coins par filleul</li>
+                                    <li><strong>Pour le filleul :</strong> 10 coins de bienvenue</li>
+                                    <li>Le filleul reçoit en plus 5 coins pour la vérification email</li>
+                                    <li>Total pour le filleul : 15 coins (10+5)</li>
+                                </ul>
+                                <p>Votre lien de parrainage est disponible dans votre profil.</p>
+                            </div>
+                        </div>
+
+                        <!-- Coins -->
+                        <div class="faq-item" data-category="coins">
+                            <button class="faq-question">
+                                <span>💰 Comment acheter des coins ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Pour acheter des coins :</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Allez dans la section "Acheter des coins"</li>
+                                    <li>Choisissez un pack (Découverte, Populaire, Performance, Ultimate)</li>
+                                    <li>Sélectionnez votre opérateur (MTN ou Orange)</li>
+                                    <li>Entrez votre numéro de téléphone</li>
+                                    <li>Confirmez le paiement sur votre mobile</li>
+                                </ol>
+                                <p>Les packs offrent des bonus : plus vous achetez, plus vous économisez !</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="coins">
+                            <button class="faq-question">
+                                <span>💡 Puis-je utiliser mes coins pour tout ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Oui, les coins peuvent être utilisés pour :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Créer de nouveaux serveurs</li>
+                                    <li>Renouveler des serveurs existants</li>
+                                    <li>Passer à un plan supérieur</li>
+                                </ul>
+                                <p>1 coin = 5 FCFA d'économie par rapport au paiement direct.</p>
+                            </div>
+                        </div>
+
+                        <!-- Technique -->
+                        <div class="faq-item" data-category="technical">
+                            <button class="faq-question">
+                                <span>⚙️ Quelles versions de Node.js sont supportées ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Nous supportons les versions LTS de Node.js :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Node.js 18.x (LTS)</li>
+                                    <li>Node.js 20.x (LTS)</li>
+                                    <li>Node.js 22.x (latest)</li>
+                                </ul>
+                                <p>Vous pouvez changer de version à tout moment depuis le panel.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="technical">
+                            <button class="faq-question">
+                                <span>📁 Comment uploader mes fichiers ?</button>
+                                </span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Plusieurs méthodes :</p>
+                                <ul style="margin-left: 20px; margin-top: 10px;">
+                                    <li><strong>Gestionnaire de fichiers web :</strong> Interface simple pour uploader et éditer</li>
+                                    <li><strong>FTP/SFTP :</strong> Utilisez les identifiants FTP fournis</li>
+                                    <li><strong>Git :</strong> Clonez directement votre dépôt sur le serveur</li>
+                                </ul>
+                                <p>Le gestionnaire de fichiers supporte aussi l'édition en direct.</p>
+                            </div>
+                        </div>
+
+                        <div class="faq-item" data-category="technical">
+                            <button class="faq-question">
+                                <span>🌐 Puis-je utiliser mon propre nom de domaine ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Oui, absolument !</p>
+                                <ol style="margin-left: 20px; margin-top: 10px;">
+                                    <li>Achetez votre nom de domaine chez un registrar</li>
+                                    <li>Configurez les enregistrements DNS vers l'IP de votre serveur</li>
+                                    <li>Dans le panel, ajoutez votre domaine dans la section "Domaines"</li>
+                                </ol>
+                                <p>Nous fournissons également des sous-domaines gratuits en *.kermhosting.com.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories Section -->
+                <div class="categories-section">
+                    <h2 class="section-title">Parcourir par <span class="gradient-text">catégorie</span></h2>
+                    
+                    <div class="categories-grid">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h3 class="category-title">Démarrage</h3>
+                            <ul class="category-links">
+                                <li><a href="#" onclick="filterFAQ('general')"><i class="fas fa-chevron-right"></i> Premiers pas</a></li>
+                                <li><a href="#" onclick="filterFAQ('account')"><i class="fas fa-chevron-right"></i> Créer un compte</a></li>
+                                <li><a href="#" onclick="filterFAQ('server')"><i class="fas fa-chevron-right"></i> Créer un serveur</a></li>
+                                <li><a href="#" onclick="filterFAQ('technical')"><i class="fas fa-chevron-right"></i> Configuration</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <h3 class="category-title">Paiements & Coins</h3>
+                            <ul class="category-links">
+                                <li><a href="#" onclick="filterFAQ('payment')"><i class="fas fa-chevron-right"></i> Payer en FCFA</a></li>
+                                <li><a href="#" onclick="filterFAQ('coins')"><i class="fas fa-chevron-right"></i> Acheter des coins</a></li>
+                                <li><a href="#" onclick="filterFAQ('payment')"><i class="fas fa-chevron-right"></i> Mobile Money</a></li>
+                                <li><a href="#" onclick="filterFAQ('payment')"><i class="fas fa-chevron-right"></i> Problèmes de paiement</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h3 class="category-title">Gestion des serveurs</h3>
+                            <ul class="category-links">
+                                <li><a href="#" onclick="filterFAQ('server')"><i class="fas fa-chevron-right"></i> Administration</a></li>
+                                <li><a href="#" onclick="filterFAQ('server')"><i class="fas fa-chevron-right"></i> Renouvellement</a></li>
+                                <li><a href="#" onclick="filterFAQ('technical')"><i class="fas fa-chevron-right"></i> Fichiers</a></li>
+                                <li><a href="#" onclick="filterFAQ('server')"><i class="fas fa-chevron-right"></i> Expiration</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation Section -->
+                <div class="docs-section">
+                    <h2 class="section-title">Documentation <span class="gradient-text">technique</span></h2>
+                    
+                    <div class="docs-grid">
+                        <a href="#" class="doc-card">
+                            <div class="doc-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3 class="doc-title">API Reference</h3>
+                            <p class="doc-description">Documentation complète de notre API pour développer vos propres applications.</p>
+                        </a>
+
+                        <a href="#" class="doc-card">
+                            <div class="doc-icon">
+                                <i class="fas fa-terminal"></i>
+                            </div>
+                            <h3 class="doc-title">CLI Tool</h3>
+                            <p class="doc-description">Interface en ligne de commande pour gérer vos serveurs depuis le terminal.</p>
+                        </a>
+
+                        <a href="#" class="doc-card">
+                            <div class="doc-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="doc-title">Guides</h3>
+                            <p class="doc-description">Tutoriels détaillés pour déployer vos applications (Discord bots, APIs, sites web).</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de ticket -->
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ouvrir un ticket de support</h2>
+                <button class="modal-close" onclick="closeModal('ticketModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="ticketForm">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i>
+                            Nom complet
+                        </label>
+                        <input type="text" class="form-input" id="ticketName" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </label>
+                        <input type="email" class="form-input" id="ticketEmail" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Sujet
+                        </label>
+                        <select class="form-select" id="ticketSubject" required>
+                            <option value="">Sélectionnez un sujet</option>
+                            <option value="technical">Problème technique</option>
+                            <option value="billing">Facturation / Paiement</option>
+                            <option value="account">Compte / Connexion</option>
+                            <option value="server">Problème de serveur</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">
+                            <i class="fas fa-server"></i>
+                            Serveur concerné (optionnel)
+                        </label>
+                        <select class="form-select" id="ticketServer">
+                            <option value="">Aucun serveur spécifique</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">
+                            <i class="fas fa-pencil-alt"></i>
+                            Description
+                        </label>
+                        <textarea class="form-textarea" id="ticketDescription" placeholder="Décrivez votre problème en détail..." required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('ticketModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="submitTicket()">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        // ===== SIDEBAR FUNCTIONS =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== FAQ TOGGLE =====
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.closest('.faq-item');
+                faqItem.classList.toggle('active');
+            });
+        });
+
+        // ===== SEARCH FAQ =====
+        function searchFAQ() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            let found = false;
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    found = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            if (!found && searchTerm.length > 0) {
+                alert('Aucun résultat trouvé pour "' + searchTerm + '". Essayez d\'autres mots-clés.');
+            }
+        }
+
+        // ===== FILTER FAQ BY CATEGORY =====
+        function filterFAQ(category) {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                if (item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Reset search
+            document.getElementById('searchInput').value = '';
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ===== TICKET FUNCTIONS =====
+        function openTicketModal() {
+            // Charger les serveurs de l'utilisateur si connecté
+            if (token) {
+                fetch('/api/servers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('ticketServer');
+                        data.servers.forEach(server => {
+                            const option = document.createElement('option');
+                            option.value = server.id;
+                            option.textContent = `${server.server_name} (${server.server_type})`;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            }
+            
+            openModal('ticketModal');
+        }
+
+        function submitTicket() {
+            const name = document.getElementById('ticketName').value;
+            const email = document.getElementById('ticketEmail').value;
+            const subject = document.getElementById('ticketSubject').value;
+            const server = document.getElementById('ticketServer').value;
+            const description = document.getElementById('ticketDescription').value;
+            
+            if (!name || !email || !subject || !description) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+            
+            // Simulation d'envoi de ticket
+            alert('Ticket envoyé avec succès ! Notre équipe vous répondra dans les plus brefs délais.');
+            closeModal('ticketModal');
+            
+            // Réinitialiser le formulaire
+            document.getElementById('ticketForm').reset();
+        }
+
+        // ===== CHECK AUTH =====
+        function checkAuth() {
+            if (token) {
+                fetch('/api/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('sidebarUserName').textContent = data.user.username;
+                        document.getElementById('sidebarUserEmail').textContent = data.user.email;
+                        document.getElementById('sidebarUserBadge').textContent = data.user.role;
+                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                        
+                        document.getElementById('navLogin').style.display = 'none';
+                        document.getElementById('navRegister').style.display = 'none';
+                        document.getElementById('logoutDivider').style.display = 'block';
+                        document.getElementById('navLogout').style.display = 'block';
+                        document.getElementById('navDashboard').style.display = 'block';
+                        document.getElementById('navProfile').style.display = 'block';
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('token');
+                });
+            }
+        }
+
+        // ===== LOGOUT =====
+        document.getElementById('navLogout')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.reload();
+        });
+
+        // ===== NAVIGATION =====
+        document.getElementById('navLogin')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = '/login';
+        });
+
+        document.getElementById('navRegister')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = '/register';
+        });
+
+        // ===== INIT =====
+        checkAuth();
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebarFunc();
+            }
+        });
+
+        // Exposer les fonctions globalement
+        window.searchFAQ = searchFAQ;
+        window.filterFAQ = filterFAQ;
+        window.openTicketModal = openTicketModal;
+        window.submitTicket = submitTicket;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>

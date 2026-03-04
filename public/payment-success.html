@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Paiement réussi - KermHosting">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Paiement réussi - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --success: #10B981;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            
+            --border-color: #2D3748;
+            
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .success-container {
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 48px 32px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: var(--success);
+            margin-bottom: 24px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--success), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .success-message {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            color: white;
+            padding: 16px 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            margin: 0 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .floating-shape {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--success);
+            filter: blur(100px);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .shape-1 {
+            top: -100px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            bottom: -100px;
+            right: -100px;
+            background: var(--primary);
+        }
+
+        .transaction-id {
+            background: var(--bg-hover);
+            padding: 12px;
+            border-radius: var(--radius-lg);
+            margin-top: 24px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .transaction-id span {
+            color: var(--primary);
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 32px 20px;
+            }
+
+            .success-title {
+                font-size: 1.75rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Formes décoratives -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1 class="success-title">Paiement réussi !</h1>
+            
+            <p class="success-message" id="successMessage">
+                Votre paiement a été traité avec succès.<br>
+                Un email de confirmation vous a été envoyé.
+            </p>
+
+            <div class="transaction-id" id="transactionContainer" style="display: none;">
+                <strong>ID de transaction :</strong> <span id="transactionId">-</span>
+            </div>
+
+            <div class="actions">
+                <a href="/dashboard" class="btn">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Tableau de bord
+                </a>
+                <a href="/pricing" class="btn btn-outline">
+                    <i class="fas fa-plus-circle"></i>
+                    Nouvel achat
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const transactionId = urlParams.get('trx');
+        const type = urlParams.get('type');
+        
+        if (transactionId) {
+            document.getElementById('transactionId').textContent = transactionId;
+            document.getElementById('transactionContainer').style.display = 'block';
+        }
+        
+        if (type === 'coins') {
+            document.getElementById('successMessage').innerHTML = `
+                Vos coins ont été crédités avec succès.<br>
+                Vous pouvez maintenant les utiliser pour créer des serveurs.
+            `;
+        } else if (type === 'server') {
+            document.getElementById('successMessage').innerHTML = `
+                Votre serveur a été créé avec succès.<br>
+                Vérifiez vos emails pour les identifiants de connexion.
+            `;
+        }
+        
+        // Redirection automatique après 5 secondes
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 5000);
+    </script>
+</body>
+</html>
