@@ -58,8 +58,8 @@ const EMAIL_CONFIG = {
     port: 587,
     secure: false,
     auth: {
-        user: 'votre.email@gmail.com',
-        pass: 'votre-mot-de-passe-app'
+        user: 'bookmakerp@gmail',
+        pass: 'azro trwn krdv octx'
     },
     from: 'KermHosting <noreply@kermhosting.com>'
 };
@@ -80,7 +80,7 @@ const SITE_CONFIG = {
     whatsapp: 'https://wa.me/237600000000',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
-    jwtSecret: 'kermhosting_super_secret_key_2024_changez_ceci',
+    jwtSecret: 'kermhosting_super_secret_key_2026_changez_ceci',
     port: process.env.PORT || 3000
 };
 
