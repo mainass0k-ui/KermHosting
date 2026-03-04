@@ -1,6 +1,5 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND ULTIME
-// Version 3.0.0 - Totalement corrigé
+// index.js - KERMHOSTING BACKEND ULTIME - VERSION FINALE
 // =============================================
 
 import express from 'express';
@@ -26,7 +25,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 // =============================================
-// CONFIGURATION SUPABASE
+// CONFIGURATION SUPABASE (À MODIFIER)
 // =============================================
 const SUPABASE_CONFIG = {
     url: 'https://qfhztozowlqajvkqdsvl.supabase.co',
@@ -35,7 +34,7 @@ const SUPABASE_CONFIG = {
 };
 
 // =============================================
-// CONFIGURATION FAPSHI
+// CONFIGURATION FAPSHI (LIVE)
 // =============================================
 const FAPSHI_CONFIG = {
     baseUrl: 'https://live.fapshi.com',
@@ -53,7 +52,7 @@ const fapshiHeaders = {
 // CONFIGURATION EMAIL AVEC MAILGUN
 // =============================================
 const MAILGUN_CONFIG = {
-    apiKey: 'cdb6cbe22a1a548199b8c7d3fa5cf71a-82cf32bf-1f5f5854',
+    apiKey: '63d0998dc9c741d099cfa966429ec4f8-82cf32bf-e8564515',
     domain: 'sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org',
     from: 'KermHosting <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
 };
@@ -71,10 +70,10 @@ const SITE_CONFIG = {
     url: 'https://kermhosting.com',
     name: 'KermHosting',
     supportEmail: 'bookmakerp@gmail.com',
-    whatsapp: 'https://wa.me/237600000000',
+    whatsapp: 'https://wa.me/237659535227',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
-    jwtSecret: 'kermhosting_super_secret_key_2024_changez_ceci',
+    jwtSecret: 'kermhosting_super_secret_key_2026_changez_ceci',
     port: process.env.PORT || 3000
 };
 
@@ -302,7 +301,7 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL AVEC MAILGUN (Templates professionnels)
+// FONCTIONS EMAIL AVEC MAILGUN - TEMPLATES PROFESSIONNELS
 // =============================================
 
 async function sendEmail(to, subject, htmlContent) {
@@ -339,8 +338,8 @@ async function sendEmail(to, subject, htmlContent) {
     }
 }
 
-// Template email professionnel avec design moderne
-function getEmailTemplate(title, content, username = '') {
+// Template de base réutilisable pour tous les emails
+function getBaseEmailTemplate(title, content, username = '') {
     const year = new Date().getFullYear();
     return `
 <!DOCTYPE html>
@@ -486,10 +485,28 @@ function getEmailTemplate(title, content, username = '') {
             margin: 20px 0;
             box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
             transition: all 0.3s;
+            border: none;
+            cursor: pointer;
         }
         .button:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 30px rgba(124, 58, 237, 0.4);
+        }
+        .button.secondary {
+            background: transparent;
+            border: 2px solid #7C3AED;
+            color: #7C3AED;
+            box-shadow: none;
+        }
+        .button.secondary:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+        .button.danger {
+            background: #EF4444;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+        .button.danger:hover {
+            background: #DC2626;
         }
         .info-grid {
             display: grid;
@@ -502,6 +519,15 @@ function getEmailTemplate(title, content, username = '') {
             padding: 20px;
             border-radius: 16px;
             border-left: 4px solid #7C3AED;
+        }
+        .info-item.warning {
+            border-left-color: #F59E0B;
+        }
+        .info-item.danger {
+            border-left-color: #EF4444;
+        }
+        .info-item.success {
+            border-left-color: #10B981;
         }
         .info-item strong {
             color: #F3F4F6;
@@ -516,6 +542,15 @@ function getEmailTemplate(title, content, username = '') {
             font-size: 24px;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
+        }
+        .info-item.warning span {
+            color: #F59E0B;
+        }
+        .info-item.danger span {
+            color: #EF4444;
+        }
+        .info-item.success span {
+            color: #10B981;
         }
         .info-item p {
             margin: 10px 0 0;
@@ -573,6 +608,20 @@ function getEmailTemplate(title, content, username = '') {
         .warning-box i {
             font-size: 24px;
         }
+        .danger-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #EF4444;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #EF4444;
+        }
+        .danger-box i {
+            font-size: 24px;
+        }
         .success-box {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid #10B981;
@@ -583,6 +632,9 @@ function getEmailTemplate(title, content, username = '') {
             align-items: center;
             gap: 12px;
             color: #10B981;
+        }
+        .success-box i {
+            font-size: 24px;
         }
         .divider {
             height: 1px;
@@ -608,9 +660,28 @@ function getEmailTemplate(title, content, username = '') {
             color: #9CA3AF;
             font-size: 20px;
             transition: color 0.3s;
+            text-decoration: none;
         }
         .social-links a:hover {
             color: #7C3AED;
+        }
+        .contact-info {
+            background: #111827;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        .contact-info a {
+            color: #7C3AED;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
         }
         @media only screen and (max-width: 600px) {
             .container {
@@ -621,6 +692,9 @@ function getEmailTemplate(title, content, username = '') {
             }
             .code {
                 font-size: 32px;
+            }
+            .header h1 {
+                font-size: 28px;
             }
         }
     </style>
@@ -703,7 +777,7 @@ function getVerificationEmailHtml(username, code) {
             <strong>Astuce :</strong> Après vérification, vous pourrez créer votre premier serveur et commencer à déployer vos projets !
         </p>
     `;
-    return getEmailTemplate('Vérification de votre compte', content, username);
+    return getBaseEmailTemplate('Vérification de votre compte', content, username);
 }
 
 // Template de bienvenue
@@ -718,7 +792,7 @@ function getWelcomeEmailHtml(username) {
         </div>
         
         <div class="info-grid">
-            <div class="info-item">
+            <div class="info-item success">
                 <strong>💰 Coins gratuits</strong>
                 <span>15 coins</span>
                 <p>10 (inscription) + 5 (vérification email)</p>
@@ -763,7 +837,7 @@ function getWelcomeEmailHtml(username) {
             Besoin d'aide ? Rejoignez notre <a href="${SITE_CONFIG.discord}" style="color: #7C3AED; text-decoration: none;">Discord</a> ou contactez-nous sur <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED; text-decoration: none;">WhatsApp</a>
         </p>
     `;
-    return getEmailTemplate('Bienvenue !', content, username);
+    return getBaseEmailTemplate('Bienvenue sur KermHosting !', content, username);
 }
 
 // Template de réinitialisation de mot de passe
@@ -806,14 +880,19 @@ function getResetEmailHtml(username, code) {
             </a>
         </p>
     `;
-    return getEmailTemplate('Réinitialisation de mot de passe', content, username);
+    return getBaseEmailTemplate('Réinitialisation de mot de passe', content, username);
 }
 
-// Template de confirmation d'achat
+// Template de confirmation d'achat de serveur
 function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     const content = `
         <h2>Merci pour votre confiance, ${username} !</h2>
         <p>Votre serveur <strong>${serverCredentials.server_name}</strong> (plan ${plan.name}) a été créé avec succès !</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div><strong> Serveur prêt à être utilisé !</strong></div>
+        </div>
         
         <h3 style="color: #7C3AED; margin: 30px 0 20px;">🔑 Identifiants de connexion</h3>
         
@@ -869,11 +948,17 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
                 Gérer mon serveur
             </a>
         </p>
+        
+        <div class="contact-info">
+            <p><strong>📧 Support :</strong> <a href="mailto:${SITE_CONFIG.supportEmail}">${SITE_CONFIG.supportEmail}</a></p>
+            <p><strong>💬 WhatsApp :</strong> <a href="${SITE_CONFIG.whatsapp}">Cliquez ici</a></p>
+            <p><strong>🎮 Discord :</strong> <a href="${SITE_CONFIG.discord}">Rejoindre la communauté</a></p>
+        </div>
     `;
-    return getEmailTemplate('Serveur créé avec succès', content, username);
+    return getBaseEmailTemplate('Serveur créé avec succès', content, username);
 }
 
-// Template de confirmation achat de coins
+// Template de confirmation d'achat de coins
 function getCoinsPurchaseHtml(username, pack, totalCoins) {
     const content = `
         <h2>Félicitations ${username} !</h2>
@@ -895,7 +980,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins) {
         </div>
         
         <div class="info-grid">
-            <div class="info-item">
+            <div class="info-item success">
                 <strong>📦 Pack</strong>
                 <span>${pack.name}</span>
             </div>
@@ -904,7 +989,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins) {
                 <span>${pack.price_fcfa} FCFA</span>
             </div>
             ${pack.bonus > 0 ? `
-            <div class="info-item">
+            <div class="info-item warning">
                 <strong>🎁 Bonus</strong>
                 <span>+${pack.bonus} coins</span>
             </div>
@@ -942,7 +1027,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins) {
             </a>
         </p>
     `;
-    return getEmailTemplate('Achat de coins confirmé', content, username);
+    return getBaseEmailTemplate('Achat de coins confirmé', content, username);
 }
 
 // Template d'expiration de serveur
@@ -974,7 +1059,7 @@ function getServerExpiringHtml(username, server, daysLeft) {
                     <strong>📅 Création</strong>
                     <span>${new Date(server.created_at).toLocaleDateString('fr-FR')}</span>
                 </div>
-                <div class="info-item">
+                <div class="info-item warning">
                     <strong>⏰ Expiration</strong>
                     <span>${new Date(server.expires_at).toLocaleDateString('fr-FR')}</span>
                 </div>
@@ -995,8 +1080,13 @@ function getServerExpiringHtml(username, server, daysLeft) {
                 Renouveler maintenant
             </a>
         </p>
+        
+        <div class="contact-info">
+            <p><strong>❓ Des questions ?</strong> Notre équipe de support est là pour vous aider.</p>
+            <p>📧 <a href="mailto:${SITE_CONFIG.supportEmail}">${SITE_CONFIG.supportEmail}</a> | 💬 <a href="${SITE_CONFIG.whatsapp}">WhatsApp</a></p>
+        </div>
     `;
-    return getEmailTemplate('Alerte expiration', content, username);
+    return getBaseEmailTemplate('⚠️ Alerte expiration', content, username);
 }
 
 // Template de suppression de serveur
@@ -1006,18 +1096,23 @@ function getServerDeletedHtml(username, server) {
         <p>Bonjour ${username},</p>
         <p>Votre serveur <strong>"${server.server_name}"</strong> a été automatiquement supprimé car il a expiré.</p>
         
-        <div style="background: #111827; border-radius: 16px; padding: 30px; margin: 30px 0; text-align: center;">
-            <i class="fas fa-trash-alt" style="color: #EF4444; font-size: 48px; margin-bottom: 20px;"></i>
-            <p style="color: #9CA3AF;">Toutes les données associées à ce serveur ont été supprimées définitivement.</p>
+        <div class="danger-box">
+            <i class="fas fa-trash-alt"></i>
+            <div>
+                <strong> Suppression effectuée</strong>
+                <p style="margin-top: 10px; color: #EF4444;">Toutes les données associées à ce serveur ont été supprimées définitivement.</p>
+            </div>
         </div>
         
-        <div class="info-item" style="margin-bottom: 30px;">
-            <strong>📋 Détails du serveur</strong>
-            <p style="margin-top: 10px;">
-                Plan : ${PLANS[server.server_type]?.name || server.server_type}<br>
-                Date de création : ${new Date(server.created_at).toLocaleDateString('fr-FR')}<br>
-                Date d'expiration : ${new Date(server.expires_at).toLocaleDateString('fr-FR')}
-            </p>
+        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 30px 0;">
+            <div class="info-item danger" style="margin-bottom: 0;">
+                <strong>📋 Détails du serveur supprimé</strong>
+                <p style="margin-top: 10px;">
+                    Plan : ${PLANS[server.server_type]?.name || server.server_type}<br>
+                    Date de création : ${new Date(server.created_at).toLocaleDateString('fr-FR')}<br>
+                    Date d'expiration : ${new Date(server.expires_at).toLocaleDateString('fr-FR')}
+                </p>
+            </div>
         </div>
         
         <p>Vous pouvez toujours recréer un serveur quand vous le souhaitez. Vos coins et votre compte sont toujours actifs.</p>
@@ -1028,8 +1123,13 @@ function getServerDeletedHtml(username, server) {
                 Créer un nouveau serveur
             </a>
         </p>
+        
+        <div class="contact-info">
+            <p><strong>❓ Vous pensez qu'il s'agit d'une erreur ?</strong></p>
+            <p>Contactez notre support : <a href="mailto:${SITE_CONFIG.supportEmail}">${SITE_CONFIG.supportEmail}</a> ou <a href="${SITE_CONFIG.whatsapp}">WhatsApp</a></p>
+        </div>
     `;
-    return getEmailTemplate('Serveur supprimé', content, username);
+    return getBaseEmailTemplate('🗑️ Serveur supprimé', content, username);
 }
 
 // Template de notification de parrainage
@@ -1062,13 +1162,13 @@ function getReferralNotificationHtml(username, referrerName) {
         </div>
         
         <p style="text-align: center;">
-            <a href="${SITE_CONFIG.url}/profile" class="button">
+            <a href="${SITE_CONFIG.url}/profile" class="button secondary">
                 <i class="fas fa-chart-line"></i>
                 Voir mes statistiques
             </a>
         </p>
     `;
-    return getEmailTemplate('Nouveau filleul !', content, username);
+    return getBaseEmailTemplate('Nouveau filleul !', content, username);
 }
 
 // Template de bienvenue pour filleul
@@ -1083,7 +1183,7 @@ function getReferralWelcomeHtml(username, referrerName) {
         </div>
         
         <div class="info-grid">
-            <div class="info-item">
+            <div class="info-item success">
                 <strong>🎁 Votre bonus</strong>
                 <span>10 coins</span>
                 <p>Offerts grâce à votre parrain</p>
@@ -1110,7 +1210,120 @@ function getReferralWelcomeHtml(username, referrerName) {
             </a>
         </p>
     `;
-    return getEmailTemplate('Bienvenue !', content, username);
+    return getBaseEmailTemplate('Bienvenue sur KermHosting !', content, username);
+}
+
+// Template de renouvellement de serveur
+function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
+    const content = `
+        <h2>Renouvellement confirmé !</h2>
+        <p>Bonjour ${username},</p>
+        <p>Votre serveur <strong>"${server.server_name}"</strong> a été renouvelé avec succès.</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div><strong> Renouvellement effectué</strong></div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item success">
+                <strong>📅 Nouvelle expiration</strong>
+                <span>${newExpiry.toLocaleDateString('fr-FR')}</span>
+            </div>
+            <div class="info-item">
+                <strong>💰 Coins déduits</strong>
+                <span>${coins} coins</span>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/dashboard" class="button">
+                <i class="fas fa-tachometer-alt"></i>
+                Voir mon serveur
+            </a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Renouvellement confirmé', content, username);
+}
+
+// Template de suspension de compte (NOUVEAU)
+function getAccountSuspendedHtml(username, reason) {
+    const content = `
+        <h2>⚠️ Compte suspendu</h2>
+        <p>Bonjour ${username},</p>
+        <p>Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        
+        <div class="danger-box">
+            <i class="fas fa-ban"></i>
+            <div>
+                <strong> Suspension de compte</strong>
+                <p style="margin-top: 10px; color: #EF4444;">${reason || 'Pour non-respect des conditions d\'utilisation.'}</p>
+            </div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 30px 0;">
+            <h3 style="color: #F3F4F6; margin-bottom: 15px;">❓ Que faire ?</h3>
+            <ul style="color: #9CA3AF; margin-left: 20px;">
+                <li style="margin-bottom: 10px;">Vérifiez vos emails pour plus d'informations</li>
+                <li style="margin-bottom: 10px;">Contactez notre support pour plus de détails</li>
+                <li style="margin-bottom: 10px;">Si vous pensez qu'il s'agit d'une erreur, notre équipe est là pour vous aider</li>
+            </ul>
+        </div>
+        
+        <div class="contact-info">
+            <p><strong>📞 Contactez le support :</strong></p>
+            <p>📧 <a href="mailto:${SITE_CONFIG.supportEmail}">${SITE_CONFIG.supportEmail}</a></p>
+            <p>💬 <a href="${SITE_CONFIG.whatsapp}">WhatsApp</a></p>
+            <p>🎮 <a href="${SITE_CONFIG.discord}">Discord</a></p>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/support" class="button secondary">
+                <i class="fas fa-headset"></i>
+                Contacter le support
+            </a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Compte suspendu', content, username);
+}
+
+// Template de suppression de compte (NOUVEAU)
+function getAccountDeletedHtml(username) {
+    const content = `
+        <h2>🗑️ Compte supprimé</h2>
+        <p>Bonjour ${username},</p>
+        <p>Votre compte KermHosting a été supprimé conformément à votre demande ou suite à une période d'inactivité prolongée.</p>
+        
+        <div class="danger-box">
+            <i class="fas fa-trash-alt"></i>
+            <div>
+                <strong> Suppression définitive</strong>
+                <p style="margin-top: 10px; color: #EF4444;">Toutes les données associées à ce compte ont été supprimées définitivement.</p>
+            </div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 30px 0;">
+            <h3 style="color: #F3F4F6; margin-bottom: 15px;">📋 Information importante</h3>
+            <p style="color: #9CA3AF;">Conformément à notre politique de confidentialité, toutes vos données personnelles, serveurs et transactions ont été effacés de nos systèmes.</p>
+        </div>
+        
+        <p>Si vous souhaitez revenir chez KermHosting, vous pouvez créer un nouveau compte à tout moment. Nous serions ravis de vous revoir !</p>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/register" class="button">
+                <i class="fas fa-user-plus"></i>
+                Créer un nouveau compte
+            </a>
+        </p>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="${SITE_CONFIG.url}/support" class="button secondary">
+                <i class="fas fa-question-circle"></i>
+                Questions ? Contactez le support
+            </a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Compte supprimé', content, username);
 }
 
 // =============================================
@@ -2025,7 +2238,7 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES PAIEMENT FAPSHI
+// ROUTES PAIEMENT FAPSHI (CORRIGÉES - sans champ medium)
 // =============================================
 
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
@@ -2810,9 +3023,7 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
         await sendEmail(
             req.user.email,
             '✅ Serveur renouvelé avec succès',
-            `<p>Bonjour ${req.user.username},</p>
-             <p>Votre serveur <strong>${server.server_name}</strong> a été renouvelé.</p>
-             <p>Nouvelle date d'expiration : ${newExpiry.toLocaleDateString('fr-FR')}</p>`
+            getRenewalConfirmationHtml(req.user.username, server, newExpiry, coins)
         );
 
         res.json({
@@ -2965,7 +3176,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
-// ROUTES ADMIN
+// ROUTES ADMIN COMPLÈTES (AVEC TOUTES LES DONNÉES)
 // =============================================
 
 app.get('/api/admin/check', authenticateToken, async (req, res) => {
@@ -2978,6 +3189,551 @@ app.get('/api/admin/check', authenticateToken, async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ success: false, error: 'Erreur vérification' });
+    }
+});
+
+// Récupérer tous les utilisateurs
+app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: users, error } = await supabase
+            .from('profiles')
+            .select(`
+                *,
+                servers:servers(count)
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('❌ Erreur SQL users:', error);
+            return res.status(500).json({ success: false, error: error.message });
+        }
+
+        const formattedUsers = users.map(user => ({
+            ...user,
+            servers_count: user.servers?.[0]?.count || 0
+        }));
+
+        res.json({ success: true, users: formattedUsers || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération users:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Récupérer tous les serveurs
+app.get('/api/admin/servers', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: servers, error } = await supabase
+            .from('servers')
+            .select(`
+                *,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('❌ Erreur SQL servers:', error);
+            return res.status(500).json({ success: false, error: error.message });
+        }
+
+        const formattedServers = servers.map(server => ({
+            ...server,
+            owner_username: server.profiles?.username,
+            owner_email: server.profiles?.email
+        }));
+
+        res.json({ success: true, servers: formattedServers || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération serveurs:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Récupérer toutes les transactions
+app.get('/api/admin/transactions', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: transactions, error } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('❌ Erreur SQL transactions:', error);
+            return res.status(500).json({ success: false, error: error.message });
+        }
+
+        const formattedTransactions = transactions.map(t => ({
+            ...t,
+            user_username: t.profiles?.username
+        }));
+
+        res.json({ success: true, transactions: formattedTransactions || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération transactions:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Récupérer les logs admin
+app.get('/api/admin/logs', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: logs, error } = await supabase
+            .from('admin_actions')
+            .select(`
+                *,
+                profiles:admin_id (
+                    username
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(100);
+
+        if (error) {
+            console.error('❌ Erreur SQL logs:', error);
+            return res.status(500).json({ success: false, error: error.message });
+        }
+
+        const formattedLogs = logs.map(log => ({
+            ...log,
+            admin_username: log.profiles?.username
+        }));
+
+        res.json({ success: true, logs: formattedLogs || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération logs:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Statistiques admin
+app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { count: totalUsers } = await supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true });
+
+        const { count: verifiedUsers } = await supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true })
+            .eq('email_verified', true);
+
+        const { count: bannedUsers } = await supabase
+            .from('profiles')
+            .select('*', { count: 'exact', head: true })
+            .eq('banned', true);
+
+        const { count: totalServers } = await supabase
+            .from('servers')
+            .select('*', { count: 'exact', head: true });
+
+        const { count: activeServers } = await supabase
+            .from('servers')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'active');
+
+        const { data: allUsers } = await supabase
+            .from('profiles')
+            .select('coins');
+
+        const totalCoins = allUsers?.reduce((sum, user) => sum + (user.coins || 0), 0) || 0;
+
+        res.json({
+            success: true,
+            stats: {
+                total_users: totalUsers || 0,
+                verified_users: verifiedUsers || 0,
+                banned_users: bannedUsers || 0,
+                total_servers: totalServers || 0,
+                active_servers: activeServers || 0,
+                total_coins: totalCoins
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur stats:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Bannir/Débannir un utilisateur
+app.post('/api/admin/users/:userId/ban', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { banned } = req.body;
+
+        if (userId === req.user.id) {
+            return res.status(400).json({ success: false, error: 'Action impossible sur vous-même' });
+        }
+
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('username, email')
+            .eq('id', userId)
+            .single();
+
+        await supabase
+            .from('profiles')
+            .update({ banned })
+            .eq('id', userId);
+
+        // Envoyer un email si banni
+        if (banned && user) {
+            await sendEmail(
+                user.email,
+                '⚠️ Votre compte KermHosting a été suspendu',
+                getAccountSuspendedHtml(user.username, 'Non-respect des conditions d\'utilisation')
+            );
+        }
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: banned ? 'user_ban' : 'user_unban',
+                target_type: 'user',
+                target_id: userId,
+                description: `${banned ? 'Bannissement' : 'Débannissement'} de ${user?.username || userId}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: banned ? 'Utilisateur banni' : 'Utilisateur débanni' });
+    } catch (error) {
+        console.error('❌ Erreur ban:', error);
+        res.status(500).json({ success: false, error: 'Erreur bannissement' });
+    }
+});
+
+// Ajouter des coins
+app.post('/api/admin/users/:userId/coins', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { amount } = req.body;
+
+        if (!amount || amount < 1) {
+            return res.status(400).json({ success: false, error: 'Montant invalide' });
+        }
+
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('coins, username')
+            .eq('id', userId)
+            .single();
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
+        }
+
+        await supabase
+            .from('profiles')
+            .update({ coins: (user.coins || 0) + amount })
+            .eq('id', userId);
+
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: userId,
+                activity_type: 'admin_coins_add',
+                coins_earned: amount,
+                description: `Ajout de ${amount} coins par admin`
+            }]);
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'coins_add',
+                target_type: 'user',
+                target_id: userId,
+                description: `Ajout de ${amount} coins à ${user.username}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: `${amount} coins ajoutés avec succès` });
+    } catch (error) {
+        console.error('❌ Erreur ajout coins:', error);
+        res.status(500).json({ success: false, error: 'Erreur ajout coins' });
+    }
+});
+
+// Retirer des coins
+app.post('/api/admin/users/:userId/coins/remove', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { amount } = req.body;
+
+        if (!amount || amount < 1) {
+            return res.status(400).json({ success: false, error: 'Montant invalide' });
+        }
+
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('coins, username')
+            .eq('id', userId)
+            .single();
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
+        }
+
+        if (user.coins < amount) {
+            return res.status(400).json({ success: false, error: 'Solde insuffisant' });
+        }
+
+        await supabase
+            .from('profiles')
+            .update({ coins: user.coins - amount })
+            .eq('id', userId);
+
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: userId,
+                activity_type: 'admin_coins_remove',
+                coins_earned: -amount,
+                description: `Retrait de ${amount} coins par admin`
+            }]);
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'coins_remove',
+                target_type: 'user',
+                target_id: userId,
+                description: `Retrait de ${amount} coins à ${user.username}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: `${amount} coins retirés avec succès` });
+    } catch (error) {
+        console.error('❌ Erreur retrait coins:', error);
+        res.status(500).json({ success: false, error: 'Erreur retrait coins' });
+    }
+});
+
+// Supprimer un utilisateur
+app.delete('/api/admin/users/:userId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (userId === req.user.id) {
+            return res.status(400).json({ success: false, error: 'Vous ne pouvez pas vous supprimer vous-même' });
+        }
+
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('username, email')
+            .eq('id', userId)
+            .single();
+
+        const { data: servers } = await supabase
+            .from('servers')
+            .select('pterodactyl_id')
+            .eq('user_id', userId);
+
+        for (const server of servers || []) {
+            if (server.pterodactyl_id) {
+                await deletePterodactylServer(server.pterodactyl_id);
+            }
+        }
+
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+
+        if (error) throw error;
+
+        // Email de confirmation de suppression
+        if (user) {
+            await sendEmail(
+                user.email,
+                '🗑️ Votre compte KermHosting a été supprimé',
+                getAccountDeletedHtml(user.username)
+            );
+        }
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'user_delete',
+                target_type: 'user',
+                target_id: userId,
+                description: `Suppression de l'utilisateur ${user?.username || userId}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: 'Utilisateur supprimé avec succès' });
+    } catch (error) {
+        console.error('❌ Erreur suppression utilisateur:', error);
+        res.status(500).json({ success: false, error: 'Erreur suppression utilisateur' });
+    }
+});
+
+// Modifier un utilisateur
+app.put('/api/admin/users/:userId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { role, email_verified, banned } = req.body;
+
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', userId)
+            .single();
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'Utilisateur non trouvé' });
+        }
+
+        if (userId === req.user.id && role && role !== req.user.role && role !== 'superadmin') {
+            return res.status(400).json({ success: false, error: 'Vous ne pouvez pas vous rétrograder vous-même' });
+        }
+
+        const updates = {};
+        if (role !== undefined) updates.role = role;
+        if (email_verified !== undefined) updates.email_verified = email_verified;
+        if (banned !== undefined) updates.banned = banned;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', userId);
+
+        if (error) throw error;
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'user_update',
+                target_type: 'user',
+                target_id: userId,
+                description: `Modification utilisateur: ${JSON.stringify(updates)}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: 'Utilisateur modifié avec succès' });
+    } catch (error) {
+        console.error('❌ Erreur modification utilisateur:', error);
+        res.status(500).json({ success: false, error: 'Erreur modification utilisateur' });
+    }
+});
+
+// Modifier un serveur
+app.put('/api/admin/servers/:serverId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { server_type, status, expires_at, username, password } = req.body;
+
+        const { data: server } = await supabase
+            .from('servers')
+            .select('*')
+            .eq('id', serverId)
+            .single();
+
+        if (!server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+
+        const updates = {};
+        if (server_type) updates.server_type = server_type;
+        if (status) updates.status = status;
+        if (expires_at) updates.expires_at = expires_at;
+        if (username) updates.username = username;
+        
+        if (password) {
+            try {
+                await callPterodactylAPI(`/api/application/users/${server.pterodactyl_id}`, 'PATCH', { password });
+                updates.password = password;
+            } catch (pteroError) {
+                console.error('❌ Erreur mise à jour mot de passe Pterodactyl:', pteroError);
+            }
+        }
+
+        const { error } = await supabase
+            .from('servers')
+            .update(updates)
+            .eq('id', serverId);
+
+        if (error) throw error;
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'server_update',
+                target_type: 'server',
+                target_id: serverId,
+                description: `Modification du serveur ${server.server_name}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: 'Serveur modifié avec succès' });
+    } catch (error) {
+        console.error('❌ Erreur modification serveur:', error);
+        res.status(500).json({ success: false, error: 'Erreur modification serveur' });
+    }
+});
+
+// Supprimer un serveur
+app.delete('/api/admin/servers/:serverId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+
+        const { data: server } = await supabase
+            .from('servers')
+            .select('*')
+            .eq('id', serverId)
+            .single();
+
+        if (!server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+
+        if (server.pterodactyl_id) {
+            await deletePterodactylServer(server.pterodactyl_id);
+        }
+
+        const { error } = await supabase
+            .from('servers')
+            .delete()
+            .eq('id', serverId);
+
+        if (error) throw error;
+
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'server_delete',
+                target_type: 'server',
+                target_id: serverId,
+                description: `Suppression du serveur ${server.server_name}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ success: true, message: 'Serveur supprimé avec succès' });
+    } catch (error) {
+        console.error('❌ Erreur suppression serveur:', error);
+        res.status(500).json({ success: false, error: 'Erreur suppression serveur' });
     }
 });
 
