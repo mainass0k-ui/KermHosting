@@ -65,7 +65,7 @@ const mailgun = new Mailgun(formData);
 const mg = mailgun.client({
     username: 'api',
     key: MAILGUN_CONFIG.apiKey,
-    url: 'https://api.mailgun.net'
+    url: 'https://api.mailgun.net/v3'
 });
 
 // =============================================
