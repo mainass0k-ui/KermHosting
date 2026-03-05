@@ -54,20 +54,20 @@ const fapshiHeaders = {
 const MAILGUN_CONFIG = {
     apiKey: '63d0998dc9c741d099cfa966429ec4f8-82cf32bf-e8564515',
     domain: 'sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org',
-    from: 'KermHosting <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
+    from: 'KermHosting☁️ <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
 };
 
 // =============================================
 // CONFIGURATION PTERODACTYL
 // =============================================
 const PTERODACTYL_CONFIG = {
-    url: 'https://votre-panel.com',
-    applicationApiKey: 'ptlc_votre_cle_application',
-    clientApiKey: 'ptlc_votre_cle_client'
+    url: 'https://panel.lionelmelo.qzz.io',
+    applicationApiKey: 'ptla_iKK0lnh3qpJ4ScboEk98uWvBqpU2BX9hwwrW4es3Atr',
+    clientApiKey: 'ptlc_ncE2HpncTdjD8sqNIcQZ1oBOhCq7N4lZ0bpoK8MtXgk'
 };
 
 const SITE_CONFIG = {
-    url: 'https://kermhosting.com',
+    url: 'https://kerm-hosting.vercel.app',
     name: 'KermHosting',
     supportEmail: 'bookmakerp@gmail.com',
     whatsapp: 'https://wa.me/237659535227',
