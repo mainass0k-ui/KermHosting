@@ -39,7 +39,7 @@ const SUPABASE_CONFIG = {
 const FAPSHI_CONFIG = {
     baseUrl: 'https://live.fapshi.com',
     apiuser: '42ae50a1-35e3-4422-b422-d238d4548bf1',
-    apikey: 'FAK_850bbe31d0093e30ad220b5a08e91671',
+    apikey: 'FAK_6c6b308a5566c995c669a7b9cfcc8ac6',
     webhookSecret: 'kermhosting_webhook_secret_2024'
 };
 
