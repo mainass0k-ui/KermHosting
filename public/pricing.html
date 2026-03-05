@@ -47,11 +47,10 @@
             --border-color: #2D3748;
             --border-light: #374151;
             
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             --shadow-glow: 0 0 15px var(--primary-glow);
-            --shadow-colored: 0 10px 30px -5px var(--primary-glow);
             
             --radius-sm: 8px;
             --radius-md: 12px;
@@ -101,7 +100,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR OPTIMISÉE ===== */
+        /* ===== SIDEBAR OPTIMISÉE MOBILE ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -1049,45 +1048,11 @@
             color: var(--primary);
         }
 
-        .payment-methods {
-            display: flex;
-            gap: 12px;
-            margin: 20px 0;
+        .modal-info-value.warning {
+            color: var(--warning);
         }
 
-        .payment-method {
-            flex: 1;
-            padding: 14px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .payment-method:hover {
-            border-color: var(--primary);
-        }
-
-        .payment-method.active {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
-        }
-
-        .payment-method i {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-        }
-
-        .payment-method.mtn i {
-            color: var(--mtn);
-        }
-
-        .payment-method.orange i {
-            color: var(--orange);
-        }
-
-        .phone-input, .text-input {
+        .phone-input {
             width: 100%;
             padding: 14px;
             background: var(--bg-input);
@@ -1098,7 +1063,7 @@
             margin-bottom: 16px;
         }
 
-        .phone-input:focus, .text-input:focus {
+        .phone-input:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -1107,10 +1072,12 @@
             display: flex;
             gap: 12px;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
 
         .payment-option {
             flex: 1;
+            min-width: 120px;
             padding: 14px;
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -1138,6 +1105,7 @@
             display: flex;
             gap: 12px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -1158,16 +1126,6 @@
             background: transparent;
             border: 2px solid var(--border-color);
             color: var(--text-primary);
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: black;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
         }
 
         /* ===== SUCCESS MODAL ===== */
@@ -1305,15 +1263,12 @@
             font-size: 0.85rem;
         }
 
-        .warning-message i {
-            font-size: 1.1rem;
-        }
-
         .success-actions {
             display: flex;
             gap: 12px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .success-btn {
@@ -1369,10 +1324,6 @@
 
         .toast.info {
             background: rgba(59, 130, 246, 0.95);
-        }
-
-        .toast.warning {
-            background: rgba(245, 158, 11, 0.95);
         }
 
         @keyframes slideIn {
@@ -1512,7 +1463,7 @@
             
             <nav class="sidebar-nav">
                 <ul id="sidebarNav">
-                    <!-- ACCUEIL - Sera affiché/caché par JS selon connexion -->
+                    <!-- ACCUEIL - Caché pour les connectés, affiché pour les visiteurs -->
                     <li id="navHome" style="display: none;">
                         <a href="/">
                             <i class="fas fa-home"></i>
@@ -1768,14 +1719,256 @@
         </main>
     </div>
 
-    <!-- MODALS (inchangés) -->
+    <!-- MODAL 1: Choix du mode de paiement -->
+    <div class="modal" id="paymentChoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Choisissez votre mode de paiement</h2>
+                <button class="modal-close" onclick="closeModal('paymentChoiceModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan choisi</span>
+                        <span class="modal-info-value" id="choicePlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="choicePlanPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix en coins</span>
+                        <span class="modal-info-value" id="choicePlanCoins">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Votre solde</span>
+                        <span class="modal-info-value" id="choiceUserBalance">- coins</span>
+                    </div>
+                    <div class="modal-info-item" id="choiceDifference" style="display: none;">
+                        <span class="modal-info-label">Coins manquants</span>
+                        <span class="modal-info-value warning" id="choiceMissingCoins">- coins</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px;">Comment souhaitez-vous payer ?</h3>
+                
+                <div class="payment-options">
+                    <div class="payment-option active" id="payWithCoins" onclick="selectPaymentMethod('coins')">
+                        <i class="fas fa-coins"></i>
+                        <div>Payer avec mes coins</div>
+                    </div>
+                    <div class="payment-option" id="payWithMobile" onclick="selectPaymentMethod('mobile')">
+                        <i class="fas fa-mobile-alt"></i>
+                        <div>Payer par Mobile Money</div>
+                    </div>
+                </div>
+
+                <div id="mobilePaymentInfo" style="display: none;">
+                    <h3 style="margin: 20px 0 16px;">Choisissez votre opérateur</h3>
+                    <div class="payment-options">
+                        <div class="payment-option mtn active" id="modalMethodMTN" onclick="selectModalMethod('MTN')">
+                            <i class="fas fa-mobile-alt" style="color: var(--mtn);"></i>
+                            <div>MTN Money</div>
+                        </div>
+                        <div class="payment-option orange" id="modalMethodOrange" onclick="selectModalMethod('ORANGE')">
+                            <i class="fas fa-mobile-alt" style="color: var(--orange);"></i>
+                            <div>Orange Money</div>
+                        </div>
+                    </div>
+                    <input type="tel" class="phone-input" id="modalPhone" placeholder="Numéro de téléphone (ex: 691234567)" maxlength="9">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('paymentChoiceModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="proceedWithPayment()" id="proceedButton">
+                    <i class="fas fa-arrow-right"></i>
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Confirmation paiement par coins -->
+    <div class="modal" id="coinsConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmation du paiement</h2>
+                <button class="modal-close" onclick="closeModal('coinsConfirmModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan</span>
+                        <span class="modal-info-value" id="confirmPlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Coins nécessaires</span>
+                        <span class="modal-info-value" id="confirmCoinsNeeded">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Votre solde</span>
+                        <span class="modal-info-value" id="confirmUserBalance">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Nouveau solde</span>
+                        <span class="modal-info-value success" id="confirmNewBalance">- coins</span>
+                    </div>
+                </div>
+                
+                <p style="color: var(--text-secondary); margin: 20px 0;">
+                    <i class="fas fa-info-circle"></i>
+                    En confirmant, vous acceptez de payer ce serveur avec vos coins.
+                </p>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="serverNameInput" placeholder="Nom du serveur (ex: MonBot)" maxlength="30">
+                    <small style="color: var(--text-secondary);">3 à 30 caractères</small>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="serverUsernameInput" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                    <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('coinsConfirmModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmCoinPayment()" id="confirmCoinBtn">
+                    <i class="fas fa-check"></i>
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Paiement par Mobile Money -->
+    <div class="modal" id="mobilePaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Paiement par Mobile Money</h2>
+                <button class="modal-close" onclick="closeModal('mobilePaymentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan choisi</span>
+                        <span class="modal-info-value" id="mobilePlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="mobilePlanPrice">- FCFA</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px;">Choisissez votre opérateur</h3>
+                <div class="payment-options">
+                    <div class="payment-option mtn active" id="mobileMethodMTN" onclick="selectMobileMethod('MTN')">
+                        <i class="fas fa-mobile-alt" style="color: var(--mtn);"></i>
+                        <div>MTN Money</div>
+                    </div>
+                    <div class="payment-option orange" id="mobileMethodOrange" onclick="selectMobileMethod('ORANGE')">
+                        <i class="fas fa-mobile-alt" style="color: var(--orange);"></i>
+                        <div>Orange Money</div>
+                    </div>
+                </div>
+
+                <input type="tel" class="phone-input" id="mobilePhone" placeholder="Numéro de téléphone (ex: 691234567)" maxlength="9">
+                
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="mobileServerName" placeholder="Nom du serveur (ex: MonBot)" maxlength="30">
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="mobileServerUsername" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                </div>
+                
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Vous recevrez une demande de confirmation sur votre téléphone.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('mobilePaymentModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="processMobilePayment()" id="mobilePayButton">
+                    <i class="fas fa-lock"></i>
+                    Payer maintenant
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Confirmation de demande -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Demande envoyée !</h2>
+                <button class="modal-close" onclick="closeModal('confirmationModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-clock" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 20px;">
+                    Une demande de paiement a été envoyée au numéro :
+                </p>
+                <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 20px;" id="confirmationPhone">
+                    +237 691234567
+                </p>
+                <p style="color: var(--text-secondary);">
+                    Veuillez confirmer l'opération sur votre téléphone.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeModal('confirmationModal')">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Achat de coins nécessaire -->
+    <div class="modal" id="buyCoinsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Coins insuffisants</h2>
+                <button class="modal-close" onclick="closeModal('buyCoinsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 20px; font-size: 1.2rem;">
+                    Il vous manque <strong id="missingCoinsAmount">0 coins</strong>
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                    Achetez le complément ou payez par Mobile Money.
+                </p>
+                
+                <div class="payment-options" style="margin-bottom: 20px;">
+                    <a href="/buy-coins" class="btn btn-primary" style="flex: 1; text-decoration: none; text-align: center;">
+                        <i class="fas fa-coins"></i>
+                        Acheter des coins
+                    </a>
+                    <button class="btn btn-outline" style="flex: 1;" onclick="switchToMobilePayment()">
+                        <i class="fas fa-mobile-alt"></i>
+                        Payer par Mobile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL (affichage identifiants) -->
     <div class="success-modal" id="successModal">
         <div class="success-content">
             <div class="success-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
             <h2 class="success-title">Serveur créé avec succès !</h2>
-            <p class="success-subtitle">Vos identifiants de connexion ont été envoyés par email.</p>
+            <p class="success-subtitle">Vos identifiants ont été envoyés par email.</p>
             
             <div class="credentials-box" id="credentialsBox"></div>
             
@@ -1795,26 +1988,6 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <div class="modal" id="paymentChoiceModal">
-        <!-- Contenu du modal existant -->
-    </div>
-
-    <div class="modal" id="coinsConfirmModal">
-        <!-- Contenu du modal existant -->
-    </div>
-
-    <div class="modal" id="mobilePaymentModal">
-        <!-- Contenu du modal existant -->
-    </div>
-
-    <div class="modal" id="confirmationModal">
-        <!-- Contenu du modal existant -->
-    </div>
-
-    <div class="modal" id="buyCoinsModal">
-        <!-- Contenu du modal existant -->
     </div>
 
     <script>
@@ -2157,6 +2330,324 @@
             }
         }
 
+        // ===== PAYMENT METHODS =====
+        function selectPaymentMethod(method) {
+            paymentMethod = method;
+            
+            document.getElementById('payWithCoins').classList.toggle('active', method === 'coins');
+            document.getElementById('payWithMobile').classList.toggle('active', method === 'mobile');
+            
+            const mobileInfo = document.getElementById('mobilePaymentInfo');
+            mobileInfo.style.display = method === 'mobile' ? 'block' : 'none';
+        }
+
+        function selectModalMethod(method) {
+            selectedMethod = method;
+            document.getElementById('modalMethodMTN').classList.toggle('active', method === 'MTN');
+            document.getElementById('modalMethodOrange').classList.toggle('active', method === 'ORANGE');
+        }
+
+        function selectMobileMethod(method) {
+            selectedMethod = method;
+            document.getElementById('mobileMethodMTN').classList.toggle('active', method === 'MTN');
+            document.getElementById('mobileMethodOrange').classList.toggle('active', method === 'ORANGE');
+        }
+
+        function proceedWithPayment() {
+            if (paymentMethod === 'coins') {
+                if (userCoins < selectedPlan.coins_needed) {
+                    showBuyCoinsModal(selectedPlan.coins_needed - userCoins);
+                    closeModal('paymentChoiceModal');
+                } else {
+                    document.getElementById('confirmPlanName').textContent = selectedPlan.name;
+                    document.getElementById('confirmCoinsNeeded').textContent = selectedPlan.coins_needed + ' coins';
+                    document.getElementById('confirmUserBalance').textContent = userCoins + ' coins';
+                    document.getElementById('confirmNewBalance').textContent = (userCoins - selectedPlan.coins_needed) + ' coins';
+                    
+                    closeModal('paymentChoiceModal');
+                    openModal('coinsConfirmModal');
+                }
+            } else {
+                const phone = document.getElementById('modalPhone').value;
+                if (!phone || phone.length !== 9) {
+                    alert('Numéro de téléphone invalide');
+                    return;
+                }
+                
+                document.getElementById('mobilePlanName').textContent = selectedPlan.name;
+                document.getElementById('mobilePlanPrice').textContent = (isYearly ? selectedPlan.price_yearly : selectedPlan.price_monthly) + ' FCFA';
+                document.getElementById('mobilePhone').value = phone;
+                
+                closeModal('paymentChoiceModal');
+                openModal('mobilePaymentModal');
+            }
+        }
+
+        function switchToMobilePayment() {
+            closeModal('buyCoinsModal');
+            selectPaymentMethod('mobile');
+            openModal('paymentChoiceModal');
+        }
+
+        function showBuyCoinsModal(missingCoins) {
+            document.getElementById('missingCoinsAmount').textContent = missingCoins + ' coins';
+            openModal('buyCoinsModal');
+        }
+
+        // ===== COIN PAYMENT =====
+        async function confirmCoinPayment() {
+            const serverName = document.getElementById('serverNameInput').value;
+            const serverUsername = document.getElementById('serverUsernameInput').value;
+            
+            if (!serverName || serverName.length < 3 || serverName.length > 30) {
+                showToast('error', 'Nom de serveur invalide');
+                return;
+            }
+            
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
+                showToast('error', "Nom d'utilisateur invalide");
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
+                showToast('error', "Lettres, chiffres et _ uniquement");
+                return;
+            }
+
+            const confirmBtn = document.getElementById('confirmCoinBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+            try {
+                const response = await fetch('/api/create-server', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plan_id: selectedPlan.key,
+                        server_name: serverName,
+                        server_username: serverUsername,
+                        payment_method: 'coins'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal('coinsConfirmModal');
+                    
+                    showSuccessModal({
+                        server_name: serverName,
+                        username: data.credentials.username,
+                        password: data.credentials.password,
+                        panel_url: data.credentials.panel_url,
+                        identifier: data.credentials.identifier,
+                        expires_at: data.server.expires_at
+                    });
+                    
+                    showToast('success', 'Serveur créé !');
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+            }
+        }
+
+        // ===== MOBILE PAYMENT =====
+        async function processMobilePayment() {
+            const phone = document.getElementById('mobilePhone').value;
+            const serverName = document.getElementById('mobileServerName').value;
+            const serverUsername = document.getElementById('mobileServerUsername').value;
+            
+            if (!phone || phone.length !== 9) {
+                showToast('error', 'Numéro invalide');
+                return;
+            }
+            
+            if (!serverName || serverName.length < 3 || serverName.length > 30) {
+                showToast('error', 'Nom de serveur invalide');
+                return;
+            }
+            
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
+                showToast('error', "Nom d'utilisateur invalide");
+                return;
+            }
+
+            const payButton = document.getElementById('mobilePayButton');
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+            try {
+                const response = await fetch('/api/payment/direct-server', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plan_id: selectedPlan.key,
+                        phone: phone,
+                        medium: selectedMethod,
+                        server_name: serverName,
+                        server_username: serverUsername
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal('mobilePaymentModal');
+                    document.getElementById('confirmationPhone').textContent = '+237 ' + phone;
+                    openModal('confirmationModal');
+                    
+                    localStorage.setItem('pendingServer', JSON.stringify({
+                        transactionId: data.transaction_id,
+                        serverName: serverName,
+                        serverUsername: serverUsername,
+                        planKey: selectedPlan.key
+                    }));
+                    
+                    setTimeout(() => checkPaymentStatus(data.transId), 5000);
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            } finally {
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fas fa-lock"></i> Payer maintenant';
+            }
+        }
+
+        async function checkPaymentStatus(transId) {
+            try {
+                const response = await fetch(`/api/payment/status/${transId}`);
+                const data = await response.json();
+
+                if (data.success && data.status === 'SUCCESSFUL') {
+                    const pending = JSON.parse(localStorage.getItem('pendingServer'));
+                    
+                    if (pending) {
+                        const createResponse = await fetch('/api/create-server', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                plan_id: pending.planKey,
+                                server_name: pending.serverName,
+                                server_username: pending.serverUsername,
+                                transaction_id: pending.transactionId,
+                                payment_method: 'fcfa'
+                            })
+                        });
+                        
+                        const createData = await createResponse.json();
+                        
+                        if (createData.success) {
+                            localStorage.removeItem('pendingServer');
+                            closeModal('confirmationModal');
+                            
+                            showSuccessModal({
+                                server_name: pending.serverName,
+                                username: createData.credentials.username,
+                                password: createData.credentials.password,
+                                panel_url: createData.credentials.panel_url,
+                                identifier: createData.credentials.identifier,
+                                expires_at: createData.server.expires_at
+                            });
+                            
+                            showToast('success', 'Paiement confirmé !');
+                        }
+                    }
+                } else if (data.status === 'FAILED' || data.status === 'EXPIRED') {
+                    // Ne rien faire
+                } else {
+                    setTimeout(() => checkPaymentStatus(transId), 5000);
+                }
+            } catch (error) {
+                console.error('Erreur vérification statut:', error);
+            }
+        }
+
+        // ===== SUCCESS MODAL =====
+        function showSuccessModal(serverData) {
+            const credentialsBox = document.getElementById('credentialsBox');
+            
+            credentialsBox.innerHTML = `
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-server"></i>
+                        Serveur
+                    </span>
+                    <span class="credential-value">${serverData.server_name}</span>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-user"></i>
+                        Utilisateur
+                    </span>
+                    <span class="credential-value">${serverData.username}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${serverData.username}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-lock"></i>
+                        Mot de passe
+                    </span>
+                    <span class="credential-value">${serverData.password}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${serverData.password}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-globe"></i>
+                        Panel
+                    </span>
+                    <span class="credential-value">${serverData.panel_url}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${serverData.panel_url}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-id"></i>
+                        ID
+                    </span>
+                    <span class="credential-value">${serverData.identifier}</span>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">
+                        <i class="fas fa-calendar"></i>
+                        Expire le
+                    </span>
+                    <span class="credential-value">${new Date(serverData.expires_at).toLocaleDateString('fr-FR')}</span>
+                </div>
+            `;
+            
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            showToast('success', 'Copié !');
+        }
+
         // ===== MODAL FUNCTIONS =====
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
@@ -2202,6 +2693,7 @@
             }
         });
 
+        // Animation d'entrée
         window.addEventListener('load', () => {
             document.querySelectorAll('.pricing-card, .coin-pack').forEach((el, index) => {
                 el.style.animationDelay = `${index * 0.1}s`;
@@ -2211,8 +2703,17 @@
         // Exposer les fonctions globalement
         window.selectPlan = selectPlan;
         window.buyCoins = buyCoins;
+        window.selectPaymentMethod = selectPaymentMethod;
+        window.selectModalMethod = selectModalMethod;
+        window.selectMobileMethod = selectMobileMethod;
+        window.proceedWithPayment = proceedWithPayment;
+        window.confirmCoinPayment = confirmCoinPayment;
+        window.processMobilePayment = processMobilePayment;
+        window.switchToMobilePayment = switchToMobilePayment;
         window.closeModal = closeModal;
         window.openModal = openModal;
+        window.closeSuccessModal = closeSuccessModal;
+        window.copyToClipboard = copyToClipboard;
     </script>
 </body>
 </html>
