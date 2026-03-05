@@ -1549,7 +1549,7 @@ async function createPterodactylServer(serverData) {
             name,
             userId,
             eggId = 15,
-            dockerImage = 'ghcr.io/parkervcp/yolks:nodejs_18',
+            dockerImage = 'ghcr.io/parkervcp/yolks:nodejs_24',
             memory,
             disk,
             cpu,
