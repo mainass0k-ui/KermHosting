@@ -883,6 +883,192 @@ function getResetEmailHtml(username, code) {
     return getBaseEmailTemplate('Réinitialisation de mot de passe', content, username);
 }
 
+// Template pour vérification de changement d'email
+function getEmailChangeVerificationHtml(username, code) {
+    const content = `
+        <h2>Vérification de votre nouvel email</h2>
+        <p>Bonjour ${username},</p>
+        <p>Vous avez demandé à modifier l'adresse email associée à votre compte KermHosting. Pour confirmer cette modification, veuillez utiliser le code de vérification ci-dessous :</p>
+        
+        <div class="code-box">
+            <div class="code">${code}</div>
+            <div class="code-label">Code de vérification</div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item warning">
+                <strong>⏰ Expiration</strong>
+                <span>15 minutes</span>
+                <p>Ce code expirera dans 15 minutes pour des raisons de sécurité</p>
+            </div>
+            <div class="info-item">
+                <strong>📧 Action</strong>
+                <span>Changement d'email</span>
+                <p>Votre adresse email sera modifiée après validation</p>
+            </div>
+        </div>
+        
+        <div class="danger-box">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <strong>⚠️ Important !</strong>
+                <p style="margin-top: 10px; color: #EF4444;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email et contactez immédiatement notre support.</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/profile?verify-email=${code}" class="button">
+                <i class="fas fa-check-circle"></i>
+                Confirmer le changement d'email
+            </a>
+        </p>
+        
+        <div class="divider"></div>
+        
+        <p style="font-size: 14px; text-align: center;">
+            <i class="fas fa-info-circle" style="color: #7C3AED;"></i>
+            Après confirmation, vous serez redirigé vers votre profil et devrez vous reconnecter avec votre nouvelle adresse email.
+        </p>
+    `;
+    return getBaseEmailTemplate('🔐 Changement d\'email - Vérification', content, username);
+}
+
+// Template de confirmation de changement d'email (envoyé à l'ancienne adresse)
+function getEmailChangedConfirmationHtml(username, newEmail) {
+    const content = `
+        <h2>Votre adresse email a été modifiée</h2>
+        <p>Bonjour ${username},</p>
+        <p>Nous vous confirmons que l'adresse email associée à votre compte KermHosting a été modifiée avec succès.</p>
+        
+        <div class="success-box">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <strong>✅ Changement effectué</strong>
+                <p style="margin-top: 10px; color: #10B981;">Nouvelle adresse : <strong>${newEmail}</strong></p>
+            </div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item success">
+                <strong>📅 Date</strong>
+                <span>${new Date().toLocaleDateString('fr-FR')}</span>
+                <p>Changement effectué à ${new Date().toLocaleTimeString('fr-FR')}</p>
+            </div>
+            <div class="info-item warning">
+                <strong>🔐 Sécurité</strong>
+                <span>Reconnexion requise</span>
+                <p>Utilisez votre nouvelle adresse email pour vous connecter</p>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Vous n'êtes pas à l'origine de ce changement ?</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">Contactez immédiatement notre support pour sécuriser votre compte.</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/login" class="button">
+                <i class="fas fa-sign-in-alt"></i>
+                Se connecter avec la nouvelle adresse
+            </a>
+        </p>
+        
+        <div class="contact-info">
+            <p><strong>📞 Support d'urgence :</strong></p>
+            <p>📧 <a href="mailto:${SITE_CONFIG.supportEmail}">${SITE_CONFIG.supportEmail}</a></p>
+            <p>💬 <a href="${SITE_CONFIG.whatsapp}">WhatsApp</a></p>
+            <p>🎮 <a href="${SITE_CONFIG.discord}">Discord</a></p>
+        </div>
+    `;
+    return getBaseEmailTemplate('📧 Email modifié avec succès', content, username);
+}
+
+// Template de confirmation de suppression de compte
+function getAccountDeletedHtml(username) {
+    const content = `
+        <h2>👋 Au revoir ${username} !</h2>
+        <p>Nous confirmons la suppression définitive de votre compte KermHosting, conformément à votre demande.</p>
+        
+        <div class="danger-box">
+            <i class="fas fa-trash-alt"></i>
+            <div>
+                <strong>🗑️ Compte supprimé définitivement</strong>
+                <p style="margin-top: 10px; color: #EF4444;">Toutes vos données personnelles, serveurs et transactions ont été effacés de nos systèmes.</p>
+            </div>
+        </div>
+        
+        <div style="background: #111827; border-radius: 16px; padding: 25px; margin: 30px 0;">
+            <h3 style="color: #F3F4F6; margin-bottom: 15px; text-align: center;">📋 Récapitulatif de la suppression</h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #0B1120; border-radius: 10px;">
+                    <i class="fas fa-user" style="color: #7C3AED; width: 30px; text-align: center;"></i>
+                    <div>
+                        <div style="color: #9CA3AF; font-size: 14px;">Nom d'utilisateur</div>
+                        <div style="color: #F3F4F6; font-weight: 600;">${username}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #0B1120; border-radius: 10px;">
+                    <i class="fas fa-calendar" style="color: #7C3AED; width: 30px; text-align: center;"></i>
+                    <div>
+                        <div style="color: #9CA3AF; font-size: 14px;">Date de suppression</div>
+                        <div style="color: #F3F4F6; font-weight: 600;">${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #0B1120; border-radius: 10px;">
+                    <i class="fas fa-coins" style="color: #7C3AED; width: 30px; text-align: center;"></i>
+                    <div>
+                        <div style="color: #9CA3AF; font-size: 14px;">Coins restants</div>
+                        <div style="color: #F3F4F6; font-weight: 600;">Définitivement perdus</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-clock"></i>
+            <div>
+                <strong>⏳ Période de grâce</strong>
+                <p style="margin-top: 10px; color: #F59E0B;">Conformément à notre politique de confidentialité, vos données seront définitivement irrécupérables après 30 jours.</p>
+            </div>
+        </div>
+        
+        <h3 style="color: #F3F4F6; margin: 30px 0 20px;">💝 Merci de nous avoir fait confiance !</h3>
+        
+        <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%); border-radius: 16px; padding: 25px; margin: 20px 0; text-align: center;">
+            <i class="fas fa-heart" style="color: #EF4444; font-size: 40px; margin-bottom: 15px;"></i>
+            <p style="color: #F3F4F6; font-size: 16px; line-height: 1.6;">
+                Nous espérons que votre expérience avec KermHosting a été satisfaisante.<br>
+                Si vous le souhaitez, vous pouvez recréer un compte à tout moment. Nous serions ravis de vous revoir !
+            </p>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="${SITE_CONFIG.url}/register" class="button">
+                <i class="fas fa-user-plus"></i>
+                Créer un nouveau compte
+            </a>
+        </p>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="${SITE_CONFIG.url}/support" class="button secondary" style="padding: 12px 24px;">
+                <i class="fas fa-question-circle"></i>
+                Une question ? Contactez le support
+            </a>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <p style="font-size: 14px; text-align: center; color: #6B7280;">
+            Conformément au RGPD, toutes vos données personnelles ont été effacées.<br>
+            Si vous pensez qu'il s'agit d'une erreur, contactez-nous dans les plus brefs délais.
+        </p>
+    `;
+    return getBaseEmailTemplate('👋 Compte supprimé', content, username);
+}
+
 // Template de confirmation d'achat de serveur
 function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     const content = `
@@ -1246,7 +1432,7 @@ function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
     return getBaseEmailTemplate('Renouvellement confirmé', content, username);
 }
 
-// Template de suspension de compte (NOUVEAU)
+// Template de suspension de compte
 function getAccountSuspendedHtml(username, reason) {
     const content = `
         <h2>⚠️ Compte suspendu</h2>
@@ -1285,45 +1471,6 @@ function getAccountSuspendedHtml(username, reason) {
         </p>
     `;
     return getBaseEmailTemplate('Compte suspendu', content, username);
-}
-
-// Template de suppression de compte (NOUVEAU)
-function getAccountDeletedHtml(username) {
-    const content = `
-        <h2>🗑️ Compte supprimé</h2>
-        <p>Bonjour ${username},</p>
-        <p>Votre compte KermHosting a été supprimé conformément à votre demande ou suite à une période d'inactivité prolongée.</p>
-        
-        <div class="danger-box">
-            <i class="fas fa-trash-alt"></i>
-            <div>
-                <strong> Suppression définitive</strong>
-                <p style="margin-top: 10px; color: #EF4444;">Toutes les données associées à ce compte ont été supprimées définitivement.</p>
-            </div>
-        </div>
-        
-        <div style="background: #111827; border-radius: 16px; padding: 20px; margin: 30px 0;">
-            <h3 style="color: #F3F4F6; margin-bottom: 15px;">📋 Information importante</h3>
-            <p style="color: #9CA3AF;">Conformément à notre politique de confidentialité, toutes vos données personnelles, serveurs et transactions ont été effacés de nos systèmes.</p>
-        </div>
-        
-        <p>Si vous souhaitez revenir chez KermHosting, vous pouvez créer un nouveau compte à tout moment. Nous serions ravis de vous revoir !</p>
-        
-        <p style="text-align: center;">
-            <a href="${SITE_CONFIG.url}/register" class="button">
-                <i class="fas fa-user-plus"></i>
-                Créer un nouveau compte
-            </a>
-        </p>
-        
-        <p style="text-align: center; margin-top: 20px;">
-            <a href="${SITE_CONFIG.url}/support" class="button secondary">
-                <i class="fas fa-question-circle"></i>
-                Questions ? Contactez le support
-            </a>
-        </p>
-    `;
-    return getBaseEmailTemplate('Compte supprimé', content, username);
 }
 
 // =============================================
@@ -2697,12 +2844,12 @@ app.post('/api/user/request-email-change', authenticateToken, async (req, res) =
         await sendEmail(
             new_email,
             '🔐 Code de vérification pour votre nouvel email',
-            getVerificationEmailHtml(req.user.username, verificationCode)
+            getEmailChangeVerificationHtml(req.user.username, verificationCode)
         );
 
         res.json({ 
             success: true, 
-            message: 'Code de vérification envoyé' 
+            message: 'Code de vérification envoyé à votre nouvelle adresse email' 
         });
 
     } catch (error) {
@@ -2717,12 +2864,12 @@ app.post('/api/user/request-email-change', authenticateToken, async (req, res) =
 // 3. Confirmer le changement d'email avec le code
 app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) => {
     try {
-        const { new_email, code } = req.body;
+        const { code } = req.body;
 
-        if (!new_email || !code) {
+        if (!code) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Email et code requis' 
+                error: 'Code requis' 
             });
         }
 
@@ -2731,10 +2878,10 @@ app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) =
         const pendingCode = req.user.metadata?.pending_email_code;
         const pendingExpires = req.user.metadata?.pending_email_expires;
 
-        if (!pendingEmail || pendingEmail !== new_email) {
+        if (!pendingEmail) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Aucune demande en cours pour cet email' 
+                error: 'Aucune demande de changement d\'email en cours' 
             });
         }
 
@@ -2752,11 +2899,14 @@ app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) =
             });
         }
 
+        // Sauvegarder l'ancien email pour l'envoi de confirmation
+        const oldEmail = req.user.email;
+
         // Mettre à jour l'email
         const { error } = await supabase
             .from('profiles')
             .update({ 
-                email: new_email,
+                email: pendingEmail,
                 metadata: {
                     ...req.user.metadata,
                     pending_email: null,
@@ -2774,21 +2924,26 @@ app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) =
             .insert([{
                 user_id: req.user.id,
                 activity_type: 'profile_update',
-                description: `Changement d'email`
+                description: `Changement d'email de ${oldEmail} vers ${pendingEmail}`
             }]);
 
         // Envoyer un email de confirmation à l'ancienne adresse
         await sendEmail(
-            req.user.email,
+            oldEmail,
             '📧 Votre email a été modifié',
-            `<p>Bonjour ${req.user.username},</p>
-             <p>Votre adresse email a été changée pour ${new_email}.</p>
-             <p>Si vous n'êtes pas à l'origine de cette modification, contactez immédiatement le support.</p>`
+            getEmailChangedConfirmationHtml(req.user.username, pendingEmail)
+        );
+
+        // Envoyer un email de bienvenue à la nouvelle adresse
+        await sendEmail(
+            pendingEmail,
+            '🎉 Bienvenue sur votre nouvelle adresse',
+            getWelcomeEmailHtml(req.user.username)
         );
 
         res.json({ 
             success: true, 
-            message: 'Email mis à jour avec succès' 
+            message: 'Email mis à jour avec succès. Veuillez vous reconnecter avec votre nouvelle adresse.' 
         });
 
     } catch (error) {
@@ -2834,15 +2989,9 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
             }
         }
 
-        // Envoyer un email de confirmation avant suppression
-        await sendEmail(
-            req.user.email,
-            '👋 Au revoir et merci !',
-            `<p>Bonjour ${req.user.username},</p>
-             <p>Votre compte KermHosting a été supprimé conformément à votre demande.</p>
-             <p>Toutes vos données personnelles, serveurs et transactions ont été effacés définitivement.</p>
-             <p>Nous espérons vous revoir bientôt !</p>`
-        );
+        // Sauvegarder les infos pour l'email
+        const username = req.user.username;
+        const email = req.user.email;
 
         // Supprimer l'utilisateur (les serveurs et transactions seront supprimés en cascade)
         const { error } = await supabase
@@ -2851,6 +3000,13 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
             .eq('id', req.user.id);
 
         if (error) throw error;
+
+        // Envoyer un email de confirmation après suppression
+        await sendEmail(
+            email,
+            '👋 Au revoir et merci !',
+            getAccountDeletedHtml(username)
+        );
 
         res.json({ 
             success: true, 
