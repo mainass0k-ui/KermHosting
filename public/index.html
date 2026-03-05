@@ -127,7 +127,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR ===== */
+        /* ===== SIDEBAR OPTIMISÉE MOBILE ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -196,8 +196,8 @@
             color: var(--text-secondary);
             font-size: 1.25rem;
             cursor: pointer;
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,6 +265,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
         }
 
         .sidebar-nav ul {
@@ -364,7 +365,7 @@
             min-width: 0;
         }
 
-        /* ===== TOP BAR ===== */
+        /* ===== TOP BAR OPTIMISÉE MOBILE ===== */
         .top-bar {
             position: sticky;
             top: 0;
@@ -384,8 +385,8 @@
             color: var(--text-primary);
             font-size: 1.5rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -421,8 +422,8 @@
             color: var(--text-primary);
             font-size: 1.25rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -457,8 +458,8 @@
         }
 
         .user-avatar-small {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: var(--radius-full);
             object-fit: cover;
             border: 2px solid var(--primary);
@@ -1207,7 +1208,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar -->
+        <!-- Sidebar dynamique -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1231,65 +1232,8 @@
             </div>
             
             <nav class="sidebar-nav">
-                <ul>
-                    <li class="active">
-                        <a href="/">
-                            <i class="fas fa-home"></i>
-                            <span>Accueil</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/pricing">
-                            <i class="fas fa-tags"></i>
-                            <span>Tarifs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/buy-coins">
-                            <i class="fas fa-coins"></i>
-                            <span>Acheter des coins</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/dashboard" id="navDashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/profile" id="navProfile">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
-                        </a>
-                    </li>
-                    <!-- NOUVEAU LIEN SUPPORT -->
-                    <li>
-                        <a href="/support">
-                            <i class="fas fa-headset"></i>
-                            <span>Support</span>
-                        </a>
-                    </li>
-                    <!-- FIN NOUVEAU LIEN -->
-                    <li class="divider"></li>
-                    <li>
-                        <a href="#" id="navLogin">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Connexion</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" id="navRegister">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Inscription</span>
-                        </a>
-                    </li>
-                    <li class="divider" id="logoutDivider" style="display: none;"></li>
-                    <li id="navLogout" style="display: none;">
-                        <a href="#">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Déconnexion</span>
-                        </a>
-                    </li>
+                <ul id="sidebarMenu">
+                    <!-- Le menu sera généré dynamiquement par JavaScript -->
                 </ul>
             </nav>
             
@@ -1769,7 +1713,7 @@
                     <div class="footer-social">
                         <a href="#"><i class="fab fa-whatsapp"></i></a>
                         <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="https://github.com/hostt11"><i class="fab fa-github"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
@@ -1813,6 +1757,12 @@
             notificationsPanel.classList.remove('active');
         });
 
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
         // ===== FAQ TOGGLE =====
         document.querySelectorAll('.faq-question').forEach(button => {
             button.addEventListener('click', () => {
@@ -1821,73 +1771,193 @@
             });
         });
 
-        // ===== CHECK AUTH STATUS =====
-        function checkAuth() {
+        // ===== AUTH STATE MANAGEMENT =====
+        let isAuthenticated = false;
+        let userData = null;
+
+        async function checkAuth() {
             const token = localStorage.getItem('token');
             if (token) {
-                fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-                .then(res => res.json())
-                .then(data => {
+                try {
+                    const res = await fetch('/api/user/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    
                     if (data.success) {
-                        document.getElementById('sidebarUserName').textContent = data.user.username;
-                        document.getElementById('sidebarUserEmail').textContent = data.user.email;
-                        document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=32`;
-                        
-                        document.getElementById('navLogin').style.display = 'none';
-                        document.getElementById('navRegister').style.display = 'none';
-                        document.getElementById('logoutDivider').style.display = 'block';
-                        document.getElementById('navLogout').style.display = 'block';
-                        document.getElementById('navDashboard').style.display = 'block';
+                        isAuthenticated = true;
+                        userData = data.user;
+                        updateUIForAuth();
+                    } else {
+                        localStorage.removeItem('token');
+                        isAuthenticated = false;
+                        updateUIForGuest();
                     }
-                })
-                .catch(() => {
-                    localStorage.removeItem('token');
-                });
+                } catch (error) {
+                    console.error('Erreur auth:', error);
+                    isAuthenticated = false;
+                    updateUIForGuest();
+                }
+            } else {
+                isAuthenticated = false;
+                updateUIForGuest();
             }
         }
-        checkAuth();
 
-        // ===== LOGOUT =====
-        document.getElementById('navLogout')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            window.location.reload();
-        });
+        // ===== DYNAMIC SIDEBAR MENU =====
+        function updateUIForAuth() {
+            // Sidebar user info
+            document.getElementById('sidebarUserName').textContent = userData.username;
+            document.getElementById('sidebarUserEmail').textContent = userData.email;
+            document.getElementById('sidebarUserBadge').textContent = userData.role;
+            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
 
-        // ===== NAVIGATION =====
-        document.getElementById('navLogin').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/login';
-        });
+            // Menu pour utilisateur connecté (SANS ACCUEIL)
+            const menuHtml = `
+                <li>
+                    <a href="/dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/pricing">
+                        <i class="fas fa-tags"></i>
+                        <span>Tarifs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/buy-coins">
+                        <i class="fas fa-coins"></i>
+                        <span>Acheter des coins</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/profile">
+                        <i class="fas fa-user"></i>
+                        <span>Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/support">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                </li>
+                ${userData.role === 'admin' || userData.role === 'superadmin' ? `
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-crown"></i>
+                        <span>Administration</span>
+                    </a>
+                </li>
+                ` : ''}
+                <li class="divider"></li>
+                <li>
+                    <a href="#" id="navLogout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+            `;
+            
+            document.getElementById('sidebarMenu').innerHTML = menuHtml;
 
-        document.getElementById('navRegister').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/register';
-        });
+            // Ajouter event listener pour déconnexion
+            document.getElementById('navLogout').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                window.location.reload();
+            });
+        }
 
+        function updateUIForGuest() {
+            // Sidebar user info pour invité
+            document.getElementById('sidebarUserName').textContent = 'Invité';
+            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+            document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+
+            // Menu pour invité (AVEC Accueil)
+            const menuHtml = `
+                <li class="active">
+                    <a href="/">
+                        <i class="fas fa-home"></i>
+                        <span>Accueil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/pricing">
+                        <i class="fas fa-tags"></i>
+                        <span>Tarifs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/buy-coins">
+                        <i class="fas fa-coins"></i>
+                        <span>Acheter des coins</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/support">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#" id="navLogin">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Connexion</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="navRegister">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Inscription</span>
+                    </a>
+                </li>
+            `;
+            
+            document.getElementById('sidebarMenu').innerHTML = menuHtml;
+
+            // Ajouter event listeners pour login/register
+            document.getElementById('navLogin').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/login';
+            });
+
+            document.getElementById('navRegister').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/register';
+            });
+        }
+
+        // ===== NAVIGATION INTELLIGENTE =====
         document.getElementById('getStartedBtn').addEventListener('click', () => {
-            window.location.href = '/register';
+            if (isAuthenticated) {
+                window.location.href = '/dashboard';
+            } else {
+                window.location.href = '/register';
+            }
         });
 
         document.getElementById('finalCtaBtn').addEventListener('click', () => {
-            window.location.href = '/register';
+            if (isAuthenticated) {
+                window.location.href = '/dashboard';
+            } else {
+                window.location.href = '/register';
+            }
         });
 
         document.getElementById('viewPricingBtn').addEventListener('click', () => {
             window.location.href = '/pricing';
         });
 
-        // ===== CLOSE NOTIFICATIONS WHEN CLICKING OUTSIDE =====
-        document.addEventListener('click', (e) => {
-            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
-                notificationsPanel.classList.remove('active');
-            }
-        });
+        // ===== INIT =====
+        checkAuth();
 
-        // ===== PREVENT SCROLLING WHEN SIDEBAR OPEN ON MOBILE =====
+        // Responsive
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) {
                 closeSidebarFunc();
