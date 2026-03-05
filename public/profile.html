@@ -1626,7 +1626,7 @@
             const icon = document.getElementById('apiKeyIcon');
             
             if (apiKeyVisible) {
-                apiKeyElement.textContent = '****************************';
+                apiKeyElement.textContent = '**********************';
                 icon.className = 'fas fa-eye';
             } else {
                 apiKeyElement.textContent = userData?.apiKey || 'N/A';
@@ -1949,7 +1949,7 @@
             displayBadges(userData.badges || []);
 
             // API Key
-            document.getElementById('apiKey').textContent = '****************************';
+            document.getElementById('apiKey').textContent = '*******************';
 
             // Transactions
             displayTransactions();
