@@ -2574,6 +2574,299 @@ app.post('/api/user/regenerate-api-key', authenticateToken, requireEmailVerifica
 });
 
 // =============================================
+// ROUTES DE GESTION DU PROFIL
+// =============================================
+
+// 1. Modifier le nom d'utilisateur
+app.post('/api/user/update-username', authenticateToken, async (req, res) => {
+    try {
+        const { username } = req.body;
+
+        if (!username) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Nom d\'utilisateur requis' 
+            });
+        }
+
+        if (username.length < 3 || username.length > 20) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Le nom d\'utilisateur doit contenir entre 3 et 20 caractères' 
+            });
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores' 
+            });
+        }
+
+        // Vérifier si le nom d'utilisateur est déjà pris
+        const { data: existingUser } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
+
+        if (existingUser && existingUser.id !== req.user.id) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Ce nom d\'utilisateur est déjà utilisé' 
+            });
+        }
+
+        // Mettre à jour le nom d'utilisateur
+        const { error } = await supabase
+            .from('profiles')
+            .update({ username })
+            .eq('id', req.user.id);
+
+        if (error) throw error;
+
+        // Journaliser l'activité
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'profile_update',
+                description: `Changement de nom d'utilisateur`
+            }]);
+
+        res.json({ 
+            success: true, 
+            message: 'Nom d\'utilisateur mis à jour avec succès' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur update username:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// 2. Demander le changement d'email (envoi de code)
+app.post('/api/user/request-email-change', authenticateToken, async (req, res) => {
+    try {
+        const { new_email } = req.body;
+
+        if (!new_email || !new_email.includes('@')) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email invalide' 
+            });
+        }
+
+        // Vérifier si l'email est déjà utilisé
+        const { data: existingUser } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', new_email)
+            .maybeSingle();
+
+        if (existingUser) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Cet email est déjà utilisé' 
+            });
+        }
+
+        // Générer un code de vérification
+        const verificationCode = generateVerificationCode();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+        // Stocker temporairement la demande (dans metadata ou table séparée)
+        // Ici on utilise les metadata du profil
+        await supabase
+            .from('profiles')
+            .update({ 
+                metadata: { 
+                    ...req.user.metadata,
+                    pending_email: new_email,
+                    pending_email_code: verificationCode,
+                    pending_email_expires: expiresAt.toISOString()
+                }
+            })
+            .eq('id', req.user.id);
+
+        // Envoyer l'email avec le code
+        await sendEmail(
+            new_email,
+            '🔐 Code de vérification pour votre nouvel email',
+            getVerificationEmailHtml(req.user.username, verificationCode)
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Code de vérification envoyé' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur request email change:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// 3. Confirmer le changement d'email avec le code
+app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) => {
+    try {
+        const { new_email, code } = req.body;
+
+        if (!new_email || !code) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email et code requis' 
+            });
+        }
+
+        // Récupérer les données temporaires
+        const pendingEmail = req.user.metadata?.pending_email;
+        const pendingCode = req.user.metadata?.pending_email_code;
+        const pendingExpires = req.user.metadata?.pending_email_expires;
+
+        if (!pendingEmail || pendingEmail !== new_email) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Aucune demande en cours pour cet email' 
+            });
+        }
+
+        if (pendingCode !== code) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Code incorrect' 
+            });
+        }
+
+        if (new Date() > new Date(pendingExpires)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Code expiré' 
+            });
+        }
+
+        // Mettre à jour l'email
+        const { error } = await supabase
+            .from('profiles')
+            .update({ 
+                email: new_email,
+                metadata: {
+                    ...req.user.metadata,
+                    pending_email: null,
+                    pending_email_code: null,
+                    pending_email_expires: null
+                }
+            })
+            .eq('id', req.user.id);
+
+        if (error) throw error;
+
+        // Journaliser l'activité
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'profile_update',
+                description: `Changement d'email`
+            }]);
+
+        // Envoyer un email de confirmation à l'ancienne adresse
+        await sendEmail(
+            req.user.email,
+            '📧 Votre email a été modifié',
+            `<p>Bonjour ${req.user.username},</p>
+             <p>Votre adresse email a été changée pour ${new_email}.</p>
+             <p>Si vous n'êtes pas à l'origine de cette modification, contactez immédiatement le support.</p>`
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Email mis à jour avec succès' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur confirm email change:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// 4. Supprimer le compte utilisateur
+app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
+    try {
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Mot de passe requis' 
+            });
+        }
+
+        // Vérifier le mot de passe
+        const validPassword = await bcrypt.compare(password, req.user.password_hash);
+        if (!validPassword) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Mot de passe incorrect' 
+            });
+        }
+
+        // Récupérer tous les serveurs de l'utilisateur pour les supprimer de Pterodactyl
+        const { data: servers } = await supabase
+            .from('servers')
+            .select('pterodactyl_id')
+            .eq('user_id', req.user.id);
+
+        // Supprimer les serveurs de Pterodactyl
+        for (const server of servers || []) {
+            if (server.pterodactyl_id) {
+                await deletePterodactylServer(server.pterodactyl_id);
+            }
+        }
+
+        // Envoyer un email de confirmation avant suppression
+        await sendEmail(
+            req.user.email,
+            '👋 Au revoir et merci !',
+            `<p>Bonjour ${req.user.username},</p>
+             <p>Votre compte KermHosting a été supprimé conformément à votre demande.</p>
+             <p>Toutes vos données personnelles, serveurs et transactions ont été effacés définitivement.</p>
+             <p>Nous espérons vous revoir bientôt !</p>`
+        );
+
+        // Supprimer l'utilisateur (les serveurs et transactions seront supprimés en cascade)
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', req.user.id);
+
+        if (error) throw error;
+
+        res.json({ 
+            success: true, 
+            message: 'Compte supprimé avec succès' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur delete account:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// =============================================
 // ROUTES SERVEURS
 // =============================================
 
@@ -3085,7 +3378,7 @@ app.post('/api/daily-reward', authenticateToken, async (req, res) => {
         if (req.user.last_daily_login === today) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui. Revenez demain !', 
+                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui🚨. Revenez demain🙏🏽 !', 
                 code: 'DAILY_REWARD_ALREADY_CLAIMED' 
             });
         }
@@ -3135,7 +3428,7 @@ app.post('/api/daily-reward', authenticateToken, async (req, res) => {
 
         res.json({
             success: true,
-            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours)`,
+            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours🫦)`,
             coins: coinsReward,
             streak: streakCount
         });
