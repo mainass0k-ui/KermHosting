@@ -1716,11 +1716,11 @@ async function fapshiInitiatePay(data) {
 // 2. Paiement direct (push sur téléphone)
 async function fapshiDirectPay(data) {
     try {
-        if (!data?.amount) return fapshiError('Montant requis', 400);
-        if (!Number.isInteger(data.amount)) return fapshiError('Le montant doit être un entier', 400);
-        if (data.amount < 100) return fapshiError('Le montant minimum est de 100 FCFA', 400);
-        if (!data?.phone) return fapshiError('Numéro de téléphone requis', 400);
-        if (!/^6[\d]{8}$/.test(data.phone)) return fapshiError('Numéro de téléphone invalide', 400);
+        if (!data?.amount) return { success: false, message: 'Montant requis', statusCode: 400 };
+        if (!Number.isInteger(data.amount)) return { success: false, message: 'Le montant doit être un entier', statusCode: 400 };
+        if (data.amount < 100) return { success: false, message: 'Le montant minimum est de 100 FCFA', statusCode: 400 };
+        if (!data?.phone) return { success: false, message: 'Numéro de téléphone requis', statusCode: 400 };
+        if (!/^6[\d]{8}$/.test(data.phone)) return { success: false, message: 'Numéro de téléphone invalide', statusCode: 400 };
 
         const config = {
             method: 'post',
@@ -1729,26 +1729,39 @@ async function fapshiDirectPay(data) {
             data: {
                 amount: data.amount,
                 phone: data.phone,
-                medium: data.medium || 'MTN',
                 name: data.name,
                 email: data.email,
                 userId: data.userId,
                 externalId: data.externalId,
                 message: data.message || 'Paiement KermHosting'
+                // ✅ PLUS DE CHAMP MEDIUM - Fapshi détecte automatiquement
             }
         };
 
+        console.log('📡 Envoi paiement Fapshi:', { 
+            amount: data.amount, 
+            phone: data.phone,
+            externalId: data.externalId 
+        });
+
         const response = await axios(config);
+        
+        console.log('✅ Réponse Fapshi:', response.data);
+
         return {
             success: true,
             transId: response.data.transId,
             statusCode: response.status
         };
     } catch (e) {
-        console.error('❌ Erreur Fapshi directPay:', e.response?.data || e.message);
+        console.error('❌ Erreur Fapshi directPay:', {
+            status: e.response?.status,
+            data: e.response?.data,
+            message: e.message
+        });
         return {
             success: false,
-            message: e.response?.data?.message || 'Erreur lors du paiement direct',
+            message: e.response?.data?.message || e.message || 'Erreur lors du paiement direct',
             statusCode: e.response?.status || 500
         };
     }
@@ -2446,12 +2459,13 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES PAIEMENT FAPSHI CORRIGÉES
+// ROUTES DE PAIEMENT CORRIGÉES
 // =============================================
 
+// Paiement direct pour acheter des serveurs
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { plan_id, phone, medium, server_name, server_username } = req.body;
+        const { plan_id, phone, server_name, server_username } = req.body;  // ✅ PLUS DE MEDIUM
 
         if (!plan_id || !PLANS[plan_id] || plan_id === 'free') {
             return res.status(400).json({ success: false, error: 'Plan invalide', code: 'INVALID_PLAN' });
@@ -2476,8 +2490,7 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
                 status: 'pending',
                 metadata: { 
                     plan, 
-                    phone, 
-                    medium,
+                    phone,
                     server_name,
                     server_username 
                 }
@@ -2490,10 +2503,10 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
             return res.status(500).json({ success: false, error: 'Erreur création transaction' });
         }
 
+        // ✅ Appel Fapshi SANS medium
         const payment = await fapshiDirectPay({
             amount: plan.price_fcfa,
             phone: phone,
-            medium: medium,
             name: req.user.username,
             email: req.user.email,
             userId: req.user.id,
@@ -2529,9 +2542,10 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
     }
 });
 
+// Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { pack_id, phone, medium } = req.body;
+        const { pack_id, phone } = req.body;  // ✅ PLUS DE MEDIUM
 
         if (!pack_id || !COIN_PACKS[pack_id]) {
             return res.status(400).json({ success: false, error: 'Pack invalide', code: 'INVALID_PACK' });
@@ -2558,8 +2572,7 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
                 status: 'pending',
                 metadata: { 
                     pack, 
-                    phone,
-                    medium 
+                    phone
                 }
             }])
             .select()
@@ -2574,10 +2587,10 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             });
         }
 
+        // ✅ Appel Fapshi SANS medium
         const payment = await fapshiDirectPay({
             amount: pack.price_fcfa,
             phone: phone,
-            medium: medium,
             name: req.user.username,
             email: req.user.email,
             userId: req.user.id,
