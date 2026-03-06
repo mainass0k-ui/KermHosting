@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="Historique des transactions - KermHosting">
+    <meta name="description" content="Historique de vos transactions KermHosting">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <title>Transactions - KermHosting</title>
+    <title>Mes transactions - KermHosting</title>
     
     <style>
         /* ===== VARIABLES ===== */
@@ -97,7 +97,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR ===== */
+        /* ===== SIDEBAR (identique aux autres pages) ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -174,11 +174,6 @@
             border-radius: var(--radius-full);
         }
 
-        .close-sidebar:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
         .sidebar-user {
             padding: 20px;
             display: flex;
@@ -234,7 +229,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px 0;
-            -webkit-overflow-scrolling: touch;
         }
 
         .sidebar-nav ul {
@@ -344,10 +338,6 @@
             border-radius: var(--radius-full);
         }
 
-        .menu-toggle:hover {
-            background: var(--bg-hover);
-        }
-
         .top-bar-logo {
             display: flex;
             align-items: center;
@@ -381,10 +371,6 @@
             border-radius: var(--radius-full);
         }
 
-        .refresh-btn:hover {
-            background: var(--bg-hover);
-        }
-
         .user-menu {
             cursor: pointer;
         }
@@ -400,23 +386,19 @@
         /* ===== PAGE CONTENT ===== */
         .page-content {
             padding: 20px 16px;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
         /* ===== PAGE HEADER ===== */
         .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
         .page-header h1 {
             font-size: 1.75rem;
             font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
         }
 
         .gradient-text {
@@ -426,50 +408,10 @@
             color: transparent;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--primary);
-            background: var(--bg-hover);
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.8rem;
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
         }
 
         /* ===== STATS CARDS ===== */
@@ -488,85 +430,50 @@
             text-align: center;
         }
 
-        .stat-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
+        .stat-card .stat-value {
             font-size: 1.5rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
             color: var(--primary);
+            margin-bottom: 4px;
         }
 
-        .stat-label {
+        .stat-card .stat-label {
             color: var(--text-secondary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
         }
 
         /* ===== FILTERS ===== */
-        .filters-section {
-            margin-bottom: 20px;
-        }
-
-        .filter-tabs {
+        .filters {
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            margin-bottom: 20px;
             overflow-x: auto;
             padding-bottom: 8px;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
 
-        .filter-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .filter-tab {
-            padding: 8px 16px;
+        .filter-chip {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-full);
+            padding: 8px 16px;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.85rem;
             white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .filter-tab:hover {
-            border-color: var(--primary);
-            color: var(--text-primary);
-        }
-
-        .filter-tab.active {
+        .filter-chip.active {
             background: var(--primary);
             border-color: var(--primary);
             color: white;
         }
 
-        .search-bar {
-            margin-top: 16px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
+        .filter-chip i {
+            margin-right: 6px;
         }
 
         /* ===== TRANSACTIONS LIST ===== */
@@ -574,25 +481,30 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .transaction-item {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
+            padding: 16px;
             border: 1px solid var(--border-color);
-            overflow: hidden;
             transition: all 0.2s;
             cursor: pointer;
         }
 
         .transaction-item:hover {
             border-color: var(--primary);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
         }
 
+        .transaction-item.expanded {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
+        }
+
         .transaction-header {
-            padding: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -601,7 +513,7 @@
         .transaction-icon {
             width: 48px;
             height: 48px;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-full);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -609,14 +521,14 @@
             flex-shrink: 0;
         }
 
-        .transaction-icon.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
         .transaction-icon.success {
             background: rgba(16, 185, 129, 0.1);
             color: var(--success);
+        }
+
+        .transaction-icon.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
         }
 
         .transaction-icon.failed {
@@ -624,134 +536,160 @@
             color: var(--danger);
         }
 
-        .transaction-icon.expired {
-            background: rgba(107, 114, 128, 0.1);
-            color: var(--text-muted);
-        }
-
-        .transaction-info {
+        .transaction-main {
             flex: 1;
             min-width: 0;
         }
 
         .transaction-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .transaction-meta {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             flex-wrap: wrap;
-            margin-bottom: 4px;
-        }
-
-        .transaction-title h3 {
-            font-size: 1rem;
-            font-weight: 600;
         }
 
         .transaction-badge {
-            padding: 2px 8px;
+            padding: 4px 8px;
             border-radius: var(--radius-full);
             font-size: 0.7rem;
             font-weight: 600;
         }
 
-        .badge-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .badge-success {
+        .transaction-badge.success {
             background: rgba(16, 185, 129, 0.1);
             color: var(--success);
         }
 
-        .badge-failed {
+        .transaction-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .transaction-badge.failed {
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
         }
 
-        .badge-expired {
-            background: rgba(107, 114, 128, 0.1);
-            color: var(--text-muted);
-        }
-
-        .transaction-details {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .transaction-details i {
-            width: 16px;
-            color: var(--primary);
-        }
-
         .transaction-amount {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.1rem;
             text-align: right;
-            min-width: 80px;
+            white-space: nowrap;
         }
 
-        .amount-positive {
+        .transaction-amount.positive {
             color: var(--success);
         }
 
-        .amount-negative {
+        .transaction-amount.negative {
             color: var(--danger);
         }
 
-        .transaction-expand {
-            padding: 0 16px 16px;
+        /* ===== TRANSACTION DETAILS ===== */
+        .transaction-details {
+            margin-top: 16px;
+            padding-top: 16px;
             border-top: 1px solid var(--border-color);
-            margin-top: 8px;
             display: none;
         }
 
-        .transaction-item.expanded .transaction-expand {
+        .transaction-item.expanded .transaction-details {
             display: block;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .expand-content {
-            padding-top: 16px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .info-grid {
+        .detail-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: 1fr;
+            gap: 12px;
             margin-bottom: 16px;
         }
 
-        .info-item {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 12px;
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
-        .info-label {
+        .detail-label {
+            font-size: 0.75rem;
             color: var(--text-secondary);
-            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 4px;
         }
 
-        .info-value {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .detail-value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
             word-break: break-all;
+            background: var(--bg-input);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
         }
 
-        .info-value.id {
+        .detail-value.monospace {
             font-family: monospace;
-            font-size: 0.8rem;
-            color: var(--primary);
+            font-size: 0.85rem;
         }
 
-        .error-message-box {
+        .detail-value.warning {
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+        }
+
+        .detail-value.danger {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .detail-value.success {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row .label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .detail-row .value {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* ===== ERROR MESSAGE ===== */
+        .error-message {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--danger);
             border-radius: var(--radius-md);
@@ -759,43 +697,71 @@
             margin-top: 16px;
         }
 
-        .error-message-box h4 {
-            color: var(--danger);
-            margin-bottom: 8px;
+        .error-title {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--danger);
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .error-message-box p {
+        .error-text {
             color: var(--text-secondary);
             font-size: 0.9rem;
             line-height: 1.6;
+            background: var(--bg-input);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-family: monospace;
             white-space: pre-wrap;
+            word-break: break-word;
         }
 
-        .metadata-box {
-            background: var(--bg-hover);
+        /* ===== FAPSHI INFO ===== */
+        .fapshi-info {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid var(--primary);
             border-radius: var(--radius-md);
             padding: 16px;
             margin-top: 16px;
         }
 
-        .metadata-box h4 {
+        .fapshi-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             color: var(--primary);
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
 
-        .metadata-pre {
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-            word-break: break-all;
+        .fapshi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .fapshi-item {
             background: var(--bg-input);
             padding: 12px;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
+        }
+
+        .fapshi-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .fapshi-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            word-break: break-all;
+            font-family: monospace;
         }
 
         /* ===== EMPTY STATE ===== */
@@ -803,28 +769,28 @@
             text-align: center;
             padding: 60px 20px;
             background: var(--bg-card);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             border: 2px dashed var(--border-color);
         }
 
         .empty-state i {
             font-size: 4rem;
             color: var(--primary);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
 
         .empty-state h3 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 8px;
         }
 
         .empty-state p {
             color: var(--text-secondary);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        /* ===== LOADING STATE ===== */
+        /* ===== LOADING ===== */
         .loading-state {
             text-align: center;
             padding: 60px 20px;
@@ -873,10 +839,6 @@
             background: rgba(59, 130, 246, 0.95);
         }
 
-        .toast.warning {
-            background: rgba(245, 158, 11, 0.95);
-        }
-
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -901,18 +863,10 @@
 
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
-            .page-content {
-                padding: 24px;
-            }
-
             .stats-grid {
-                gap: 20px;
+                grid-template-columns: repeat(4, 1fr);
             }
-
-            .info-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
+            
             .toast {
                 left: auto;
                 right: 20px;
@@ -935,22 +889,6 @@
 
             .top-bar-logo {
                 display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .transaction-header {
-                flex-wrap: wrap;
-            }
-
-            .transaction-amount {
-                width: 100%;
-                text-align: left;
-                margin-left: 60px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1003,12 +941,6 @@
                             <span>Acheter des coins</span>
                         </a>
                     </li>
-                    <li class="active">
-                        <a href="/transactions">
-                            <i class="fas fa-history"></i>
-                            <span>Transactions</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="/profile">
                             <i class="fas fa-user"></i>
@@ -1019,6 +951,12 @@
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/transactions">
+                            <i class="fas fa-history"></i>
+                            <span>Transactions</span>
                         </a>
                     </li>
                     <li class="divider"></li>
@@ -1057,7 +995,7 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
-                    <button class="refresh-btn" id="refreshBtn" onclick="loadTransactions()" title="Actualiser">
+                    <button class="refresh-btn" id="refreshBtn" onclick="loadTransactions()">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                     <div class="user-menu" id="userMenu">
@@ -1071,55 +1009,46 @@
                 <!-- Page Header -->
                 <div class="page-header">
                     <h1>
-                        <span class="gradient-text">Historique</span> des transactions
+                        <span class="gradient-text">Mes transactions</span>
                     </h1>
-                    <div class="header-actions">
-                        <button class="btn btn-outline btn-small" onclick="loadTransactions()">
-                            <i class="fas fa-sync-alt"></i>
-                            Actualiser
-                        </button>
-                    </div>
+                    <p class="page-subtitle">
+                        Historique complet de vos paiements et achats
+                    </p>
                 </div>
 
                 <!-- Stats Cards -->
                 <div class="stats-grid" id="statsContainer">
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="stat-value" id="totalSpent">0</div>
-                        <div class="stat-label">Total dépensé</div>
+                        <div class="stat-value" id="totalTransactions">0</div>
+                        <div class="stat-label">Total</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-value" id="successCount">0</div>
+                        <div class="stat-value" id="successfulTransactions">0</div>
                         <div class="stat-label">Réussies</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="stat-value" id="failedCount">0</div>
+                        <div class="stat-value" id="pendingTransactions">0</div>
+                        <div class="stat-label">En attente</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="failedTransactions">0</div>
                         <div class="stat-label">Échouées</div>
                     </div>
                 </div>
 
                 <!-- Filters -->
-                <div class="filters-section">
-                    <div class="filter-tabs">
-                        <span class="filter-tab active" onclick="filterTransactions('all')">Toutes</span>
-                        <span class="filter-tab" onclick="filterTransactions('pending')">En attente</span>
-                        <span class="filter-tab" onclick="filterTransactions('successful')">Réussies</span>
-                        <span class="filter-tab" onclick="filterTransactions('failed')">Échouées</span>
-                        <span class="filter-tab" onclick="filterTransactions('expired')">Expirées</span>
-                        <span class="filter-tab" onclick="filterTransactions('coins')">Achats de coins</span>
-                        <span class="filter-tab" onclick="filterTransactions('server')">Achats de serveurs</span>
+                <div class="filters">
+                    <div class="filter-chip active" onclick="filterTransactions('all')" id="filterAll">
+                        <i class="fas fa-list"></i> Toutes
                     </div>
-
-                    <div class="search-bar">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher par ID, montant..." onkeyup="searchTransactions()">
+                    <div class="filter-chip" onclick="filterTransactions('successful')" id="filterSuccessful">
+                        <i class="fas fa-check-circle"></i> Réussies
+                    </div>
+                    <div class="filter-chip" onclick="filterTransactions('pending')" id="filterPending">
+                        <i class="fas fa-clock"></i> En attente
+                    </div>
+                    <div class="filter-chip" onclick="filterTransactions('failed')" id="filterFailed">
+                        <i class="fas fa-exclamation-circle"></i> Échouées
                     </div>
                 </div>
 
@@ -1132,24 +1061,6 @@
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- MODAL: Détails de la transaction -->
-    <div class="modal" id="transactionModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Détails de la transaction</h2>
-                <button class="modal-close" onclick="closeModal('transactionModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="transactionModalBody">
-                <!-- Le contenu sera injecté dynamiquement -->
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -1180,15 +1091,6 @@
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ===== MODAL FUNCTIONS =====
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
         // ===== TOAST NOTIFICATION =====
         function showToast(type, message) {
             const toast = document.createElement('div');
@@ -1206,14 +1108,54 @@
             }, 3000);
         }
 
-        // ===== VARIABLES GLOBALES =====
+        // ===== FORMATTERS =====
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatAmount(amount, currency) {
+            if (currency === 'FCFA') {
+                return amount.toLocaleString() + ' FCFA';
+            } else {
+                return amount + ' coins';
+            }
+        }
+
+        function getTransactionIcon(type, status) {
+            if (status === 'successful') {
+                return type === 'coins_purchase' ? 'fa-coins' : 'fa-server';
+            } else if (status === 'pending') {
+                return 'fa-clock';
+            } else {
+                return 'fa-exclamation-triangle';
+            }
+        }
+
+        function getTransactionTitle(transaction) {
+            if (transaction.type === 'coins_purchase') {
+                const packName = transaction.metadata?.pack?.name || 'Pack de coins';
+                return `Achat: ${packName}`;
+            } else if (transaction.type === 'server_purchase') {
+                return `Achat serveur: ${transaction.metadata?.server_name || transaction.plan_key || 'Serveur'}`;
+            } else if (transaction.type === 'server_renewal') {
+                return `Renouvellement: ${transaction.metadata?.server_name || 'Serveur'}`;
+            } else {
+                return `Transaction ${transaction.id.substring(0, 8)}...`;
+            }
+        }
+
+        // ===== LOAD USER DATA =====
         let userData = null;
         let allTransactions = [];
         let filteredTransactions = [];
-        let currentFilter = 'all';
-        let searchTerm = '';
 
-        // ===== LOAD USER DATA =====
         async function loadUserData() {
             try {
                 const res = await fetch('/api/user/me', {
@@ -1231,9 +1173,14 @@
                     document.getElementById('sidebarCoins').textContent = userData.coins;
                     document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
 
-                    allTransactions = data.transactions || [];
-                    applyFilters();
-                    updateStats();
+                    if (data.transactions) {
+                        allTransactions = data.transactions;
+                        filteredTransactions = [...allTransactions];
+                        displayTransactions();
+                        updateStats();
+                    } else {
+                        loadTransactions();
+                    }
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
@@ -1254,91 +1201,84 @@
                     </div>
                 `;
 
-                const res = await fetch('/api/user/me', {
+                // Si l'API user/me ne renvoie pas les transactions, utiliser une route dédiée
+                const res = await fetch('/api/user/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                
+                // Fallback si la route n'existe pas
+                if (res.status === 404) {
+                    // Utiliser les transactions de user/me
+                    if (userData) {
+                        // Recharger user/me
+                        const userRes = await fetch('/api/user/me', {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const userData = await userRes.json();
+                        if (userData.success && userData.transactions) {
+                            allTransactions = userData.transactions;
+                            filteredTransactions = [...allTransactions];
+                            displayTransactions();
+                            updateStats();
+                        }
+                    }
+                    return;
+                }
+
                 const data = await res.json();
 
                 if (data.success) {
                     allTransactions = data.transactions || [];
-                    applyFilters();
+                    filteredTransactions = [...allTransactions];
+                    displayTransactions();
                     updateStats();
+                } else {
+                    showToast('error', 'Erreur chargement transactions');
                 }
             } catch (error) {
                 console.error('Erreur chargement transactions:', error);
-                showToast('error', 'Erreur de chargement');
+                document.getElementById('transactionsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger vos transactions</p>
+                        <button class="btn btn-primary" onclick="loadTransactions()">Réessayer</button>
+                    </div>
+                `;
             }
         }
 
         // ===== UPDATE STATS =====
         function updateStats() {
-            let totalSpent = 0;
-            let successCount = 0;
-            let failedCount = 0;
+            const total = allTransactions.length;
+            const successful = allTransactions.filter(t => t.status === 'successful').length;
+            const pending = allTransactions.filter(t => t.status === 'pending').length;
+            const failed = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired').length;
 
-            allTransactions.forEach(t => {
-                if (t.status === 'successful') {
-                    if (t.currency === 'FCFA') {
-                        totalSpent += t.amount;
-                    }
-                    successCount++;
-                } else if (t.status === 'failed') {
-                    failedCount++;
-                }
-            });
-
-            document.getElementById('totalSpent').textContent = totalSpent + ' FCFA';
-            document.getElementById('successCount').textContent = successCount;
-            document.getElementById('failedCount').textContent = failedCount;
+            document.getElementById('totalTransactions').textContent = total;
+            document.getElementById('successfulTransactions').textContent = successful;
+            document.getElementById('pendingTransactions').textContent = pending;
+            document.getElementById('failedTransactions').textContent = failed;
         }
 
         // ===== FILTER TRANSACTIONS =====
         function filterTransactions(filter) {
-            currentFilter = filter;
-            
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active');
+            // Update active filter
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
             });
-            event.target.classList.add('active');
-            
-            applyFilters();
-        }
+            document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`).classList.add('active');
 
-        function searchTransactions() {
-            searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            applyFilters();
-        }
-
-        function applyFilters() {
-            filteredTransactions = allTransactions.filter(t => {
-                // Filtre par statut/type
-                if (currentFilter === 'pending' && t.status !== 'pending') return false;
-                if (currentFilter === 'successful' && t.status !== 'successful') return false;
-                if (currentFilter === 'failed' && t.status !== 'failed') return false;
-                if (currentFilter === 'expired' && t.status !== 'expired') return false;
-                if (currentFilter === 'coins' && t.type !== 'coins_purchase') return false;
-                if (currentFilter === 'server' && !['server_purchase', 'server_renewal'].includes(t.type)) return false;
-
-                // Recherche par terme
-                if (searchTerm) {
-                    const searchFields = [
-                        t.id,
-                        t.amount?.toString(),
-                        t.currency,
-                        t.type,
-                        t.status,
-                        t.payment_id,
-                        t.fapshi_transaction_id,
-                        t.metadata?.phone,
-                        t.metadata?.pack?.name,
-                        t.metadata?.plan?.name
-                    ].map(f => f?.toString().toLowerCase() || '');
-
-                    return searchFields.some(f => f.includes(searchTerm));
-                }
-
-                return true;
-            });
+            // Filter transactions
+            if (filter === 'all') {
+                filteredTransactions = [...allTransactions];
+            } else if (filter === 'successful') {
+                filteredTransactions = allTransactions.filter(t => t.status === 'successful');
+            } else if (filter === 'pending') {
+                filteredTransactions = allTransactions.filter(t => t.status === 'pending');
+            } else if (filter === 'failed') {
+                filteredTransactions = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired');
+            }
 
             displayTransactions();
         }
@@ -1352,11 +1292,8 @@
                     <div class="empty-state">
                         <i class="fas fa-history"></i>
                         <h3>Aucune transaction</h3>
-                        <p>Vous n'avez pas encore effectué de transaction.</p>
-                        <a href="/buy-coins" class="btn btn-primary">
-                            <i class="fas fa-coins"></i>
-                            Acheter des coins
-                        </a>
+                        <p>Vous n'avez pas encore effectué de transaction</p>
+                        <a href="/buy-coins" class="btn btn-primary">Acheter des coins</a>
                     </div>
                 `;
                 return;
@@ -1364,135 +1301,146 @@
 
             let html = '<div class="transactions-list">';
 
-            filteredTransactions.forEach(t => {
-                const date = new Date(t.created_at);
-                const completedDate = t.completed_at ? new Date(t.completed_at) : null;
+            filteredTransactions.forEach(transaction => {
+                const status = transaction.status || 'pending';
+                const statusClass = status === 'successful' ? 'success' : (status === 'pending' ? 'pending' : 'failed');
+                const icon = getTransactionIcon(transaction.type, status);
+                const title = getTransactionTitle(transaction);
+                const date = formatDate(transaction.created_at);
+                const amount = transaction.amount || 0;
+                const currency = transaction.currency || 'FCFA';
+                const formattedAmount = formatAmount(amount, currency);
+                const amountClass = transaction.type === 'coins_purchase' ? 'positive' : 'negative';
                 
-                let icon = 'fa-clock';
-                let iconClass = 'pending';
-                let badgeClass = 'badge-pending';
-                let badgeText = 'En attente';
-
-                if (t.status === 'successful') {
-                    icon = 'fa-check-circle';
-                    iconClass = 'success';
-                    badgeClass = 'badge-success';
-                    badgeText = 'Réussie';
-                } else if (t.status === 'failed') {
-                    icon = 'fa-exclamation-circle';
-                    iconClass = 'failed';
-                    badgeClass = 'badge-failed';
-                    badgeText = 'Échouée';
-                } else if (t.status === 'expired') {
-                    icon = 'fa-hourglass-end';
-                    iconClass = 'expired';
-                    badgeClass = 'badge-expired';
-                    badgeText = 'Expirée';
-                }
-
-                let typeText = '';
-                let typeIcon = '';
-
-                if (t.type === 'coins_purchase') {
-                    typeText = 'Achat de coins';
-                    typeIcon = 'fa-coins';
-                } else if (t.type === 'server_purchase') {
-                    typeText = 'Achat de serveur';
-                    typeIcon = 'fa-server';
-                } else if (t.type === 'server_renewal') {
-                    typeText = 'Renouvellement de serveur';
-                    typeIcon = 'fa-sync-alt';
-                } else if (t.type === 'admin_adjustment') {
-                    typeText = 'Ajustement admin';
-                    typeIcon = 'fa-crown';
-                }
-
-                const amountClass = t.currency === 'COINS' ? 'amount-positive' : 'amount-negative';
-                const amountPrefix = t.currency === 'COINS' ? '🪙 ' : '💰 ';
+                // Extraire les détails Fapshi
+                const fapshiId = transaction.fapshi_transaction_id || 'N/A';
+                const errorMessage = transaction.metadata?.error_message || transaction.error_message;
+                const fapshiResponse = transaction.metadata?.fapshi_response || transaction.fapshi_response;
 
                 html += `
-                    <div class="transaction-item" onclick="toggleExpand('${t.id}')" id="transaction-${t.id}">
+                    <div class="transaction-item" onclick="toggleTransaction('${transaction.id}')">
                         <div class="transaction-header">
-                            <div class="transaction-icon ${iconClass}">
+                            <div class="transaction-icon ${statusClass}">
                                 <i class="fas ${icon}"></i>
                             </div>
-                            <div class="transaction-info">
-                                <div class="transaction-title">
-                                    <h3>${typeText}</h3>
-                                    <span class="transaction-badge ${badgeClass}">${badgeText}</span>
-                                </div>
-                                <div class="transaction-details">
-                                    <span><i class="fas fa-calendar"></i> ${date.toLocaleDateString('fr-FR')}</span>
-                                    <span><i class="fas fa-clock"></i> ${date.toLocaleTimeString('fr-FR')}</span>
-                                    ${t.payment_id ? `<span><i class="fas fa-hashtag"></i> ${t.payment_id.substring(0, 8)}...</span>` : ''}
+                            <div class="transaction-main">
+                                <div class="transaction-title">${title}</div>
+                                <div class="transaction-meta">
+                                    <span>${date}</span>
+                                    <span class="transaction-badge ${statusClass}">${status}</span>
                                 </div>
                             </div>
                             <div class="transaction-amount ${amountClass}">
-                                ${amountPrefix}${t.amount} ${t.currency}
+                                ${formattedAmount}
                             </div>
                         </div>
-                        <div class="transaction-expand" id="expand-${t.id}">
-                            <div class="expand-content">
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <div class="info-label">ID Transaction</div>
-                                        <div class="info-value id">${t.id}</div>
-                                    </div>
-                                    ${t.payment_id ? `
-                                    <div class="info-item">
-                                        <div class="info-label">ID Paiement</div>
-                                        <div class="info-value id">${t.payment_id}</div>
-                                    </div>
-                                    ` : ''}
-                                    ${t.fapshi_transaction_id ? `
-                                    <div class="info-item">
-                                        <div class="info-label">ID Fapshi</div>
-                                        <div class="info-value id">${t.fapshi_transaction_id}</div>
-                                    </div>
-                                    ` : ''}
-                                    <div class="info-item">
-                                        <div class="info-label">Montant</div>
-                                        <div class="info-value">${t.amount} ${t.currency}</div>
-                                    </div>
-                                    ${t.coins_amount ? `
-                                    <div class="info-item">
-                                        <div class="info-label">Coins</div>
-                                        <div class="info-value">${t.coins_amount} coins</div>
-                                    </div>
-                                    ` : ''}
-                                    <div class="info-item">
-                                        <div class="info-label">Date</div>
-                                        <div class="info-value">${date.toLocaleString('fr-FR')}</div>
-                                    </div>
-                                    ${completedDate ? `
-                                    <div class="info-item">
-                                        <div class="info-label">Complétée le</div>
-                                        <div class="info-value">${completedDate.toLocaleString('fr-FR')}</div>
-                                    </div>
-                                    ` : ''}
+                        
+                        <div class="transaction-details" id="details-${transaction.id}">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">ID Transaction</span>
+                                    <span class="detail-value monospace">${transaction.id}</span>
                                 </div>
-
-                                ${t.metadata ? `
-                                <div class="metadata-box">
-                                    <h4><i class="fas fa-info-circle"></i> Détails supplémentaires</h4>
-                                    <pre class="metadata-pre">${JSON.stringify(t.metadata, null, 2)}</pre>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label">Type</span>
+                                    <span class="detail-value">
+                                        ${transaction.type === 'coins_purchase' ? 'Achat de coins' : 
+                                          transaction.type === 'server_purchase' ? 'Achat de serveur' : 
+                                          transaction.type === 'server_renewal' ? 'Renouvellement' : 'Transaction'}
+                                    </span>
                                 </div>
-                                ` : ''}
-
-                                ${t.status === 'failed' && t.metadata?.error ? `
-                                <div class="error-message-box">
-                                    <h4><i class="fas fa-exclamation-triangle"></i> Raison de l'échec</h4>
-                                    <p>${t.metadata.error}</p>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label">Date</span>
+                                    <span class="detail-value">${date}</span>
                                 </div>
-                                ` : ''}
-
-                                ${t.status === 'failed' && t.fapshi_response ? `
-                                <div class="error-message-box">
-                                    <h4><i class="fas fa-exclamation-triangle"></i> Réponse Fapshi</h4>
-                                    <pre class="metadata-pre">${JSON.stringify(t.fapshi_response, null, 2)}</pre>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label">Montant</span>
+                                    <span class="detail-value ${amountClass}">${formattedAmount}</span>
                                 </div>
-                                ` : ''}
                             </div>
+
+                            <!-- Fapshi Info -->
+                            <div class="fapshi-info">
+                                <div class="fapshi-title">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Informations Fapshi</span>
+                                </div>
+                                <div class="fapshi-grid">
+                                    <div class="fapshi-item">
+                                        <div class="fapshi-label">Transaction ID</div>
+                                        <div class="fapshi-value">${fapshiId}</div>
+                                    </div>
+                                    <div class="fapshi-item">
+                                        <div class="fapshi-label">Statut</div>
+                                        <div class="fapshi-value ${statusClass}">${status}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${transaction.metadata?.phone ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Téléphone</span>
+                                    <span class="detail-value">${transaction.metadata.phone}</span>
+                                </div>
+                            ` : ''}
+
+                            ${transaction.metadata?.medium || transaction.metadata?.original_medium ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Opérateur</span>
+                                    <span class="detail-value">${transaction.metadata.original_medium || transaction.metadata.medium || 'N/A'}</span>
+                                </div>
+                            ` : ''}
+
+                            ${transaction.metadata?.server_name ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Serveur</span>
+                                    <span class="detail-value">${transaction.metadata.server_name}</span>
+                                </div>
+                            ` : ''}
+
+                            ${transaction.metadata?.pack?.name ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Pack</span>
+                                    <span class="detail-value">${transaction.metadata.pack.name}</span>
+                                </div>
+                            ` : ''}
+
+                            ${transaction.plan_key ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Plan</span>
+                                    <span class="detail-value">${transaction.plan_key}</span>
+                                </div>
+                            ` : ''}
+
+                            ${transaction.completed_at ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Complété le</span>
+                                    <span class="detail-value">${formatDate(transaction.completed_at)}</span>
+                                </div>
+                            ` : ''}
+
+                            ${errorMessage ? `
+                                <div class="error-message">
+                                    <div class="error-title">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>Erreur de paiement</span>
+                                    </div>
+                                    <div class="error-text">${errorMessage}</div>
+                                </div>
+                            ` : ''}
+
+                            ${fapshiResponse ? `
+                                <div class="error-message">
+                                    <div class="error-title">
+                                        <i class="fas fa-robot"></i>
+                                        <span>Réponse Fapshi</span>
+                                    </div>
+                                    <div class="error-text">${JSON.stringify(fapshiResponse, null, 2)}</div>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -1502,92 +1450,11 @@
             container.innerHTML = html;
         }
 
-        // ===== TOGGLE EXPAND =====
-        function toggleExpand(transactionId) {
-            const item = document.getElementById(`transaction-${transactionId}`);
+        // ===== TOGGLE TRANSACTION DETAILS =====
+        function toggleTransaction(transactionId) {
+            const details = document.getElementById(`details-${transactionId}`);
+            const item = details.closest('.transaction-item');
             item.classList.toggle('expanded');
-        }
-
-        // ===== VIEW TRANSACTION DETAILS =====
-        function viewTransactionDetails(transaction) {
-            const modalBody = document.getElementById('transactionModalBody');
-            
-            let html = `
-                <div class="info-grid" style="grid-template-columns: 1fr;">
-                    <div class="info-item">
-                        <div class="info-label">ID Transaction</div>
-                        <div class="info-value id">${transaction.id}</div>
-                    </div>
-            `;
-
-            if (transaction.payment_id) {
-                html += `
-                    <div class="info-item">
-                        <div class="info-label">ID Paiement</div>
-                        <div class="info-value id">${transaction.payment_id}</div>
-                    </div>
-                `;
-            }
-
-            if (transaction.fapshi_transaction_id) {
-                html += `
-                    <div class="info-item">
-                        <div class="info-label">ID Fapshi</div>
-                        <div class="info-value id">${transaction.fapshi_transaction_id}</div>
-                    </div>
-                `;
-            }
-
-            html += `
-                    <div class="info-item">
-                        <div class="info-label">Type</div>
-                        <div class="info-value">${transaction.type}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Montant</div>
-                        <div class="info-value">${transaction.amount} ${transaction.currency}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Statut</div>
-                        <div class="info-value" style="color: ${transaction.status === 'successful' ? '#10B981' : transaction.status === 'failed' ? '#EF4444' : '#F59E0B'}">${transaction.status}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Créée le</div>
-                        <div class="info-value">${new Date(transaction.created_at).toLocaleString('fr-FR')}</div>
-                    </div>
-            `;
-
-            if (transaction.completed_at) {
-                html += `
-                    <div class="info-item">
-                        <div class="info-label">Complétée le</div>
-                        <div class="info-value">${new Date(transaction.completed_at).toLocaleString('fr-FR')}</div>
-                    </div>
-                `;
-            }
-
-            if (transaction.metadata) {
-                html += `
-                    <div class="metadata-box">
-                        <h4>Métadonnées</h4>
-                        <pre class="metadata-pre">${JSON.stringify(transaction.metadata, null, 2)}</pre>
-                    </div>
-                `;
-            }
-
-            if (transaction.status === 'failed' && transaction.metadata?.error) {
-                html += `
-                    <div class="error-message-box">
-                        <h4>Erreur</h4>
-                        <p>${transaction.metadata.error}</p>
-                    </div>
-                `;
-            }
-
-            html += '</div>';
-            
-            modalBody.innerHTML = html;
-            openModal('transactionModal');
         }
 
         // ===== LOGOUT =====
@@ -1600,20 +1467,17 @@
         // ===== INIT =====
         loadUserData();
 
+        // Exposer les fonctions globalement
+        window.filterTransactions = filterTransactions;
+        window.toggleTransaction = toggleTransaction;
+        window.loadTransactions = loadTransactions;
+
         // Responsive
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) {
                 closeSidebarFunc();
             }
         });
-
-        // Exposer les fonctions globalement
-        window.filterTransactions = filterTransactions;
-        window.searchTransactions = searchTransactions;
-        window.toggleExpand = toggleExpand;
-        window.viewTransactionDetails = viewTransactionDetails;
-        window.closeModal = closeModal;
-        window.loadTransactions = loadTransactions;
     </script>
 </body>
 </html>
