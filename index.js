@@ -1675,12 +1675,80 @@ function fapshiError(message, statusCode) {
     return { message, statusCode };
 }
 
-// 1. Initier un paiement (redirection)
+// 1. Paiement direct (push sur téléphone) - ACTIVÉ MAINTENANT !
+async function fapshiDirectPay(data) {
+    try {
+        console.log('📤 Envoi paiement Direct Pay à Fapshi:', { 
+            amount: data.amount, 
+            phone: data.phone,
+            externalId: data.externalId 
+        });
+
+        if (!data?.amount) return { success: false, message: 'Montant requis', statusCode: 400 };
+        if (!Number.isInteger(data.amount)) return { success: false, message: 'Le montant doit être un entier', statusCode: 400 };
+        if (data.amount < 100) return { success: false, message: 'Le montant minimum est de 100 FCFA', statusCode: 400 };
+        if (!data?.phone) return { success: false, message: 'Numéro de téléphone requis', statusCode: 400 };
+        if (!/^6[\d]{8}$/.test(data.phone)) return { success: false, message: 'Numéro de téléphone invalide (doit commencer par 6 et avoir 9 chiffres)', statusCode: 400 };
+
+        const config = {
+            method: 'post',
+            url: `${FAPSHI_CONFIG.baseUrl}/direct-pay`,
+            headers: fapshiHeaders,
+            data: {
+                amount: data.amount,
+                phone: data.phone,
+                name: data.name || 'Client KermHosting',
+                email: data.email,
+                userId: data.userId,
+                externalId: data.externalId,
+                message: data.message || 'Paiement KermHosting'
+            }
+        };
+
+        const response = await axios(config);
+        
+        console.log('✅ Réponse Fapshi Direct Pay:', response.data);
+
+        return {
+            success: true,
+            transId: response.data.transId,
+            statusCode: response.status
+        };
+    } catch (e) {
+        console.error('❌ Erreur Fapshi directPay:', {
+            status: e.response?.status,
+            data: e.response?.data,
+            message: e.message
+        });
+        
+        // Message d'erreur plus explicite
+        let errorMessage = 'Erreur lors du paiement direct';
+        if (e.response?.data?.message) {
+            errorMessage = e.response.data.message;
+        } else if (e.message) {
+            errorMessage = e.message;
+        }
+        
+        return {
+            success: false,
+            message: errorMessage,
+            statusCode: e.response?.status || 500
+        };
+    }
+}
+
+// 2. Initier un paiement (redirection) - Gardé pour compatibilité
 async function fapshiInitiatePay(data) {
     try {
-        if (!data?.amount) return fapshiError('Montant requis', 400);
-        if (!Number.isInteger(data.amount)) return fapshiError('Le montant doit être un entier', 400);
-        if (data.amount < 100) return fapshiError('Le montant minimum est de 100 FCFA', 400);
+        console.log('📤 Envoi paiement Initiate Pay à Fapshi:', { 
+            amount: data.amount, 
+            email: data.email,
+            externalId: data.externalId 
+        });
+
+        if (!data?.amount) return { success: false, message: 'Montant requis', statusCode: 400 };
+        if (!Number.isInteger(data.amount)) return { success: false, message: 'Le montant doit être un entier', statusCode: 400 };
+        if (data.amount < 100) return { success: false, message: 'Le montant minimum est de 100 FCFA', statusCode: 400 };
 
         const config = {
             method: 'post',
@@ -1697,6 +1765,9 @@ async function fapshiInitiatePay(data) {
         };
 
         const response = await axios(config);
+        
+        console.log('✅ Réponse Fapshi Initiate Pay:', response.data);
+
         return {
             success: true,
             transId: response.data.transId,
@@ -1713,64 +1784,10 @@ async function fapshiInitiatePay(data) {
     }
 }
 
-// 2. Paiement direct (push sur téléphone)
-async function fapshiDirectPay(data) {
-    try {
-        if (!data?.amount) return { success: false, message: 'Montant requis', statusCode: 400 };
-        if (!Number.isInteger(data.amount)) return { success: false, message: 'Le montant doit être un entier', statusCode: 400 };
-        if (data.amount < 100) return { success: false, message: 'Le montant minimum est de 100 FCFA', statusCode: 400 };
-        if (!data?.phone) return { success: false, message: 'Numéro de téléphone requis', statusCode: 400 };
-        if (!/^6[\d]{8}$/.test(data.phone)) return { success: false, message: 'Numéro de téléphone invalide', statusCode: 400 };
-
-        const config = {
-            method: 'post',
-            url: `${FAPSHI_CONFIG.baseUrl}/direct-pay`,
-            headers: fapshiHeaders,
-            data: {
-                amount: data.amount,
-                phone: data.phone,
-                name: data.name,
-                email: data.email,
-                userId: data.userId,
-                externalId: data.externalId,
-                message: data.message || 'Paiement KermHosting'
-                // ✅ PLUS DE CHAMP MEDIUM - Fapshi détecte automatiquement
-            }
-        };
-
-        console.log('📡 Envoi paiement Fapshi:', { 
-            amount: data.amount, 
-            phone: data.phone,
-            externalId: data.externalId 
-        });
-
-        const response = await axios(config);
-        
-        console.log('✅ Réponse Fapshi:', response.data);
-
-        return {
-            success: true,
-            transId: response.data.transId,
-            statusCode: response.status
-        };
-    } catch (e) {
-        console.error('❌ Erreur Fapshi directPay:', {
-            status: e.response?.status,
-            data: e.response?.data,
-            message: e.message
-        });
-        return {
-            success: false,
-            message: e.response?.data?.message || e.message || 'Erreur lors du paiement direct',
-            statusCode: e.response?.status || 500
-        };
-    }
-}
-
 // 3. Vérifier le statut d'une transaction
 async function fapshiPaymentStatus(transId) {
     try {
-        if (!transId || typeof transId !== 'string') return fapshiError('ID de transaction invalide', 400);
+        if (!transId || typeof transId !== 'string') return { success: false, message: 'ID de transaction invalide', statusCode: 400 };
 
         const config = {
             method: 'get',
@@ -1780,7 +1797,6 @@ async function fapshiPaymentStatus(transId) {
 
         const response = await axios(config);
         
-        // La réponse peut être un objet ou un tableau
         const data = response.data;
         
         return {
@@ -1829,34 +1845,6 @@ async function fapshiBalance() {
         return {
             success: false,
             message: e.response?.data?.message || 'Erreur lors de la vérification du solde',
-            statusCode: e.response?.status || 500
-        };
-    }
-}
-
-// 5. Expirer une transaction
-async function fapshiExpirePay(transId) {
-    try {
-        if (!transId || typeof transId !== 'string') return fapshiError('ID de transaction invalide', 400);
-
-        const config = {
-            method: 'post',
-            url: `${FAPSHI_CONFIG.baseUrl}/expire-pay`,
-            headers: fapshiHeaders,
-            data: { transId }
-        };
-
-        const response = await axios(config);
-        return {
-            success: true,
-            message: response.data.message || 'Transaction expirée avec succès',
-            statusCode: response.status
-        };
-    } catch (e) {
-        console.error('❌ Erreur Fapshi expirePay:', e.response?.data || e.message);
-        return {
-            success: false,
-            message: e.response?.data?.message || 'Erreur lors de l\'expiration',
             statusCode: e.response?.status || 500
         };
     }
@@ -2465,8 +2453,9 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 // Paiement direct pour acheter des serveurs
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { plan_id, phone, server_name, server_username } = req.body;  // ✅ PLUS DE MEDIUM
+        const { plan_id, phone, server_name, server_username } = req.body;
 
+        // Validations
         if (!plan_id || !PLANS[plan_id] || plan_id === 'free') {
             return res.status(400).json({ success: false, error: 'Plan invalide', code: 'INVALID_PLAN' });
         }
@@ -2475,9 +2464,22 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
             return res.status(400).json({ success: false, error: 'Numéro de téléphone requis', code: 'PHONE_REQUIRED' });
         }
 
+        // Validation du numéro de téléphone
+        if (!/^6[\d]{8}$/.test(phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Numéro de téléphone invalide. Utilisez un numéro à 9 chiffres commençant par 6 (ex: 691234567).', 
+                code: 'INVALID_PHONE' 
+            });
+        }
+
         const plan = PLANS[plan_id];
         const transactionId = crypto.randomUUID();
 
+        // Vérifier que l'utilisateur a assez de fonds si paiement par coins
+        // (à adapter selon ta logique)
+
+        // Créer la transaction en base
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -2500,10 +2502,14 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
 
         if (error) {
             console.error('❌ Erreur insertion transaction:', error);
-            return res.status(500).json({ success: false, error: 'Erreur création transaction' });
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur création transaction',
+                code: 'TRANSACTION_CREATION_ERROR' 
+            });
         }
 
-        // ✅ Appel Fapshi SANS medium
+        // Initier le paiement direct Fapshi (MAINTENANT ACTIVÉ !)
         const payment = await fapshiDirectPay({
             amount: plan.price_fcfa,
             phone: phone,
@@ -2515,13 +2521,26 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
         });
 
         if (!payment.success) {
+            // Mettre à jour la transaction en échec
+            await supabase
+                .from('transactions')
+                .update({ 
+                    status: 'failed',
+                    metadata: { 
+                        ...transaction.metadata, 
+                        error: payment.message 
+                    }
+                })
+                .eq('id', transactionId);
+
             return res.status(400).json({
                 success: false,
-                error: payment.message || 'Erreur lors du paiement',
+                error: payment.message || 'Erreur lors du paiement. Veuillez vérifier votre solde Mobile Money et réessayer.',
                 code: 'FAPSHI_ERROR'
             });
         }
 
+        // Mettre à jour la transaction avec l'ID Fapshi
         await supabase
             .from('transactions')
             .update({
@@ -2531,21 +2550,25 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
 
         res.json({
             success: true,
-            message: 'Demande de paiement envoyée. Confirmez sur votre téléphone.',
+            message: 'Demande de paiement envoyée. Veuillez confirmer la transaction sur votre téléphone Mobile Money.',
             transaction_id: transactionId,
             transId: payment.transId
         });
 
     } catch (error) {
         console.error('❌ Erreur paiement direct:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur', code: 'PAYMENT_ERROR' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur. Veuillez réessayer.', 
+            code: 'PAYMENT_ERROR' 
+        });
     }
 });
 
 // Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { pack_id, phone } = req.body;  // ✅ PLUS DE MEDIUM
+        const { pack_id, phone } = req.body;
 
         if (!pack_id || !COIN_PACKS[pack_id]) {
             return res.status(400).json({ success: false, error: 'Pack invalide', code: 'INVALID_PACK' });
@@ -2553,6 +2576,15 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 
         if (!phone) {
             return res.status(400).json({ success: false, error: 'Numéro de téléphone requis', code: 'PHONE_REQUIRED' });
+        }
+
+        // Validation du numéro de téléphone
+        if (!/^6[\d]{8}$/.test(phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Numéro de téléphone invalide. Utilisez un numéro à 9 chiffres commençant par 6.', 
+                code: 'INVALID_PHONE' 
+            });
         }
 
         const pack = COIN_PACKS[pack_id];
@@ -2583,11 +2615,11 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             return res.status(500).json({ 
                 success: false, 
                 error: 'Erreur création transaction',
-                details: error.message 
+                code: 'TRANSACTION_CREATION_ERROR' 
             });
         }
 
-        // ✅ Appel Fapshi SANS medium
+        // Initier le paiement direct Fapshi
         const payment = await fapshiDirectPay({
             amount: pack.price_fcfa,
             phone: phone,
@@ -2595,10 +2627,22 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             email: req.user.email,
             userId: req.user.id,
             externalId: transactionId,
-            message: `Achat ${totalCoins} coins`
+            message: `Achat ${totalCoins} coins - ${req.user.username}`
         });
 
         if (!payment.success) {
+            // Mettre à jour la transaction en échec
+            await supabase
+                .from('transactions')
+                .update({ 
+                    status: 'failed',
+                    metadata: { 
+                        ...transaction.metadata, 
+                        error: payment.message 
+                    }
+                })
+                .eq('id', transactionId);
+
             return res.status(400).json({
                 success: false,
                 error: payment.message || 'Erreur lors du paiement',
@@ -2634,21 +2678,80 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 app.get('/api/payment/status/:transId', async (req, res) => {
     try {
         const { transId } = req.params;
+        
+        if (!transId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'ID de transaction requis' 
+            });
+        }
+
+        console.log(`🔍 Vérification statut transaction: ${transId}`);
+        
         const status = await fapshiPaymentStatus(transId);
 
         if (!status.success) {
-            return res.status(400).json({ success: false, error: status.message });
+            return res.status(400).json({ 
+                success: false, 
+                error: status.message 
+            });
+        }
+
+        // Récupérer la transaction dans notre base
+        const { data: transaction } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('fapshi_transaction_id', transId)
+            .single();
+
+        // Si le statut a changé, mettre à jour notre base
+        if (transaction && transaction.status !== status.status.toLowerCase()) {
+            await supabase
+                .from('transactions')
+                .update({
+                    status: status.status.toLowerCase(),
+                    completed_at: status.status === 'SUCCESSFUL' ? new Date().toISOString() : null
+                })
+                .eq('id', transaction.id);
+                
+            console.log(`✅ Transaction ${transId} mise à jour: ${status.status}`);
+        }
+
+        // Message personnalisé selon le statut
+        let userMessage = '';
+        let action = 'none';
+
+        switch (status.status) {
+            case 'SUCCESSFUL':
+                userMessage = '✅ Paiement confirmé avec succès !';
+                action = 'create_server';
+                break;
+            case 'FAILED':
+                userMessage = '❌ Le paiement a échoué. Vérifiez que vous avez suffisamment de fonds sur votre compte Mobile Money et que vous avez confirmé la transaction.';
+                action = 'retry';
+                break;
+            case 'PENDING':
+                userMessage = '⏳ Paiement en attente de confirmation. Veuillez vérifier votre téléphone et confirmer la transaction.';
+                action = 'wait';
+                break;
+            default:
+                userMessage = `Statut: ${status.status}`;
         }
 
         res.json({
             success: true,
             status: status.status,
+            message: userMessage,
+            action: action,
             data: status
         });
 
     } catch (error) {
         console.error('❌ Erreur vérification statut:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
     }
 });
 
