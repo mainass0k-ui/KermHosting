@@ -2756,26 +2756,37 @@ app.get('/api/payment/status/:transId', async (req, res) => {
 });
 
 // =============================================
-// WEBHOOK FAPSHI CORRIGÉ - Avec mise à jour des coins
+// WEBHOOK FAPSHI ULTRA-DÉTAILLÉ
 // =============================================
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
         const { transId } = req.body;
-        console.log('📥 Webhook reçu - transId:', transId);
+        
+        // Log SUPER détaillé
+        console.log('\n========== WEBHOOK FAPSHI REÇU ==========');
+        console.log('📥 Timestamp:', new Date().toISOString());
+        console.log('📥 transId:', transId);
+        console.log('📥 Headers:', req.headers);
+        console.log('📥 Body complet:', JSON.stringify(req.body, null, 2));
+        console.log('==========================================\n');
 
         if (!transId) {
+            console.log('❌ transId manquant');
             return res.status(400).json({ message: 'transId requis' });
         }
 
-        // Vérifier le statut auprès de Fapshi
+        // 1. Vérifier le statut Fapshi
+        console.log('🔍 Vérification statut Fapshi...');
         const event = await fapshiPaymentStatus(transId);
-        console.log('📊 Statut Fapshi:', event);
+        console.log('📊 Réponse Fapshi:', JSON.stringify(event, null, 2));
 
         if (event.statusCode !== 200) {
+            console.log('❌ Erreur Fapshi:', event.message);
             return res.status(400).json({ message: event.message });
         }
 
-        // Récupérer la transaction dans notre base
+        // 2. Chercher la transaction
+        console.log('🔍 Recherche dans Supabase...');
         const { data: transaction, error } = await supabase
             .from('transactions')
             .select('*')
@@ -2783,11 +2794,31 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
             .single();
 
         if (error || !transaction) {
-            console.log('❌ Transaction non trouvée:', transId);
-            return res.status(404).json({ message: 'Transaction non trouvée' });
+            console.log('❌ Transaction non trouvée dans Supabase');
+            console.log('Erreur:', error);
+            
+            // Chercher par l'ID externe aussi
+            const { data: txByExternal } = await supabase
+                .from('transactions')
+                .select('*')
+                .eq('id', transId)
+                .maybeSingle();
+            
+            if (txByExternal) {
+                console.log('✅ Trouvée par ID externe:', txByExternal);
+                // Mettre à jour avec le fapshi_id
+                await supabase
+                    .from('transactions')
+                    .update({ fapshi_transaction_id: transId })
+                    .eq('id', txByExternal.id);
+                
+                transaction = txByExternal;
+            } else {
+                return res.status(404).json({ message: 'Transaction non trouvée' });
+            }
         }
 
-        console.log('📦 Transaction trouvée:', transaction);
+        console.log('✅ Transaction trouvée:', JSON.stringify(transaction, null, 2));
 
         // Éviter les doublons
         if (transaction.status === event.status.toLowerCase()) {
@@ -2795,77 +2826,106 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
             return res.json({ received: true });
         }
 
-        // Mettre à jour le statut de la transaction
+        // 3. Mettre à jour le statut
+        console.log('📝 Mise à jour du statut...');
         await supabase
             .from('transactions')
             .update({
                 status: event.status.toLowerCase(),
-                completed_at: event.status === 'SUCCESSFUL' ? new Date().toISOString() : null
+                completed_at: event.status === 'SUCCESSFUL' ? new Date().toISOString() : null,
+                fapshi_response: event
             })
             .eq('id', transaction.id);
 
-        // Si le paiement est réussi, CRÉDITER LES COINS
+        // 4. Si paiement réussi, CRÉDITER
         if (event.status === 'SUCCESSFUL') {
-            console.log('💰 Paiement réussi pour transaction:', transaction.id);
-
+            console.log('💰 PAIEMENT RÉUSSI !!!');
+            
             if (transaction.type === 'coins_purchase') {
-                // 🔥 IMPORTANT: Récupérer l'utilisateur et ajouter les coins
+                console.log('🎯 Type: achat de coins');
+                
+                // Récupérer l'utilisateur
                 const { data: user, error: userError } = await supabase
                     .from('profiles')
-                    .select('coins, email, username')
+                    .select('*')
                     .eq('id', transaction.user_id)
                     .single();
 
                 if (userError || !user) {
                     console.error('❌ Utilisateur non trouvé:', transaction.user_id);
+                    console.error(userError);
                 } else {
-                    const coinsToAdd = transaction.coins_amount || 0;
-                    const newBalance = (user.coins || 0) + coinsToAdd;
+                    console.log('👤 Utilisateur trouvé:', user.username, 'coins actuels:', user.coins);
+                    
+                    // Calculer les coins
+                    let coinsToAdd = transaction.coins_amount || 0;
+                    
+                    // Si pas de coins_amount, regarder dans metadata
+                    if (coinsToAdd === 0 && transaction.metadata?.pack) {
+                        const pack = transaction.metadata.pack;
+                        coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+                        console.log('📦 Coins calculés depuis metadata:', coinsToAdd);
+                    }
 
-                    console.log(`🎯 Ajout de ${coinsToAdd} coins à ${user.username} (${user.coins} → ${newBalance})`);
+                    // Dernier recours : chercher dans COIN_PACKS
+                    if (coinsToAdd === 0 && transaction.pack_id && COIN_PACKS[transaction.pack_id]) {
+                        const pack = COIN_PACKS[transaction.pack_id];
+                        coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+                        console.log('📦 Coins calculés depuis COIN_PACKS:', coinsToAdd);
+                    }
 
-                    // Mettre à jour le solde de l'utilisateur
-                    const { error: updateError } = await supabase
-                        .from('profiles')
-                        .update({ coins: newBalance })
-                        .eq('id', transaction.user_id);
+                    console.log('💰 Coins à ajouter:', coinsToAdd);
 
-                    if (updateError) {
-                        console.error('❌ Erreur mise à jour coins:', updateError);
+                    if (coinsToAdd > 0) {
+                        const newBalance = (user.coins || 0) + coinsToAdd;
+                        
+                        // CRÉDITER !!!
+                        const { error: updateError } = await supabase
+                            .from('profiles')
+                            .update({ coins: newBalance })
+                            .eq('id', user.id);
+
+                        if (updateError) {
+                            console.error('❌ ERREUR CRÉDIT:', updateError);
+                        } else {
+                            console.log(`✅ ${coinsToAdd} COINS CRÉDITÉS À ${user.username}`);
+                            console.log(`   Ancien solde: ${user.coins}`);
+                            console.log(`   Nouveau solde: ${newBalance}`);
+
+                            // Journaliser
+                            await supabase
+                                .from('user_activities')
+                                .insert([{
+                                    user_id: user.id,
+                                    activity_type: 'coins_purchase',
+                                    coins_earned: coinsToAdd,
+                                    description: `Achat de ${coinsToAdd} coins (transaction ${transaction.id})`,
+                                    metadata: { fapshi_id: transId }
+                                }]);
+
+                            // Email
+                            const pack = transaction.metadata?.pack || { name: 'Pack de coins' };
+                            await sendEmail(
+                                user.email,
+                                '💰 Achat de coins confirmé !',
+                                getCoinsPurchaseHtml(user.username, pack, coinsToAdd)
+                            );
+                        }
                     } else {
-                        console.log('✅ Coins crédités avec succès');
-
-                        // Journaliser l'activité
-                        await supabase
-                            .from('user_activities')
-                            .insert([{
-                                user_id: transaction.user_id,
-                                activity_type: 'coins_purchase',
-                                coins_earned: coinsToAdd,
-                                description: `Achat de ${coinsToAdd} coins (transaction ${transaction.id})`
-                            }]);
-
-                        // Envoyer un email de confirmation
-                        const pack = transaction.metadata?.pack || COIN_PACKS[transaction.pack_id] || { name: 'Pack de coins' };
-                        await sendEmail(
-                            user.email,
-                            '💰 Achat de coins confirmé !',
-                            getCoinsPurchaseHtml(user.username, pack, coinsToAdd)
-                        );
+                        console.error('❌ Aucun coin à créditer !');
+                        console.log('Transaction complète:', JSON.stringify(transaction, null, 2));
                     }
                 }
-            } else if (transaction.type === 'server_purchase') {
-                console.log('🎯 Paiement serveur réussi, en attente de création');
-                // Le serveur sera créé quand l'utilisateur viendra sur la page de création
-                // Les infos sont dans transaction.metadata (server_name, server_username, etc.)
             }
         }
 
+        console.log('✅ Webhook traité avec succès');
         res.json({ received: true });
 
     } catch (error) {
         console.error('❌ Erreur webhook:', error);
-        res.status(500).json({ message: 'Erreur serveur' });
+        console.error(error.stack);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
     }
 });
 
