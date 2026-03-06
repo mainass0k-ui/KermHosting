@@ -2756,54 +2756,24 @@ app.get('/api/payment/status/:transId', async (req, res) => {
 });
 
 // =============================================
-// WEBHOOK FAPSHI CORRIGÉ (gère le tableau de transactions)
+// WEBHOOK FAPSHI CORRIGÉ - Avec mise à jour des coins
 // =============================================
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
-        // Le webhook peut envoyer un objet ou un tableau
-        const webhookData = req.body;
-        
-        console.log('📥 Webhook Fapshi reçu:', JSON.stringify(webhookData, null, 2));
-
-        // Si c'est un tableau, traiter chaque transaction
-        if (Array.isArray(webhookData)) {
-            console.log(`📦 Traitement de ${webhookData.length} transaction(s)`);
-            
-            for (const event of webhookData) {
-                await processFapshiTransaction(event);
-            }
-            
-            return res.json({ received: true, count: webhookData.length });
-        }
-        
-        // Si c'est un objet unique
-        else if (webhookData && webhookData.transId) {
-            await processFapshiTransaction(webhookData);
-            return res.json({ received: true });
-        }
-        
-        else {
-            console.warn('⚠️ Format de webhook inattendu:', webhookData);
-            return res.status(400).json({ message: 'Format de webhook invalide' });
-        }
-        
-    } catch (error) {
-        console.error('❌ Erreur webhook Fapshi:', error);
-        res.status(500).json({ message: 'Erreur serveur' });
-    }
-});
-
-// Fonction de traitement d'une transaction
-async function processFapshiTransaction(event) {
-    try {
-        const { transId, status, amount, externalId, userId, email } = event;
+        const { transId } = req.body;
+        console.log('📥 Webhook reçu - transId:', transId);
 
         if (!transId) {
-            console.warn('⚠️ Transaction sans transId reçue');
-            return;
+            return res.status(400).json({ message: 'transId requis' });
         }
 
-        console.log(`🔄 Traitement transaction ${transId} - Statut: ${status}`);
+        // Vérifier le statut auprès de Fapshi
+        const event = await fapshiPaymentStatus(transId);
+        console.log('📊 Statut Fapshi:', event);
+
+        if (event.statusCode !== 200) {
+            return res.status(400).json({ message: event.message });
+        }
 
         // Récupérer la transaction dans notre base
         const { data: transaction, error } = await supabase
@@ -2813,131 +2783,91 @@ async function processFapshiTransaction(event) {
             .single();
 
         if (error || !transaction) {
-            console.log(`⚠️ Transaction ${transId} non trouvée en base, création...`);
-            
-            // Si la transaction n'existe pas mais que le webhook nous informe,
-            // on peut la créer si c'est un succès
-            if (status === 'SUCCESSFUL' && externalId) {
-                await supabase
-                    .from('transactions')
-                    .insert([{
-                        id: externalId || crypto.randomUUID(),
-                        user_id: userId,
-                        type: externalId?.startsWith('TRX-') ? 'server_purchase' : 'coins_purchase',
-                        amount: amount,
-                        currency: 'FCFA',
-                        status: 'completed',
-                        fapshi_transaction_id: transId,
-                        completed_at: new Date().toISOString(),
-                        metadata: { webhook_data: event }
-                    }]);
-                    
-                console.log(`✅ Transaction ${transId} créée avec succès`);
-            }
-            return;
+            console.log('❌ Transaction non trouvée:', transId);
+            return res.status(404).json({ message: 'Transaction non trouvée' });
         }
+
+        console.log('📦 Transaction trouvée:', transaction);
 
         // Éviter les doublons
-        if (transaction.status === status.toLowerCase()) {
-            console.log(`ℹ️ Transaction ${transId} déjà traitée (${status})`);
-            return;
+        if (transaction.status === event.status.toLowerCase()) {
+            console.log('⚠️ Statut déjà à jour');
+            return res.json({ received: true });
         }
 
-        // Mettre à jour le statut
+        // Mettre à jour le statut de la transaction
         await supabase
             .from('transactions')
             .update({
-                status: status.toLowerCase(),
-                completed_at: status === 'SUCCESSFUL' ? new Date().toISOString() : null,
-                metadata: { ...transaction.metadata, webhook_update: event }
+                status: event.status.toLowerCase(),
+                completed_at: event.status === 'SUCCESSFUL' ? new Date().toISOString() : null
             })
             .eq('id', transaction.id);
 
-        console.log(`✅ Transaction ${transId} mise à jour: ${status}`);
+        // Si le paiement est réussi, CRÉDITER LES COINS
+        if (event.status === 'SUCCESSFUL') {
+            console.log('💰 Paiement réussi pour transaction:', transaction.id);
 
-        // Traiter selon le statut
-        switch (status) {
-            case 'SUCCESSFUL':
-                await handleSuccessfulPayment(transaction, event);
-                break;
-                
-            case 'FAILED':
-                console.log(`❌ Paiement échoué pour ${transId}`);
-                break;
-                
-            case 'EXPIRED':
-                console.log(`⏰ Paiement expiré pour ${transId}`);
-                break;
-                
-            default:
-                console.log(`ℹ️ Statut non géré: ${status}`);
-        }
-        
-    } catch (error) {
-        console.error(`❌ Erreur traitement transaction ${event?.transId}:`, error);
-    }
-}
-
-// Gestion des paiements réussis
-async function handleSuccessfulPayment(transaction, event) {
-    try {
-        if (transaction.type === 'coins_purchase') {
-            // Achat de coins
-            const { data: user } = await supabase
-                .from('profiles')
-                .select('coins, email, username')
-                .eq('id', transaction.user_id)
-                .single();
-
-            if (user) {
-                // Ajouter les coins
-                await supabase
+            if (transaction.type === 'coins_purchase') {
+                // 🔥 IMPORTANT: Récupérer l'utilisateur et ajouter les coins
+                const { data: user, error: userError } = await supabase
                     .from('profiles')
-                    .update({ coins: (user.coins || 0) + (transaction.coins_amount || 0) })
-                    .eq('id', transaction.user_id);
+                    .select('coins, email, username')
+                    .eq('id', transaction.user_id)
+                    .single();
 
-                // Email de confirmation
-                const pack = COIN_PACKS[transaction.pack_id];
-                await sendEmail(
-                    user.email,
-                    '💰 Achat de coins confirmé',
-                    getCoinsPurchaseHtml(user.username, pack, transaction.coins_amount)
-                );
-                
-                console.log(`✅ ${transaction.coins_amount} coins ajoutés à l'utilisateur ${user.username}`);
+                if (userError || !user) {
+                    console.error('❌ Utilisateur non trouvé:', transaction.user_id);
+                } else {
+                    const coinsToAdd = transaction.coins_amount || 0;
+                    const newBalance = (user.coins || 0) + coinsToAdd;
+
+                    console.log(`🎯 Ajout de ${coinsToAdd} coins à ${user.username} (${user.coins} → ${newBalance})`);
+
+                    // Mettre à jour le solde de l'utilisateur
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ coins: newBalance })
+                        .eq('id', transaction.user_id);
+
+                    if (updateError) {
+                        console.error('❌ Erreur mise à jour coins:', updateError);
+                    } else {
+                        console.log('✅ Coins crédités avec succès');
+
+                        // Journaliser l'activité
+                        await supabase
+                            .from('user_activities')
+                            .insert([{
+                                user_id: transaction.user_id,
+                                activity_type: 'coins_purchase',
+                                coins_earned: coinsToAdd,
+                                description: `Achat de ${coinsToAdd} coins (transaction ${transaction.id})`
+                            }]);
+
+                        // Envoyer un email de confirmation
+                        const pack = transaction.metadata?.pack || COIN_PACKS[transaction.pack_id] || { name: 'Pack de coins' };
+                        await sendEmail(
+                            user.email,
+                            '💰 Achat de coins confirmé !',
+                            getCoinsPurchaseHtml(user.username, pack, coinsToAdd)
+                        );
+                    }
+                }
+            } else if (transaction.type === 'server_purchase') {
+                console.log('🎯 Paiement serveur réussi, en attente de création');
+                // Le serveur sera créé quand l'utilisateur viendra sur la page de création
+                // Les infos sont dans transaction.metadata (server_name, server_username, etc.)
             }
         }
-        
-        else if (transaction.type === 'server_purchase') {
-            // Achat de serveur - Le serveur sera créé quand l'utilisateur viendra sur le dashboard
-            console.log(`✅ Paiement serveur confirmé pour l'utilisateur ${transaction.user_id}`);
-            
-            // Récupérer l'utilisateur
-            const { data: user } = await supabase
-                .from('profiles')
-                .select('email, username')
-                .eq('id', transaction.user_id)
-                .single();
 
-            if (user) {
-                // Email de confirmation
-                await sendEmail(
-                    user.email,
-                    '✅ Paiement serveur confirmé',
-                    `<p>Bonjour ${user.username},</p>
-                     <p>Votre paiement de <strong>${transaction.amount} FCFA</strong> a été confirmé.</p>
-                     <p>Vous pouvez maintenant créer votre serveur depuis le tableau de bord.</p>
-                     <p style="text-align: center;">
-                        <a href="${SITE_CONFIG.url}/dashboard" class="button">Créer mon serveur</a>
-                     </p>`
-                );
-            }
-        }
-        
+        res.json({ received: true });
+
     } catch (error) {
-        console.error('❌ Erreur handleSuccessfulPayment:', error);
+        console.error('❌ Erreur webhook:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
     }
-}
+});
 
 // =============================================
 // ROUTES UTILISATEUR
