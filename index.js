@@ -53,8 +53,8 @@ const fapshiHeaders = {
 // =============================================
 const MAILGUN_CONFIG = {
     apiKey: '63d0998dc9c741d099cfa966429ec4f8-82cf32bf-e8564515',
-    domain: 'sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org',
-    from: 'KermHosting☁️ <postmaster@sandboxe7ebd2a141ff47379c7254dffc97aaf2.mailgun.org>'
+    domain: 'kermhosting.site',
+    from: 'KermHosting☁️ <Kermhosting.site>'
 };
 
 // =============================================
