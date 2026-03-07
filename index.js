@@ -54,7 +54,7 @@ const fapshiHeaders = {
 const MAILGUN_CONFIG = {
     apiKey: '2d8dd9238a5057a8b11a7abea8b45af9-82cf32bf-82c549a6', // Ta clé API (la même)
     domain: 'kermhosting.site', // TON NOUVEAU DOMAINE !
-    from: 'KermHosting <noreply@kermhosting.site>', // Email avec ton domaine
+    from: 'KermHosting☁️ <noreply@kermhosting.site>', // Email avec ton domaine
     baseUrl: 'https://api.eu.mailgun.net/v3' // Serveur Europe (plus rapide)
 };
 
