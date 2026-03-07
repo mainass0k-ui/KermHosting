@@ -872,6 +872,10 @@
             margin-bottom: 16px;
         }
 
+        .modal-icon i {
+            transition: all 0.3s;
+        }
+
         .modal-title {
             font-size: 1.3rem;
             margin-bottom: 12px;
@@ -958,6 +962,10 @@
             background: rgba(59, 130, 246, 0.95);
         }
 
+        .toast.warning {
+            background: rgba(245, 158, 11, 0.95);
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -1040,7 +1048,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar (version connectée - SANS Accueil) -->
+        <!-- Sidebar (version connectée) -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1065,7 +1073,6 @@
             
             <nav class="sidebar-nav">
                 <ul>
-                    <!-- ACCUEIL SUPPRIMÉ - Uniquement pour les non-connectés -->
                     <li>
                         <a href="/dashboard">
                             <i class="fas fa-tachometer-alt"></i>
@@ -1186,10 +1193,6 @@
                 <!-- Coins Packs -->
                 <div class="coins-grid" id="coinsGrid">
                     <!-- Les packs seront chargés dynamiquement -->
-                    <div class="loading-state">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Chargement des packs...</p>
-                    </div>
                 </div>
 
                 <!-- Payment Section -->
@@ -1248,16 +1251,16 @@
             <div class="modal-icon">
                 <i class="fas fa-clock"></i>
             </div>
-            <h2 class="modal-title">Demande envoyée !</h2>
-            <p class="modal-message">
+            <h2 class="modal-title" id="modalTitle">Demande envoyée !</h2>
+            <p class="modal-message" id="modalMessage">
                 Une demande de paiement a été envoyée au numéro :
             </p>
             <div class="modal-phone" id="modalPhone">+237 6XXXXXXXX</div>
-            <p class="modal-message">
+            <p class="modal-message" id="modalSubMessage">
                 Veuillez confirmer l'opération sur votre téléphone.<br>
                 La transaction sera automatiquement validée.
             </p>
-            <button class="modal-btn" onclick="closeModal()">J'ai compris</button>
+            <button class="modal-btn" onclick="closeModal()" id="modalBtn">J'ai compris</button>
         </div>
     </div>
 
@@ -1266,6 +1269,13 @@
         if (!token) {
             window.location.href = '/login?redirect=buy-coins';
         }
+
+        // ===== VARIABLES GLOBALES =====
+        let paymentCheckInterval = null;
+        let currentTransaction = null;
+        let selectedMethod = 'MTN';
+        let selectedPack = null;
+        let userCoins = 0;
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -1290,10 +1300,6 @@
         overlay.addEventListener('click', closeSidebarFunc);
 
         // ===== PAYMENT METHOD =====
-        let selectedMethod = 'MTN';
-        let selectedPack = null;
-        let userCoins = 0;
-
         function selectMethod(method) {
             selectedMethod = method;
             
@@ -1327,13 +1333,15 @@
                     document.getElementById('sidebarUserBadge').textContent = data.user.role;
                     document.getElementById('sidebarCoins').textContent = userCoins;
                     document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                    
+                    return data.user;
                 }
             } catch (error) {
                 console.error('Erreur chargement:', error);
             }
         }
 
-        // ===== LOAD COIN PACKS =====
+        // ===== COIN PACKS =====
         const COIN_PACKS = {
             'small': {
                 name: 'Pack Découverte',
@@ -1437,7 +1445,7 @@
             }
         }
 
-        // ===== INITIATE PAYMENT (CORRIGÉ) =====
+        // ===== SYSTÈME DE VÉRIFICATION AUTOMATIQUE =====
         async function initiatePayment() {
             if (!selectedPack) {
                 showToast('error', 'Veuillez sélectionner un pack');
@@ -1473,9 +1481,24 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    // STOCKER LA TRANSACTION
+                    currentTransaction = {
+                        transactionId: data.transaction_id,
+                        fapshiId: data.transId,
+                        pack: selectedPack,
+                        packKey: packKey,
+                        phone: phone,
+                        startTime: Date.now()
+                    };
+
+                    // AFFICHER LE MODAL
                     document.getElementById('modalPhone').textContent = `+237 ${phone}`;
                     document.getElementById('paymentModal').classList.add('active');
                     
+                    // COMMENCER LA VÉRIFICATION AUTOMATIQUE
+                    startPaymentVerification(data.transId, packKey, selectedPack);
+                    
+                    // NETTOYER L'INTERFACE
                     selectedPack = null;
                     document.querySelectorAll('.coin-card').forEach(card => {
                         card.classList.remove('selected');
@@ -1483,37 +1506,172 @@
                     document.getElementById('selectedInfo').style.display = 'none';
                     document.getElementById('phoneNumber').value = '';
                     
-                    setTimeout(() => checkPaymentStatus(data.transId), 5000);
                 } else {
                     showToast('error', data.error || 'Erreur lors du paiement');
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer avec <span id="payMethod">' + 
+                        (selectedMethod === 'MTN' ? 'MTN Money' : 'Orange Money') + '</span>';
                 }
             } catch (error) {
+                console.error('Erreur:', error);
                 showToast('error', 'Erreur réseau');
-            } finally {
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer avec <span id="payMethod">' + 
                     (selectedMethod === 'MTN' ? 'MTN Money' : 'Orange Money') + '</span>';
             }
         }
 
-        // ===== CHECK PAYMENT STATUS =====
-        async function checkPaymentStatus(transId) {
-            try {
-                const response = await fetch(`/api/payment/status/${transId}`);
-                const data = await response.json();
-
-                if (data.success && data.status === 'SUCCESSFUL') {
-                    showToast('success', 'Paiement réussi ! Vos coins ont été crédités.');
-                    loadUserData();
-                } else if (data.status === 'FAILED') {
-                    showToast('error', 'Paiement échoué');
-                } else if (data.status === 'EXPIRED') {
-                    showToast('warning', 'Paiement expiré');
-                } else {
-                    setTimeout(() => checkPaymentStatus(transId), 5000);
+        function startPaymentVerification(fapshiId, packKey, pack) {
+            // Arrêter l'ancien intervalle s'il existe
+            if (paymentCheckInterval) {
+                clearInterval(paymentCheckInterval);
+            }
+            
+            let attempts = 0;
+            const maxAttempts = 60; // 60 * 3s = 3 minutes max
+            
+            // Réinitialiser le modal
+            document.getElementById('modalTitle').textContent = 'Demande envoyée !';
+            document.getElementById('modalMessage').textContent = 'Une demande de paiement a été envoyée au numéro :';
+            document.getElementById('modalSubMessage').innerHTML = 'Veuillez confirmer l\'opération sur votre téléphone.<br>La transaction sera automatiquement validée.';
+            document.getElementById('modalBtn').textContent = 'J\'ai compris';
+            
+            // Afficher un message dans le modal
+            updateModalMessage('Vérification du paiement en cours...', '⌛');
+            
+            paymentCheckInterval = setInterval(async () => {
+                attempts++;
+                
+                try {
+                    console.log(`🔄 Vérification ${attempts}/${maxAttempts} pour ${fapshiId}`);
+                    
+                    const response = await fetch(`/api/payment/status/${fapshiId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        console.log('Statut reçu:', data.status);
+                        
+                        // SUCCÈS !
+                        if (data.status === 'SUCCESSFUL') {
+                            clearInterval(paymentCheckInterval);
+                            
+                            // Calculer les coins
+                            const totalCoins = pack.coins + (pack.bonus || 0);
+                            
+                            // METTRE À JOUR LE MODAL
+                            updateModalMessage(
+                                '✅ Paiement confirmé ! Crédit en cours...',
+                                '💰',
+                                'success'
+                            );
+                            document.getElementById('modalTitle').textContent = 'Paiement réussi !';
+                            document.getElementById('modalSubMessage').innerHTML = `💰 ${totalCoins} coins vont être crédités...`;
+                            document.getElementById('modalBtn').textContent = 'Fermer';
+                            
+                            // Mettre à jour le solde immédiatement
+                            setTimeout(async () => {
+                                // Recharger les données utilisateur
+                                await loadUserData();
+                                
+                                // Afficher la confirmation
+                                showToast('success', `💰 ${totalCoins} coins crédités !`);
+                                
+                                // Fermer le modal après 2 secondes
+                                setTimeout(() => {
+                                    document.getElementById('paymentModal').classList.remove('active');
+                                }, 2000);
+                            }, 1000);
+                            
+                            return;
+                        }
+                        
+                        // ÉCHEC
+                        if (data.status === 'FAILED' || data.status === 'EXPIRED') {
+                            clearInterval(paymentCheckInterval);
+                            updateModalMessage(
+                                `❌ Paiement ${data.status === 'FAILED' ? 'échoué' : 'expiré'}.`,
+                                '❌',
+                                'error'
+                            );
+                            document.getElementById('modalTitle').textContent = 'Paiement échoué';
+                            document.getElementById('modalSubMessage').innerHTML = 'Veuillez réessayer.';
+                            
+                            setTimeout(() => {
+                                document.getElementById('paymentModal').classList.remove('active');
+                                document.getElementById('payBtn').disabled = false;
+                                document.getElementById('payBtn').innerHTML = '<i class="fas fa-lock"></i> Payer avec <span id="payMethod">' + 
+                                    (selectedMethod === 'MTN' ? 'MTN Money' : 'Orange Money') + '</span>';
+                            }, 3000);
+                            
+                            return;
+                        }
+                        
+                        // ENCORE EN ATTENTE
+                        if (data.status === 'PENDING') {
+                            updateModalMessage(
+                                `En attente de confirmation... (${attempts}/${maxAttempts})`,
+                                '⏳'
+                            );
+                        }
+                    }
+                    
+                    // Arrêt après maxAttempts
+                    if (attempts >= maxAttempts) {
+                        clearInterval(paymentCheckInterval);
+                        updateModalMessage(
+                            '⏰ Délai dépassé.',
+                            '⚠️',
+                            'warning'
+                        );
+                        document.getElementById('modalTitle').textContent = 'Délai expiré';
+                        document.getElementById('modalSubMessage').innerHTML = 'Vérifiez dans vos transactions.<br>Si le paiement a réussi, reconnectez-vous.';
+                        
+                        setTimeout(() => {
+                            document.getElementById('paymentModal').classList.remove('active');
+                        }, 5000);
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur vérification:', error);
+                    updateModalMessage('Erreur de vérification...', '❌', 'error');
                 }
-            } catch (error) {
-                console.error('Erreur vérification statut:', error);
+            }, 3000); // Vérification toutes les 3 secondes
+        }
+
+        function updateModalMessage(message, icon, type = 'info') {
+            const modalMessage = document.querySelector('.modal-message');
+            const modalIcon = document.querySelector('.modal-icon i');
+            
+            if (modalMessage) {
+                modalMessage.textContent = message;
+            }
+            
+            if (modalIcon) {
+                modalIcon.className = `fas ${
+                    icon === '💰' ? 'fa-coins' : 
+                    icon === '⌛' ? 'fa-hourglass-half' :
+                    icon === '✅' ? 'fa-check-circle' :
+                    icon === '❌' ? 'fa-times-circle' :
+                    icon === '⚠️' ? 'fa-exclamation-triangle' :
+                    'fa-clock'
+                }`;
+                
+                if (type === 'success') {
+                    modalIcon.style.color = '#10B981';
+                } else if (type === 'error') {
+                    modalIcon.style.color = '#EF4444';
+                } else if (type === 'warning') {
+                    modalIcon.style.color = '#F59E0B';
+                } else {
+                    modalIcon.style.color = '#7C3AED';
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            if (paymentCheckInterval) {
+                clearInterval(paymentCheckInterval);
             }
         }
 
@@ -1522,7 +1680,12 @@
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <i class="fas ${
+                    type === 'success' ? 'fa-check-circle' : 
+                    type === 'error' ? 'fa-exclamation-circle' : 
+                    type === 'warning' ? 'fa-exclamation-triangle' :
+                    'fa-info-circle'
+                }"></i>
                 <span>${message}</span>
             `;
 
@@ -1532,11 +1695,6 @@
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
-        }
-
-        // ===== MODAL =====
-        function closeModal() {
-            document.getElementById('paymentModal').classList.remove('active');
         }
 
         // ===== LOGOUT =====
