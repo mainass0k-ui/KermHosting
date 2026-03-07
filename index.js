@@ -2579,10 +2579,9 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
 });
 
 // Paiement direct pour acheter des coins - VERSION CORRIGÉE
-// Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
-        const { pack_id, phone } = req.body;  // ✅ PLUS DE MEDIUM
+        const { pack_id, phone } = req.body;
 
         if (!pack_id || !COIN_PACKS[pack_id]) {
             return res.status(400).json({ success: false, error: 'Pack invalide', code: 'INVALID_PACK' });
@@ -2592,10 +2591,20 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             return res.status(400).json({ success: false, error: 'Numéro de téléphone requis', code: 'PHONE_REQUIRED' });
         }
 
+        // Validation du numéro de téléphone
+        if (!/^6[\d]{8}$/.test(phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Numéro de téléphone invalide. Utilisez un numéro à 9 chiffres commençant par 6.', 
+                code: 'INVALID_PHONE' 
+            });
+        }
+
         const pack = COIN_PACKS[pack_id];
         const totalCoins = pack.coins + (pack.bonus || 0);
         const transactionId = crypto.randomUUID();
 
+        // 🔴 IMPORTANT: On insère coins_amount pour que le webhook sache combien créditer
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -2605,11 +2614,17 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
                 pack_id: pack_id,
                 amount: pack.price_fcfa,
                 currency: 'FCFA',
-                coins_amount: totalCoins,
+                coins_amount: totalCoins,  // ← CRUCIAL: c'est cette valeur qui sera créditée
                 status: 'pending',
                 metadata: { 
-                    pack, 
-                    phone
+                    pack: {
+                        name: pack.name,
+                        coins: pack.coins,
+                        bonus: pack.bonus || 0,
+                        price: pack.price_fcfa
+                    },
+                    phone,
+                    pack_id
                 }
             }])
             .select()
@@ -2620,11 +2635,11 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             return res.status(500).json({ 
                 success: false, 
                 error: 'Erreur création transaction',
-                details: error.message 
+                code: 'TRANSACTION_CREATION_ERROR' 
             });
         }
 
-        // ✅ Appel Fapshi SANS medium
+        // Initier le paiement direct Fapshi
         const payment = await fapshiDirectPay({
             amount: pack.price_fcfa,
             phone: phone,
@@ -2632,10 +2647,22 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
             email: req.user.email,
             userId: req.user.id,
             externalId: transactionId,
-            message: `Achat ${totalCoins} coins`
+            message: `Achat ${totalCoins} coins - ${req.user.username}`
         });
 
         if (!payment.success) {
+            // Mettre à jour la transaction en échec
+            await supabase
+                .from('transactions')
+                .update({ 
+                    status: 'failed',
+                    metadata: { 
+                        ...transaction.metadata, 
+                        error: payment.message 
+                    }
+                })
+                .eq('id', transactionId);
+
             return res.status(400).json({
                 success: false,
                 error: payment.message || 'Erreur lors du paiement',
@@ -2671,21 +2698,104 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
 app.get('/api/payment/status/:transId', async (req, res) => {
     try {
         const { transId } = req.params;
+        
+        if (!transId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'ID de transaction requis' 
+            });
+        }
+
+        console.log(`🔍 Vérification statut transaction: ${transId}`);
+        
         const status = await fapshiPaymentStatus(transId);
 
         if (!status.success) {
-            return res.status(400).json({ success: false, error: status.message });
+            return res.status(400).json({ 
+                success: false, 
+                error: status.message 
+            });
+        }
+
+        // Récupérer la transaction dans notre base - utiliser maybeSingle()
+        const { data: transaction, error: txError } = await supabase
+            .from('transactions')
+            .select('*, profiles:user_id(username, email)')
+            .eq('fapshi_transaction_id', transId)
+            .maybeSingle();
+
+        if (txError) {
+            console.error('❌ Erreur récupération transaction:', txError);
+        }
+
+        // Si le statut a changé, mettre à jour notre base
+        if (transaction && transaction.status !== status.status.toLowerCase()) {
+            await supabase
+                .from('transactions')
+                .update({
+                    status: status.status.toLowerCase(),
+                    completed_at: status.status === 'SUCCESSFUL' ? new Date().toISOString() : null,
+                    fapshi_response: status
+                })
+                .eq('id', transaction.id);
+                
+            console.log(`✅ Transaction ${transId} mise à jour: ${status.status}`);
+
+            // Si paiement réussi, vérifier que les coins ont été crédités
+            if (status.status === 'SUCCESSFUL' && transaction.type === 'coins_purchase') {
+                const { data: user } = await supabase
+                    .from('profiles')
+                    .select('coins')
+                    .eq('id', transaction.user_id)
+                    .single();
+                
+                if (user) {
+                    console.log(`💰 Solde actuel de l'utilisateur: ${user.coins} coins`);
+                }
+            }
+        }
+
+        // Message personnalisé selon le statut
+        let userMessage = '';
+        let action = 'none';
+
+        switch (status.status) {
+            case 'SUCCESSFUL':
+                userMessage = '✅ Paiement confirmé avec succès !';
+                action = 'success';
+                break;
+            case 'FAILED':
+                userMessage = '❌ Le paiement a échoué. Vérifiez que vous avez suffisamment de fonds sur votre compte Mobile Money et que vous avez confirmé la transaction.';
+                action = 'retry';
+                break;
+            case 'PENDING':
+                userMessage = '⏳ Paiement en attente de confirmation. Veuillez vérifier votre téléphone et confirmer la transaction.';
+                action = 'wait';
+                break;
+            default:
+                userMessage = `Statut: ${status.status}`;
         }
 
         res.json({
             success: true,
             status: status.status,
+            message: userMessage,
+            action: action,
+            transaction: transaction ? {
+                id: transaction.id,
+                type: transaction.type,
+                coins_amount: transaction.coins_amount,
+                created_at: transaction.created_at
+            } : null,
             data: status
         });
 
     } catch (error) {
         console.error('❌ Erreur vérification statut:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
     }
 });
 
