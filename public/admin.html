@@ -20,7 +20,6 @@
     <title>Administration - KermHosting</title>
     
     <style>
-        /* ===== VARIABLES ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -318,7 +317,7 @@
             min-width: 0;
         }
 
-        /* ===== TOP BAR (optimisée mobile) ===== */
+        /* ===== TOP BAR ===== */
         .top-bar {
             position: sticky;
             top: 0;
@@ -399,7 +398,7 @@
             object-fit: cover;
         }
 
-        /* ===== PAGE CONTENT (optimisée mobile) ===== */
+        /* ===== PAGE CONTENT ===== */
         .page-content {
             padding: 16px;
             max-width: 1400px;
@@ -505,7 +504,7 @@
             font-size: 0.8rem;
         }
 
-        /* ===== STATS GRID (optimisée mobile) ===== */
+        /* ===== STATS GRID ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -579,71 +578,64 @@
             margin-top: 4px;
         }
 
-        /* ===== PTERODACTYL STATS (optimisée mobile) ===== */
-        .ptero-stats {
+        /* ===== FINANCIAL STATS ===== */
+        .financial-stats {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 24px;
         }
 
-        .ptero-card {
-            background: var(--bg-card);
+        .financial-card {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
             border-radius: var(--radius-lg);
             padding: 20px;
-            border: 1px solid var(--border-color);
-            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
 
-        .ptero-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 1.8rem;
-            color: var(--primary);
+        .financial-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
         }
 
-        .ptero-value {
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .financial-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .financial-amount {
             font-size: 1.8rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
-            color: var(--primary);
+            position: relative;
+            z-index: 1;
         }
 
-        .ptero-label {
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            font-size: 0.9rem;
+        .financial-sub {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
         }
 
-        .ptero-progress {
-            height: 6px;
-            background: var(--border-color);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            margin: 12px 0;
-        }
-
-        .ptero-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-full);
-            transition: width 0.3s;
-        }
-
-        .ptero-details {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* ===== CHARTS (optimisés mobile) ===== */
+        /* ===== CHARTS ===== */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -669,7 +661,7 @@
             width: 100% !important;
         }
 
-        /* ===== TABS (optimisés mobile) ===== */
+        /* ===== TABS ===== */
         .tabs {
             display: flex;
             gap: 8px;
@@ -709,22 +701,33 @@
             background: var(--primary);
         }
 
-        /* ===== SEARCH BAR (optimisée mobile) ===== */
+        /* ===== SEARCH BAR OPTIMISÉE ===== */
         .search-bar {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .search-input {
-            width: 100%;
-            padding: 14px 16px;
+            flex: 1;
+            padding: 12px 16px;
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            min-width: 200px;
         }
 
         .search-input:focus {
@@ -733,13 +736,13 @@
         }
 
         .filter-select {
-            width: 100%;
-            padding: 14px 16px;
+            padding: 12px 16px;
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            min-width: 160px;
         }
 
         .filter-select:focus {
@@ -747,7 +750,35 @@
             border-color: var(--primary);
         }
 
-        /* ===== TABLES (scrollables horizontalement) ===== */
+        .search-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-hover);
+            padding: 8px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+        }
+
+        .search-badge i {
+            color: var(--primary);
+        }
+
+        .clear-search {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .clear-search:hover {
+            background: var(--bg-hover);
+            color: var(--danger);
+        }
+
+        /* ===== TABLES OPTIMISÉES ===== */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -760,7 +791,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 1000px;
         }
 
         th {
@@ -770,6 +801,9 @@
             font-weight: 600;
             font-size: 0.85rem;
             color: var(--text-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         td {
@@ -821,6 +855,12 @@
             color: var(--info);
         }
 
+        .action-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
         .action-btn {
             background: none;
             border: 1px solid var(--border-color);
@@ -833,7 +873,6 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
-            margin: 0 2px;
         }
 
         .action-btn:hover {
@@ -854,7 +893,76 @@
             background: var(--warning);
         }
 
-        /* ===== MODALS (optimisés mobile) ===== */
+        .action-btn.view:hover {
+            background: var(--info);
+        }
+
+        /* ===== TOP BUYERS ===== */
+        .top-buyers {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .top-buyers h3 {
+            margin-bottom: 16px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buyer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .buyer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+
+        .buyer-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .buyer-info {
+            flex: 1;
+        }
+
+        .buyer-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .buyer-email {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .buyer-total {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        /* ===== MODALS OPTIMISÉS ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -878,7 +986,7 @@
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px 20px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
@@ -952,7 +1060,7 @@
         .modal-info-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            min-width: 100px;
+            min-width: 120px;
         }
 
         .modal-info-value {
@@ -974,12 +1082,12 @@
 
         .modal-input, .modal-select {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .modal-input:focus, .modal-select:focus {
@@ -1020,7 +1128,7 @@
             justify-content: flex-end;
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             top: 20px;
@@ -1108,7 +1216,7 @@
             font-size: 0.95rem;
         }
 
-        /* ===== LOADING STATE ===== */
+        /* ===== LOADING ===== */
         .loading-state {
             text-align: center;
             padding: 40px 20px;
@@ -1127,6 +1235,74 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0 12px;
+        }
+
+        /* ===== EXPORT BUTTONS ===== */
+        .export-btns {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .export-btn {
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .page-content {
@@ -1138,8 +1314,8 @@
                 gap: 20px;
             }
 
-            .ptero-stats {
-                grid-template-columns: repeat(3, 1fr);
+            .financial-stats {
+                grid-template-columns: repeat(4, 1fr);
             }
 
             .charts-grid {
@@ -1148,15 +1324,11 @@
 
             .search-bar {
                 flex-direction: row;
+                align-items: center;
             }
 
-            .search-input {
+            .search-row {
                 flex: 1;
-            }
-
-            .filter-select {
-                width: auto;
-                min-width: 200px;
             }
 
             .page-header {
@@ -1206,7 +1378,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar (version connectée - SANS Accueil) -->
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1231,7 +1403,6 @@
             
             <nav class="sidebar-nav">
                 <ul>
-                    <!-- ACCUEIL SUPPRIMÉ - Uniquement pour les non-connectés -->
                     <li>
                         <a href="/dashboard">
                             <i class="fas fa-tachometer-alt"></i>
@@ -1262,7 +1433,7 @@
                             <span>Transactions</span>
                         </a>
                     </li>
-                     <li>
+                    <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
@@ -1375,7 +1546,7 @@
                             </div>
                         </div>
                         <div class="stat-value" id="statTotalCoins">0</div>
-                        <div class="stat-label">Coins</div>
+                        <div class="stat-label">Coins total</div>
                         <div class="stat-change">
                             <i class="fas fa-chart-line"></i>
                             <span id="statAvgCoins">0 par user</span>
@@ -1385,78 +1556,62 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon">
-                                <i class="fas fa-chart-bar"></i>
+                                <i class="fas fa-ban"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="statRevenue">0</div>
-                        <div class="stat-label">Revenus FCFA</div>
+                        <div class="stat-value" id="statBannedUsers">0</div>
+                        <div class="stat-label">Bannis</div>
                         <div class="stat-change">
-                            <i class="fas fa-arrow-up"></i>
-                            <span id="statTransactions">0 tx</span>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span id="statBannedPercent">0%</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pterodactyl Stats -->
-                <div class="ptero-stats" id="pteroStats">
-                    <div class="ptero-card">
-                        <div class="ptero-icon">
-                            <i class="fas fa-microchip"></i>
-                        </div>
-                        <div class="ptero-value" id="pteroCPU">0%</div>
-                        <div class="ptero-label">CPU Global</div>
-                        <div class="ptero-progress">
-                            <div class="ptero-progress-fill" id="pteroCPUProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="ptero-details">
-                            <span id="pteroCPUUsed">0</span>
-                            <span>/</span>
-                            <span id="pteroCPUTotal">100%</span>
-                        </div>
+                <!-- Financial Stats -->
+                <div class="financial-stats" id="financialStats">
+                    <div class="financial-card">
+                        <div class="financial-label">Revenus totaux</div>
+                        <div class="financial-amount" id="financialTotal">0 FCFA</div>
+                        <div class="financial-sub" id="financialTotalSub">Tous temps</div>
                     </div>
-
-                    <div class="ptero-card">
-                        <div class="ptero-icon">
-                            <i class="fas fa-memory"></i>
-                        </div>
-                        <div class="ptero-value" id="pteroRAM">0 GB</div>
-                        <div class="ptero-label">RAM Utilisée</div>
-                        <div class="ptero-progress">
-                            <div class="ptero-progress-fill" id="pteroRAMProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="ptero-details">
-                            <span id="pteroRAMUsed">0</span>
-                            <span>/</span>
-                            <span id="pteroRAMTotal">0 GB</span>
-                        </div>
+                    <div class="financial-card">
+                        <div class="financial-label">Aujourd'hui</div>
+                        <div class="financial-amount" id="financialToday">0 FCFA</div>
+                        <div class="financial-sub" id="financialTodaySub">0 transactions</div>
                     </div>
-
-                    <div class="ptero-card">
-                        <div class="ptero-icon">
-                            <i class="fas fa-hdd"></i>
-                        </div>
-                        <div class="ptero-value" id="pteroDisk">0 GB</div>
-                        <div class="ptero-label">Stockage Utilisé</div>
-                        <div class="ptero-progress">
-                            <div class="ptero-progress-fill" id="pteroDiskProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="ptero-details">
-                            <span id="pteroDiskUsed">0</span>
-                            <span>/</span>
-                            <span id="pteroDiskTotal">0 GB</span>
-                        </div>
+                    <div class="financial-card">
+                        <div class="financial-label">Moyenne</div>
+                        <div class="financial-amount" id="financialAvg">0 FCFA</div>
+                        <div class="financial-sub" id="financialAvgSub">par transaction</div>
+                    </div>
+                    <div class="financial-card">
+                        <div class="financial-label">Total transactions</div>
+                        <div class="financial-amount" id="financialCount">0</div>
+                        <div class="financial-sub" id="financialCountSub">paiements réussis</div>
                     </div>
                 </div>
 
                 <!-- Charts -->
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h3>Créations de serveurs (30j)</h3>
-                        <canvas id="serversChart"></canvas>
+                        <h3>Revenus (30 jours)</h3>
+                        <canvas id="revenueChart"></canvas>
                     </div>
                     <div class="chart-card">
-                        <h3>Revenus (30j)</h3>
-                        <canvas id="revenueChart"></canvas>
+                        <h3>Répartition par type</h3>
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Acheteurs -->
+                <div class="top-buyers" id="topBuyers" style="display: none;">
+                    <h3>
+                        <i class="fas fa-crown" style="color: var(--warning);"></i>
+                        Top 10 acheteurs
+                    </h3>
+                    <div class="buyer-list" id="topBuyersList">
+                        <!-- Rempli dynamiquement -->
                     </div>
                 </div>
 
@@ -1465,22 +1620,42 @@
                     <div class="tab active" onclick="switchTab('users')">Utilisateurs</div>
                     <div class="tab" onclick="switchTab('servers')">Serveurs</div>
                     <div class="tab" onclick="switchTab('transactions')">Transactions</div>
+                    <div class="tab" onclick="switchTab('financial')">Finances</div>
                     <div class="tab" onclick="switchTab('pterodactyl')">Pterodactyl</div>
-                    <div class="tab" onclick="switchTab('logs')">Logs Admin</div>
+                    <div class="tab" onclick="switchTab('logs')">Logs</div>
                 </div>
 
-                <!-- Tab: Utilisateurs -->
+                <!-- Tab: Utilisateurs (OPTIMISÉ) -->
                 <div class="tab-pane active" id="tab-users">
                     <div class="search-bar">
-                        <input type="text" class="search-input" id="userSearch" placeholder="Rechercher un utilisateur..." onkeyup="filterUsers()">
-                        <select class="filter-select" id="userFilter" onchange="filterUsers()">
-                            <option value="all">Tous</option>
-                            <option value="verified">Vérifiés</option>
-                            <option value="unverified">Non vérifiés</option>
-                            <option value="banned">Bannis</option>
-                            <option value="admin">Admins</option>
-                            <option value="superadmin">Super Admins</option>
-                        </select>
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="userSearch" placeholder="Rechercher (nom, email, ID...)" onkeyup="filterUsers()">
+                            <select class="filter-select" id="userFilter" onchange="filterUsers()">
+                                <option value="all">Tous les utilisateurs</option>
+                                <option value="verified">Vérifiés</option>
+                                <option value="unverified">Non vérifiés</option>
+                                <option value="banned">Bannis</option>
+                                <option value="admin">Admins</option>
+                                <option value="superadmin">Super Admins</option>
+                                <option value="withCoins">Avec coins</option>
+                                <option value="withServers">Avec serveurs</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-users"></i>
+                            <span id="userCount">0</span> utilisateurs
+                            <button class="clear-search" onclick="clearUserSearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="export-btns">
+                            <button class="export-btn" onclick="exportUsers('csv')">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </button>
+                            <button class="export-btn" onclick="exportUsers('json')">
+                                <i class="fas fa-file-code"></i> JSON
+                            </button>
+                        </div>
                     </div>
 
                     <div class="table-container">
@@ -1492,7 +1667,7 @@
                                     <th>Email</th>
                                     <th>Rôle</th>
                                     <th>Coins</th>
-                                    <th>Srvs</th>
+                                    <th>Serveurs</th>
                                     <th>Statut</th>
                                     <th>Inscription</th>
                                     <th>Actions</th>
@@ -1508,18 +1683,40 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="userPagination">
+                        <button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="page-info" id="userPageInfo">Page 1 / 1</span>
+                        <button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tab: Serveurs -->
                 <div class="tab-pane" id="tab-servers">
                     <div class="search-bar">
-                        <input type="text" class="search-input" id="serverSearch" placeholder="Rechercher un serveur..." onkeyup="filterServers()">
-                        <select class="filter-select" id="serverFilter" onchange="filterServers()">
-                            <option value="all">Tous</option>
-                            <option value="active">Actifs</option>
-                            <option value="expired">Expirés</option>
-                            <option value="expiring">Expire bientôt</option>
-                        </select>
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="serverSearch" placeholder="Rechercher un serveur..." onkeyup="filterServers()">
+                            <select class="filter-select" id="serverFilter" onchange="filterServers()">
+                                <option value="all">Tous les serveurs</option>
+                                <option value="active">Actifs</option>
+                                <option value="expired">Expirés</option>
+                                <option value="expiring">Expire bientôt (3j)</option>
+                                <option value="free">Free</option>
+                                <option value="1gb">Starter</option>
+                                <option value="2gb">Basic</option>
+                                <option value="4gb">Pro</option>
+                                <option value="8gb">Business</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-server"></i>
+                            <span id="serverCount">0</span> serveurs
+                        </div>
                     </div>
 
                     <div class="table-container">
@@ -1551,15 +1748,22 @@
                 <!-- Tab: Transactions -->
                 <div class="tab-pane" id="tab-transactions">
                     <div class="search-bar">
-                        <input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher une transaction..." onkeyup="filterTransactions()">
-                        <select class="filter-select" id="transactionFilter" onchange="filterTransactions()">
-                            <option value="all">Toutes</option>
-                            <option value="completed">Complétées</option>
-                            <option value="pending">En attente</option>
-                            <option value="failed">Échouées</option>
-                            <option value="coins">Achats de coins</option>
-                            <option value="server">Achats de serveurs</option>
-                        </select>
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher une transaction..." onkeyup="filterTransactions()">
+                            <select class="filter-select" id="transactionFilter" onchange="filterTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="completed">Complétées</option>
+                                <option value="pending">En attente</option>
+                                <option value="failed">Échouées</option>
+                                <option value="coins">Achats de coins</option>
+                                <option value="server">Achats de serveurs</option>
+                                <option value="renewal">Renouvellements</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span id="transactionCount">0</span> transactions
+                        </div>
                     </div>
 
                     <div class="table-container">
@@ -1571,19 +1775,73 @@
                                     <th>Type</th>
                                     <th>Montant</th>
                                     <th>Statut</th>
+                                    <th>Moyen</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="transactionsTableBody">
                                 <tr>
-                                    <td colspan="7" class="loading-state">
+                                    <td colspan="8" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement des transactions...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Finances -->
+                <div class="tab-pane" id="tab-financial">
+                    <div class="stats-grid" style="margin-bottom: 16px;">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="financialCoinsPurchases">0 FCFA</div>
+                            <div class="stat-label">Achats de coins</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="financialServerPurchases">0 FCFA</div>
+                            <div class="stat-label">Achats de serveurs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="financialRenewals">0 FCFA</div>
+                            <div class="stat-label">Renouvellements</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="financialOther">0 FCFA</div>
+                            <div class="stat-label">Autres</div>
+                        </div>
+                    </div>
+
+                    <!-- Top Acheteurs (détaillé) -->
+                    <div class="top-buyers">
+                        <h3>
+                            <i class="fas fa-trophy" style="color: var(--warning);"></i>
+                            Top acheteurs
+                        </h3>
+                        <div class="buyer-list" id="detailedTopBuyers">
+                            <!-- Rempli dynamiquement -->
+                        </div>
                     </div>
                 </div>
 
@@ -1655,15 +1913,21 @@
                 <!-- Tab: Logs Admin -->
                 <div class="tab-pane" id="tab-logs">
                     <div class="search-bar">
-                        <input type="text" class="search-input" id="logSearch" placeholder="Rechercher dans les logs..." onkeyup="filterLogs()">
-                        <select class="filter-select" id="logFilter" onchange="filterLogs()">
-                            <option value="all">Toutes</option>
-                            <option value="ban">Bannissements</option>
-                            <option value="role">Changements rôle</option>
-                            <option value="coins">Ajouts coins</option>
-                            <option value="server">Actions serveurs</option>
-                            <option value="delete">Suppressions</option>
-                        </select>
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="logSearch" placeholder="Rechercher dans les logs..." onkeyup="filterLogs()">
+                            <select class="filter-select" id="logFilter" onchange="filterLogs()">
+                                <option value="all">Toutes</option>
+                                <option value="ban">Bannissements</option>
+                                <option value="role">Changements rôle</option>
+                                <option value="coins">Ajouts/retraits coins</option>
+                                <option value="server">Actions serveurs</option>
+                                <option value="delete">Suppressions</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-history"></i>
+                            <span id="logCount">0</span> logs
+                        </div>
                     </div>
 
                     <div class="table-container">
@@ -1715,6 +1979,10 @@
                     <div class="modal-info-item">
                         <span class="modal-info-label">Email</span>
                         <span class="modal-info-value" id="editEmail">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Coins</span>
+                        <span class="modal-info-value" id="editCoins">-</span>
                     </div>
                 </div>
 
@@ -1850,6 +2118,26 @@
         </div>
     </div>
 
+    <!-- MODAL: Détails transaction -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails de la transaction</h2>
+                <button class="modal-close" onclick="closeModal('transactionModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info" id="transactionDetails">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -1862,9 +2150,15 @@
         let allServers = [];
         let allTransactions = [];
         let allLogs = [];
+        let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
         let charts = {};
+
+        // Pagination
+        let currentUserPage = 1;
+        const usersPerPage = 20;
+        let filteredUsers = [];
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -1952,9 +2246,145 @@
             }
         }
 
+        // ===== LOAD FINANCIAL STATS =====
+        async function loadFinancialStats() {
+            try {
+                const res = await fetch('/api/admin/financial-stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    financialStats = data.financial;
+
+                    // Mettre à jour les cartes financières
+                    document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
+                    document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
+                    document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
+                    document.getElementById('financialCount').textContent = data.financial.total_transactions;
+                    
+                    document.getElementById('financialTodaySub').textContent = data.financial.total_transactions + ' transactions';
+                    
+                    // Mettre à jour les stats par type
+                    document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type.coins_purchase || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialServerPurchases').textContent = (data.financial.by_type.server_purchase || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialRenewals').textContent = (data.financial.by_type.server_renewal || 0).toLocaleString() + ' FCFA';
+
+                    // Afficher les top acheteurs
+                    if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
+                        document.getElementById('topBuyers').style.display = 'block';
+                        
+                        let buyersHtml = '';
+                        data.financial.top_buyers.forEach((buyer, index) => {
+                            buyersHtml += `
+                                <div class="buyer-item">
+                                    <div class="buyer-rank">${index + 1}</div>
+                                    <div class="buyer-info">
+                                        <div class="buyer-name">${buyer.username}</div>
+                                        <div class="buyer-email">${buyer.email}</div>
+                                    </div>
+                                    <div class="buyer-total">${buyer.total.toLocaleString()} FCFA</div>
+                                    <div class="action-group">
+                                        <button class="action-btn view" onclick="editUser('${buyer.user_id}')" title="Voir utilisateur">
+                                            <i class="fas fa-user"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        document.getElementById('topBuyersList').innerHTML = buyersHtml;
+                        document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
+                    }
+
+                    // Mettre à jour les graphiques
+                    updateCharts(data.financial);
+                }
+            } catch (error) {
+                console.error('Erreur chargement stats financières:', error);
+            }
+        }
+
+        // ===== UPDATE CHARTS =====
+        function updateCharts(financial) {
+            // Détruire les anciens graphiques
+            if (charts.revenue) charts.revenue.destroy();
+            if (charts.type) charts.type.destroy();
+
+            // Graphique des revenus mensuels
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: financial.monthly?.map(m => m.month) || ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Revenus (FCFA)',
+                        data: financial.monthly?.map(m => m.amount) || [0, 0, 0, 0, 0, 0],
+                        borderColor: '#7C3AED',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#F3F4F6' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: '#2D3748' },
+                            ticks: { 
+                                color: '#9CA3AF',
+                                callback: value => value.toLocaleString() + ' FCFA'
+                            }
+                        },
+                        x: {
+                            grid: { color: '#2D3748' },
+                            ticks: { color: '#9CA3AF' }
+                        }
+                    }
+                }
+            });
+
+            // Graphique de répartition par type
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            charts.type = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Achats de coins', 'Achats de serveurs', 'Renouvellements'],
+                    datasets: [{
+                        data: [
+                            financial.by_type?.coins_purchase || 0,
+                            financial.by_type?.server_purchase || 0,
+                            financial.by_type?.server_renewal || 0
+                        ],
+                        backgroundColor: [
+                            '#F59E0B',
+                            '#7C3AED',
+                            '#10B981'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#F3F4F6' }
+                        }
+                    }
+                }
+            });
+        }
+
         // ===== LOAD ADMIN DATA =====
         async function loadAdminData() {
             try {
+                // Stats générales
                 const statsRes = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1967,10 +2397,13 @@
                     document.getElementById('statActiveServers').textContent = (statsData.stats.active_servers || 0) + ' actifs';
                     document.getElementById('statTotalCoins').textContent = statsData.stats.total_coins || 0;
                     document.getElementById('statAvgCoins').textContent = statsData.stats.total_users ? Math.round(statsData.stats.total_coins / statsData.stats.total_users) + ' par user' : '0 par user';
-                    document.getElementById('statRevenue').textContent = (statsData.stats.total_revenue || 0) + ' FCFA';
-                    document.getElementById('statTransactions').textContent = (statsData.stats.total_transactions || 0) + ' tx';
+                    document.getElementById('statBannedUsers').textContent = statsData.stats.banned_users || 0;
+                    
+                    const bannedPercent = statsData.stats.total_users ? Math.round((statsData.stats.banned_users / statsData.stats.total_users) * 100) : 0;
+                    document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
 
+                // Utilisateurs
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1978,9 +2411,12 @@
 
                 if (usersData.success) {
                     allUsers = usersData.users;
+                    filteredUsers = [...allUsers];
+                    document.getElementById('userCount').textContent = allUsers.length;
                     displayUsers();
                 }
 
+                // Serveurs
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1988,9 +2424,11 @@
 
                 if (serversData.success) {
                     allServers = serversData.servers;
+                    document.getElementById('serverCount').textContent = allServers.length;
                     displayServers();
                 }
 
+                // Transactions
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -1998,9 +2436,11 @@
 
                 if (transData.success) {
                     allTransactions = transData.transactions;
+                    document.getElementById('transactionCount').textContent = allTransactions.length;
                     displayTransactions();
                 }
 
+                // Logs
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2008,11 +2448,15 @@
 
                 if (logsData.success) {
                     allLogs = logsData.logs;
+                    document.getElementById('logCount').textContent = allLogs.length;
                     displayLogs();
                 }
 
+                // Stats financières
+                await loadFinancialStats();
+
+                // Stats Pterodactyl
                 loadPterodactylStats();
-                initCharts();
 
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
@@ -2030,22 +2474,8 @@
 
                 if (data.success) {
                     document.getElementById('pteroCPU').textContent = data.cpu_used + '%';
-                    document.getElementById('pteroCPUProgress').style.width = data.cpu_used + '%';
-                    document.getElementById('pteroCPUUsed').textContent = data.cpu_used + '%';
-                    document.getElementById('pteroCPUTotal').textContent = '100%';
-
                     document.getElementById('pteroRAM').textContent = (data.ram_used / 1024).toFixed(1) + ' GB';
-                    const ramPercent = (data.ram_used / data.ram_total) * 100;
-                    document.getElementById('pteroRAMProgress').style.width = ramPercent + '%';
-                    document.getElementById('pteroRAMUsed').textContent = (data.ram_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroRAMTotal').textContent = (data.ram_total / 1024).toFixed(1) + ' GB';
-
                     document.getElementById('pteroDisk').textContent = (data.disk_used / 1024).toFixed(1) + ' GB';
-                    const diskPercent = (data.disk_used / data.disk_total) * 100;
-                    document.getElementById('pteroDiskProgress').style.width = diskPercent + '%';
-                    document.getElementById('pteroDiskUsed').textContent = (data.disk_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroDiskTotal').textContent = (data.disk_total / 1024).toFixed(1) + ' GB';
-
                     document.getElementById('pteroNodes').textContent = data.nodes || 0;
                     document.getElementById('pteroUsers').textContent = data.ptero_users || 0;
                     document.getElementById('pteroTotalServers').textContent = data.ptero_servers || 0;
@@ -2060,18 +2490,31 @@
             }
         }
 
-        // ===== DISPLAY USERS =====
+        // ===== DISPLAY USERS (AVEC PAGINATION) =====
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             
-            if (!allUsers || allUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur</td></tr>';
+            if (!filteredUsers || filteredUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td></tr>';
+                document.getElementById('userPagination').style.display = 'none';
                 return;
             }
 
+            document.getElementById('userPagination').style.display = 'flex';
+
+            // Pagination
+            const startIndex = (currentUserPage - 1) * usersPerPage;
+            const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
+            const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            document.getElementById('userPageInfo').textContent = `Page ${currentUserPage} / ${totalPages}`;
+            document.getElementById('userPrevBtn').disabled = currentUserPage === 1;
+            document.getElementById('userNextBtn').disabled = currentUserPage === totalPages;
+
             let html = '';
             
-            allUsers.forEach(user => {
+            paginatedUsers.forEach(user => {
                 const status = user.banned ? 'Banni' : (user.email_verified ? 'Actif' : 'Non vérifié');
                 const statusClass = user.banned ? 'badge-danger' : (user.email_verified ? 'badge-success' : 'badge-warning');
                 const roleClass = user.role === 'superadmin' ? 'badge-danger' : (user.role === 'admin' ? 'badge-primary' : 'badge-info');
@@ -2087,24 +2530,41 @@
                         <td><span class="badge ${statusClass}">${status}</span></td>
                         <td>${new Date(user.created_at).toLocaleDateString('fr-FR')}</td>
                         <td>
-                            <button class="action-btn" title="Modifier" onclick="editUser('${user.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" title="Voir serveurs" onclick="viewUserServers('${user.id}')">
-                                <i class="fas fa-server"></i>
-                            </button>
-                            <button class="action-btn" title="Bannir/Débannir" onclick="toggleBan('${user.id}', ${user.banned})">
-                                <i class="fas fa-ban"></i>
-                            </button>
-                            <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editUser('${user.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn view" title="Voir serveurs" onclick="viewUserServers('${user.id}')">
+                                    <i class="fas fa-server"></i>
+                                </button>
+                                <button class="action-btn ban" title="${user.banned ? 'Débannir' : 'Bannir'}" onclick="toggleBan('${user.id}', ${user.banned})">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="action-btn" title="Voir transactions" onclick="viewUserTransactions('${user.id}')">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
             });
             
             tbody.innerHTML = html;
+        }
+
+        function changeUserPage(direction) {
+            if (direction === 'prev' && currentUserPage > 1) {
+                currentUserPage--;
+            } else if (direction === 'next') {
+                const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+                if (currentUserPage < totalPages) {
+                    currentUserPage++;
+                }
+            }
+            displayUsers();
         }
 
         // ===== DISPLAY SERVERS =====
@@ -2144,15 +2604,17 @@
                         <td>${new Date(server.created_at).toLocaleDateString('fr-FR')}</td>
                         <td>${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td>
                         <td>
-                            <button class="action-btn" title="Modifier" onclick="editServer('${server.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
-                                <i class="fas fa-user"></i>
-                            </button>
-                            <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -2166,28 +2628,43 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!allTransactions || allTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Aucune transaction</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction</td></tr>';
                 return;
             }
 
             let html = '';
             
             allTransactions.forEach(transaction => {
-                const statusClass = transaction.status === 'completed' ? 'badge-success' : 
+                const statusClass = transaction.status === 'successful' ? 'badge-success' : 
                                    transaction.status === 'pending' ? 'badge-warning' : 'badge-danger';
+                
+                const typeText = {
+                    'coins_purchase': 'Achat de coins',
+                    'server_purchase': 'Achat de serveur',
+                    'server_renewal': 'Renouvellement'
+                }[transaction.type] || transaction.type;
+                
+                const mediumIcon = transaction.medium === 'MTN' ? '📱 MTN' : 
+                                  transaction.medium === 'ORANGE' ? '📱 Orange' : '💳';
                 
                 html += `
                     <tr>
                         <td><code>${transaction.id.substring(0, 8)}...</code></td>
                         <td>${transaction.user_username || 'Inconnu'}</td>
-                        <td>${transaction.type === 'coins_purchase' ? 'Achat de coins' : 'Achat de serveur'}</td>
-                        <td>${transaction.amount} ${transaction.currency}</td>
+                        <td>${typeText}</td>
+                        <td><strong>${transaction.amount.toLocaleString()} ${transaction.currency}</strong></td>
                         <td><span class="badge ${statusClass}">${transaction.status}</span></td>
+                        <td>${transaction.medium || mediumIcon}</td>
                         <td>${new Date(transaction.created_at).toLocaleString('fr-FR')}</td>
                         <td>
-                            <button class="action-btn" title="Détails" onclick="viewTransaction('${transaction.id}')">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
+                            <div class="action-group">
+                                <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -2276,22 +2753,37 @@
             const search = document.getElementById('userSearch').value.toLowerCase();
             const filter = document.getElementById('userFilter').value;
             
-            const filtered = allUsers.filter(user => {
+            filteredUsers = allUsers.filter(user => {
                 const matchesSearch = (user.username?.toLowerCase() || '').includes(search) ||
                                     (user.email?.toLowerCase() || '').includes(search) ||
-                                    (user.id || '').includes(search);
+                                    (user.id || '').toLowerCase().includes(search);
                 
-                if (filter === 'all') return matchesSearch;
-                if (filter === 'verified') return matchesSearch && user.email_verified;
-                if (filter === 'unverified') return matchesSearch && !user.email_verified;
-                if (filter === 'banned') return matchesSearch && user.banned;
-                if (filter === 'admin') return matchesSearch && user.role === 'admin';
-                if (filter === 'superadmin') return matchesSearch && user.role === 'superadmin';
+                if (!matchesSearch) return false;
                 
-                return false;
+                switch(filter) {
+                    case 'verified': return user.email_verified;
+                    case 'unverified': return !user.email_verified;
+                    case 'banned': return user.banned;
+                    case 'admin': return user.role === 'admin';
+                    case 'superadmin': return user.role === 'superadmin';
+                    case 'withCoins': return user.coins > 0;
+                    case 'withServers': return (user.servers_count || 0) > 0;
+                    default: return true;
+                }
             });
             
-            displayFilteredUsers(filtered);
+            currentUserPage = 1;
+            document.getElementById('userCount').textContent = filteredUsers.length;
+            displayUsers();
+        }
+
+        function clearUserSearch() {
+            document.getElementById('userSearch').value = '';
+            document.getElementById('userFilter').value = 'all';
+            filteredUsers = [...allUsers];
+            currentUserPage = 1;
+            document.getElementById('userCount').textContent = allUsers.length;
+            displayUsers();
         }
 
         function filterServers() {
@@ -2303,19 +2795,26 @@
                                     (server.owner_username || '').toLowerCase().includes(search) ||
                                     (server.id || '').includes(search);
                 
-                if (filter === 'all') return matchesSearch;
+                if (!matchesSearch) return false;
                 
                 const now = new Date();
                 const expiry = new Date(server.expires_at);
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
                 
-                if (filter === 'active') return matchesSearch && daysLeft > 0;
-                if (filter === 'expired') return matchesSearch && daysLeft < 0;
-                if (filter === 'expiring') return matchesSearch && daysLeft > 0 && daysLeft <= 3;
-                
-                return false;
+                switch(filter) {
+                    case 'active': return daysLeft > 0;
+                    case 'expired': return daysLeft < 0;
+                    case 'expiring': return daysLeft > 0 && daysLeft <= 3;
+                    case 'free': return server.server_type === 'free';
+                    case '1gb': return server.server_type === '1gb';
+                    case '2gb': return server.server_type === '2gb';
+                    case '4gb': return server.server_type === '4gb';
+                    case '8gb': return server.server_type === '8gb';
+                    default: return true;
+                }
             });
             
+            document.getElementById('serverCount').textContent = filtered.length;
             displayFilteredServers(filtered);
         }
 
@@ -2327,16 +2826,20 @@
                 const matchesSearch = (trans.id || '').includes(search) ||
                                     (trans.user_username || '').toLowerCase().includes(search);
                 
-                if (filter === 'all') return matchesSearch;
-                if (filter === 'completed') return matchesSearch && trans.status === 'completed';
-                if (filter === 'pending') return matchesSearch && trans.status === 'pending';
-                if (filter === 'failed') return matchesSearch && trans.status === 'failed';
-                if (filter === 'coins') return matchesSearch && trans.type === 'coins_purchase';
-                if (filter === 'server') return matchesSearch && trans.type === 'server_purchase';
+                if (!matchesSearch) return false;
                 
-                return false;
+                switch(filter) {
+                    case 'completed': return trans.status === 'successful';
+                    case 'pending': return trans.status === 'pending';
+                    case 'failed': return trans.status === 'failed';
+                    case 'coins': return trans.type === 'coins_purchase';
+                    case 'server': return trans.type === 'server_purchase';
+                    case 'renewal': return trans.type === 'server_renewal';
+                    default: return true;
+                }
             });
             
+            document.getElementById('transactionCount').textContent = filtered.length;
             displayFilteredTransactions(filtered);
         }
 
@@ -2348,66 +2851,23 @@
                 const matchesSearch = (log.description || '').toLowerCase().includes(search) ||
                                     (log.admin_username || '').toLowerCase().includes(search);
                 
-                if (filter === 'all') return matchesSearch;
-                if (filter === 'ban') return matchesSearch && (log.action_type || '').includes('ban');
-                if (filter === 'role') return matchesSearch && (log.action_type || '').includes('role');
-                if (filter === 'coins') return matchesSearch && (log.action_type || '').includes('coins');
-                if (filter === 'server') return matchesSearch && (log.action_type || '').includes('server');
-                if (filter === 'delete') return matchesSearch && (log.action_type || '').includes('delete');
+                if (!matchesSearch) return false;
                 
-                return false;
+                switch(filter) {
+                    case 'ban': return (log.action_type || '').includes('ban');
+                    case 'role': return (log.action_type || '').includes('role');
+                    case 'coins': return (log.action_type || '').includes('coins');
+                    case 'server': return (log.action_type || '').includes('server');
+                    case 'delete': return (log.action_type || '').includes('delete');
+                    default: return true;
+                }
             });
             
+            document.getElementById('logCount').textContent = filtered.length;
             displayFilteredLogs(filtered);
         }
 
         // ===== DISPLAY FILTERED FUNCTIONS =====
-        function displayFilteredUsers(users) {
-            const tbody = document.getElementById('usersTableBody');
-            
-            if (!users || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            users.forEach(user => {
-                const status = user.banned ? 'Banni' : (user.email_verified ? 'Actif' : 'Non vérifié');
-                const statusClass = user.banned ? 'badge-danger' : (user.email_verified ? 'badge-success' : 'badge-warning');
-                const roleClass = user.role === 'superadmin' ? 'badge-danger' : (user.role === 'admin' ? 'badge-primary' : 'badge-info');
-                
-                html += `
-                    <tr>
-                        <td><code>${user.id.substring(0, 8)}...</code></td>
-                        <td><strong>${user.username}</strong></td>
-                        <td>${user.email}</td>
-                        <td><span class="badge ${roleClass}">${user.role}</span></td>
-                        <td>${user.coins} coins</td>
-                        <td>${user.servers_count || 0}</td>
-                        <td><span class="badge ${statusClass}">${status}</span></td>
-                        <td>${new Date(user.created_at).toLocaleDateString('fr-FR')}</td>
-                        <td>
-                            <button class="action-btn" title="Modifier" onclick="editUser('${user.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" title="Voir serveurs" onclick="viewUserServers('${user.id}')">
-                                <i class="fas fa-server"></i>
-                            </button>
-                            <button class="action-btn" title="Bannir/Débannir" onclick="toggleBan('${user.id}', ${user.banned})">
-                                <i class="fas fa-ban"></i>
-                            </button>
-                            <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
         function displayFilteredServers(servers) {
             const tbody = document.getElementById('serversTableBody');
             
@@ -2444,15 +2904,17 @@
                         <td>${new Date(server.created_at).toLocaleDateString('fr-FR')}</td>
                         <td>${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td>
                         <td>
-                            <button class="action-btn" title="Modifier" onclick="editServer('${server.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
-                                <i class="fas fa-user"></i>
-                            </button>
-                            <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -2465,28 +2927,40 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!transactions || transactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Aucune transaction trouvée</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
                 return;
             }
 
             let html = '';
             
             transactions.forEach(transaction => {
-                const statusClass = transaction.status === 'completed' ? 'badge-success' : 
+                const statusClass = transaction.status === 'successful' ? 'badge-success' : 
                                    transaction.status === 'pending' ? 'badge-warning' : 'badge-danger';
+                
+                const typeText = {
+                    'coins_purchase': 'Achat de coins',
+                    'server_purchase': 'Achat de serveur',
+                    'server_renewal': 'Renouvellement'
+                }[transaction.type] || transaction.type;
                 
                 html += `
                     <tr>
                         <td><code>${transaction.id.substring(0, 8)}...</code></td>
                         <td>${transaction.user_username || 'Inconnu'}</td>
-                        <td>${transaction.type === 'coins_purchase' ? 'Achat de coins' : 'Achat de serveur'}</td>
-                        <td>${transaction.amount} ${transaction.currency}</td>
+                        <td>${typeText}</td>
+                        <td><strong>${transaction.amount.toLocaleString()} ${transaction.currency}</strong></td>
                         <td><span class="badge ${statusClass}">${transaction.status}</span></td>
+                        <td>${transaction.medium || 'N/A'}</td>
                         <td>${new Date(transaction.created_at).toLocaleString('fr-FR')}</td>
                         <td>
-                            <button class="action-btn" title="Détails" onclick="viewTransaction('${transaction.id}')">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
+                            <div class="action-group">
+                                <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -2521,80 +2995,6 @@
             tbody.innerHTML = html;
         }
 
-        // ===== INIT CHARTS =====
-        function initCharts() {
-            if (charts.servers) charts.servers.destroy();
-            if (charts.revenue) charts.revenue.destroy();
-
-            const serversCtx = document.getElementById('serversChart').getContext('2d');
-            charts.servers = new Chart(serversCtx, {
-                type: 'line',
-                data: {
-                    labels: ['J-30', 'J-25', 'J-20', 'J-15', 'J-10', 'J-5', 'Aujourd\'hui'],
-                    datasets: [{
-                        label: 'Créations de serveurs',
-                        data: [12, 19, 15, 17, 14, 13, 15],
-                        borderColor: '#7C3AED',
-                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#F3F4F6' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: { color: '#2D3748' },
-                            ticks: { color: '#9CA3AF' }
-                        },
-                        x: {
-                            grid: { color: '#2D3748' },
-                            ticks: { color: '#9CA3AF' }
-                        }
-                    }
-                }
-            });
-
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            charts.revenue = new Chart(revenueCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['J-30', 'J-25', 'J-20', 'J-15', 'J-10', 'J-5', 'Aujourd\'hui'],
-                    datasets: [{
-                        label: 'Revenus (FCFA)',
-                        data: [2500, 4000, 3000, 3500, 2800, 3200, 2900],
-                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#F3F4F6' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: { color: '#2D3748' },
-                            ticks: { color: '#9CA3AF' }
-                        },
-                        x: {
-                            grid: { color: '#2D3748' },
-                            ticks: { color: '#9CA3AF' }
-                        }
-                    }
-                }
-            });
-        }
-
         // ===== USER ACTIONS =====
         function editUser(userId) {
             const user = allUsers.find(u => u.id === userId);
@@ -2605,6 +3005,7 @@
             document.getElementById('editUserId').textContent = user.id;
             document.getElementById('editUsername').textContent = user.username;
             document.getElementById('editEmail').textContent = user.email;
+            document.getElementById('editCoins').textContent = user.coins + ' coins';
             document.getElementById('editRole').value = user.role;
             document.getElementById('editEmailVerified').value = user.email_verified ? 'true' : 'false';
             document.getElementById('editBanned').value = user.banned ? 'true' : 'false';
@@ -2624,7 +3025,7 @@
                                 <p>${window.PLANS?.[server.server_type]?.name || server.server_type} - Expire: ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div class="server-mini-actions">
-                                <button class="action-btn" onclick="editServer('${server.id}')">
+                                <button class="action-btn edit" onclick="editServer('${server.id}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="action-btn delete" onclick="deleteServer('${server.id}')">
@@ -2647,12 +3048,58 @@
             closeModal('userEditModal');
         }
 
+        function viewUserTransactions(userId) {
+            switchTab('transactions');
+            document.getElementById('transactionSearch').value = userId;
+            filterTransactions();
+            closeModal('userEditModal');
+        }
+
         function viewUser(userId) {
             editUser(userId);
         }
 
         function viewTransaction(transactionId) {
-            showToast('info', 'Détails de la transaction: ' + transactionId);
+            const transaction = allTransactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            const detailsDiv = document.getElementById('transactionDetails');
+            detailsDiv.innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">ID</span>
+                    <span class="modal-info-value">${transaction.id}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Utilisateur</span>
+                    <span class="modal-info-value">${transaction.user_username || 'Inconnu'} (${transaction.user_id})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Type</span>
+                    <span class="modal-info-value">${transaction.type}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Montant</span>
+                    <span class="modal-info-value">${transaction.amount} ${transaction.currency}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Statut</span>
+                    <span class="modal-info-value"><span class="badge ${transaction.status === 'successful' ? 'badge-success' : 'badge-warning'}">${transaction.status}</span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Moyen</span>
+                    <span class="modal-info-value">${transaction.medium || 'N/A'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date</span>
+                    <span class="modal-info-value">${new Date(transaction.created_at).toLocaleString('fr-FR')}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Fapshi ID</span>
+                    <span class="modal-info-value">${transaction.fapshi_transaction_id || 'N/A'}</span>
+                </div>
+            `;
+
+            openModal('transactionModal');
         }
 
         function viewNode(nodeId) {
@@ -2660,51 +3107,71 @@
         }
 
         async function toggleBan(userId, currentBanned) {
-            if (!confirm(`Voulez-vous ${currentBanned ? 'débannir' : 'bannir'} cet utilisateur ?`)) return;
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>`;
+            document.getElementById('confirmTitle').textContent = currentBanned ? 'Débannir' : 'Bannir';
+            document.getElementById('confirmMessage').textContent = `Êtes-vous sûr de vouloir ${currentBanned ? 'débannir' : 'bannir'} cet utilisateur ?`;
             
-            try {
-                const res = await fetch(`/api/admin/users/${userId}/ban`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ banned: !currentBanned })
-                });
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
                 
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast('success', data.message);
-                    loadAdminData();
-                } else {
-                    showToast('error', data.error);
+                try {
+                    const res = await fetch(`/api/admin/users/${userId}/ban`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ banned: !currentBanned })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', data.message);
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
                 }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
+            };
+            
+            openModal('confirmModal');
         }
 
         async function deleteUser(userId) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible !')) return;
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
+            document.getElementById('confirmTitle').textContent = 'Supprimer utilisateur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible !';
             
-            try {
-                const res = await fetch(`/api/admin/users/${userId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
                 
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast('success', 'Utilisateur supprimé');
-                    loadAdminData();
-                } else {
-                    showToast('error', data.error);
+                try {
+                    const res = await fetch(`/api/admin/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Utilisateur supprimé');
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
                 }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
+            };
+            
+            openModal('confirmModal');
         }
 
         async function addCoinsToUser() {
@@ -2859,28 +3326,38 @@
         }
 
         async function deleteServer(serverId) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer ce serveur ?')) return;
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
+            document.getElementById('confirmTitle').textContent = 'Supprimer serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce serveur ?';
             
-            try {
-                const res = await fetch(`/api/admin/servers/${serverId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
                 
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast('success', 'Serveur supprimé');
-                    if (currentServerId === serverId) {
-                        closeModal('serverEditModal');
+                try {
+                    const res = await fetch(`/api/admin/servers/${serverId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Serveur supprimé');
+                        if (currentServerId === serverId) {
+                            closeModal('serverEditModal');
+                        }
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error);
                     }
-                    loadAdminData();
-                } else {
-                    showToast('error', data.error);
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
                 }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
+            };
+            
+            openModal('confirmModal');
         }
 
         // ===== BULK ACTIONS =====
@@ -2919,6 +3396,43 @@
             }
         }
 
+        // ===== EXPORT FUNCTIONS =====
+        function exportUsers(format) {
+            const data = filteredUsers.map(u => ({
+                id: u.id,
+                username: u.username,
+                email: u.email,
+                role: u.role,
+                coins: u.coins,
+                servers: u.servers_count || 0,
+                verified: u.email_verified,
+                banned: u.banned,
+                created_at: u.created_at
+            }));
+
+            if (format === 'csv') {
+                const headers = Object.keys(data[0]).join(',');
+                const rows = data.map(obj => Object.values(obj).map(v => `"${v}"`).join(',')).join('\n');
+                const csv = headers + '\n' + rows;
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `users_export_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+            } else {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `users_export_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+            }
+            
+            showToast('success', `Export ${format.toUpperCase()} téléchargé`);
+        }
+
         // ===== REFRESH =====
         function refreshAllData() {
             showToast('info', 'Actualisation des données...');
@@ -2954,11 +3468,13 @@
         // Exposer les fonctions globalement
         window.switchTab = switchTab;
         window.filterUsers = filterUsers;
+        window.clearUserSearch = clearUserSearch;
         window.filterServers = filterServers;
         window.filterTransactions = filterTransactions;
         window.filterLogs = filterLogs;
         window.editUser = editUser;
         window.viewUserServers = viewUserServers;
+        window.viewUserTransactions = viewUserTransactions;
         window.viewUser = viewUser;
         window.viewTransaction = viewTransaction;
         window.viewNode = viewNode;
@@ -2975,6 +3491,8 @@
         window.refreshAllData = refreshAllData;
         window.closeModal = closeModal;
         window.openModal = openModal;
+        window.exportUsers = exportUsers;
+        window.changeUserPage = changeUserPage;
     </script>
 </body>
 </html>
