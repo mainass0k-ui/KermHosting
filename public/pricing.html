@@ -2137,10 +2137,10 @@
             let html = '';
 
             Object.entries(PLANS).forEach(([key, plan]) => {
-                const monthlyPrice = plan.price_monthly;
-                const yearlyPrice = plan.price_yearly;
-                const displayPrice = isYearly ? yearlyPrice : monthlyPrice;
-                const pricePeriod = isYearly ? '/mois' : '/semaine';
+                const weekleyPrice = plan.price_weekly;
+                const monthleyPrice = plan.price_monthley;
+                const displayPrice = isWeekly ? yearlyPrice : monthlyPrice;
+                const pricePeriod = isMonthley ? '/mois' : '/semaine';
                 
                 const popularClass = plan.popular ? 'popular' : '';
                 const btnClass = plan.popular ? 'popular-btn' : '';
