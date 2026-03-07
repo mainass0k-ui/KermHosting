@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="Tarifs KermHosting - Hébergement Node.js à partir de 500 FCFA/mois. Payez en FCFA par Mobile Money.">
+    <meta name="description" content="Tarifs KermHosting - Hébergement Node.js à partir de 500 FCFA/7 jours. Payez en FCFA par Mobile Money.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
     
     <!-- Apple Touch Icon -->
@@ -686,9 +686,27 @@
             color: var(--warning);
         }
 
+        .duration-badge {
+            display: inline-block;
+            background: var(--bg-hover);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--info);
+            margin-top: 8px;
+        }
+
+        .duration-badge i {
+            margin-right: 4px;
+        }
+
+        .duration-badge.free {
+            color: var(--warning);
+        }
+
         .card-features {
             list-style: none;
-            margin-bottom: 24px;
+            margin: 20px 0 24px;
         }
 
         .card-features li {
@@ -710,6 +728,14 @@
 
         .card-features .fa-times {
             color: var(--danger);
+        }
+
+        .card-features .fa-clock {
+            color: var(--warning);
+        }
+
+        .card-features .fa-calendar {
+            color: var(--info);
         }
 
         .card-btn {
@@ -943,6 +969,30 @@
             color: var(--text-secondary);
             line-height: 1.6;
             font-size: 0.9rem;
+        }
+
+        /* ===== DURATION HIGHLIGHT ===== */
+        .duration-highlight {
+            display: inline-block;
+            background: var(--bg-hover);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .duration-highlight.free {
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .duration-highlight.paid {
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .duration-highlight i {
+            margin-right: 4px;
         }
 
         /* ===== MODALS ===== */
@@ -1439,7 +1489,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar (adaptative selon connexion) -->
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1464,7 +1514,6 @@
             
             <nav class="sidebar-nav">
                 <ul id="sidebarNav">
-                    <!-- ACCUEIL - Caché pour les connectés, affiché pour les visiteurs -->
                     <li id="navHome" style="display: none;">
                         <a href="/">
                             <i class="fas fa-home"></i>
@@ -1489,18 +1538,13 @@
                             <span>Tableau de bord</span>
                         </a>
                     </li>
-                        <li id="navProfile" style="display: none;">
+                    <li id="navProfile" style="display: none;">
                         <a href="/profile">
                             <i class="fas fa-user"></i>
                             <span>Profil</span>
                         </a>
                     </li>
-                        <a href="/transactions">
-                            <i class="fas fa-history"></i>
-                            <span>Transactions</span>
-                        </a>
-                     </li>
-                     </li>
+                    <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
@@ -1595,12 +1639,12 @@
 
                 <!-- Billing Toggle -->
                 <div class="billing-toggle">
-                    <span class="toggle-label active" id="monthlyLabel">Mensuel</span>
+                    <span class="toggle-label active" id="monthlyLabel">7 jours</span>
                     <div class="toggle-switch monthly" id="billingToggle">
                         <div class="toggle-slider"></div>
                     </div>
                     <span class="toggle-label" id="yearlyLabel">
-                        Annuel
+                        Mensuel
                         <span class="discount-badge">-20%</span>
                     </span>
                 </div>
@@ -1659,6 +1703,12 @@
                         <div class="comparison-cell">200%</div>
                         <div class="comparison-cell">400%</div>
 
+                        <div class="comparison-cell">Durée</div>
+                        <div class="comparison-cell"><i class="fas fa-clock" style="color: var(--warning);"></i> 24h</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+
                         <div class="comparison-cell">Bases de données</div>
                         <div class="comparison-cell">1</div>
                         <div class="comparison-cell">3</div>
@@ -1686,6 +1736,15 @@
                         <div class="faq-item">
                             <div class="faq-question">
                                 <i class="fas fa-question-circle"></i>
+                                Combien de temps dure un serveur ?
+                            </div>
+                            <div class="faq-answer">
+                                Le plan Free dure 24h pour vous permettre de tester. Les plans payants (Starter, Basic, Pro) durent 7 jours. Vous pouvez les renouveler à tout moment avec vos coins.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
                                 Comment payer en FCFA ?
                             </div>
                             <div class="faq-answer">
@@ -1708,15 +1767,6 @@
                             </div>
                             <div class="faq-answer">
                                 Les coins sont notre monnaie virtuelle. Achetez des packs pour économiser jusqu'à 20%.
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <div class="faq-question">
-                                <i class="fas fa-question-circle"></i>
-                                Remboursement possible ?
-                            </div>
-                            <div class="faq-answer">
-                                Garantie satisfait ou remboursé de 7 jours sur tous nos plans payants.
                             </div>
                         </div>
                     </div>
@@ -1747,6 +1797,10 @@
                     <div class="modal-info-item">
                         <span class="modal-info-label">Prix en coins</span>
                         <span class="modal-info-value" id="choicePlanCoins">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="choicePlanDuration">- jours</span>
                     </div>
                     <div class="modal-info-item">
                         <span class="modal-info-label">Votre solde</span>
@@ -1816,6 +1870,10 @@
                         <span class="modal-info-value" id="confirmCoinsNeeded">- coins</span>
                     </div>
                     <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="confirmDuration">- jours</span>
+                    </div>
+                    <div class="modal-info-item">
                         <span class="modal-info-label">Votre solde</span>
                         <span class="modal-info-value" id="confirmUserBalance">- coins</span>
                     </div>
@@ -1868,6 +1926,10 @@
                     <div class="modal-info-item">
                         <span class="modal-info-label">Prix</span>
                         <span class="modal-info-value" id="mobilePlanPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="mobilePlanDuration">- jours</span>
                     </div>
                 </div>
 
@@ -2021,11 +2083,11 @@
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ===== TOGGLE BILLING =====
+        // ===== TOGGLE BILLING CORRIGÉ =====
         const toggle = document.getElementById('billingToggle');
         const monthlyLabel = document.getElementById('monthlyLabel');
         const yearlyLabel = document.getElementById('yearlyLabel');
-        let isYearly = false;
+        let isYearly = false; // false = 7 jours, true = mensuel
 
         toggle.addEventListener('click', () => {
             isYearly = !isYearly;
@@ -2035,18 +2097,25 @@
             updatePrices();
         });
 
-        // ===== PLANS DATA =====
+        // ===== PLANS DATA AVEC DURÉES CORRECTES =====
         const PLANS = {
             'free': {
                 name: 'Free',
                 memory: 256,
                 disk: 5120,
                 cpu: 50,
+                price_weekly: 0,
                 price_monthly: 0,
-                price_yearly: 0,
                 coins_needed: 0,
-                duration_days: 1,
-                features: ['256 MB RAM', '5 GB SSD', '50% CPU', '1 DB', '1 backup'],
+                duration_days: 1, // 24h
+                features: [
+                    '256 MB RAM', 
+                    '5 GB SSD', 
+                    '50% CPU', 
+                    '1 DB', 
+                    '1 backup',
+                    '⏰ Expire après 24h'
+                ],
                 icon: 'fa-gift',
                 color: 'gray'
             },
@@ -2055,11 +2124,19 @@
                 memory: 1024,
                 disk: 10240,
                 cpu: 100,
-                price_monthly: 500,
-                price_yearly: 4800,
+                price_weekly: 500,
+                price_monthly: 1800, // 500 × 4 -20% = 1600
                 coins_needed: 100,
                 duration_days: 7,
-                features: ['1 GB RAM', '10 GB SSD', '100% CPU', '3 DB', '3 backups', 'Support standard'],
+                features: [
+                    '1 GB RAM', 
+                    '10 GB SSD', 
+                    '100% CPU', 
+                    '3 DB', 
+                    '3 backups',
+                    '📅 7 jours',
+                    'Support standard'
+                ],
                 icon: 'fa-rocket',
                 color: 'blue',
                 popular: true
@@ -2069,11 +2146,19 @@
                 memory: 2048,
                 disk: 20480,
                 cpu: 200,
-                price_monthly: 800,
-                price_yearly: 7680,
+                price_weekly: 800,
+                price_monthly: 2900, // 800 × 4 -10% = 2880
                 coins_needed: 160,
                 duration_days: 7,
-                features: ['2 GB RAM', '20 GB SSD', '200% CPU', '5 DB', '5 backups', 'Support prioritaire'],
+                features: [
+                    '2 GB RAM', 
+                    '20 GB SSD', 
+                    '200% CPU', 
+                    '5 DB', 
+                    '5 backups',
+                    '📅 7 jours',
+                    'Support prioritaire'
+                ],
                 icon: 'fa-server',
                 color: 'green'
             },
@@ -2082,11 +2167,19 @@
                 memory: 4096,
                 disk: 40960,
                 cpu: 400,
-                price_monthly: 1300,
-                price_yearly: 12480,
+                price_weekly: 1300,
+                price_monthly: 4700, // 1300 × 4 -10% = 4680
                 coins_needed: 260,
                 duration_days: 7,
-                features: ['4 GB RAM', '40 GB SSD', '400% CPU', '10 DB', '10 backups', 'Support VIP 24/7'],
+                features: [
+                    '4 GB RAM', 
+                    '40 GB SSD', 
+                    '400% CPU', 
+                    '10 DB', 
+                    '10 backups',
+                    '📅 7 jours',
+                    'Support VIP 24/7'
+                ],
                 icon: 'fa-crown',
                 color: 'purple'
             }
@@ -2131,19 +2224,22 @@
         let userData = null;
         let paymentMethod = 'coins';
 
-        // ===== DISPLAY FUNCTIONS =====
+        // ===== DISPLAY PLANS CORRIGÉ =====
         function displayPlans() {
             const container = document.getElementById('pricingGrid');
             let html = '';
 
             Object.entries(PLANS).forEach(([key, plan]) => {
-                const weekleyPrice = plan.price_weekly;
-                const monthleyPrice = plan.price_monthley;
-                const displayPrice = isWeekly ? yearlyPrice : monthlyPrice;
-                const pricePeriod = isMonthley ? '/mois' : '/semaine';
+                const price = isYearly ? plan.price_monthly : plan.price_weekly;
+                const pricePeriod = isYearly ? '/mois' : '/7 jours';
                 
                 const popularClass = plan.popular ? 'popular' : '';
                 const btnClass = plan.popular ? 'popular-btn' : '';
+
+                // Badge de durée spécial pour le free
+                const durationBadge = key === 'free' 
+                    ? '<span class="duration-highlight free"><i class="fas fa-clock"></i> 24h d\'essai</span>'
+                    : '<span class="duration-highlight paid"><i class="fas fa-calendar"></i> 7 jours</span>';
 
                 html += `
                     <div class="pricing-card ${popularClass}">
@@ -2154,19 +2250,20 @@
                             </div>
                             <h3 class="card-name">${plan.name}</h3>
                             <div class="card-price">
-                                <span class="price">${displayPrice.toLocaleString()}</span>
+                                <span class="price">${price.toLocaleString()}</span>
                                 <span class="price-period">FCFA${pricePeriod}</span>
                             </div>
                             <div class="price-coins">
                                 <i class="fas fa-coins"></i>
                                 ${plan.coins_needed} coins
                             </div>
+                            ${durationBadge}
                         </div>
                         <ul class="card-features">
                             ${plan.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
                         </ul>
                         <button class="card-btn ${btnClass}" onclick="selectPlan('${key}')">
-                            ${plan.price_monthly === 0 ? 'Essayer gratuitement' : 'Choisir ce plan'}
+                            ${plan.price_weekly === 0 ? 'Essayer gratuitement' : 'Choisir ce plan'}
                             <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
@@ -2237,13 +2334,11 @@
                         userData = data.user;
                         userCoins = data.user.coins;
                         
-                        // Mise à jour sidebar
                         document.getElementById('sidebarUserName').textContent = data.user.username;
                         document.getElementById('sidebarUserEmail').textContent = data.user.email;
                         document.getElementById('sidebarUserBadge').textContent = data.user.role;
                         document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
                         
-                        // Cacher éléments non connectés, afficher éléments connectés
                         document.getElementById('navHome').style.display = 'none';
                         document.getElementById('navDashboard').style.display = 'block';
                         document.getElementById('navProfile').style.display = 'block';
@@ -2299,12 +2394,13 @@
             selectedPlan = PLANS[planKey];
             selectedPlan.key = planKey;
             
-            const price = isYearly ? selectedPlan.price_yearly : selectedPlan.price_monthly;
+            const price = isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly;
             const coinsNeeded = selectedPlan.coins_needed;
             
             document.getElementById('choicePlanName').textContent = selectedPlan.name;
             document.getElementById('choicePlanPrice').textContent = price + ' FCFA';
             document.getElementById('choicePlanCoins').textContent = coinsNeeded + ' coins';
+            document.getElementById('choicePlanDuration').textContent = selectedPlan.duration_days + ' jours';
             document.getElementById('choiceUserBalance').textContent = userCoins + ' coins';
             
             const difference = document.getElementById('choiceDifference');
@@ -2367,6 +2463,7 @@
                 } else {
                     document.getElementById('confirmPlanName').textContent = selectedPlan.name;
                     document.getElementById('confirmCoinsNeeded').textContent = selectedPlan.coins_needed + ' coins';
+                    document.getElementById('confirmDuration').textContent = selectedPlan.duration_days + ' jours';
                     document.getElementById('confirmUserBalance').textContent = userCoins + ' coins';
                     document.getElementById('confirmNewBalance').textContent = (userCoins - selectedPlan.coins_needed) + ' coins';
                     
@@ -2376,12 +2473,13 @@
             } else {
                 const phone = document.getElementById('modalPhone').value;
                 if (!phone || phone.length !== 9) {
-                    alert('Numéro de téléphone invalide');
+                    showToast('error', 'Numéro de téléphone invalide');
                     return;
                 }
                 
                 document.getElementById('mobilePlanName').textContent = selectedPlan.name;
-                document.getElementById('mobilePlanPrice').textContent = (isYearly ? selectedPlan.price_yearly : selectedPlan.price_monthly) + ' FCFA';
+                document.getElementById('mobilePlanPrice').textContent = (isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly) + ' FCFA';
+                document.getElementById('mobilePlanDuration').textContent = selectedPlan.duration_days + ' jours';
                 document.getElementById('mobilePhone').value = phone;
                 
                 closeModal('paymentChoiceModal');
