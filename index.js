@@ -2565,7 +2565,7 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
     }
 });
 
-// Paiement direct pour acheter des coins
+// Paiement direct pour acheter des coins - VERSION CORRIGÉE
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { pack_id, phone } = req.body;
@@ -2591,6 +2591,7 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
         const totalCoins = pack.coins + (pack.bonus || 0);
         const transactionId = crypto.randomUUID();
 
+        // 🔴 IMPORTANT: On insère coins_amount pour que le webhook sache combien créditer
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert([{
@@ -2600,11 +2601,17 @@ app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, 
                 pack_id: pack_id,
                 amount: pack.price_fcfa,
                 currency: 'FCFA',
-                coins_amount: totalCoins,
+                coins_amount: totalCoins,  // ← CRUCIAL: c'est cette valeur qui sera créditée
                 status: 'pending',
                 metadata: { 
-                    pack, 
-                    phone
+                    pack: {
+                        name: pack.name,
+                        coins: pack.coins,
+                        bonus: pack.bonus || 0,
+                        price: pack.price_fcfa
+                    },
+                    phone,
+                    pack_id
                 }
             }])
             .select()
@@ -2697,12 +2704,16 @@ app.get('/api/payment/status/:transId', async (req, res) => {
             });
         }
 
-        // Récupérer la transaction dans notre base
-        const { data: transaction } = await supabase
+        // Récupérer la transaction dans notre base - utiliser maybeSingle()
+        const { data: transaction, error: txError } = await supabase
             .from('transactions')
-            .select('*')
+            .select('*, profiles:user_id(username, email)')
             .eq('fapshi_transaction_id', transId)
-            .single();
+            .maybeSingle();
+
+        if (txError) {
+            console.error('❌ Erreur récupération transaction:', txError);
+        }
 
         // Si le statut a changé, mettre à jour notre base
         if (transaction && transaction.status !== status.status.toLowerCase()) {
@@ -2710,11 +2721,25 @@ app.get('/api/payment/status/:transId', async (req, res) => {
                 .from('transactions')
                 .update({
                     status: status.status.toLowerCase(),
-                    completed_at: status.status === 'SUCCESSFUL' ? new Date().toISOString() : null
+                    completed_at: status.status === 'SUCCESSFUL' ? new Date().toISOString() : null,
+                    fapshi_response: status
                 })
                 .eq('id', transaction.id);
                 
             console.log(`✅ Transaction ${transId} mise à jour: ${status.status}`);
+
+            // Si paiement réussi, vérifier que les coins ont été crédités
+            if (status.status === 'SUCCESSFUL' && transaction.type === 'coins_purchase') {
+                const { data: user } = await supabase
+                    .from('profiles')
+                    .select('coins')
+                    .eq('id', transaction.user_id)
+                    .single();
+                
+                if (user) {
+                    console.log(`💰 Solde actuel de l'utilisateur: ${user.coins} coins`);
+                }
+            }
         }
 
         // Message personnalisé selon le statut
@@ -2724,7 +2749,7 @@ app.get('/api/payment/status/:transId', async (req, res) => {
         switch (status.status) {
             case 'SUCCESSFUL':
                 userMessage = '✅ Paiement confirmé avec succès !';
-                action = 'create_server';
+                action = 'success';
                 break;
             case 'FAILED':
                 userMessage = '❌ Le paiement a échoué. Vérifiez que vous avez suffisamment de fonds sur votre compte Mobile Money et que vous avez confirmé la transaction.';
@@ -2743,6 +2768,12 @@ app.get('/api/payment/status/:transId', async (req, res) => {
             status: status.status,
             message: userMessage,
             action: action,
+            transaction: transaction ? {
+                id: transaction.id,
+                type: transaction.type,
+                coins_amount: transaction.coins_amount,
+                created_at: transaction.created_at
+            } : null,
             data: status
         });
 
@@ -2756,7 +2787,7 @@ app.get('/api/payment/status/:transId', async (req, res) => {
 });
 
 // =============================================
-// WEBHOOK FAPSHI ULTRA-DÉTAILLÉ
+// WEBHOOK FAPSHI CORRIGÉ - VERSION FINALE
 // =============================================
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
@@ -2785,27 +2816,25 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
             return res.status(400).json({ message: event.message });
         }
 
-        // 2. Chercher la transaction
+        // 2. Chercher la transaction - CORRECTION: utiliser maybeSingle() au lieu de single()
         console.log('🔍 Recherche dans Supabase...');
         const { data: transaction, error } = await supabase
             .from('transactions')
             .select('*')
             .eq('fapshi_transaction_id', transId)
-            .single();
+            .maybeSingle();  // ← CHANGEMENT CRUCIAL !!!
 
-        if (error || !transaction) {
-            console.log('❌ Transaction non trouvée dans Supabase');
-            console.log('Erreur:', error);
-            
-            // Chercher par l'ID externe aussi
+        // Si pas trouvée par fapshi_id, chercher par l'ID externe
+        if (!transaction && !error) {
+            console.log('🔍 Transaction non trouvée par fapshi_id, recherche par ID externe...');
             const { data: txByExternal } = await supabase
                 .from('transactions')
                 .select('*')
                 .eq('id', transId)
-                .maybeSingle();
+                .maybeSingle();  // ← CHANGEMENT CRUCIAL !!!
             
             if (txByExternal) {
-                console.log('✅ Trouvée par ID externe:', txByExternal);
+                console.log('✅ Trouvée par ID externe:', txByExternal.id);
                 // Mettre à jour avec le fapshi_id
                 await supabase
                     .from('transactions')
@@ -2813,9 +2842,48 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
                     .eq('id', txByExternal.id);
                 
                 transaction = txByExternal;
-            } else {
-                return res.status(404).json({ message: 'Transaction non trouvée' });
             }
+        }
+
+        // Si toujours pas trouvée
+        if (!transaction) {
+            console.log('❌ Transaction non trouvée dans Supabase');
+            console.log('Erreur:', error);
+            
+            // Créer une transaction de secours si c'est un paiement inconnu
+            console.log('📝 Tentative de récupération...');
+            
+            // Essayer de trouver par metadata
+            const { data: allTransactions } = await supabase
+                .from('transactions')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            // Chercher une transaction avec le même montant récent
+            if (event.amount && allTransactions) {
+                const matchingTx = allTransactions.find(tx => 
+                    tx.amount === event.amount && 
+                    new Date(tx.created_at) > new Date(Date.now() - 3600000) // Moins d'1h
+                );
+                
+                if (matchingTx) {
+                    console.log('✅ Transaction récupérée par montant:', matchingTx.id);
+                    transaction = matchingTx;
+                    
+                    await supabase
+                        .from('transactions')
+                        .update({ fapshi_transaction_id: transId })
+                        .eq('id', matchingTx.id);
+                }
+            }
+        }
+
+        // Si toujours pas de transaction, on ne peut pas continuer
+        if (!transaction) {
+            console.log('❌ Aucune transaction correspondante trouvée');
+            return res.status(404).json({ message: 'Transaction non trouvée' });
         }
 
         console.log('✅ Transaction trouvée:', JSON.stringify(transaction, null, 2));
@@ -2823,60 +2891,107 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
         // Éviter les doublons
         if (transaction.status === event.status.toLowerCase()) {
             console.log('⚠️ Statut déjà à jour');
-            return res.json({ received: true });
+            return res.json({ received: true, already_processed: true });
         }
 
         // 3. Mettre à jour le statut
         console.log('📝 Mise à jour du statut...');
-        await supabase
+        const { error: updateTxError } = await supabase
             .from('transactions')
             .update({
                 status: event.status.toLowerCase(),
                 completed_at: event.status === 'SUCCESSFUL' ? new Date().toISOString() : null,
-                fapshi_response: event
+                fapshi_response: event,
+                medium: event.medium || transaction.medium
             })
             .eq('id', transaction.id);
 
-        // 4. Si paiement réussi, CRÉDITER
+        if (updateTxError) {
+            console.error('❌ Erreur mise à jour transaction:', updateTxError);
+        }
+
+        // 4. Si paiement réussi, CRÉDITER LES COINS (VERSION ROBUSTE)
         if (event.status === 'SUCCESSFUL') {
             console.log('💰 PAIEMENT RÉUSSI !!!');
             
             if (transaction.type === 'coins_purchase') {
                 console.log('🎯 Type: achat de coins');
                 
-                // Récupérer l'utilisateur
+                // Récupérer l'utilisateur avec maybeSingle() pour éviter les erreurs
                 const { data: user, error: userError } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', transaction.user_id)
-                    .single();
+                    .maybeSingle();  // ← CHANGEMENT CRUCIAL !!!
 
                 if (userError || !user) {
                     console.error('❌ Utilisateur non trouvé:', transaction.user_id);
                     console.error(userError);
-                } else {
-                    console.log('👤 Utilisateur trouvé:', user.username, 'coins actuels:', user.coins);
                     
-                    // Calculer les coins
-                    let coinsToAdd = transaction.coins_amount || 0;
+                    // Log l'erreur mais on ne fait pas échouer le webhook
+                    await supabase
+                        .from('system_logs')
+                        .insert([{
+                            log_type: 'payment_error',
+                            message: `Utilisateur non trouvé pour transaction ${transaction.id}`,
+                            details: { transaction_id: transaction.id, user_id: transaction.user_id },
+                            severity: 'error'
+                        }]);
                     
-                    // Si pas de coins_amount, regarder dans metadata
-                    if (coinsToAdd === 0 && transaction.metadata?.pack) {
-                        const pack = transaction.metadata.pack;
-                        coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
-                        console.log('📦 Coins calculés depuis metadata:', coinsToAdd);
+                    return res.json({ received: true, warning: 'User not found' });
+                }
+
+                console.log('👤 Utilisateur trouvé:', user.username, 'coins actuels:', user.coins);
+                
+                // Calculer les coins à créditer - PLUSIEURS SOURCES DE SECOURS
+                let coinsToAdd = 0;
+                
+                // Source 1: coins_amount de la transaction
+                if (transaction.coins_amount && transaction.coins_amount > 0) {
+                    coinsToAdd = transaction.coins_amount;
+                    console.log('📦 Coins depuis transaction.coins_amount:', coinsToAdd);
+                }
+                // Source 2: metadata.pack
+                else if (transaction.metadata?.pack) {
+                    const pack = transaction.metadata.pack;
+                    coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+                    console.log('📦 Coins depuis metadata.pack:', coinsToAdd);
+                }
+                // Source 3: pack_id dans COIN_PACKS
+                else if (transaction.pack_id && COIN_PACKS[transaction.pack_id]) {
+                    const pack = COIN_PACKS[transaction.pack_id];
+                    coinsToAdd = pack.coins + (pack.bonus || 0);
+                    console.log('📦 Coins depuis COIN_PACKS global:', coinsToAdd);
+                }
+                // Source 4: pack_id dans la table coin_packs
+                else if (transaction.pack_id) {
+                    const { data: packFromDb } = await supabase
+                        .from('coin_packs')
+                        .select('*')
+                        .eq('pack_key', transaction.pack_id)
+                        .maybeSingle();
+                    
+                    if (packFromDb) {
+                        coinsToAdd = packFromDb.coins + (packFromDb.bonus || 0);
+                        console.log('📦 Coins depuis table coin_packs:', coinsToAdd);
                     }
+                }
 
-                    // Dernier recours : chercher dans COIN_PACKS
-                    if (coinsToAdd === 0 && transaction.pack_id && COIN_PACKS[transaction.pack_id]) {
-                        const pack = COIN_PACKS[transaction.pack_id];
-                        coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
-                        console.log('📦 Coins calculés depuis COIN_PACKS:', coinsToAdd);
-                    }
+                console.log('💰 Coins à ajouter (final):', coinsToAdd);
 
-                    console.log('💰 Coins à ajouter:', coinsToAdd);
-
-                    if (coinsToAdd > 0) {
+                if (coinsToAdd > 0) {
+                    // Vérifier si déjà crédité (anti-doublon)
+                    const { data: existingActivity } = await supabase
+                        .from('user_activities')
+                        .select('id')
+                        .eq('user_id', user.id)
+                        .eq('activity_type', 'coins_purchase')
+                        .filter('metadata->>fapshi_id', 'eq', transId)
+                        .maybeSingle();
+                    
+                    if (existingActivity) {
+                        console.log('⚠️ Coins déjà crédités pour cette transaction');
+                    } else {
                         const newBalance = (user.coins || 0) + coinsToAdd;
                         
                         // CRÉDITER !!!
@@ -2887,6 +3002,15 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
 
                         if (updateError) {
                             console.error('❌ ERREUR CRÉDIT:', updateError);
+                            
+                            await supabase
+                                .from('system_logs')
+                                .insert([{
+                                    log_type: 'credit_error',
+                                    message: `Erreur crédit pour ${user.id}: ${updateError.message}`,
+                                    details: { user_id: user.id, coins: coinsToAdd },
+                                    severity: 'error'
+                                }]);
                         } else {
                             console.log(`✅ ${coinsToAdd} COINS CRÉDITÉS À ${user.username}`);
                             console.log(`   Ancien solde: ${user.coins}`);
@@ -2900,32 +3024,67 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
                                     activity_type: 'coins_purchase',
                                     coins_earned: coinsToAdd,
                                     description: `Achat de ${coinsToAdd} coins (transaction ${transaction.id})`,
-                                    metadata: { fapshi_id: transId }
+                                    metadata: { 
+                                        fapshi_id: transId,
+                                        transaction_id: transaction.id,
+                                        pack_id: transaction.pack_id
+                                    }
                                 }]);
 
-                            // Email
-                            const pack = transaction.metadata?.pack || { name: 'Pack de coins' };
-                            await sendEmail(
-                                user.email,
-                                '💰 Achat de coins confirmé !',
-                                getCoinsPurchaseHtml(user.username, pack, coinsToAdd)
-                            );
+                            // Email de confirmation
+                            try {
+                                const pack = transaction.metadata?.pack || { 
+                                    name: transaction.pack_id || 'Pack de coins',
+                                    coins: coinsToAdd
+                                };
+                                
+                                await sendEmail(
+                                    user.email,
+                                    '💰 Achat de coins confirmé !',
+                                    getCoinsPurchaseHtml(user.username, pack, coinsToAdd)
+                                );
+                            } catch (emailError) {
+                                console.error('❌ Erreur envoi email:', emailError);
+                            }
                         }
-                    } else {
-                        console.error('❌ Aucun coin à créditer !');
-                        console.log('Transaction complète:', JSON.stringify(transaction, null, 2));
                     }
+                } else {
+                    console.error('❌ Aucun coin à créditer !');
+                    console.log('Transaction complète:', JSON.stringify(transaction, null, 2));
+                    
+                    await supabase
+                        .from('system_logs')
+                        .insert([{
+                            log_type: 'no_coins_to_credit',
+                            message: `Pas de coins à créditer pour transaction ${transaction.id}`,
+                            details: { transaction_id: transaction.id },
+                            severity: 'warning'
+                        }]);
                 }
+            } else if (transaction.type === 'server_purchase') {
+                console.log('🎯 Type: achat de serveur');
+                // Ici tu peux ajouter la logique pour marquer le serveur comme payé
             }
         }
 
         console.log('✅ Webhook traité avec succès');
-        res.json({ received: true });
+        res.json({ received: true, processed: true });
 
     } catch (error) {
         console.error('❌ Erreur webhook:', error);
         console.error(error.stack);
-        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+        
+        // Log l'erreur mais retourne 200 pour que Fapshi ne renvoie pas
+        await supabase
+            .from('system_logs')
+            .insert([{
+                log_type: 'webhook_error',
+                message: error.message,
+                details: { stack: error.stack },
+                severity: 'error'
+            }]).catch(e => console.error('Erreur logging:', e));
+        
+        res.status(200).json({ received: true, error: error.message });
     }
 });
 
