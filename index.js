@@ -49,12 +49,13 @@ const fapshiHeaders = {
 };
 
 // =============================================
-// CONFIGURATION EMAIL AVEC MAILGUN
+// CONFIGURATION MAILGUN AVEC DOMAINE PROPRE
 // =============================================
 const MAILGUN_CONFIG = {
-    apiKey: '54d3ce17ac544e522ce4b5aa8659cc88-82cf32bf-89ddc7da',
-    domain: 'https://api.eu.mailgun.net/v3/kermhosting.site/messages',
-    from: 'KermHosting☁️ <postmaster@kermhosting.site>'
+    apiKey: '2d8dd9238a5057a8b11a7abea8b45af9-82cf32bf-82c549a6', // Ta clé API (la même)
+    domain: 'kermhosting.site', // TON NOUVEAU DOMAINE !
+    from: 'KermHosting <noreply@kermhosting.site>', // Email avec ton domaine
+    baseUrl: 'https://api.eu.mailgun.net/v3' // Serveur Europe (plus rapide)
 };
 
 // =============================================
@@ -66,10 +67,13 @@ const PTERODACTYL_CONFIG = {
     clientApiKey: 'ptlc_ncE2HpncTdjD8sqNIcQZ1oBOhCq7N4lZ0bpoK8MtXgk'
 };
 
+// =============================================
+// CONFIGURATION SITE AVEC TON NOUVEAU DOMAINE
+// =============================================
 const SITE_CONFIG = {
-    url: 'https://kerm-hosting.vercel.app',
+    url: 'https://kermhosting.site', // TON NOUVEAU DOMAINE !
     name: 'KermHosting',
-    supportEmail: 'bookmakerp@gmail.com',
+    supportEmail: 'support@kermhosting.site', // Email avec ton domaine
     whatsapp: 'https://wa.me/237659535227',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
@@ -301,11 +305,12 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL AVEC MAILGUN - TEMPLATES PROFESSIONNELS
+// FONCTION EMAIL MISE À JOUR AVEC TON DOMAINE
 // =============================================
-
 async function sendEmail(to, subject, htmlContent) {
     try {
+        console.log(`📧 Tentative d'envoi à ${to} via ${MAILGUN_CONFIG.domain}...`);
+        
         const formData = new URLSearchParams();
         formData.append('from', MAILGUN_CONFIG.from);
         formData.append('to', to);
@@ -314,7 +319,7 @@ async function sendEmail(to, subject, htmlContent) {
 
         const response = await axios({
             method: 'post',
-            url: `https://api.mailgun.net/v3/${MAILGUN_CONFIG.domain}/messages`,
+            url: `${MAILGUN_CONFIG.baseUrl}/${MAILGUN_CONFIG.domain}/messages`,
             auth: {
                 username: 'api',
                 password: MAILGUN_CONFIG.apiKey
@@ -325,16 +330,24 @@ async function sendEmail(to, subject, htmlContent) {
             }
         });
 
-        console.log(`✅ Email envoyé à ${to}`);
-        return { success: true };
+        console.log(`✅ Email envoyé avec succès à ${to} via ${MAILGUN_CONFIG.domain}`);
+        return { success: true, data: response.data };
+        
     } catch (error) {
-        // En sandbox, on ignore les erreurs d'autorisation
-        if (error.response?.status === 403 || error.response?.status === 401) {
-            console.log(`⚠️ Mode sandbox: Email à ${to} non envoyé (destinataire non autorisé)`);
-            return { success: true, sandbox: true };
+        console.error('❌ Erreur Mailgun détaillée:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message,
+            domain: MAILGUN_CONFIG.domain
+        });
+        
+        // En cas d'erreur sandbox, on log mais on ne bloque pas
+        if (error.response?.status === 403) {
+            console.log(`⚠️ Domaine ${MAILGUN_CONFIG.domain} en cours de validation ?`);
         }
-        console.error('❌ Erreur email:', error.response?.data || error.message);
-        return { success: false };
+        
+        return { success: false, error: error.message };
     }
 }
 
