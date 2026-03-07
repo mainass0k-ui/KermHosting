@@ -4700,6 +4700,150 @@ app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (
 });
 
 // =============================================
+// ROUTE ADMIN - STATISTIQUES FINANCIÈRES COMPLÈTES
+// =============================================
+app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        console.log('💰 Récupération des stats financières...');
+
+        // 1. Total des revenus FCFA (transactions réussies)
+        const { data: revenueData, error: revenueError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (revenueError) throw revenueError;
+
+        const totalRevenue = revenueData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        // 2. Revenus par mois (pour le graphique)
+        const { data: monthlyData, error: monthlyError } = await supabase
+            .from('transactions')
+            .select('amount, created_at')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()); // 90 jours
+
+        if (monthlyError) throw monthlyError;
+
+        // Grouper par mois
+        const monthlyRevenue = {};
+        monthlyData?.forEach(t => {
+            const month = new Date(t.created_at).toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
+            monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (t.amount || 0);
+        });
+
+        // 3. Statistiques par type de transaction
+        const { data: typeData, error: typeError } = await supabase
+            .from('transactions')
+            .select('type, amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (typeError) throw typeError;
+
+        const revenueByType = {
+            coins_purchase: 0,
+            server_purchase: 0,
+            server_renewal: 0
+        };
+
+        typeData?.forEach(t => {
+            if (revenueByType[t.type] !== undefined) {
+                revenueByType[t.type] += t.amount || 0;
+            }
+        });
+
+        // 4. Top acheteurs
+        const { data: topBuyers, error: topError } = await supabase
+            .from('transactions')
+            .select(`
+                amount,
+                user_id,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .order('amount', { ascending: false });
+
+        if (topError) throw topError;
+
+        // Agréger par utilisateur
+        const buyerMap = new Map();
+        topBuyers?.forEach(t => {
+            const userId = t.user_id;
+            if (!buyerMap.has(userId)) {
+                buyerMap.set(userId, {
+                    user_id: userId,
+                    username: t.profiles?.username || 'Inconnu',
+                    email: t.profiles?.email || '',
+                    total: 0,
+                    count: 0
+                });
+            }
+            const buyer = buyerMap.get(userId);
+            buyer.total += t.amount || 0;
+            buyer.count++;
+        });
+
+        const topBuyersList = Array.from(buyerMap.values())
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+
+        // 5. Transactions du jour
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { data: todayData, error: todayError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', today.toISOString());
+
+        if (todayError) throw todayError;
+
+        const todayRevenue = todayData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        // 6. Nombre total de transactions
+        const { count: totalTransactions, error: countError } = await supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (countError) throw countError;
+
+        // 7. Moyenne par transaction
+        const avgTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+
+        res.json({
+            success: true,
+            financial: {
+                total_revenue: totalRevenue,
+                today_revenue: todayRevenue,
+                total_transactions: totalTransactions || 0,
+                avg_transaction: Math.round(avgTransaction),
+                by_type: revenueByType,
+                monthly: Object.entries(monthlyRevenue).map(([month, amount]) => ({ month, amount })),
+                top_buyers: topBuyersList
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur stats financières:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur récupération des stats financières' 
+        });
+    }
+});
+
+// =============================================
 // CRON JOBS
 // =============================================
 
