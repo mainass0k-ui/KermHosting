@@ -73,7 +73,7 @@ const PTERODACTYL_CONFIG = {
 const SITE_CONFIG = {
     url: 'https://kermhosting.site', // TON NOUVEAU DOMAINE !
     name: 'KermHosting',
-    supportEmail: 'support@kermhosting.site', // Email avec ton domaine
+    supportEmail: 'bookmakerp@gmail.com', // Email avec ton domaine
     whatsapp: 'https://wa.me/237659535227',
     discord: 'https://discord.gg/kermhosting',
     twitter: 'https://twitter.com/kermhosting',
