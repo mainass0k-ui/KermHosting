@@ -2717,76 +2717,57 @@ app.get('/api/payment/status/:transId', async (req, res) => {
             });
         }
 
-        // Récupérer la transaction dans notre base - utiliser maybeSingle()
-        const { data: transaction, error: txError } = await supabase
+        // Récupérer la transaction dans notre base
+        const { data: transaction } = await supabase
             .from('transactions')
-            .select('*, profiles:user_id(username, email)')
+            .select('*')
             .eq('fapshi_transaction_id', transId)
-            .maybeSingle();
+            .single();
 
-        if (txError) {
-            console.error('❌ Erreur récupération transaction:', txError);
-        }
-
-        // Si le statut a changé, mettre à jour notre base
-        if (transaction && transaction.status !== status.status.toLowerCase()) {
+        // Si le statut est SUCCESSFUL et que la transaction est encore pending
+        if (transaction && transaction.status === 'pending' && status.status === 'SUCCESSFUL') {
+            console.log('💰 Paiement détecté comme réussi par le client !');
+            
+            // Mettre à jour la transaction
             await supabase
                 .from('transactions')
                 .update({
-                    status: status.status.toLowerCase(),
-                    completed_at: status.status === 'SUCCESSFUL' ? new Date().toISOString() : null,
-                    fapshi_response: status
+                    status: 'successful',
+                    completed_at: new Date().toISOString()
                 })
                 .eq('id', transaction.id);
+            
+            // Récupérer l'utilisateur
+            const { data: user } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', transaction.user_id)
+                .single();
+            
+            if (user && transaction.type === 'coins_purchase') {
+                // Calculer les coins
+                let coinsToAdd = transaction.coins_amount || 0;
                 
-            console.log(`✅ Transaction ${transId} mise à jour: ${status.status}`);
-
-            // Si paiement réussi, vérifier que les coins ont été crédités
-            if (status.status === 'SUCCESSFUL' && transaction.type === 'coins_purchase') {
-                const { data: user } = await supabase
-                    .from('profiles')
-                    .select('coins')
-                    .eq('id', transaction.user_id)
-                    .single();
+                if (coinsToAdd === 0 && transaction.metadata?.pack) {
+                    const pack = transaction.metadata.pack;
+                    coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+                }
                 
-                if (user) {
-                    console.log(`💰 Solde actuel de l'utilisateur: ${user.coins} coins`);
+                if (coinsToAdd > 0) {
+                    // CRÉDITER
+                    await supabase
+                        .from('profiles')
+                        .update({ coins: (user.coins || 0) + coinsToAdd })
+                        .eq('id', user.id);
+                    
+                    console.log(`✅ ${coinsToAdd} coins crédités à ${user.username} (via client polling)`);
                 }
             }
-        }
-
-        // Message personnalisé selon le statut
-        let userMessage = '';
-        let action = 'none';
-
-        switch (status.status) {
-            case 'SUCCESSFUL':
-                userMessage = '✅ Paiement confirmé avec succès !';
-                action = 'success';
-                break;
-            case 'FAILED':
-                userMessage = '❌ Le paiement a échoué. Vérifiez que vous avez suffisamment de fonds sur votre compte Mobile Money et que vous avez confirmé la transaction.';
-                action = 'retry';
-                break;
-            case 'PENDING':
-                userMessage = '⏳ Paiement en attente de confirmation. Veuillez vérifier votre téléphone et confirmer la transaction.';
-                action = 'wait';
-                break;
-            default:
-                userMessage = `Statut: ${status.status}`;
         }
 
         res.json({
             success: true,
             status: status.status,
-            message: userMessage,
-            action: action,
-            transaction: transaction ? {
-                id: transaction.id,
-                type: transaction.type,
-                coins_amount: transaction.coins_amount,
-                created_at: transaction.created_at
-            } : null,
             data: status
         });
 
