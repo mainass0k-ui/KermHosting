@@ -16,6 +16,7 @@ import { WebSocketServer } from 'ws';
 import http from 'http';
 import axios from 'axios';
 import FormData from 'form-data';
+import { Resend } from 'resend'; // AJOUT RESEND
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,14 +50,16 @@ const fapshiHeaders = {
 };
 
 // =============================================
-// CONFIGURATION MAILGUN AVEC DOMAINE PROPRE
+// CONFIGURATION RESEND (NOUVEAU)
 // =============================================
-const MAILGUN_CONFIG = {
-    apiKey: '2d8dd9238a5057a8b11a7abea8b45af9-82cf32bf-82c549a6', // Ta clé API (la même)
-    domain: 'kermhosting.site', // TON NOUVEAU DOMAINE !
-    from: 'KermHosting☁️ <noreply@kermhosting.site>', // Email avec ton domaine
-    baseUrl: 'https://api.eu.mailgun.net/v3' // Serveur Europe (plus rapide)
+const RESEND_CONFIG = {
+    apiKey: 're_H45dWC65_QJEweNhFFLL9qhsn9c46m2Hn',
+    from: 'KermHosting <noreply@kermhosting.site>',
+    supportFrom: 'Support KermHosting <support@kermhosting.site>'
 };
+
+// Initialisation Resend
+const resend = new Resend(RESEND_CONFIG.apiKey);
 
 // =============================================
 // CONFIGURATION PTERODACTYL
@@ -71,9 +74,9 @@ const PTERODACTYL_CONFIG = {
 // CONFIGURATION SITE AVEC TON NOUVEAU DOMAINE
 // =============================================
 const SITE_CONFIG = {
-    url: 'https://kermhosting.site', // TON NOUVEAU DOMAINE !
+    url: 'https://kermhosting.site',
     name: 'KermHosting',
-    supportEmail: 'bookmakerp@gmail.com', // Email avec ton domaine
+    supportEmail: 'bookmakerp@gmail.com',
     whatsapp: 'https://wa.me/237659535227',
     discord: 'https://discord.gg/pDyM3Du3h',
     instagram: 'https://twitter.com/kermhosting',
@@ -305,49 +308,53 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTION EMAIL MISE À JOUR AVEC TON DOMAINE
+// FONCTION EMAIL AVEC RESEND (NOUVEAU)
 // =============================================
 async function sendEmail(to, subject, htmlContent) {
     try {
-        console.log(`📧 Tentative d'envoi à ${to} via ${MAILGUN_CONFIG.domain}...`);
+        console.log(`📧 Tentative d'envoi à ${to} via Resend...`);
         
-        const formData = new URLSearchParams();
-        formData.append('from', MAILGUN_CONFIG.from);
-        formData.append('to', to);
-        formData.append('subject', subject);
-        formData.append('html', htmlContent);
-
-        const response = await axios({
-            method: 'post',
-            url: `${MAILGUN_CONFIG.baseUrl}/${MAILGUN_CONFIG.domain}/messages`,
-            auth: {
-                username: 'api',
-                password: MAILGUN_CONFIG.apiKey
-            },
-            data: formData,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
+        const { data, error } = await resend.emails.send({
+            from: RESEND_CONFIG.from,
+            to: [to],
+            subject: subject,
+            html: htmlContent
         });
 
-        console.log(`✅ Email envoyé avec succès à ${to} via ${MAILGUN_CONFIG.domain}`);
-        return { success: true, data: response.data };
+        if (error) {
+            console.error('❌ Erreur Resend:', error);
+            return { success: false, error };
+        }
+
+        console.log(`✅ Email envoyé avec succès à ${to}`, data);
+        return { success: true, data };
         
     } catch (error) {
-        console.error('❌ Erreur Mailgun détaillée:', {
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data,
-            message: error.message,
-            domain: MAILGUN_CONFIG.domain
-        });
-        
-        // En cas d'erreur sandbox, on log mais on ne bloque pas
-        if (error.response?.status === 403) {
-            console.log(`⚠️ Domaine ${MAILGUN_CONFIG.domain} en cours de validation ?`);
-        }
-        
+        console.error('❌ Erreur envoi email:', error);
         return { success: false, error: error.message };
+    }
+}
+
+// Version pour le support (avec une adresse d'expéditeur différente)
+async function sendSupportEmail(to, subject, htmlContent) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: RESEND_CONFIG.supportFrom,
+            to: [to],
+            subject: subject,
+            html: htmlContent
+        });
+
+        if (error) {
+            console.error('❌ Erreur Resend support:', error);
+            return { success: false };
+        }
+
+        console.log(`✅ Email support envoyé à ${to}`);
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Erreur email support:', error);
+        return { success: false };
     }
 }
 
@@ -729,7 +736,7 @@ function getBaseEmailTemplate(title, content, username = '') {
             <p>Hébergement Node.js nouvelle génération - Paiement en FCFA</p>
             <div class="social-links">
                 <a href="${SITE_CONFIG.discord}"><i class="fab fa-discord"></i></a>
-                <a href="${SITE_CONFIG.twitter}"><i class="fab fa-twitter"></i></a>
+                <a href="${SITE_CONFIG.instagram}"><i class="fab fa-instagram"></i></a>
                 <a href="${SITE_CONFIG.whatsapp}"><i class="fab fa-whatsapp"></i></a>
                 <a href="#"><i class="fab fa-github"></i></a>
             </div>
@@ -1485,6 +1492,45 @@ function getAccountSuspendedHtml(username, reason) {
     `;
     return getBaseEmailTemplate('Compte suspendu', content, username);
 }
+
+// =============================================
+// ROUTE DE TEST RESEND (NOUVELLE)
+// =============================================
+app.get('/api/test-resend', async (req, res) => {
+    try {
+        const result = await sendEmail(
+            'bookmakerp@gmail.com',
+            '✅ Test Resend - KermHosting',
+            `
+            <div style="font-family: Arial; padding: 20px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 10px;">
+                <h1 style="color: #7C3AED; text-align: center;">KermHosting</h1>
+                <h2 style="text-align: center;">Test Resend Réussi ! 🎉</h2>
+                <p style="text-align: center;">Les emails fonctionnent parfaitement avec Resend.</p>
+                <div style="background: #1e293b; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p><strong>API Key:</strong> re_H45dWC65_QJEweNhFFLL9qhsn9c46m2Hn</p>
+                    <p><strong>Domaine:</strong> kermhosting.site</p>
+                    <p><strong>Statut:</strong> ✅ Actif</p>
+                </div>
+                <p style="text-align: center; color: #94a3b8;">Plus de problèmes de sandbox !</p>
+            </div>
+            `
+        );
+
+        if (result.success) {
+            res.json({ 
+                success: true, 
+                message: 'Email envoyé avec succès !' 
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                error: result.error 
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // =============================================
 // FONCTIONS PTERODACTYL
@@ -4975,7 +5021,7 @@ app.get('*', (req, res) => res.status(404).sendFile(path.join(__dirname, 'public
 server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
     console.log(`💰 Mode paiement: Fapshi LIVE`);
-    console.log(`📧 Email: ${MAILGUN_CONFIG.from}`);
+    console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
     
