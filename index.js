@@ -62,7 +62,7 @@ const MAILGUN_CONFIG = {
 // CONFIGURATION PTERODACTYL
 // =============================================
 const PTERODACTYL_CONFIG = {
-    url: 'https://panel.lionelmelo.qzz.io',
+    url: 'https://panel.kermhosting.site',
     applicationApiKey: 'ptla_iKK0lnh3qpJ4ScboEk98uWvBqpU2BX9hwwrW4es3Atr',
     clientApiKey: 'ptlc_ncE2HpncTdjD8sqNIcQZ1oBOhCq7N4lZ0bpoK8MtXgk'
 };
