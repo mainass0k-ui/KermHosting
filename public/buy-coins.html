@@ -988,6 +988,74 @@
             }
         }
 
+        /* ===== NOTIFICATION GLOBALE ===== */
+        .global-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            max-width: 400px;
+            width: 90%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .global-notification.show {
+            display: flex;
+            animation: notificationSlideDown 0.3s ease-out;
+        }
+
+        @keyframes notificationSlideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .notification-icon {
+            font-size: 1.8rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 640px) {
             .coins-grid {
@@ -1264,6 +1332,20 @@
         </div>
     </div>
 
+    <!-- Notification globale (apparaît sur toutes les pages) -->
+    <div class="global-notification" id="globalNotification">
+        <div class="notification-icon" id="notificationIcon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title" id="notificationTitle">Paiement réussi !</div>
+            <div class="notification-message" id="notificationMessage">100 coins ont été crédités</div>
+        </div>
+        <button class="notification-close" onclick="closeGlobalNotification()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -1276,6 +1358,142 @@
         let selectedMethod = 'MTN';
         let selectedPack = null;
         let userCoins = 0;
+        let activeTransactions = [];
+
+        // ===== CHARGER LES TRANSACTIONS ACTIVES AU DÉMARRAGE =====
+        function loadActiveTransactions() {
+            try {
+                const saved = localStorage.getItem('activeCoinTransactions');
+                if (saved) {
+                    activeTransactions = JSON.parse(saved);
+                    console.log('📦 Transactions actives chargées:', activeTransactions);
+                    
+                    // Vérifier chaque transaction
+                    activeTransactions.forEach(tx => {
+                        if (tx.status === 'pending') {
+                            checkTransactionStatus(tx);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Erreur chargement transactions:', e);
+            }
+        }
+
+        // ===== SAUVEGARDER LES TRANSACTIONS ACTIVES =====
+        function saveActiveTransactions() {
+            try {
+                localStorage.setItem('activeCoinTransactions', JSON.stringify(activeTransactions));
+            } catch (e) {
+                console.error('Erreur sauvegarde transactions:', e);
+            }
+        }
+
+        // ===== VÉRIFIER UNE TRANSACTION SPÉCIFIQUE =====
+        async function checkTransactionStatus(transaction) {
+            console.log(`🔍 Vérification transaction ${transaction.fapshiId} (${transaction.status})`);
+            
+            try {
+                const response = await fetch(`/api/payment/status/${transaction.fapshiId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log(`📊 Statut reçu pour ${transaction.fapshiId}:`, data.status);
+                    
+                    // Si le statut a changé
+                    if (data.status !== transaction.status) {
+                        transaction.status = data.status;
+                        
+                        if (data.status === 'SUCCESSFUL') {
+                            transaction.completed = true;
+                            transaction.completedAt = Date.now();
+                            
+                            // AFFICHER LA NOTIFICATION GLOBALE
+                            const totalCoins = transaction.pack.coins + (transaction.pack.bonus || 0);
+                            showGlobalNotification(
+                                '💰 Paiement réussi !',
+                                `${totalCoins} coins ont été crédités sur votre compte.`,
+                                'success'
+                            );
+                            
+                            // Recharger le solde
+                            loadUserData();
+                            
+                            console.log(`✅ Transaction ${transaction.fapshiId} réussie !`);
+                        } else if (data.status === 'FAILED' || data.status === 'EXPIRED') {
+                            transaction.failed = true;
+                            
+                            showGlobalNotification(
+                                '❌ Paiement échoué',
+                                'La transaction a échoué ou expiré.',
+                                'error'
+                            );
+                            
+                            console.log(`❌ Transaction ${transaction.fapshiId} échouée`);
+                        }
+                        
+                        // Mettre à jour la liste
+                        saveActiveTransactions();
+                    }
+                }
+            } catch (error) {
+                console.error(`Erreur vérification transaction ${transaction.fapshiId}:`, error);
+            }
+        }
+
+        // ===== VÉRIFIER TOUTES LES TRANSACTIONS =====
+        function checkAllTransactions() {
+            if (!activeTransactions || activeTransactions.length === 0) return;
+            
+            console.log('🔄 Vérification de toutes les transactions...');
+            
+            activeTransactions = activeTransactions.filter(tx => {
+                // Garder seulement les transactions de moins de 30 minutes
+                const age = Date.now() - (tx.startTime || 0);
+                if (age > 30 * 60 * 1000) { // 30 minutes
+                    console.log(`🗑️ Transaction ${tx.fapshiId} supprimée (trop vieille)`);
+                    return false;
+                }
+                return !tx.completed && !tx.failed;
+            });
+            
+            activeTransactions.forEach(tx => checkTransactionStatus(tx));
+            saveActiveTransactions();
+        }
+
+        // ===== NOTIFICATION GLOBALE =====
+        function showGlobalNotification(title, message, type = 'success') {
+            const notification = document.getElementById('globalNotification');
+            const icon = document.getElementById('notificationIcon');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            // Changer l'icône selon le type
+            if (type === 'success') {
+                icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                notification.style.background = 'linear-gradient(135deg, var(--success), var(--secondary))';
+            } else if (type === 'error') {
+                icon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                notification.style.background = 'linear-gradient(135deg, var(--danger), #dc2626)';
+            } else if (type === 'warning') {
+                icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                notification.style.background = 'linear-gradient(135deg, var(--warning), #e08e0b)';
+            }
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            
+            notification.classList.add('show');
+            
+            // Auto-cacher après 5 secondes
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        function closeGlobalNotification() {
+            document.getElementById('globalNotification').classList.remove('show');
+        }
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -1445,7 +1663,7 @@
             }
         }
 
-        // ===== SYSTÈME DE VÉRIFICATION AUTOMATIQUE =====
+        // ===== INITIATE PAYMENT (AVEC STOCKAGE PERSISTANT) =====
         async function initiatePayment() {
             if (!selectedPack) {
                 showToast('error', 'Veuillez sélectionner un pack');
@@ -1481,22 +1699,26 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // STOCKER LA TRANSACTION
-                    currentTransaction = {
+                    // CRÉER LA TRANSACTION PERSISTANTE
+                    const transaction = {
                         transactionId: data.transaction_id,
                         fapshiId: data.transId,
                         pack: selectedPack,
                         packKey: packKey,
                         phone: phone,
-                        startTime: Date.now()
+                        startTime: Date.now(),
+                        status: 'pending',
+                        completed: false,
+                        failed: false
                     };
-
+                    
+                    // AJOUTER À LA LISTE DES TRANSACTIONS ACTIVES
+                    activeTransactions.push(transaction);
+                    saveActiveTransactions();
+                    
                     // AFFICHER LE MODAL
                     document.getElementById('modalPhone').textContent = `+237 ${phone}`;
                     document.getElementById('paymentModal').classList.add('active');
-                    
-                    // COMMENCER LA VÉRIFICATION AUTOMATIQUE
-                    startPaymentVerification(data.transId, packKey, selectedPack);
                     
                     // NETTOYER L'INTERFACE
                     selectedPack = null;
@@ -1505,6 +1727,9 @@
                     });
                     document.getElementById('selectedInfo').style.display = 'none';
                     document.getElementById('phoneNumber').value = '';
+                    
+                    // VÉRIFIER LE STATUT IMMÉDIATEMENT
+                    setTimeout(() => checkTransactionStatus(transaction), 2000);
                     
                 } else {
                     showToast('error', data.error || 'Erreur lors du paiement');
@@ -1518,160 +1743,6 @@
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer avec <span id="payMethod">' + 
                     (selectedMethod === 'MTN' ? 'MTN Money' : 'Orange Money') + '</span>';
-            }
-        }
-
-        function startPaymentVerification(fapshiId, packKey, pack) {
-            // Arrêter l'ancien intervalle s'il existe
-            if (paymentCheckInterval) {
-                clearInterval(paymentCheckInterval);
-            }
-            
-            let attempts = 0;
-            const maxAttempts = 60; // 60 * 3s = 3 minutes max
-            
-            // Réinitialiser le modal
-            document.getElementById('modalTitle').textContent = 'Demande envoyée !';
-            document.getElementById('modalMessage').textContent = 'Une demande de paiement a été envoyée au numéro :';
-            document.getElementById('modalSubMessage').innerHTML = 'Veuillez confirmer l\'opération sur votre téléphone.<br>La transaction sera automatiquement validée.';
-            document.getElementById('modalBtn').textContent = 'J\'ai compris';
-            
-            // Afficher un message dans le modal
-            updateModalMessage('Vérification du paiement en cours...', '⌛');
-            
-            paymentCheckInterval = setInterval(async () => {
-                attempts++;
-                
-                try {
-                    console.log(`🔄 Vérification ${attempts}/${maxAttempts} pour ${fapshiId}`);
-                    
-                    const response = await fetch(`/api/payment/status/${fapshiId}`);
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        console.log('Statut reçu:', data.status);
-                        
-                        // SUCCÈS !
-                        if (data.status === 'SUCCESSFUL') {
-                            clearInterval(paymentCheckInterval);
-                            
-                            // Calculer les coins
-                            const totalCoins = pack.coins + (pack.bonus || 0);
-                            
-                            // METTRE À JOUR LE MODAL
-                            updateModalMessage(
-                                '✅ Paiement confirmé ! Crédit en cours...',
-                                '💰',
-                                'success'
-                            );
-                            document.getElementById('modalTitle').textContent = 'Paiement réussi !';
-                            document.getElementById('modalSubMessage').innerHTML = `💰 ${totalCoins} coins vont être crédités...`;
-                            document.getElementById('modalBtn').textContent = 'Fermer';
-                            
-                            // Mettre à jour le solde immédiatement
-                            setTimeout(async () => {
-                                // Recharger les données utilisateur
-                                await loadUserData();
-                                
-                                // Afficher la confirmation
-                                showToast('success', `💰 ${totalCoins} coins crédités !`);
-                                
-                                // Fermer le modal après 2 secondes
-                                setTimeout(() => {
-                                    document.getElementById('paymentModal').classList.remove('active');
-                                }, 2000);
-                            }, 1000);
-                            
-                            return;
-                        }
-                        
-                        // ÉCHEC
-                        if (data.status === 'FAILED' || data.status === 'EXPIRED') {
-                            clearInterval(paymentCheckInterval);
-                            updateModalMessage(
-                                `❌ Paiement ${data.status === 'FAILED' ? 'échoué' : 'expiré'}.`,
-                                '❌',
-                                'error'
-                            );
-                            document.getElementById('modalTitle').textContent = 'Paiement échoué';
-                            document.getElementById('modalSubMessage').innerHTML = 'Veuillez réessayer.';
-                            
-                            setTimeout(() => {
-                                document.getElementById('paymentModal').classList.remove('active');
-                                document.getElementById('payBtn').disabled = false;
-                                document.getElementById('payBtn').innerHTML = '<i class="fas fa-lock"></i> Payer avec <span id="payMethod">' + 
-                                    (selectedMethod === 'MTN' ? 'MTN Money' : 'Orange Money') + '</span>';
-                            }, 3000);
-                            
-                            return;
-                        }
-                        
-                        // ENCORE EN ATTENTE
-                        if (data.status === 'PENDING') {
-                            updateModalMessage(
-                                `En attente de confirmation... (${attempts}/${maxAttempts})`,
-                                '⏳'
-                            );
-                        }
-                    }
-                    
-                    // Arrêt après maxAttempts
-                    if (attempts >= maxAttempts) {
-                        clearInterval(paymentCheckInterval);
-                        updateModalMessage(
-                            '⏰ Délai dépassé.',
-                            '⚠️',
-                            'warning'
-                        );
-                        document.getElementById('modalTitle').textContent = 'Délai expiré';
-                        document.getElementById('modalSubMessage').innerHTML = 'Vérifiez dans vos transactions.<br>Si le paiement a réussi, reconnectez-vous.';
-                        
-                        setTimeout(() => {
-                            document.getElementById('paymentModal').classList.remove('active');
-                        }, 5000);
-                    }
-                    
-                } catch (error) {
-                    console.error('Erreur vérification:', error);
-                    updateModalMessage('Erreur de vérification...', '❌', 'error');
-                }
-            }, 3000); // Vérification toutes les 3 secondes
-        }
-
-        function updateModalMessage(message, icon, type = 'info') {
-            const modalMessage = document.querySelector('.modal-message');
-            const modalIcon = document.querySelector('.modal-icon i');
-            
-            if (modalMessage) {
-                modalMessage.textContent = message;
-            }
-            
-            if (modalIcon) {
-                modalIcon.className = `fas ${
-                    icon === '💰' ? 'fa-coins' : 
-                    icon === '⌛' ? 'fa-hourglass-half' :
-                    icon === '✅' ? 'fa-check-circle' :
-                    icon === '❌' ? 'fa-times-circle' :
-                    icon === '⚠️' ? 'fa-exclamation-triangle' :
-                    'fa-clock'
-                }`;
-                
-                if (type === 'success') {
-                    modalIcon.style.color = '#10B981';
-                } else if (type === 'error') {
-                    modalIcon.style.color = '#EF4444';
-                } else if (type === 'warning') {
-                    modalIcon.style.color = '#F59E0B';
-                } else {
-                    modalIcon.style.color = '#7C3AED';
-                }
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-            if (paymentCheckInterval) {
-                clearInterval(paymentCheckInterval);
             }
         }
 
@@ -1697,10 +1768,15 @@
             }, 3000);
         }
 
+        function closeModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
         // ===== LOGOUT =====
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            localStorage.removeItem('activeCoinTransactions');
             window.location.href = '/';
         });
 
@@ -1715,6 +1791,10 @@
         loadUserData();
         displayCoinPacks();
         selectMethod('MTN');
+        loadActiveTransactions();
+        
+        // VÉRIFIER LES TRANSACTIONS TOUTES LES 10 SECONDES
+        setInterval(checkAllTransactions, 10000);
     </script>
 </body>
 </html>
