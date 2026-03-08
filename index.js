@@ -40,7 +40,7 @@ const FAPSHI_CONFIG = {
     baseUrl: 'https://live.fapshi.com',
     apiuser: '42ae50a1-35e3-4422-b422-d238d4548bf1',
     apikey: 'FAK_6c6b308a5566c995c669a7b9cfcc8ac6',
-    webhookSecret: 'kermhosting_webhook_secret_2024'
+    webhookSecret: 'kermhosting_webhook_secret_2026'
 };
 
 const fapshiHeaders = {
@@ -75,8 +75,8 @@ const SITE_CONFIG = {
     name: 'KermHosting',
     supportEmail: 'bookmakerp@gmail.com', // Email avec ton domaine
     whatsapp: 'https://wa.me/237659535227',
-    discord: 'https://discord.gg/kermhosting',
-    twitter: 'https://twitter.com/kermhosting',
+    discord: 'https://discord.gg/pDyM3Du3h',
+    instagram: 'https://twitter.com/kermhosting',
     jwtSecret: 'kermhosting_super_secret_key_2026_changez_ceci',
     port: process.env.PORT || 3000
 };
