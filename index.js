@@ -54,7 +54,7 @@ const fapshiHeaders = {
 // =============================================
 const RESEND_CONFIG = {
     apiKey: 're_H45dWC65_QJEweNhFFLL9qhsn9c46m2Hn',
-    from: 'KermHosting <noreply@kermhosting.site>',
+    from: 'KermHosting☁️ <noreply@kermhosting.site>',
     supportFrom: 'Support KermHosting <support@kermhosting.site>'
 };
 
