@@ -285,15 +285,17 @@
             cursor: pointer;
             text-decoration: underline;
             font-size: 1rem;
+            transition: all 0.3s;
         }
 
-        .resend-link button:hover {
+        .resend-link button:hover:not(:disabled) {
             color: var(--primary-light);
         }
 
         .resend-link button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            text-decoration: none;
         }
 
         .auth-links {
@@ -500,7 +502,7 @@
                 <p>Vous n'avez pas reçu le code ?</p>
                 <button id="resendBtn" onclick="resendCode()">Renvoyer le code</button>
                 <div class="timer" id="timer" style="display: none;">
-                    <span id="timerSeconds">60</span> secondes avant de pouvoir renvoyer
+                    <span id="timerSeconds">30</span> secondes avant de pouvoir renvoyer
                 </div>
             </div>
 
@@ -633,7 +635,7 @@
                     
                     resendTimer = setTimeout(() => {
                         resendTimer = null;
-                    }, 60000);
+                    }, 30000);
                 } else {
                     document.getElementById('messageContainer').innerHTML = `
                         <div class="message error">
