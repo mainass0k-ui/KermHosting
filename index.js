@@ -66,7 +66,7 @@ const resend = new Resend(RESEND_CONFIG.apiKey);
 // =============================================
 const PTERODACTYL_CONFIG = {
     url: 'http://37.60.244.89:8080',
-    applicationApiKey: 'ptla_DhRhoK1WouNfEuniLXjy5BXt1HoWGuPsD4m80lHoGoA',
+    applicationApiKey: 'ptla_TIdmCiO969PlJEBxjL918Yn5wJ68hbwtHl6Vg5dWesD',
     clientApiKey: 'ptlc_ncE2HpncTdjD8sqNIcQZ1oBOhCq7N4lZ0bpoK8MtXgk'
 };
 
