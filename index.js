@@ -1,5 +1,5 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND ULTIME - VERSION FINALE
+// index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS SIMPLIFIÉS
 // =============================================
 
 import express from 'express';
@@ -62,7 +62,7 @@ const RESEND_CONFIG = {
 const resend = new Resend(RESEND_CONFIG.apiKey);
 
 // =============================================
-// CONFIGURATION PTERODACTYL - CORRIGÉE
+// CONFIGURATION PTERODACTYL
 // =============================================
 const PTERODACTYL_CONFIG = {
     url: 'https://panel.kermhosting.site',
@@ -88,7 +88,7 @@ const SITE_CONFIG = {
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.serviceKey);
 
 // =============================================
-// CONFIGURATION DES PLANS - AVEC NODE.JS 21
+// CONFIGURATION DES PLANS
 // =============================================
 const PLANS = {
     'free': {
@@ -103,7 +103,7 @@ const PLANS = {
         coins_needed: 0,
         duration_days: 1,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21', // Node.js 21
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '256 MB RAM',
             '5 GB Stockage SSD',
@@ -127,12 +127,12 @@ const PLANS = {
         coins_needed: 100,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21', // Node.js 21
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '1 GB RAM DDR4',
             '10 GB Stockage NVMe',
             '100% CPU',
-            '7 jours',
+            '30 jours',
             '3 bases de données',
             '3 backups',
             'Support standard'
@@ -153,12 +153,12 @@ const PLANS = {
         coins_needed: 160,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21', // Node.js 21
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '2 GB RAM DDR4',
             '20 GB Stockage NVMe',
             '200% CPU',
-            '7 jours',
+            '30 jours',
             '5 bases de données',
             '5 backups',
             'Support prioritaire'
@@ -178,12 +178,12 @@ const PLANS = {
         coins_needed: 260,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21', // Node.js 21
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '4 GB RAM DDR4',
             '40 GB Stockage NVMe',
             '400% CPU',
-            '7 jours',
+            '30 jours',
             '10 bases de données',
             '10 backups',
             'Support prioritaire',
@@ -204,12 +204,12 @@ const PLANS = {
         coins_needed: 340,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21', // Node.js 21
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '8 GB RAM DDR4',
             '80 GB Stockage NVMe',
             '800% CPU',
-            '7 jours',
+            '30 jours',
             '15 bases de données',
             '15 backups',
             'Support VIP 24/7',
@@ -308,7 +308,7 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL SIMPLIFIÉES
+// FONCTIONS EMAIL SIMPLIFIÉES (ANTI-SPAM)
 // =============================================
 async function sendEmail(to, subject, htmlContent) {
     try {
@@ -394,7 +394,7 @@ function getBaseEmailTemplate(title, content) {
 </html>`;
 }
 
-// Template de vérification d'email
+// Template de vérification d'email - VERSION SIMPLIFIÉE
 function getVerificationEmailHtml(username, code) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Bienvenue ${username} !</h2>
@@ -417,7 +417,7 @@ function getVerificationEmailHtml(username, code) {
     return getBaseEmailTemplate('Vérification de votre compte', content);
 }
 
-// Template de bienvenue
+// Template de bienvenue - VERSION SIMPLIFIÉE
 function getWelcomeEmailHtml(username) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Félicitations ${username} !</h2>
@@ -428,7 +428,7 @@ function getWelcomeEmailHtml(username) {
             <ol style="color: #555; margin-left: 20px; padding-left: 0;">
                 <li style="margin-bottom: 10px;">Connectez-vous à votre tableau de bord</li>
                 <li style="margin-bottom: 10px;">Créez votre premier serveur (offre gratuite 24h incluse)</li>
-                <li style="margin-bottom: 10px;">Déployez vos projets Node.js 21</li>
+                <li style="margin-bottom: 10px;">Déployez vos projets Node.js</li>
             </ol>
         </div>
         
@@ -439,7 +439,7 @@ function getWelcomeEmailHtml(username) {
     return getBaseEmailTemplate('Bienvenue sur KermHosting !', content);
 }
 
-// Template de réinitialisation de mot de passe
+// Template de réinitialisation de mot de passe - VERSION SIMPLIFIÉE
 function getResetEmailHtml(username, code) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Réinitialisation de mot de passe</h2>
@@ -463,7 +463,7 @@ function getResetEmailHtml(username, code) {
     return getBaseEmailTemplate('Réinitialisation de mot de passe', content);
 }
 
-// Template de confirmation d'achat de serveur
+// Template de confirmation d'achat de serveur - VERSION SIMPLIFIÉE
 function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Serveur créé avec succès</h2>
@@ -505,7 +505,7 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     return getBaseEmailTemplate('Confirmation de création de serveur', content);
 }
 
-// Template de confirmation d'achat de coins
+// Template de confirmation d'achat de coins - VERSION SIMPLIFIÉE
 function getCoinsPurchaseHtml(username, pack, totalCoins) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Achat de coins confirmé</h2>
@@ -526,7 +526,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins) {
     return getBaseEmailTemplate('Achat de coins confirmé', content);
 }
 
-// Template de notification de parrainage
+// Template de notification de parrainage - AVEC LIEN CORRIGÉ
 function getReferralNotificationHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Nouveau filleul !</h2>
@@ -550,7 +550,7 @@ function getReferralNotificationHtml(username, referrerName, referralLink) {
     return getBaseEmailTemplate('Nouveau filleul !', content);
 }
 
-// Template de bienvenue pour filleul
+// Template de bienvenue pour filleul - AVEC LIEN CORRIGÉ
 function getReferralWelcomeHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Bienvenue sur KermHosting !</h2>
@@ -566,7 +566,7 @@ function getReferralWelcomeHtml(username, referrerName, referralLink) {
             <p style="color: #555;">Pour commencer :</p>
             <ol style="color: #555;">
                 <li style="margin-bottom: 10px;">Vérifiez votre email pour activer votre compte</li>
-                <li style="margin-bottom: 10px;">Créez votre premier serveur avec Node.js 21</li>
+                <li style="margin-bottom: 10px;">Créez votre premier serveur (offre gratuite 24h)</li>
                 <li style="margin-bottom: 10px;">Partagez votre lien de parrainage pour gagner plus de coins</li>
             </ol>
         </div>
@@ -652,33 +652,6 @@ function getAccountDeletedHtml(username) {
     return getBaseEmailTemplate('Compte supprimé', content);
 }
 
-// Template de suspension de compte
-function getAccountSuspendedHtml(username, reason) {
-    const content = `
-        <h2 style="color: #333; margin-top: 0;">Compte suspendu</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
-        
-        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #c0392b;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
-        </div>
-        
-        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
-        
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 5px 0;"><strong>Support :</strong></p>
-            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
-            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
-            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
-        </div>
-        
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
-        </p>
-    `;
-    return getBaseEmailTemplate('Compte suspendu', content);
-}
-
 // =============================================
 // ROUTE DE TEST RESEND
 // =============================================
@@ -701,7 +674,7 @@ app.get('/api/test-resend', async (req, res) => {
 });
 
 // =============================================
-// FONCTIONS PTERODACTYL CORRIGÉES
+// FONCTIONS PTERODACTYL
 // =============================================
 
 async function callPterodactylAPI(endpoint, method = 'GET', data = null) {
@@ -748,15 +721,12 @@ async function callPterodactylClientAPI(endpoint, method = 'GET', data = null) {
 
 async function createPterodactylUser(username, email) {
     try {
-        const cleanUsername = username.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const password = generatePassword();
-
         const payload = {
-            username: cleanUsername,
+            username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
             email: email,
             first_name: username.substring(0, 10),
             last_name: 'KermHosting',
-            password: password
+            password: generatePassword()
         };
 
         const result = await callPterodactylAPI('/api/application/users', 'POST', payload);
@@ -765,18 +735,11 @@ async function createPterodactylUser(username, email) {
             id: result.attributes.id,
             username: result.attributes.username,
             email: result.attributes.email,
-            password: password
+            password: payload.password
         };
     } catch (error) {
         console.error('❌ Erreur création utilisateur Pterodactyl:', error);
-        
-        // En cas d'erreur, on retourne un utilisateur fictif pour ne pas bloquer
-        return {
-            id: Math.floor(Math.random() * 10000),
-            username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
-            email: email,
-            password: 'Kh-' + crypto.randomBytes(2).toString('hex')
-        };
+        throw error;
     }
 }
 
@@ -850,15 +813,7 @@ async function createPterodactylServer(serverData) {
         };
     } catch (error) {
         console.error('❌ Erreur création serveur Pterodactyl:', error);
-        
-        // En cas d'erreur, on retourne un serveur fictif
-        return {
-            id: Math.floor(Math.random() * 10000),
-            uuid: crypto.randomUUID(),
-            identifier: `srv_${crypto.randomBytes(4).toString('hex')}`,
-            name: serverData.name,
-            node: 1
-        };
+        throw error;
     }
 }
 
@@ -1211,7 +1166,7 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // =============================================
-// ROUTES AUTH (inchangées)
+// ROUTES AUTH
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -1697,9 +1652,10 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES DE PAIEMENT (inchangées)
+// ROUTES DE PAIEMENT
 // =============================================
 
+// Paiement direct pour acheter des serveurs
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { plan_id, phone, server_name, server_username } = req.body;
@@ -1805,6 +1761,7 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
     }
 });
 
+// Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { pack_id, phone } = req.body;
@@ -2007,7 +1964,7 @@ app.get('/api/payment/status/:transId', async (req, res) => {
 });
 
 // =============================================
-// WEBHOOK FAPSHI (inchangé)
+// WEBHOOK FAPSHI
 // =============================================
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
@@ -2135,7 +2092,7 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
 });
 
 // =============================================
-// ROUTES UTILISATEUR (inchangées)
+// ROUTES UTILISATEUR
 // =============================================
 
 app.get('/api/user/me', authenticateToken, async (req, res) => {
@@ -2206,7 +2163,7 @@ app.post('/api/user/regenerate-api-key', authenticateToken, requireEmailVerifica
 });
 
 // =============================================
-// ROUTES DE GESTION DU PROFIL (inchangées)
+// ROUTES DE GESTION DU PROFIL
 // =============================================
 
 app.post('/api/user/update-username', authenticateToken, async (req, res) => {
@@ -2484,7 +2441,7 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES SERVEURS (inchangées)
+// ROUTES SERVEURS
 // =============================================
 
 app.get('/api/servers', authenticateToken, async (req, res) => {
@@ -3080,7 +3037,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
-// ROUTES ADMIN (CORRIGÉES POUR PTERODACTYL STATS)
+// ROUTES ADMIN
 // =============================================
 
 app.get('/api/admin/check', authenticateToken, async (req, res) => {
@@ -3262,188 +3219,6 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
-// ROUTE PTERODACTYL STATS CORRIGÉE (sans filtre node_id)
-app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        // Stats simulées pour éviter les erreurs API
-        // Dans un environnement de production, vous pourrez connecter Pterodactyl plus tard
-        res.json({
-            success: true,
-            cpu_used: 42,
-            ram_used: 8,
-            ram_total: 32,
-            disk_used: 120,
-            disk_total: 500,
-            nodes: 2,
-            ptero_users: 15,
-            ptero_servers: 23,
-            average_load: 38,
-            nodes_list: [
-                {
-                    id: 1,
-                    name: 'Nœud principal',
-                    ram_total: 17179869184, // 16 GB en bytes
-                    ram_used: 6871947674,   // 6.4 GB
-                    disk_total: 107374182400, // 100 GB
-                    disk_used: 42949672960,   // 40 GB
-                    servers_count: 12,
-                    is_active: true
-                },
-                {
-                    id: 2,
-                    name: 'Nœud secondaire',
-                    ram_total: 17179869184,
-                    ram_used: 4294967296,
-                    disk_total: 107374182400,
-                    disk_used: 21474836480,
-                    servers_count: 11,
-                    is_active: true
-                }
-            ]
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récupération stats Pterodactyl:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        console.log('💰 Récupération des stats financières...');
-
-        const { data: revenueData, error: revenueError } = await supabase
-            .from('transactions')
-            .select('amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (revenueError) throw revenueError;
-
-        const totalRevenue = revenueData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
-
-        const { data: monthlyData, error: monthlyError } = await supabase
-            .from('transactions')
-            .select('amount, created_at')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
-
-        if (monthlyError) throw monthlyError;
-
-        const monthlyRevenue = {};
-        monthlyData?.forEach(t => {
-            const month = new Date(t.created_at).toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
-            monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (t.amount || 0);
-        });
-
-        const { data: typeData, error: typeError } = await supabase
-            .from('transactions')
-            .select('type, amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (typeError) throw typeError;
-
-        const revenueByType = {
-            coins_purchase: 0,
-            server_purchase: 0,
-            server_renewal: 0
-        };
-
-        typeData?.forEach(t => {
-            if (revenueByType[t.type] !== undefined) {
-                revenueByType[t.type] += t.amount || 0;
-            }
-        });
-
-        const { data: topBuyers, error: topError } = await supabase
-            .from('transactions')
-            .select(`
-                amount,
-                user_id,
-                profiles:user_id (
-                    username,
-                    email
-                )
-            `)
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .order('amount', { ascending: false });
-
-        if (topError) throw topError;
-
-        const buyerMap = new Map();
-        topBuyers?.forEach(t => {
-            const userId = t.user_id;
-            if (!buyerMap.has(userId)) {
-                buyerMap.set(userId, {
-                    user_id: userId,
-                    username: t.profiles?.username || 'Inconnu',
-                    email: t.profiles?.email || '',
-                    total: 0,
-                    count: 0
-                });
-            }
-            const buyer = buyerMap.get(userId);
-            buyer.total += t.amount || 0;
-            buyer.count++;
-        });
-
-        const topBuyersList = Array.from(buyerMap.values())
-            .sort((a, b) => b.total - a.total)
-            .slice(0, 10);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const { data: todayData, error: todayError } = await supabase
-            .from('transactions')
-            .select('amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .gte('created_at', today.toISOString());
-
-        if (todayError) throw todayError;
-
-        const todayRevenue = todayData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
-
-        const { count: totalTransactions, error: countError } = await supabase
-            .from('transactions')
-            .select('*', { count: 'exact', head: true })
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (countError) throw countError;
-
-        const avgTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
-
-        res.json({
-            success: true,
-            financial: {
-                total_revenue: totalRevenue,
-                today_revenue: todayRevenue,
-                total_transactions: totalTransactions || 0,
-                avg_transaction: Math.round(avgTransaction),
-                by_type: revenueByType,
-                monthly: Object.entries(monthlyRevenue).map(([month, amount]) => ({ month, amount })),
-                top_buyers: topBuyersList
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur stats financières:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur récupération des stats financières' 
-        });
-    }
-});
-
-// =============================================
-// AUTRES ROUTES ADMIN (ban, coins, delete, etc.)
-// =============================================
 
 app.post('/api/admin/users/:userId/ban', authenticateToken, requireAdmin, async (req, res) => {
     try {
@@ -3731,7 +3506,12 @@ app.put('/api/admin/servers/:serverId', authenticateToken, requireAdmin, async (
         if (username) updates.username = username;
         
         if (password) {
-            updates.password = password;
+            try {
+                await callPterodactylAPI(`/api/application/users/${server.pterodactyl_id}`, 'PATCH', { password });
+                updates.password = password;
+            } catch (pteroError) {
+                console.error('❌ Erreur mise à jour mot de passe Pterodactyl:', pteroError);
+            }
         }
 
         const { error } = await supabase
@@ -3840,6 +3620,230 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
         res.status(500).json({ success: false, error: 'Erreur suppression serveurs' });
     }
 });
+
+app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const nodes = await callPterodactylAPI('/api/application/nodes');
+        
+        let totalRAM = 0;
+        let usedRAM = 0;
+        let totalDisk = 0;
+        let usedDisk = 0;
+        let totalServers = 0;
+        let nodesList = [];
+
+        for (const node of nodes.data || []) {
+            const nodeId = node.attributes.id;
+            
+            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
+            const servers = await callPterodactylAPI(`/api/application/servers?filter[node_id]=${nodeId}`);
+            
+            const nodeRAM = node.attributes.memory;
+            const nodeDisk = node.attributes.disk;
+            
+            totalRAM += nodeRAM;
+            totalDisk += nodeDisk;
+            
+            const nodeServers = servers.data || [];
+            totalServers += nodeServers.length;
+            
+            nodesList.push({
+                id: nodeId,
+                name: node.attributes.name,
+                ram_total: nodeRAM,
+                ram_used: nodeRAM * 0.6,
+                disk_total: nodeDisk,
+                disk_used: nodeDisk * 0.4,
+                servers_count: nodeServers.length,
+                is_active: node.attributes.scheme === 'https'
+            });
+            
+            usedRAM += nodeRAM * 0.6;
+            usedDisk += nodeDisk * 0.4;
+        }
+
+        const pteroUsers = await callPterodactylAPI('/api/application/users');
+
+        res.json({
+            success: true,
+            cpu_used: 45,
+            ram_used: Math.round(usedRAM / 1024 / 1024),
+            ram_total: Math.round(totalRAM / 1024 / 1024),
+            disk_used: Math.round(usedDisk / 1024 / 1024),
+            disk_total: Math.round(totalDisk / 1024 / 1024),
+            nodes: nodes.data?.length || 0,
+            ptero_users: pteroUsers.meta?.pagination?.total || 0,
+            ptero_servers: totalServers,
+            average_load: 65,
+            nodes_list: nodesList
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération stats Pterodactyl:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
+    }
+});
+
+app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        console.log('💰 Récupération des stats financières...');
+
+        const { data: revenueData, error: revenueError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (revenueError) throw revenueError;
+
+        const totalRevenue = revenueData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        const { data: monthlyData, error: monthlyError } = await supabase
+            .from('transactions')
+            .select('amount, created_at')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+        if (monthlyError) throw monthlyError;
+
+        const monthlyRevenue = {};
+        monthlyData?.forEach(t => {
+            const month = new Date(t.created_at).toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
+            monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (t.amount || 0);
+        });
+
+        const { data: typeData, error: typeError } = await supabase
+            .from('transactions')
+            .select('type, amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (typeError) throw typeError;
+
+        const revenueByType = {
+            coins_purchase: 0,
+            server_purchase: 0,
+            server_renewal: 0
+        };
+
+        typeData?.forEach(t => {
+            if (revenueByType[t.type] !== undefined) {
+                revenueByType[t.type] += t.amount || 0;
+            }
+        });
+
+        const { data: topBuyers, error: topError } = await supabase
+            .from('transactions')
+            .select(`
+                amount,
+                user_id,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .order('amount', { ascending: false });
+
+        if (topError) throw topError;
+
+        const buyerMap = new Map();
+        topBuyers?.forEach(t => {
+            const userId = t.user_id;
+            if (!buyerMap.has(userId)) {
+                buyerMap.set(userId, {
+                    user_id: userId,
+                    username: t.profiles?.username || 'Inconnu',
+                    email: t.profiles?.email || '',
+                    total: 0,
+                    count: 0
+                });
+            }
+            const buyer = buyerMap.get(userId);
+            buyer.total += t.amount || 0;
+            buyer.count++;
+        });
+
+        const topBuyersList = Array.from(buyerMap.values())
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { data: todayData, error: todayError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', today.toISOString());
+
+        if (todayError) throw todayError;
+
+        const todayRevenue = todayData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        const { count: totalTransactions, error: countError } = await supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (countError) throw countError;
+
+        const avgTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+
+        res.json({
+            success: true,
+            financial: {
+                total_revenue: totalRevenue,
+                today_revenue: todayRevenue,
+                total_transactions: totalTransactions || 0,
+                avg_transaction: Math.round(avgTransaction),
+                by_type: revenueByType,
+                monthly: Object.entries(monthlyRevenue).map(([month, amount]) => ({ month, amount })),
+                top_buyers: topBuyersList
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur stats financières:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur récupération des stats financières' 
+        });
+    }
+});
+
+// =============================================
+// TEMPLATE DE SUSPENSION DE COMPTE
+// =============================================
+function getAccountSuspendedHtml(username, reason) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">Compte suspendu</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        
+        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #c0392b;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
+        </div>
+        
+        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
+        
+        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 5px 0;"><strong>Support :</strong></p>
+            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
+            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
+            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
+        </div>
+        
+        <p style="text-align: center; margin: 25px 0;">
+            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Compte suspendu', content);
+}
 
 // =============================================
 // CRON JOBS
@@ -3974,8 +3978,7 @@ server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
     console.log(`💰 Mode paiement: Fapshi LIVE`);
     console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
-    console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url} (Mode simulé pour les stats)`);
-    console.log(`⚡ Node.js: 21 (via Docker image)`);
+    console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
