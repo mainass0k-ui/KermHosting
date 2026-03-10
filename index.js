@@ -857,6 +857,33 @@ async function getServerResources(serverIdentifier) {
     }
 }
 
+// Récupérer les serveurs d'un node spécifique via l'API Application
+async function getServersByNode(nodeId) {
+    try {
+        // Récupérer tous les serveurs
+        const allServers = await callPterodactylAPI('/api/application/servers');
+        
+        // Filtrer ceux qui sont sur le node spécifié
+        // Note: Cette info peut être dans relationships ou dans les attributs selon la version
+        const servers = allServers.data.filter(server => {
+            // Vérifier si le serveur a des relations et contient le node_id
+            if (server.attributes.relationships?.node?.attributes?.id === parseInt(nodeId)) {
+                return true;
+            }
+            // Alternative: certains endpoints renvoient node_id directement
+            if (server.attributes.node === parseInt(nodeId)) {
+                return true;
+            }
+            return false;
+        });
+        
+        return servers;
+    } catch (error) {
+        console.error('❌ Erreur récupération serveurs par node:', error);
+        return [];
+    }
+}
+
 async function sendServerPowerAction(serverIdentifier, action) {
     try {
         await callPterodactylClientAPI(`/api/client/servers/${serverIdentifier}/power`, 'POST', { signal: action });
@@ -3037,6 +3064,101 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
+// ROUTES PTERODACTYL - STATS & NODES
+// =============================================
+
+// Route pour récupérer tous les nodes
+app.get('/api/pterodactyl/nodes', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const nodes = await callPterodactylAPI('/api/application/nodes');
+        res.json({ success: true, nodes: nodes.data || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération nodes:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération nodes' });
+    }
+});
+
+// Route pour récupérer les serveurs d'un node spécifique (solution alternative sans filtre)
+app.get('/api/pterodactyl/nodes/:nodeId/servers', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { nodeId } = req.params;
+        
+        // Essayer d'abord l'endpoint spécifique (si disponible)
+        try {
+            const nodeServers = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
+            return res.json({ success: true, servers: nodeServers.data || [] });
+        } catch (specificError) {
+            // Si l'endpoint spécifique échoue, on utilise notre fonction de filtrage
+            console.log('⚠️ Endpoint spécifique non disponible, utilisation du filtrage manuel');
+            const servers = await getServersByNode(nodeId);
+            return res.json({ success: true, servers });
+        }
+    } catch (error) {
+        console.error('❌ Erreur récupération serveurs du node:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération serveurs' });
+    }
+});
+
+// Route pour récupérer les stats détaillées d'un serveur (Client API)
+app.get('/api/pterodactyl/servers/:identifier/resources', authenticateToken, async (req, res) => {
+    try {
+        const { identifier } = req.params;
+        
+        // Vérifier que l'utilisateur a accès à ce serveur
+        const { data: server } = await supabase
+            .from('servers')
+            .select('*')
+            .eq('server_identifier', identifier)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (!server && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, error: 'Accès non autorisé' });
+        }
+
+        const resources = await getServerResources(identifier);
+        
+        if (!resources) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+
+        res.json({ 
+            success: true, 
+            resources: resources,
+            server: server || null
+        });
+    } catch (error) {
+        console.error('❌ Erreur récupération ressources serveur:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération ressources' });
+    }
+});
+
+// Route pour récupérer les allocations d'un serveur
+app.get('/api/pterodactyl/servers/:serverId/allocations', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        
+        // Vérifier l'accès
+        const { data: server } = await supabase
+            .from('servers')
+            .select('*')
+            .eq('pterodactyl_id', parseInt(serverId))
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (!server && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, error: 'Accès non autorisé' });
+        }
+
+        const allocations = await getServerAllocations(serverId);
+        res.json({ success: true, allocations });
+    } catch (error) {
+        console.error('❌ Erreur récupérations allocations:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupérations allocations' });
+    }
+});
+
+// =============================================
 // ROUTES ADMIN
 // =============================================
 
@@ -3217,6 +3339,216 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
     } catch (error) {
         console.error('❌ Erreur stats:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const nodes = await callPterodactylAPI('/api/application/nodes');
+        
+        let totalRAM = 0;
+        let usedRAM = 0;
+        let totalDisk = 0;
+        let usedDisk = 0;
+        let totalServers = 0;
+        let nodesList = [];
+
+        for (const node of nodes.data || []) {
+            const nodeId = node.attributes.id;
+            
+            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
+            
+            // Solution alternative sans filtre non supporté
+            let nodeServers = [];
+            try {
+                // Essayer l'endpoint spécifique d'abord
+                const serversResponse = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
+                nodeServers = serversResponse.data || [];
+            } catch (specificError) {
+                // Fallback: récupérer tous les serveurs et filtrer manuellement
+                console.log(`⚠️ Fallback: filtrage manuel pour le node ${nodeId}`);
+                const allServers = await callPterodactylAPI('/api/application/servers');
+                nodeServers = allServers.data.filter(s => {
+                    if (s.attributes.relationships?.node?.attributes?.id === nodeId) return true;
+                    if (s.attributes.node === nodeId) return true;
+                    return false;
+                });
+            }
+            
+            const nodeRAM = node.attributes.memory;
+            const nodeDisk = node.attributes.disk;
+            
+            totalRAM += nodeRAM;
+            totalDisk += nodeDisk;
+            
+            totalServers += nodeServers.length;
+            
+            nodesList.push({
+                id: nodeId,
+                name: node.attributes.name,
+                ram_total: nodeRAM,
+                ram_used: nodeRAM * 0.6,
+                disk_total: nodeDisk,
+                disk_used: nodeDisk * 0.4,
+                servers_count: nodeServers.length,
+                is_active: node.attributes.scheme === 'https'
+            });
+            
+            usedRAM += nodeRAM * 0.6;
+            usedDisk += nodeDisk * 0.4;
+        }
+
+        const pteroUsers = await callPterodactylAPI('/api/application/users');
+
+        res.json({
+            success: true,
+            cpu_used: 45,
+            ram_used: Math.round(usedRAM / 1024 / 1024),
+            ram_total: Math.round(totalRAM / 1024 / 1024),
+            disk_used: Math.round(usedDisk / 1024 / 1024),
+            disk_total: Math.round(totalDisk / 1024 / 1024),
+            nodes: nodes.data?.length || 0,
+            ptero_users: pteroUsers.meta?.pagination?.total || 0,
+            ptero_servers: totalServers,
+            average_load: 65,
+            nodes_list: nodesList
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération stats Pterodactyl:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
+    }
+});
+
+app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        console.log('💰 Récupération des stats financières...');
+
+        const { data: revenueData, error: revenueError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (revenueError) throw revenueError;
+
+        const totalRevenue = revenueData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        const { data: monthlyData, error: monthlyError } = await supabase
+            .from('transactions')
+            .select('amount, created_at')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+        if (monthlyError) throw monthlyError;
+
+        const monthlyRevenue = {};
+        monthlyData?.forEach(t => {
+            const month = new Date(t.created_at).toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
+            monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (t.amount || 0);
+        });
+
+        const { data: typeData, error: typeError } = await supabase
+            .from('transactions')
+            .select('type, amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (typeError) throw typeError;
+
+        const revenueByType = {
+            coins_purchase: 0,
+            server_purchase: 0,
+            server_renewal: 0
+        };
+
+        typeData?.forEach(t => {
+            if (revenueByType[t.type] !== undefined) {
+                revenueByType[t.type] += t.amount || 0;
+            }
+        });
+
+        const { data: topBuyers, error: topError } = await supabase
+            .from('transactions')
+            .select(`
+                amount,
+                user_id,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .order('amount', { ascending: false });
+
+        if (topError) throw topError;
+
+        const buyerMap = new Map();
+        topBuyers?.forEach(t => {
+            const userId = t.user_id;
+            if (!buyerMap.has(userId)) {
+                buyerMap.set(userId, {
+                    user_id: userId,
+                    username: t.profiles?.username || 'Inconnu',
+                    email: t.profiles?.email || '',
+                    total: 0,
+                    count: 0
+                });
+            }
+            const buyer = buyerMap.get(userId);
+            buyer.total += t.amount || 0;
+            buyer.count++;
+        });
+
+        const topBuyersList = Array.from(buyerMap.values())
+            .sort((a, b) => b.total - a.total)
+            .slice(0, 10);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const { data: todayData, error: todayError } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful')
+            .gte('created_at', today.toISOString());
+
+        if (todayError) throw todayError;
+
+        const todayRevenue = todayData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+
+        const { count: totalTransactions, error: countError } = await supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('currency', 'FCFA')
+            .eq('status', 'successful');
+
+        if (countError) throw countError;
+
+        const avgTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+
+        res.json({
+            success: true,
+            financial: {
+                total_revenue: totalRevenue,
+                today_revenue: todayRevenue,
+                total_transactions: totalTransactions || 0,
+                avg_transaction: Math.round(avgTransaction),
+                by_type: revenueByType,
+                monthly: Object.entries(monthlyRevenue).map(([month, amount]) => ({ month, amount })),
+                top_buyers: topBuyersList
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur stats financières:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur récupération des stats financières' 
+        });
     }
 });
 
@@ -3618,201 +3950,6 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
     } catch (error) {
         console.error('❌ Erreur suppression tous les serveurs:', error);
         res.status(500).json({ success: false, error: 'Erreur suppression serveurs' });
-    }
-});
-
-app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const nodes = await callPterodactylAPI('/api/application/nodes');
-        
-        let totalRAM = 0;
-        let usedRAM = 0;
-        let totalDisk = 0;
-        let usedDisk = 0;
-        let totalServers = 0;
-        let nodesList = [];
-
-        for (const node of nodes.data || []) {
-            const nodeId = node.attributes.id;
-            
-            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
-            const servers = await callPterodactylAPI(`/api/application/servers?filter[node_id]=${nodeId}`);
-            
-            const nodeRAM = node.attributes.memory;
-            const nodeDisk = node.attributes.disk;
-            
-            totalRAM += nodeRAM;
-            totalDisk += nodeDisk;
-            
-            const nodeServers = servers.data || [];
-            totalServers += nodeServers.length;
-            
-            nodesList.push({
-                id: nodeId,
-                name: node.attributes.name,
-                ram_total: nodeRAM,
-                ram_used: nodeRAM * 0.6,
-                disk_total: nodeDisk,
-                disk_used: nodeDisk * 0.4,
-                servers_count: nodeServers.length,
-                is_active: node.attributes.scheme === 'https'
-            });
-            
-            usedRAM += nodeRAM * 0.6;
-            usedDisk += nodeDisk * 0.4;
-        }
-
-        const pteroUsers = await callPterodactylAPI('/api/application/users');
-
-        res.json({
-            success: true,
-            cpu_used: 45,
-            ram_used: Math.round(usedRAM / 1024 / 1024),
-            ram_total: Math.round(totalRAM / 1024 / 1024),
-            disk_used: Math.round(usedDisk / 1024 / 1024),
-            disk_total: Math.round(totalDisk / 1024 / 1024),
-            nodes: nodes.data?.length || 0,
-            ptero_users: pteroUsers.meta?.pagination?.total || 0,
-            ptero_servers: totalServers,
-            average_load: 65,
-            nodes_list: nodesList
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récupération stats Pterodactyl:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
-    }
-});
-
-app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        console.log('💰 Récupération des stats financières...');
-
-        const { data: revenueData, error: revenueError } = await supabase
-            .from('transactions')
-            .select('amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (revenueError) throw revenueError;
-
-        const totalRevenue = revenueData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
-
-        const { data: monthlyData, error: monthlyError } = await supabase
-            .from('transactions')
-            .select('amount, created_at')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
-
-        if (monthlyError) throw monthlyError;
-
-        const monthlyRevenue = {};
-        monthlyData?.forEach(t => {
-            const month = new Date(t.created_at).toLocaleString('fr-FR', { month: 'short', year: 'numeric' });
-            monthlyRevenue[month] = (monthlyRevenue[month] || 0) + (t.amount || 0);
-        });
-
-        const { data: typeData, error: typeError } = await supabase
-            .from('transactions')
-            .select('type, amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (typeError) throw typeError;
-
-        const revenueByType = {
-            coins_purchase: 0,
-            server_purchase: 0,
-            server_renewal: 0
-        };
-
-        typeData?.forEach(t => {
-            if (revenueByType[t.type] !== undefined) {
-                revenueByType[t.type] += t.amount || 0;
-            }
-        });
-
-        const { data: topBuyers, error: topError } = await supabase
-            .from('transactions')
-            .select(`
-                amount,
-                user_id,
-                profiles:user_id (
-                    username,
-                    email
-                )
-            `)
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .order('amount', { ascending: false });
-
-        if (topError) throw topError;
-
-        const buyerMap = new Map();
-        topBuyers?.forEach(t => {
-            const userId = t.user_id;
-            if (!buyerMap.has(userId)) {
-                buyerMap.set(userId, {
-                    user_id: userId,
-                    username: t.profiles?.username || 'Inconnu',
-                    email: t.profiles?.email || '',
-                    total: 0,
-                    count: 0
-                });
-            }
-            const buyer = buyerMap.get(userId);
-            buyer.total += t.amount || 0;
-            buyer.count++;
-        });
-
-        const topBuyersList = Array.from(buyerMap.values())
-            .sort((a, b) => b.total - a.total)
-            .slice(0, 10);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const { data: todayData, error: todayError } = await supabase
-            .from('transactions')
-            .select('amount')
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful')
-            .gte('created_at', today.toISOString());
-
-        if (todayError) throw todayError;
-
-        const todayRevenue = todayData?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
-
-        const { count: totalTransactions, error: countError } = await supabase
-            .from('transactions')
-            .select('*', { count: 'exact', head: true })
-            .eq('currency', 'FCFA')
-            .eq('status', 'successful');
-
-        if (countError) throw countError;
-
-        const avgTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
-
-        res.json({
-            success: true,
-            financial: {
-                total_revenue: totalRevenue,
-                today_revenue: todayRevenue,
-                total_transactions: totalTransactions || 0,
-                avg_transaction: Math.round(avgTransaction),
-                by_type: revenueByType,
-                monthly: Object.entries(monthlyRevenue).map(([month, amount]) => ({ month, amount })),
-                top_buyers: topBuyersList
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur stats financières:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur récupération des stats financières' 
-        });
     }
 });
 
