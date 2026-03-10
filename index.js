@@ -65,9 +65,9 @@ const resend = new Resend(RESEND_CONFIG.apiKey);
 // CONFIGURATION PTERODACTYL
 // =============================================
 const PTERODACTYL_CONFIG = {
-    url: 'http://37.60.244.89:8080',
-    applicationApiKey: 'ptla_TIdmCiO969PlJEBxjL918Yn5wJ68hbwtHl6Vg5dWesD',
-    clientApiKey: 'ptlc_ncE2HpncTdjD8sqNIcQZ1oBOhCq7N4lZ0bpoK8MtXgk'
+    url: 'https://panel.kermhosting.site',
+    applicationApiKey: 'ptla_KPjcN67epE1rmoqe1sIXPxkapiWZTUxwX6fJsW6nUrx',
+    clientApiKey: 'ptlc_bmegICkSoLH06PmBBjcHA0aUFvK9niMvRweUImEgDfd'
 };
 
 // =============================================
