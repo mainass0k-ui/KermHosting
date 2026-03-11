@@ -2741,114 +2741,90 @@
         }
 
         async function savePromoCode() {
-            const code = document.getElementById('promoCode').value.trim().toUpperCase();
-            const description = document.getElementById('promoDescription').value.trim();
-            const discountType = document.getElementById('promoDiscountType').value;
-            const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
-            const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
-            const maxDiscount = document.getElementById('promoMaxDiscount').value ? parseInt(document.getElementById('promoMaxDiscount').value) : null;
-            const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || 1;
-            const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
-            const expiresAt = document.getElementById('promoExpiresAt').value;
-            const isActive = document.getElementById('promoActive').checked;
-            const sendEmail = document.getElementById('promoSendEmail').checked;
+    const code = document.getElementById('promoCode').value.trim().toUpperCase();
+    const description = document.getElementById('promoDescription').value.trim();
+    const discountType = document.getElementById('promoDiscountType').value;
+    const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
+    const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
+    const maxDiscount = document.getElementById('promoMaxDiscount').value ? parseInt(document.getElementById('promoMaxDiscount').value) : null;
+    const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || 1;
+    const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
+    const expiresAt = document.getElementById('promoExpiresAt').value;
+    const isActive = document.getElementById('promoActive').checked;
+    const sendEmail = document.getElementById('promoSendEmail').checked;
 
-            const plansSelect = document.getElementById('promoPlans');
-            const applicablePlans = Array.from(plansSelect.selectedOptions).map(opt => opt.value);
+    const plansSelect = document.getElementById('promoPlans');
+    const applicablePlans = Array.from(plansSelect.selectedOptions).map(opt => opt.value);
 
-            if (!code) {
-                showToast('error', 'Le code promo est requis');
-                return;
+    if (!code) {
+        showToast('error', 'Le code promo est requis');
+        return;
+    }
+
+    if (!discountValue || discountValue < 1) {
+        showToast('error', 'Valeur de réduction invalide');
+        return;
+    }
+
+    if (discountType === 'percentage' && (discountValue < 1 || discountValue > 100)) {
+        showToast('error', 'Le pourcentage doit être entre 1 et 100');
+        return;
+    }
+
+    if (applicablePlans.length === 0) {
+        showToast('error', 'Sélectionnez au moins un plan');
+        return;
+    }
+
+    const data = {
+        code,
+        description,
+        discount_type: discountType,
+        discount_value: discountValue,
+        applicable_plans: applicablePlans,
+        min_purchase: minPurchase,
+        max_discount: maxDiscount,
+        usage_limit: usageLimit,
+        per_user_limit: perUserLimit,
+        is_active: isActive,
+        email_notification: sendEmail  // Changé de send_email à email_notification
+    };
+
+    if (expiresAt) {
+        data.expires_at = new Date(expiresAt).toISOString();
+    }
+
+    try {
+        const url = currentPromoId ? `/api/admin/promo-codes/${currentPromoId}` : '/api/admin/promo-codes';
+        const method = currentPromoId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+            showToast('success', result.message || 'Code promo enregistré');
+            closeModal('promoModal');
+            loadPromoCodes();
+            
+            if (result.emails_sent) {
+                showToast('info', `Email envoyé à ${result.emails_sent} utilisateurs`);
             }
-
-            if (!discountValue || discountValue < 1) {
-                showToast('error', 'Valeur de réduction invalide');
-                return;
-            }
-
-            if (discountType === 'percentage' && (discountValue < 1 || discountValue > 100)) {
-                showToast('error', 'Le pourcentage doit être entre 1 et 100');
-                return;
-            }
-
-            if (applicablePlans.length === 0) {
-                showToast('error', 'Sélectionnez au moins un plan');
-                return;
-            }
-
-            const data = {
-                code,
-                description,
-                discount_type: discountType,
-                discount_value: discountValue,
-                applicable_plans: applicablePlans,
-                min_purchase: minPurchase,
-                max_discount: maxDiscount,
-                usage_limit: usageLimit,
-                per_user_limit: perUserLimit,
-                is_active: isActive,
-                send_email: sendEmail
-            };
-
-            if (expiresAt) {
-                data.expires_at = new Date(expiresAt).toISOString();
-            }
-
-            try {
-                const url = currentPromoId ? `/api/admin/promo-codes/${currentPromoId}` : '/api/admin/promo-codes';
-                const method = currentPromoId ? 'PUT' : 'POST';
-
-                const res = await fetch(url, {
-                    method,
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await res.json();
-
-                if (result.success) {
-                    showToast('success', result.message || 'Code promo enregistré');
-                    closeModal('promoModal');
-                    loadPromoCodes();
-                    
-                    if (result.emails_sent) {
-                        showToast('info', `Email envoyé à ${result.emails_sent} utilisateurs`);
-                    }
-                } else {
-                    showToast('error', result.error || 'Erreur lors de l\'enregistrement');
-                }
-            } catch (error) {
-                console.error('Erreur sauvegarde promo:', error);
-                showToast('error', 'Erreur réseau');
-            }
+        } else {
+            showToast('error', result.error || 'Erreur lors de l\'enregistrement');
         }
-
-        async function togglePromoStatus(codeId, newStatus) {
-            try {
-                const res = await fetch(`/api/admin/promo-codes/${codeId}/toggle`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ is_active: newStatus })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    showToast('success', `Code ${newStatus ? 'activé' : 'désactivé'}`);
-                    loadPromoCodes();
-                } else {
-                    showToast('error', data.error);
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
-        }
+    } catch (error) {
+        console.error('Erreur sauvegarde promo:', error);
+        showToast('error', 'Erreur réseau');
+    }
+}
 
         async function sendPromoEmail(codeId) {
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-envelope" style="color: var(--warning);"></i>';
