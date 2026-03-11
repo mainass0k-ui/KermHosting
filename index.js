@@ -4102,6 +4102,7 @@ app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'pub
 app.get('/email-verification', (req, res) => res.sendFile(path.join(__dirname, 'public', 'email-verification.html')));
 app.get('/support', (req, res) => res.sendFile(path.join(__dirname, 'public', 'support.html')));
 app.get('/transactions', (req, res) => res.sendFile(path.join(__dirname, 'public', 'transactions.html')));
+app.get('/bot', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bot.html')));
 app.get('/server/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'view.html')));
 app.get('/server/:id/files', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'files.html')));
 
