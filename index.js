@@ -132,7 +132,7 @@ const PLANS = {
             '1 GB RAM DDR4',
             '10 GB Stockage NVMe',
             '100% CPU',
-            '7 jours',
+            '30 jours',
             '3 bases de données',
             '3 backups',
             'Support standard'
@@ -158,7 +158,7 @@ const PLANS = {
             '2 GB RAM DDR4',
             '20 GB Stockage NVMe',
             '200% CPU',
-            '7 jours',
+            '30 jours',
             '5 bases de données',
             '5 backups',
             'Support prioritaire'
@@ -183,7 +183,7 @@ const PLANS = {
             '4 GB RAM DDR4',
             '40 GB Stockage NVMe',
             '400% CPU',
-            '7 jours',
+            '30 jours',
             '10 bases de données',
             '10 backups',
             'Support prioritaire',
@@ -209,7 +209,7 @@ const PLANS = {
             '8 GB RAM DDR4',
             '80 GB Stockage NVMe',
             '800% CPU',
-            '7 jours',
+            '30 jours',
             '15 bases de données',
             '15 backups',
             'Support VIP 24/7',
@@ -652,78 +652,6 @@ function getAccountDeletedHtml(username) {
     return getBaseEmailTemplate('Compte supprimé', content);
 }
 
-// Template de suspension de compte
-function getAccountSuspendedHtml(username, reason) {
-    const content = `
-        <h2 style="color: #333; margin-top: 0;">Compte suspendu</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
-        
-        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #c0392b;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
-        </div>
-        
-        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
-        
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 5px 0;"><strong>Support :</strong></p>
-            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
-            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
-            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
-        </div>
-        
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
-        </p>
-    `;
-    return getBaseEmailTemplate('Compte suspendu', content);
-}
-
-// Template d'email promotionnel pour code promo
-function getPromoEmailHtml(username, promoCode, discountText, validUntil, plansText) {
-    const code = promoCode.code;
-    const description = promoCode.description || 'Profitez de cette offre exceptionnelle';
-    
-    const content = `
-        <h2 style="color: #333; margin-top: 0;">🎁 Offre spéciale pour vous !</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        
-        <p style="color: #555; line-height: 1.6;">Nous avons une offre exclusive rien que pour vous :</p>
-        
-        <div style="background-color: #f0f9ff; border: 2px dashed #F59E0B; border-radius: 5px; padding: 30px; margin: 30px 0; text-align: center;">
-            <div style="font-size: 48px; color: #F59E0B; margin-bottom: 20px;">🎁</div>
-            
-            <div style="font-size: 32px; font-weight: 700; color: #F59E0B; letter-spacing: 4px; margin-bottom: 20px; background-color: #fff; padding: 15px; border-radius: 5px;">
-                ${code}
-            </div>
-            
-            <p style="color: #333; font-size: 18px; margin: 20px 0;">
-                ${discountText}
-            </p>
-            
-            <p style="color: #666; margin-bottom: 20px;">
-                ${description}
-            </p>
-            
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <p style="margin: 5px 0;"><strong style="color: #7C3AED;">Valable sur les plans :</strong> ${plansText}</p>
-                <p style="margin: 5px 0;"><strong style="color: #7C3AED;">Valable jusqu'au :</strong> ${validUntil}</p>
-            </div>
-            
-            <p style="margin: 20px 0;">
-                <a href="${SITE_CONFIG.url}/pricing?promo=${code}" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 5px; font-weight: 600;">
-                    Profiter de l'offre
-                </a>
-            </p>
-        </div>
-        
-        <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">
-            Une seule utilisation par compte. Offre valable dans la limite des stocks.
-        </p>
-    `;
-    return getBaseEmailTemplate('Code promo spécial', content);
-}
-
 // =============================================
 // ROUTE DE TEST RESEND
 // =============================================
@@ -936,9 +864,16 @@ async function getServersByNode(nodeId) {
         const allServers = await callPterodactylAPI('/api/application/servers');
         
         // Filtrer ceux qui sont sur le node spécifié
+        // Note: Cette info peut être dans relationships ou dans les attributs selon la version
         const servers = allServers.data.filter(server => {
-            if (server.attributes.relationships?.node?.attributes?.id === parseInt(nodeId)) return true;
-            if (server.attributes.node === parseInt(nodeId)) return true;
+            // Vérifier si le serveur a des relations et contient le node_id
+            if (server.attributes.relationships?.node?.attributes?.id === parseInt(nodeId)) {
+                return true;
+            }
+            // Alternative: certains endpoints renvoient node_id directement
+            if (server.attributes.node === parseInt(nodeId)) {
+                return true;
+            }
             return false;
         });
         
@@ -3148,10 +3083,12 @@ app.get('/api/pterodactyl/nodes/:nodeId/servers', authenticateToken, requireAdmi
     try {
         const { nodeId } = req.params;
         
+        // Essayer d'abord l'endpoint spécifique (si disponible)
         try {
             const nodeServers = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
             return res.json({ success: true, servers: nodeServers.data || [] });
         } catch (specificError) {
+            // Si l'endpoint spécifique échoue, on utilise notre fonction de filtrage
             console.log('⚠️ Endpoint spécifique non disponible, utilisation du filtrage manuel');
             const servers = await getServersByNode(nodeId);
             return res.json({ success: true, servers });
@@ -3167,6 +3104,7 @@ app.get('/api/pterodactyl/servers/:identifier/resources', authenticateToken, asy
     try {
         const { identifier } = req.params;
         
+        // Vérifier que l'utilisateur a accès à ce serveur
         const { data: server } = await supabase
             .from('servers')
             .select('*')
@@ -3200,6 +3138,7 @@ app.get('/api/pterodactyl/servers/:serverId/allocations', authenticateToken, asy
     try {
         const { serverId } = req.params;
         
+        // Vérifier l'accès
         const { data: server } = await supabase
             .from('servers')
             .select('*')
@@ -3403,6 +3342,84 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
     }
 });
 
+app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const nodes = await callPterodactylAPI('/api/application/nodes');
+        
+        let totalRAM = 0;
+        let usedRAM = 0;
+        let totalDisk = 0;
+        let usedDisk = 0;
+        let totalServers = 0;
+        let nodesList = [];
+
+        for (const node of nodes.data || []) {
+            const nodeId = node.attributes.id;
+            
+            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
+            
+            // Solution alternative sans filtre non supporté
+            let nodeServers = [];
+            try {
+                // Essayer l'endpoint spécifique d'abord
+                const serversResponse = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
+                nodeServers = serversResponse.data || [];
+            } catch (specificError) {
+                // Fallback: récupérer tous les serveurs et filtrer manuellement
+                console.log(`⚠️ Fallback: filtrage manuel pour le node ${nodeId}`);
+                const allServers = await callPterodactylAPI('/api/application/servers');
+                nodeServers = allServers.data.filter(s => {
+                    if (s.attributes.relationships?.node?.attributes?.id === nodeId) return true;
+                    if (s.attributes.node === nodeId) return true;
+                    return false;
+                });
+            }
+            
+            const nodeRAM = node.attributes.memory;
+            const nodeDisk = node.attributes.disk;
+            
+            totalRAM += nodeRAM;
+            totalDisk += nodeDisk;
+            
+            totalServers += nodeServers.length;
+            
+            nodesList.push({
+                id: nodeId,
+                name: node.attributes.name,
+                ram_total: nodeRAM,
+                ram_used: nodeRAM * 0.6,
+                disk_total: nodeDisk,
+                disk_used: nodeDisk * 0.4,
+                servers_count: nodeServers.length,
+                is_active: node.attributes.scheme === 'https'
+            });
+            
+            usedRAM += nodeRAM * 0.6;
+            usedDisk += nodeDisk * 0.4;
+        }
+
+        const pteroUsers = await callPterodactylAPI('/api/application/users');
+
+        res.json({
+            success: true,
+            cpu_used: 45,
+            ram_used: Math.round(usedRAM / 1024 / 1024),
+            ram_total: Math.round(totalRAM / 1024 / 1024),
+            disk_used: Math.round(usedDisk / 1024 / 1024),
+            disk_total: Math.round(totalDisk / 1024 / 1024),
+            nodes: nodes.data?.length || 0,
+            ptero_users: pteroUsers.meta?.pagination?.total || 0,
+            ptero_servers: totalServers,
+            average_load: 65,
+            nodes_list: nodesList
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération stats Pterodactyl:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
+    }
+});
+
 app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (req, res) => {
     try {
         console.log('💰 Récupération des stats financières...');
@@ -3532,81 +3549,6 @@ app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (re
             success: false, 
             error: 'Erreur récupération des stats financières' 
         });
-    }
-});
-
-app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const nodes = await callPterodactylAPI('/api/application/nodes');
-        
-        let totalRAM = 0;
-        let usedRAM = 0;
-        let totalDisk = 0;
-        let usedDisk = 0;
-        let totalServers = 0;
-        let nodesList = [];
-
-        for (const node of nodes.data || []) {
-            const nodeId = node.attributes.id;
-            
-            const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
-            
-            let nodeServers = [];
-            try {
-                const serversResponse = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
-                nodeServers = serversResponse.data || [];
-            } catch (specificError) {
-                console.log(`⚠️ Fallback: filtrage manuel pour le node ${nodeId}`);
-                const allServers = await callPterodactylAPI('/api/application/servers');
-                nodeServers = allServers.data.filter(s => {
-                    if (s.attributes.relationships?.node?.attributes?.id === nodeId) return true;
-                    if (s.attributes.node === nodeId) return true;
-                    return false;
-                });
-            }
-            
-            const nodeRAM = node.attributes.memory;
-            const nodeDisk = node.attributes.disk;
-            
-            totalRAM += nodeRAM;
-            totalDisk += nodeDisk;
-            
-            totalServers += nodeServers.length;
-            
-            nodesList.push({
-                id: nodeId,
-                name: node.attributes.name,
-                ram_total: nodeRAM,
-                ram_used: nodeRAM * 0.6,
-                disk_total: nodeDisk,
-                disk_used: nodeDisk * 0.4,
-                servers_count: nodeServers.length,
-                is_active: node.attributes.scheme === 'https'
-            });
-            
-            usedRAM += nodeRAM * 0.6;
-            usedDisk += nodeDisk * 0.4;
-        }
-
-        const pteroUsers = await callPterodactylAPI('/api/application/users');
-
-        res.json({
-            success: true,
-            cpu_used: 45,
-            ram_used: Math.round(usedRAM / 1024 / 1024),
-            ram_total: Math.round(totalRAM / 1024 / 1024),
-            disk_used: Math.round(usedDisk / 1024 / 1024),
-            disk_total: Math.round(totalDisk / 1024 / 1024),
-            nodes: nodes.data?.length || 0,
-            ptero_users: pteroUsers.meta?.pagination?.total || 0,
-            ptero_servers: totalServers,
-            average_load: 65,
-            nodes_list: nodesList
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récupération stats Pterodactyl:', error);
-        res.status(500).json({ success: false, error: 'Erreur récupération stats Pterodactyl' });
     }
 });
 
@@ -4012,629 +3954,33 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
 });
 
 // =============================================
-// ROUTES ADMIN POUR CODES PROMO
+// TEMPLATE DE SUSPENSION DE COMPTE
 // =============================================
-
-// Fonction pour envoyer un email promo à tous les utilisateurs
-async function sendPromoEmailToAllUsers(promoCode, adminUsername) {
-    try {
-        const { data: users, error } = await supabase
-            .from('profiles')
-            .select('email, username')
-            .eq('email_verified', true)
-            .eq('banned', false);
-
-        if (error) throw error;
-
-        if (!users || users.length === 0) {
-            console.log('⚠️ Aucun utilisateur à qui envoyer l\'email');
-            return { success: true, sent: 0 };
-        }
-
-        const discountText = promoCode.discount_type === 'percentage' 
-            ? `${promoCode.discount_value}% de réduction`
-            : `${promoCode.discount_value} FCFA de réduction`;
-
-        const validUntil = promoCode.expires_at 
-            ? new Date(promoCode.expires_at).toLocaleDateString('fr-FR')
-            : 'durée limitée';
-
-        const plansText = promoCode.applicable_plans.map(plan => {
-            const planNames = { '1gb': 'Starter', '2gb': 'Basic', '4gb': 'Pro' };
-            return planNames[plan] || plan;
-        }).join(', ');
-
-        let sentCount = 0;
-        let errorCount = 0;
-
-        for (const user of users) {
-            try {
-                await sendEmail(
-                    user.email,
-                    '🎁 Code promo spécial KermHosting !',
-                    getPromoEmailHtml(user.username, promoCode, discountText, validUntil, plansText)
-                );
-                sentCount++;
-            } catch (emailError) {
-                console.error(`❌ Erreur envoi à ${user.email}:`, emailError);
-                errorCount++;
-            }
-        }
-
-        console.log(`✅ Emails promo envoyés: ${sentCount} succès, ${errorCount} échecs`);
-        return { success: true, sent: sentCount, errors: errorCount };
-
-    } catch (error) {
-        console.error('❌ Erreur envoi emails promo:', error);
-        return { success: false, error: error.message };
-    }
+function getAccountSuspendedHtml(username, reason) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">Compte suspendu</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        
+        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #c0392b;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
+        </div>
+        
+        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
+        
+        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 5px 0;"><strong>Support :</strong></p>
+            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
+            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
+            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
+        </div>
+        
+        <p style="text-align: center; margin: 25px 0;">
+            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Compte suspendu', content);
 }
-
-// Récupérer tous les codes promo
-app.get('/api/admin/promo-codes', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: codes, error } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        res.json({ success: true, codes: codes || [] });
-    } catch (error) {
-        console.error('❌ Erreur récupération codes promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Créer un code promo (avec option d'envoi d'email)
-app.post('/api/admin/promo-codes', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const {
-            code,
-            description,
-            discount_type,
-            discount_value,
-            applicable_plans,
-            min_purchase,
-            max_discount,
-            usage_limit,
-            per_user_limit,
-            starts_at,
-            expires_at,
-            is_active,
-            send_email
-        } = req.body;
-
-        if (!code || !discount_type || !discount_value) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Code, type et valeur de réduction requis' 
-            });
-        }
-
-        if (discount_type === 'percentage' && (discount_value < 1 || discount_value > 100)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Le pourcentage doit être entre 1 et 100' 
-            });
-        }
-
-        const { data: existing } = await supabase
-            .from('promo_codes')
-            .select('id')
-            .eq('code', code.toUpperCase())
-            .maybeSingle();
-
-        if (existing) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code existe déjà' 
-            });
-        }
-
-        const { data: newCode, error } = await supabase
-            .from('promo_codes')
-            .insert([{
-                code: code.toUpperCase(),
-                description,
-                discount_type,
-                discount_value,
-                applicable_plans: applicable_plans || ['1gb', '2gb', '4gb'],
-                min_purchase: min_purchase || 0,
-                max_discount,
-                usage_limit: usage_limit || 1,
-                per_user_limit: per_user_limit || 1,
-                starts_at: starts_at || new Date().toISOString(),
-                expires_at,
-                is_active: is_active !== undefined ? is_active : true,
-                send_email_notification: send_email || false,
-                created_by: req.user.id
-            }])
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        let emailResult = null;
-        if (send_email) {
-            emailResult = await sendPromoEmailToAllUsers(newCode, req.user.username);
-            
-            if (emailResult.success) {
-                await supabase
-                    .from('promo_codes')
-                    .update({ email_sent: true })
-                    .eq('id', newCode.id);
-            }
-        }
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'promo_create',
-                target_type: 'promo',
-                target_id: newCode.id,
-                description: `Création du code promo ${code}${send_email ? ' avec envoi d\'emails' : ''}`,
-                metadata: { emails_sent: emailResult?.sent || 0 },
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ 
-            success: true, 
-            message: 'Code promo créé avec succès',
-            code: newCode,
-            emails_sent: emailResult?.sent || 0
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur création code promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Modifier un code promo
-app.put('/api/admin/promo-codes/:codeId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { codeId } = req.params;
-        const updates = req.body;
-
-        const { data: existing, error: fetchError } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .eq('id', codeId)
-            .single();
-
-        if (fetchError || !existing) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo non trouvé' 
-            });
-        }
-
-        if (updates.code && updates.code !== existing.code) {
-            const { data: duplicate } = await supabase
-                .from('promo_codes')
-                .select('id')
-                .eq('code', updates.code.toUpperCase())
-                .maybeSingle();
-
-            if (duplicate) {
-                return res.status(400).json({ 
-                    success: false, 
-                    error: 'Ce code existe déjà' 
-                });
-            }
-            updates.code = updates.code.toUpperCase();
-        }
-
-        const { data: updated, error } = await supabase
-            .from('promo_codes')
-            .update({
-                ...updates,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', codeId)
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'promo_update',
-                target_type: 'promo',
-                target_id: codeId,
-                description: `Modification du code promo ${existing.code}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ 
-            success: true, 
-            message: 'Code promo modifié avec succès',
-            code: updated 
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur modification code promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Supprimer un code promo
-app.delete('/api/admin/promo-codes/:codeId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { codeId } = req.params;
-
-        const { data: code } = await supabase
-            .from('promo_codes')
-            .select('code')
-            .eq('id', codeId)
-            .single();
-
-        if (!code) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo non trouvé' 
-            });
-        }
-
-        const { error } = await supabase
-            .from('promo_codes')
-            .delete()
-            .eq('id', codeId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'promo_delete',
-                target_type: 'promo',
-                target_id: codeId,
-                description: `Suppression du code promo ${code.code}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ 
-            success: true, 
-            message: 'Code promo supprimé avec succès' 
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur suppression code promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Activer/Désactiver un code promo
-app.patch('/api/admin/promo-codes/:codeId/toggle', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { codeId } = req.params;
-        const { is_active } = req.body;
-
-        const { data: code } = await supabase
-            .from('promo_codes')
-            .select('code')
-            .eq('id', codeId)
-            .single();
-
-        if (!code) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo non trouvé' 
-            });
-        }
-
-        const { error } = await supabase
-            .from('promo_codes')
-            .update({ 
-                is_active,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', codeId);
-
-        if (error) throw error;
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'promo_toggle',
-                target_type: 'promo',
-                target_id: codeId,
-                description: `${is_active ? 'Activation' : 'Désactivation'} du code promo ${code.code}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ 
-            success: true, 
-            message: `Code promo ${is_active ? 'activé' : 'désactivé'} avec succès` 
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur activation/désactivation code promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Envoyer un email promo manuellement
-app.post('/api/admin/promo-codes/:codeId/send-email', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { codeId } = req.params;
-
-        const { data: promo, error } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .eq('id', codeId)
-            .single();
-
-        if (error || !promo) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo non trouvé' 
-            });
-        }
-
-        const emailResult = await sendPromoEmailToAllUsers(promo, req.user.username);
-
-        if (!emailResult.success) {
-            return res.status(500).json({ 
-                success: false, 
-                error: emailResult.error 
-            });
-        }
-
-        await supabase
-            .from('promo_codes')
-            .update({ email_sent: true })
-            .eq('id', codeId);
-
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'promo_email',
-                target_type: 'promo',
-                target_id: codeId,
-                description: `Envoi d'email pour le code promo ${promo.code}`,
-                metadata: { emails_sent: emailResult.sent },
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ 
-            success: true, 
-            message: `Emails envoyés à ${emailResult.sent} utilisateurs`,
-            sent: emailResult.sent,
-            errors: emailResult.errors
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur envoi emails promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Statistiques d'un code promo
-app.get('/api/admin/promo-codes/:codeId/stats', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { codeId } = req.params;
-
-        const { data: promo } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .eq('id', codeId)
-            .single();
-
-        if (!promo) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo non trouvé' 
-            });
-        }
-
-        const { data: usage } = await supabase
-            .from('promo_code_usage')
-            .select(`
-                *,
-                profiles:user_id (
-                    username,
-                    email
-                ),
-                transactions (
-                    amount,
-                    created_at
-                )
-            `)
-            .eq('promo_code_id', codeId)
-            .order('used_at', { ascending: false });
-
-        const totalDiscount = usage?.reduce((sum, u) => sum + (u.discount_applied || 0), 0) || 0;
-
-        res.json({
-            success: true,
-            promo,
-            stats: {
-                total_uses: usage?.length || 0,
-                total_discount: totalDiscount,
-                remaining_uses: promo.usage_limit ? (promo.usage_limit - promo.used_count) : 'Illimité',
-                usage_details: usage || []
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur récupération stats promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Valider un code promo (côté client)
-app.post('/api/validate-promo', authenticateToken, async (req, res) => {
-    try {
-        const { code, plan_id, amount } = req.body;
-
-        if (!code || !plan_id) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Code promo et plan requis' 
-            });
-        }
-
-        const { data: promo, error } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .eq('code', code.toUpperCase())
-            .single();
-
-        if (error || !promo) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Code promo invalide' 
-            });
-        }
-
-        if (!promo.is_active) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code promo n\'est plus actif' 
-            });
-        }
-
-        const now = new Date();
-        const startsAt = new Date(promo.starts_at);
-        const expiresAt = promo.expires_at ? new Date(promo.expires_at) : null;
-
-        if (now < startsAt) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code promo n\'est pas encore valide' 
-            });
-        }
-
-        if (expiresAt && now > expiresAt) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code promo a expiré' 
-            });
-        }
-
-        if (promo.usage_limit && promo.used_count >= promo.usage_limit) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code promo a atteint sa limite d\'utilisations' 
-            });
-        }
-
-        const { data: existingUsage } = await supabase
-            .from('promo_code_usage')
-            .select('id')
-            .eq('promo_code_id', promo.id)
-            .eq('user_id', req.user.id)
-            .maybeSingle();
-
-        if (existingUsage) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Vous avez déjà utilisé ce code promo' 
-            });
-        }
-
-        if (!promo.applicable_plans.includes(plan_id)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Ce code promo ne s\'applique pas à ce plan' 
-            });
-        }
-
-        if (amount && amount < promo.min_purchase) {
-            return res.status(400).json({ 
-                success: false, 
-                error: `Montant minimum d'achat : ${promo.min_purchase} FCFA` 
-            });
-        }
-
-        let discountAmount = 0;
-        let finalAmount = amount;
-
-        if (amount) {
-            if (promo.discount_type === 'percentage') {
-                discountAmount = Math.round(amount * promo.discount_value / 100);
-                if (promo.max_discount && discountAmount > promo.max_discount) {
-                    discountAmount = promo.max_discount;
-                }
-            } else {
-                discountAmount = promo.discount_value;
-            }
-            finalAmount = Math.max(0, amount - discountAmount);
-        }
-
-        res.json({
-            success: true,
-            promo: {
-                id: promo.id,
-                code: promo.code,
-                description: promo.description,
-                discount_type: promo.discount_type,
-                discount_value: promo.discount_value,
-                discountAmount,
-                finalAmount,
-                valid: true
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Erreur validation code promo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// =============================================
-// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
-// =============================================
-app.get('/api/download-bot', async (req, res) => {
-    try {
-        const fileName = 'KERM-MD-V1.zip';
-        
-        const possiblePaths = [
-            path.join(__dirname, 'public', 'downloads', fileName),
-            path.join(__dirname, 'bots', fileName),
-            path.join(__dirname, fileName)
-        ];
-        
-        let filePath = null;
-        for (const testPath of possiblePaths) {
-            if (fs.existsSync(testPath)) {
-                filePath = testPath;
-                break;
-            }
-        }
-        
-        if (!filePath) {
-            return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
-        }
-        
-        const fileBuffer = fs.readFileSync(filePath);
-        
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
-        res.setHeader('Content-Length', fileBuffer.length);
-        res.setHeader('Cache-Control', 'no-cache');
-        
-        res.end(fileBuffer);
-        
-    } catch (error) {
-        console.error('❌ Erreur:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
 
 // =============================================
 // CRON JOBS
@@ -4739,6 +4085,51 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1 CORRIGÉE
+// =============================================
+app.get('/api/download-bot', async (req, res) => {
+    try {
+        const fileName = 'KERM-MD-V1.zip';
+        
+        // Chemins à vérifier
+        const possiblePaths = [
+            path.join(__dirname, 'public', 'downloads', fileName),
+            path.join(__dirname, 'bots', fileName),
+            path.join(__dirname, fileName)
+        ];
+        
+        let filePath = null;
+        for (const testPath of possiblePaths) {
+            if (fs.existsSync(testPath)) {
+                filePath = testPath;
+                break;
+            }
+        }
+        
+        if (!filePath) {
+            return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
+        }
+        
+        // Lire le fichier en buffer
+        const fileBuffer = fs.readFileSync(filePath);
+        
+        // Configuration des headers pour forcer le téléchargement
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
+        res.setHeader('Content-Length', fileBuffer.length);
+        res.setHeader('Cache-Control', 'no-cache');
+        
+        // Envoyer le buffer
+        res.end(fileBuffer);
+        
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+
+// =============================================
 // ROUTES PAGES HTML
 // =============================================
 
@@ -4771,7 +4162,6 @@ server.listen(SITE_CONFIG.port, async () => {
     console.log(`💰 Mode paiement: Fapshi LIVE`);
     console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
-    console.log(`🎟️ Codes promo: Activés`);
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
