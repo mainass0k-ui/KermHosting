@@ -7,7 +7,7 @@
     <meta name="description" content="Tarifs KermHosting - Hébergement Node.js à partir de 500 FCFA/7 jours. Payez en FCFA par Mobile Money.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -598,6 +598,156 @@
             margin-left: 6px;
         }
 
+        /* ===== PROMO CODE SECTION ===== */
+        .promo-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .promo-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .promo-title i {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+
+        .promo-input-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .promo-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            min-width: 200px;
+            text-transform: uppercase;
+        }
+
+        .promo-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .promo-apply-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--accent), #FF8C42);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .promo-apply-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .promo-apply-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .promo-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+        }
+
+        .promo-info.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .promo-info.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .promo-info.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .promo-info i {
+            font-size: 1.2rem;
+        }
+
+        .promo-details {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            display: none;
+        }
+
+        .promo-details.active {
+            display: block;
+        }
+
+        .promo-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .promo-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .promo-detail-label {
+            color: var(--text-secondary);
+        }
+
+        .promo-detail-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .promo-detail-value.discount {
+            color: var(--success);
+        }
+
+        .promo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            background: var(--accent);
+            color: black;
+            margin-left: 8px;
+        }
+
         /* ===== PRICING GRID ===== */
         .pricing-grid {
             display: grid;
@@ -777,6 +927,18 @@
         .card-btn.popular-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
+        }
+
+        .promo-price {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-right: 8px;
         }
 
         /* ===== COINS PACKS SECTION ===== */
@@ -1109,6 +1271,10 @@
             color: var(--warning);
         }
 
+        .modal-info-value.discount {
+            color: var(--success);
+        }
+
         .phone-input {
             width: 100%;
             padding: 14px;
@@ -1383,6 +1549,10 @@
             background: rgba(59, 130, 246, 0.95);
         }
 
+        .toast.warning {
+            background: rgba(245, 158, 11, 0.95);
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -1447,6 +1617,10 @@
             .toast {
                 left: auto;
                 right: 20px;
+            }
+
+            .promo-input-group {
+                flex-wrap: nowrap;
             }
         }
 
@@ -1667,6 +1841,63 @@
                     </span>
                 </div>
 
+                <!-- SECTION CODE PROMO RÉELLE -->
+                <div class="promo-section" id="promoSection">
+                    <h2 class="promo-title">
+                        <i class="fas fa-ticket-alt"></i>
+                        Vous avez un code promo ?
+                    </h2>
+                    <div class="promo-input-group">
+                        <input type="text" class="promo-input" id="promoCodeInput" placeholder="Entrez votre code" maxlength="50">
+                        <button class="promo-apply-btn" id="applyPromoBtn" onclick="applyPromoCode()">
+                            <i class="fas fa-check"></i>
+                            Appliquer
+                        </button>
+                    </div>
+                    <div class="promo-info" id="promoInfo" style="display: none;"></div>
+                    
+                    <!-- Détails du code promo appliqué -->
+                    <div class="promo-details" id="promoDetails">
+                        <h3 style="margin-bottom: 12px; font-size: 1rem;">Détails de votre réduction</h3>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Code</span>
+                            <span class="promo-detail-value" id="promoDetailCode">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Description</span>
+                            <span class="promo-detail-value" id="promoDetailDescription">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Type de réduction</span>
+                            <span class="promo-detail-value" id="promoDetailType">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Valeur</span>
+                            <span class="promo-detail-value discount" id="promoDetailValue">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Plans concernés</span>
+                            <span class="promo-detail-value" id="promoDetailPlans">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Achat minimum</span>
+                            <span class="promo-detail-value" id="promoDetailMinPurchase">0 FCFA</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Utilisations</span>
+                            <span class="promo-detail-value" id="promoDetailUsage">-</span>
+                        </div>
+                        <div class="promo-detail-item">
+                            <span class="promo-detail-label">Valide jusqu'au</span>
+                            <span class="promo-detail-value" id="promoDetailExpiry">-</span>
+                        </div>
+                        <button class="btn btn-outline btn-small" onclick="removePromoCode()" style="margin-top: 12px; width: 100%;">
+                            <i class="fas fa-times"></i>
+                            Retirer le code
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Pricing Grid -->
                 <div class="pricing-grid" id="pricingGrid">
                     <div class="loading-state">
@@ -1787,6 +2018,16 @@
                                 Les coins sont notre monnaie virtuelle. Achetez des packs pour économiser jusqu'à 20%.
                             </div>
                         </div>
+                        <!-- FAQ sur les codes promo -->
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Comment fonctionnent les codes promo ?
+                            </div>
+                            <div class="faq-answer">
+                                Entrez votre code dans le champ prévu. S'il est valide, la réduction s'appliquera automatiquement sur les plans concernés. Chaque code ne peut être utilisé qu'une seule fois par utilisateur (sauf si l'admin autorise plus).
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1809,7 +2050,15 @@
                         <span class="modal-info-value" id="choicePlanName">-</span>
                     </div>
                     <div class="modal-info-item">
-                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-label">Prix original</span>
+                        <span class="modal-info-value" id="choiceOriginalPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item" id="choiceDiscountRow" style="display: none;">
+                        <span class="modal-info-label">Réduction</span>
+                        <span class="modal-info-value discount" id="choiceDiscount">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix final</span>
                         <span class="modal-info-value" id="choicePlanPrice">- FCFA</span>
                     </div>
                     <div class="modal-info-item">
@@ -1942,7 +2191,15 @@
                         <span class="modal-info-value" id="mobilePlanName">-</span>
                     </div>
                     <div class="modal-info-item">
-                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-label">Prix original</span>
+                        <span class="modal-info-value" id="mobileOriginalPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item" id="mobileDiscountRow" style="display: none;">
+                        <span class="modal-info-label">Réduction</span>
+                        <span class="modal-info-value discount" id="mobileDiscount">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix final</span>
                         <span class="modal-info-value" id="mobilePlanPrice">- FCFA</span>
                     </div>
                     <div class="modal-info-item">
@@ -2047,6 +2304,51 @@
         </div>
     </div>
 
+    <!-- MODAL 6: Code promo déjà utilisé -->
+    <div class="modal" id="promoAlreadyUsedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Code déjà utilisé</h2>
+                <button class="modal-close" onclick="closeModal('promoAlreadyUsedModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 16px; font-size: 1.2rem;">
+                    Vous avez déjà utilisé ce code promo
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Les codes promo ne peuvent être utilisés qu'une seule fois par utilisateur (sauf si l'admin a configuré plus).
+                </p>
+                <button class="btn btn-primary" onclick="closeModal('promoAlreadyUsedModal')">
+                    J'ai compris
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: Code promo expiré -->
+    <div class="modal" id="promoExpiredModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Code expiré</h2>
+                <button class="modal-close" onclick="closeModal('promoExpiredModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-clock" style="font-size: 4rem; color: var(--danger); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 16px; font-size: 1.2rem;">
+                    Ce code promo a expiré
+                </p>
+                <button class="btn btn-primary" onclick="closeModal('promoExpiredModal')">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- SUCCESS MODAL (affichage identifiants) -->
     <div class="success-modal" id="successModal">
         <div class="success-content">
@@ -2101,7 +2403,7 @@
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ===== TOGGLE BILLING CORRIGÉ =====
+        // ===== TOGGLE BILLING =====
         const toggle = document.getElementById('billingToggle');
         const monthlyLabel = document.getElementById('monthlyLabel');
         const yearlyLabel = document.getElementById('yearlyLabel');
@@ -2115,7 +2417,7 @@
             updatePrices();
         });
 
-        // ===== PLANS DATA AVEC DURÉES CORRECTES =====
+        // ===== PLANS DATA =====
         const PLANS = {
             'free': {
                 name: 'Free',
@@ -2125,7 +2427,7 @@
                 price_weekly: 0,
                 price_monthly: 0,
                 coins_needed: 0,
-                duration_days: 1, // 24h
+                duration_days: 1,
                 features: [
                     '256 MB RAM', 
                     '5 GB SSD', 
@@ -2143,7 +2445,7 @@
                 disk: 10240,
                 cpu: 100,
                 price_weekly: 500,
-                price_monthly: 1800, // 500 × 4 -20% = 1600
+                price_monthly: 1800,
                 coins_needed: 100,
                 duration_days: 7,
                 features: [
@@ -2165,7 +2467,7 @@
                 disk: 20480,
                 cpu: 200,
                 price_weekly: 800,
-                price_monthly: 2900, // 800 × 4 -10% = 2880
+                price_monthly: 2900,
                 coins_needed: 160,
                 duration_days: 7,
                 features: [
@@ -2186,7 +2488,7 @@
                 disk: 40960,
                 cpu: 400,
                 price_weekly: 1300,
-                price_monthly: 4700, // 1300 × 4 -10% = 4680
+                price_monthly: 4700,
                 coins_needed: 260,
                 duration_days: 7,
                 features: [
@@ -2241,20 +2543,47 @@
         let userCoins = 0;
         let userData = null;
         let paymentMethod = 'coins';
+        
+        // Variables pour le code promo RÉELLES
+        let activePromoCode = null;
+        let activePromoDiscount = 0;
 
-        // ===== DISPLAY PLANS CORRIGÉ =====
+        // ===== DISPLAY PLANS =====
         function displayPlans() {
             const container = document.getElementById('pricingGrid');
             let html = '';
 
             Object.entries(PLANS).forEach(([key, plan]) => {
-                const price = isYearly ? plan.price_monthly : plan.price_weekly;
+                let price = isYearly ? plan.price_monthly : plan.price_weekly;
                 const pricePeriod = isYearly ? '/mois' : '/7 jours';
+                
+                // Appliquer la réduction du code promo si actif
+                let displayPrice = price;
+                let discountHtml = '';
+                let originalPriceHtml = '';
+                
+                if (activePromoCode && price > 0 && activePromoCode.applicable_plans && activePromoCode.applicable_plans.includes(key)) {
+                    // Vérifier le montant minimum
+                    if (price >= (activePromoCode.min_purchase || 0)) {
+                        let discount = activePromoCode.discount_type === 'percentage' 
+                            ? Math.round(price * activePromoCode.discount_value / 100)
+                            : activePromoCode.discount_value;
+                        
+                        // Appliquer la réduction maximale si définie
+                        if (activePromoCode.max_discount && discount > activePromoCode.max_discount) {
+                            discount = activePromoCode.max_discount;
+                        }
+                        
+                        displayPrice = Math.max(price - discount, 0);
+                        
+                        discountHtml = `<span class="promo-price"> (-${activePromoCode.discount_value}${activePromoCode.discount_type === 'percentage' ? '%' : ' FCFA'})</span>`;
+                        originalPriceHtml = `<span class="original-price">${price.toLocaleString()} FCFA</span>`;
+                    }
+                }
                 
                 const popularClass = plan.popular ? 'popular' : '';
                 const btnClass = plan.popular ? 'popular-btn' : '';
 
-                // Badge de durée spécial pour le free
                 const durationBadge = key === 'free' 
                     ? '<span class="duration-highlight free"><i class="fas fa-clock"></i> 24h d\'essai</span>'
                     : '<span class="duration-highlight paid"><i class="fas fa-calendar"></i> 7 jours</span>';
@@ -2268,8 +2597,10 @@
                             </div>
                             <h3 class="card-name">${plan.name}</h3>
                             <div class="card-price">
-                                <span class="price">${price.toLocaleString()}</span>
+                                ${originalPriceHtml}
+                                <span class="price">${displayPrice.toLocaleString()}</span>
                                 <span class="price-period">FCFA${pricePeriod}</span>
+                                ${discountHtml}
                             </div>
                             <div class="price-coins">
                                 <i class="fas fa-coins"></i>
@@ -2321,6 +2652,161 @@
 
         function updatePrices() {
             displayPlans();
+        }
+
+        // ===== FONCTIONS POUR LES CODES PROMO RÉELLES =====
+        async function applyPromoCode() {
+            const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+            
+            if (!code) {
+                showToast('warning', 'Veuillez entrer un code promo');
+                return;
+            }
+
+            if (!token) {
+                showToast('info', 'Connectez-vous pour utiliser un code promo');
+                setTimeout(() => {
+                    window.location.href = `/login?redirect=pricing`;
+                }, 2000);
+                return;
+            }
+
+            const applyBtn = document.getElementById('applyPromoBtn');
+            applyBtn.disabled = true;
+            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+            try {
+                // Appel API RÉEL pour valider le code promo
+                const response = await fetch('/api/validate-promo', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        code, 
+                        plan_id: '1gb', // Plan par défaut pour la validation
+                        amount: 500 // Montant minimum pour la validation
+                    })
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    // Code promo valide
+                    activePromoCode = data.promo;
+                    
+                    // Afficher les informations de succès
+                    const promoInfo = document.getElementById('promoInfo');
+                    promoInfo.style.display = 'flex';
+                    promoInfo.className = 'promo-info success';
+                    promoInfo.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>Code promo appliqué avec succès !</span>
+                    `;
+                    
+                    // Afficher les détails du code
+                    document.getElementById('promoDetailCode').textContent = data.promo.code;
+                    document.getElementById('promoDetailDescription').textContent = data.promo.description || 'Aucune description';
+                    document.getElementById('promoDetailType').textContent = data.promo.discount_type === 'percentage' ? 'Pourcentage' : 'Montant fixe';
+                    document.getElementById('promoDetailValue').textContent = data.promo.discount_type === 'percentage' 
+                        ? `${data.promo.discount_value}% ${data.promo.max_discount ? `(max ${data.promo.max_discount} FCFA)` : ''}`
+                        : `${data.promo.discount_value} FCFA`;
+                    
+                    const planNames = {'1gb':'Starter','2gb':'Basic','4gb':'Pro','8gb':'Business'};
+                    document.getElementById('promoDetailPlans').textContent = data.promo.applicable_plans.map(p => planNames[p] || p).join(', ');
+                    
+                    document.getElementById('promoDetailMinPurchase').textContent = data.promo.min_purchase > 0 ? data.promo.min_purchase + ' FCFA' : 'Aucun minimum';
+                    
+                    const usageText = data.promo.usage_limit 
+                        ? `${data.promo.used_count || 0}/${data.promo.usage_limit} utilisations`
+                        : `${data.promo.used_count || 0} utilisations (illimité)`;
+                    document.getElementById('promoDetailUsage').textContent = usageText;
+                    
+                    document.getElementById('promoDetailExpiry').textContent = data.promo.expires_at 
+                        ? new Date(data.promo.expires_at).toLocaleDateString('fr-FR')
+                        : 'Sans expiration';
+                    
+                    document.getElementById('promoDetails').classList.add('active');
+                    
+                    // Mettre à jour les prix
+                    displayPlans();
+                    
+                    showToast('success', 'Code promo appliqué !');
+                    
+                } else {
+                    // Gérer les différentes erreurs
+                    const promoInfo = document.getElementById('promoInfo');
+                    promoInfo.style.display = 'flex';
+                    
+                    // Messages d'erreur spécifiques basés sur le code d'erreur
+                    switch (data.code) {
+                        case 'ALREADY_USED':
+                            promoInfo.className = 'promo-info warning';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Vous avez déjà utilisé ce code promo</span>
+                            `;
+                            openModal('promoAlreadyUsedModal');
+                            break;
+                            
+                        case 'EXPIRED':
+                            promoInfo.className = 'promo-info error';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-clock"></i>
+                                <span>Ce code promo a expiré</span>
+                            `;
+                            openModal('promoExpiredModal');
+                            break;
+                            
+                        case 'INACTIVE':
+                            promoInfo.className = 'promo-info error';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-ban"></i>
+                                <span>Ce code promo n'est plus actif</span>
+                            `;
+                            break;
+                            
+                        case 'NOT_STARTED':
+                            promoInfo.className = 'promo-info warning';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-hourglass-start"></i>
+                                <span>Ce code promo n'est pas encore valide</span>
+                            `;
+                            break;
+                            
+                        case 'LIMIT_REACHED':
+                            promoInfo.className = 'promo-info warning';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-times-circle"></i>
+                                <span>Ce code promo a atteint sa limite d'utilisations</span>
+                            `;
+                            break;
+                            
+                        default:
+                            promoInfo.className = 'promo-info error';
+                            promoInfo.innerHTML = `
+                                <i class="fas fa-times-circle"></i>
+                                <span>${data.error || 'Code promo invalide'}</span>
+                            `;
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur validation code promo:', error);
+                showToast('error', 'Erreur lors de la validation du code');
+            } finally {
+                applyBtn.disabled = false;
+                applyBtn.innerHTML = '<i class="fas fa-check"></i> Appliquer';
+            }
+        }
+
+        function removePromoCode() {
+            activePromoCode = null;
+            document.getElementById('promoCodeInput').value = '';
+            document.getElementById('promoInfo').style.display = 'none';
+            document.getElementById('promoDetails').classList.remove('active');
+            displayPlans();
+            showToast('info', 'Code promo retiré');
         }
 
         // ===== TOAST NOTIFICATION =====
@@ -2415,8 +2901,35 @@
             const price = isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly;
             const coinsNeeded = selectedPlan.coins_needed;
             
+            // Appliquer la réduction du code promo si applicable
+            let finalPrice = price;
+            let discount = 0;
+            
+            if (activePromoCode && activePromoCode.applicable_plans && activePromoCode.applicable_plans.includes(planKey)) {
+                if (price >= (activePromoCode.min_purchase || 0)) {
+                    discount = activePromoCode.discount_type === 'percentage' 
+                        ? Math.round(price * activePromoCode.discount_value / 100)
+                        : activePromoCode.discount_value;
+                    
+                    if (activePromoCode.max_discount && discount > activePromoCode.max_discount) {
+                        discount = activePromoCode.max_discount;
+                    }
+                    
+                    finalPrice = Math.max(price - discount, 0);
+                }
+            }
+            
             document.getElementById('choicePlanName').textContent = selectedPlan.name;
-            document.getElementById('choicePlanPrice').textContent = price + ' FCFA';
+            document.getElementById('choiceOriginalPrice').textContent = price + ' FCFA';
+            
+            if (discount > 0) {
+                document.getElementById('choiceDiscountRow').style.display = 'flex';
+                document.getElementById('choiceDiscount').textContent = discount + ' FCFA';
+            } else {
+                document.getElementById('choiceDiscountRow').style.display = 'none';
+            }
+            
+            document.getElementById('choicePlanPrice').textContent = finalPrice + ' FCFA';
             document.getElementById('choicePlanCoins').textContent = coinsNeeded + ' coins';
             document.getElementById('choicePlanDuration').textContent = selectedPlan.duration_days + ' jours';
             document.getElementById('choiceUserBalance').textContent = userCoins + ' coins';
@@ -2495,8 +3008,36 @@
                     return;
                 }
                 
+                // Calculer le prix final avec réduction
+                const price = isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly;
+                let finalPrice = price;
+                let discount = 0;
+                
+                if (activePromoCode && activePromoCode.applicable_plans && activePromoCode.applicable_plans.includes(selectedPlan.key)) {
+                    if (price >= (activePromoCode.min_purchase || 0)) {
+                        discount = activePromoCode.discount_type === 'percentage' 
+                            ? Math.round(price * activePromoCode.discount_value / 100)
+                            : activePromoCode.discount_value;
+                        
+                        if (activePromoCode.max_discount && discount > activePromoCode.max_discount) {
+                            discount = activePromoCode.max_discount;
+                        }
+                        
+                        finalPrice = Math.max(price - discount, 0);
+                    }
+                }
+                
                 document.getElementById('mobilePlanName').textContent = selectedPlan.name;
-                document.getElementById('mobilePlanPrice').textContent = (isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly) + ' FCFA';
+                document.getElementById('mobileOriginalPrice').textContent = price + ' FCFA';
+                
+                if (discount > 0) {
+                    document.getElementById('mobileDiscountRow').style.display = 'flex';
+                    document.getElementById('mobileDiscount').textContent = discount + ' FCFA';
+                } else {
+                    document.getElementById('mobileDiscountRow').style.display = 'none';
+                }
+                
+                document.getElementById('mobilePlanPrice').textContent = finalPrice + ' FCFA';
                 document.getElementById('mobilePlanDuration').textContent = selectedPlan.duration_days + ' jours';
                 document.getElementById('mobilePhone').value = phone;
                 
@@ -2551,7 +3092,8 @@
                         plan_id: selectedPlan.key,
                         server_name: serverName,
                         server_username: serverUsername,
-                        payment_method: 'coins'
+                        payment_method: 'coins',
+                        promo_code: activePromoCode ? activePromoCode.code : null // Inclure le code promo
                     })
                 });
 
@@ -2559,6 +3101,11 @@
 
                 if (data.success) {
                     closeModal('coinsConfirmModal');
+                    
+                    // Retirer le code promo après utilisation
+                    if (activePromoCode) {
+                        removePromoCode();
+                    }
                     
                     showSuccessModal({
                         server_name: serverName,
@@ -2618,7 +3165,8 @@
                         phone: phone,
                         medium: selectedMethod,
                         server_name: serverName,
-                        server_username: serverUsername
+                        server_username: serverUsername,
+                        promo_code: activePromoCode ? activePromoCode.code : null // Inclure le code promo
                     })
                 });
 
@@ -2633,7 +3181,8 @@
                         transactionId: data.transaction_id,
                         serverName: serverName,
                         serverUsername: serverUsername,
-                        planKey: selectedPlan.key
+                        planKey: selectedPlan.key,
+                        promoCode: activePromoCode ? activePromoCode.code : null
                     }));
                     
                     setTimeout(() => checkPaymentStatus(data.transId), 5000);
@@ -2668,7 +3217,8 @@
                                 server_name: pending.serverName,
                                 server_username: pending.serverUsername,
                                 transaction_id: pending.transactionId,
-                                payment_method: 'fcfa'
+                                payment_method: 'fcfa',
+                                promo_code: pending.promoCode
                             })
                         });
                         
@@ -2677,6 +3227,11 @@
                         if (createData.success) {
                             localStorage.removeItem('pendingServer');
                             closeModal('confirmationModal');
+                            
+                            // Retirer le code promo après utilisation
+                            if (pending.promoCode) {
+                                removePromoCode();
+                            }
                             
                             showSuccessModal({
                                 server_name: pending.serverName,
@@ -2808,6 +3363,13 @@
             selectPlan(planParam);
         }
 
+        // Récupérer le code promo depuis l'URL si présent (ex: ?promo=WELCOME10)
+        const promoParam = urlParams.get('promo');
+        if (promoParam && token) {
+            document.getElementById('promoCodeInput').value = promoParam;
+            setTimeout(() => applyPromoCode(), 1000);
+        }
+
         // Responsive
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) {
@@ -2836,6 +3398,8 @@
         window.openModal = openModal;
         window.closeSuccessModal = closeSuccessModal;
         window.copyToClipboard = copyToClipboard;
+        window.applyPromoCode = applyPromoCode;
+        window.removePromoCode = removePromoCode;
     </script>
 </body>
 </html>
