@@ -7,7 +7,7 @@
     <meta name="description" content="Administration KermHosting - Gérez les utilisateurs et serveurs">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -104,7 +104,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR (optimisée mobile) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -707,7 +707,134 @@
             background: var(--primary);
         }
 
-        /* ===== SEARCH BAR OPTIMISÉE ===== */
+        /* ===== PROMO CODES SECTION ===== */
+        .promo-section {
+            margin-bottom: 30px;
+        }
+
+        .promo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .promo-header h2 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .promo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .promo-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .promo-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .promo-card.inactive {
+            opacity: 0.6;
+        }
+
+        .promo-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .promo-code {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .promo-description {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .promo-details {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .promo-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .promo-detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .promo-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .promo-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .promo-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .promo-stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .promo-stat-number {
+            display: block;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .promo-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== SEARCH BAR ===== */
         .search-bar {
             display: flex;
             flex-direction: column;
@@ -784,7 +911,7 @@
             color: var(--danger);
         }
 
-        /* ===== TABLES OPTIMISÉES ===== */
+        /* ===== TABLES ===== */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -968,7 +1095,7 @@
             font-size: 1rem;
         }
 
-        /* ===== MODALS OPTIMISÉS ===== */
+        /* ===== MODALS ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -1086,7 +1213,7 @@
             font-size: 0.9rem;
         }
 
-        .modal-input, .modal-select {
+        .modal-input, .modal-select, .modal-textarea {
             width: 100%;
             padding: 12px;
             background: var(--bg-input);
@@ -1096,9 +1223,27 @@
             font-size: 0.95rem;
         }
 
-        .modal-input:focus, .modal-select:focus {
+        .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
             outline: none;
             border-color: var(--primary);
+        }
+
+        .modal-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
         }
 
         .modal-actions {
@@ -1510,6 +1655,10 @@
                         <span class="gradient-text">Administration</span> KermHosting
                     </h1>
                     <div class="header-actions">
+                        <button class="btn btn-warning" onclick="showCreatePromoModal()">
+                            <i class="fas fa-tag"></i>
+                            <span class="btn-text">Nouveau code promo</span>
+                        </button>
                         <button class="btn btn-danger" onclick="showDeleteAllServersModal()">
                             <i class="fas fa-trash-alt"></i>
                             <span class="btn-text">Supprimer tous</span>
@@ -1627,17 +1776,36 @@
                     </div>
                 </div>
 
+                <!-- Promo Codes Section -->
+                <div class="promo-section">
+                    <div class="promo-header">
+                        <h2>
+                            <i class="fas fa-tags" style="color: var(--accent);"></i>
+                            Codes promo
+                        </h2>
+                        <button class="btn btn-success btn-small" onclick="showCreatePromoModal()">
+                            <i class="fas fa-plus"></i> Nouveau code
+                        </button>
+                    </div>
+                    <div class="promo-grid" id="promoCodesList">
+                        <div class="loading-state">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <p>Chargement des codes promo...</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tabs -->
                 <div class="tabs">
                     <div class="tab active" onclick="switchTab('users')">Utilisateurs</div>
                     <div class="tab" onclick="switchTab('servers')">Serveurs</div>
                     <div class="tab" onclick="switchTab('transactions')">Transactions</div>
                     <div class="tab" onclick="switchTab('financial')">Finances</div>
-                    <div class="tab" onclick="switchTab('pterodactyl')">Pterodactyl</div>
+                    <div class="tab" onclick="switchTab('promos')">Codes promo</div>
                     <div class="tab" onclick="switchTab('logs')">Logs</div>
                 </div>
 
-                <!-- Tab: Utilisateurs (OPTIMISÉ) -->
+                <!-- Tab: Utilisateurs -->
                 <div class="tab-pane active" id="tab-users">
                     <div class="search-bar">
                         <div class="search-row">
@@ -1696,7 +1864,6 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="pagination" id="userPagination">
                         <button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn">
                             <i class="fas fa-chevron-left"></i>
@@ -1837,15 +2004,14 @@
                         <div class="stat-card">
                             <div class="stat-header">
                                 <div class="stat-icon">
-                                    <i class="fas fa-chart-pie"></i>
+                                    <i class="fas fa-percent"></i>
                                 </div>
                             </div>
-                            <div class="stat-value" id="financialOther">0 FCFA</div>
-                            <div class="stat-label">Autres</div>
+                            <div class="stat-value" id="financialPromoUsage">0 FCFA</div>
+                            <div class="stat-label">Réductions promo</div>
                         </div>
                     </div>
 
-                    <!-- Top Acheteurs (détaillé) -->
                     <div class="top-buyers">
                         <h3>
                             <i class="fas fa-trophy" style="color: var(--warning);"></i>
@@ -1857,68 +2023,19 @@
                     </div>
                 </div>
 
-                <!-- Tab: Pterodactyl -->
-                <div class="tab-pane" id="tab-pterodactyl">
-                    <div class="stats-grid" style="margin-bottom: 16px;">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-database"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroNodes">0</div>
-                            <div class="stat-label">Nœuds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-users-cog"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroUsers">0</div>
-                            <div class="stat-label">Utilisateurs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroTotalServers">0</div>
-                            <div class="stat-label">Serveurs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroLoad">0%</div>
-                            <div class="stat-label">Charge</div>
-                        </div>
+                <!-- Tab: Codes Promo -->
+                <div class="tab-pane" id="tab-promos">
+                    <div class="promo-header">
+                        <h2>Gestion des codes promo</h2>
+                        <button class="btn btn-success" onclick="showCreatePromoModal()">
+                            <i class="fas fa-plus"></i> Créer un code
+                        </button>
                     </div>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nœud</th>
-                                    <th>RAM</th>
-                                    <th>Disque</th>
-                                    <th>Serveurs</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pteroNodesBody">
-                                <tr>
-                                    <td colspan="6" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des nœuds...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="promo-grid" id="promoCodesTabList">
+                        <div class="loading-state">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <p>Chargement des codes promo...</p>
+                        </div>
                     </div>
                 </div>
 
@@ -1934,6 +2051,7 @@
                                 <option value="coins">Ajouts/retraits coins</option>
                                 <option value="server">Actions serveurs</option>
                                 <option value="delete">Suppressions</option>
+                                <option value="promo">Codes promo</option>
                             </select>
                         </div>
                         <div class="search-badge">
@@ -1967,6 +2085,128 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- MODAL: Création/Édition code promo -->
+    <div class="modal" id="promoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="promoModalTitle">Créer un code promo</h2>
+                <button class="modal-close" onclick="closeModal('promoModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="promoForm">
+                    <div class="modal-form-group">
+                        <label>Code promo *</label>
+                        <input type="text" class="modal-input" id="promoCode" placeholder="Ex: BIENVENUE20" required maxlength="30">
+                        <small style="color: var(--text-muted);">Lettres majuscules, chiffres et underscores</small>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Description</label>
+                        <textarea class="modal-textarea" id="promoDescription" placeholder="Description du code promo..."></textarea>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Type de réduction *</label>
+                        <select class="modal-select" id="promoDiscountType" onchange="toggleDiscountFields()">
+                            <option value="percentage">Pourcentage (%)</option>
+                            <option value="fixed">Montant fixe (FCFA)</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Valeur de la réduction *</label>
+                        <input type="number" class="modal-input" id="promoDiscountValue" placeholder="Ex: 20" min="1" required>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Plans applicables</label>
+                        <select class="modal-select" id="promoPlans" multiple size="4">
+                            <option value="1gb" selected>Starter (1GB)</option>
+                            <option value="2gb" selected>Basic (2GB)</option>
+                            <option value="4gb" selected>Pro (4GB)</option>
+                            <option value="8gb">Business (8GB)</option>
+                        </select>
+                        <small style="color: var(--text-muted);">Maintenez Ctrl pour sélectionner plusieurs</small>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Montant minimum d'achat</label>
+                        <input type="number" class="modal-input" id="promoMinPurchase" placeholder="0" min="0">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Réduction maximale (pourcentage uniquement)</label>
+                        <input type="number" class="modal-input" id="promoMaxDiscount" placeholder="Aucune limite" min="0">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Limite d'utilisations totales</label>
+                        <input type="number" class="modal-input" id="promoUsageLimit" placeholder="1" min="1">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Limite par utilisateur</label>
+                        <input type="number" class="modal-input" id="promoPerUserLimit" placeholder="1" min="1">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Date d'expiration</label>
+                        <input type="datetime-local" class="modal-input" id="promoExpiresAt">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="promoActive" checked>
+                        <label for="promoActive">Code actif immédiatement</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="promoSendEmail">
+                        <label for="promoSendEmail">Envoyer une notification par email à tous les utilisateurs</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('promoModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="savePromoCode()" id="savePromoBtn">Créer le code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Détails code promo -->
+    <div class="modal" id="promoDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails du code promo</h2>
+                <button class="modal-close" onclick="closeModal('promoDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info" id="promoDetailsContent">
+                    <!-- Rempli dynamiquement -->
+                </div>
+                <h3 style="margin: 20px 0 10px;">Utilisations</h3>
+                <div id="promoUsageList">
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('promoDetailsModal')">Fermer</button>
+                <button class="btn btn-warning" onclick="sendPromoEmail()" id="sendPromoEmailBtn">
+                    <i class="fas fa-envelope"></i> Envoyer email
+                </button>
+                <button class="btn btn-danger" onclick="deletePromoCode()" id="deletePromoBtn">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL: Édition utilisateur -->
@@ -2162,9 +2402,11 @@
         let allServers = [];
         let allTransactions = [];
         let allLogs = [];
+        let allPromoCodes = [];
         let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
+        let currentPromoId = null;
         let charts = {};
 
         // Pagination
@@ -2248,6 +2490,7 @@
                     document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
 
                     loadAdminData();
+                    loadPromoCodes();
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
@@ -2255,6 +2498,438 @@
             } catch (error) {
                 console.error('Erreur chargement:', error);
                 showToast('error', 'Erreur de chargement');
+            }
+        }
+
+        // ===== LOAD PROMO CODES =====
+        async function loadPromoCodes() {
+            try {
+                const res = await fetch('/api/admin/promo-codes', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    allPromoCodes = data.codes || [];
+                    displayPromoCodes();
+                }
+            } catch (error) {
+                console.error('Erreur chargement codes promo:', error);
+            }
+        }
+
+        // ===== DISPLAY PROMO CODES =====
+        function displayPromoCodes() {
+            const container = document.getElementById('promoCodesList');
+            const tabContainer = document.getElementById('promoCodesTabList');
+            
+            if (!allPromoCodes || allPromoCodes.length === 0) {
+                const emptyHtml = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <i class="fas fa-tags" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                        <p>Aucun code promo pour le moment</p>
+                        <button class="btn btn-primary" onclick="showCreatePromoModal()" style="margin-top: 20px;">
+                            <i class="fas fa-plus"></i> Créer un code
+                        </button>
+                    </div>
+                `;
+                container.innerHTML = emptyHtml;
+                tabContainer.innerHTML = emptyHtml;
+                return;
+            }
+
+            let html = '';
+            allPromoCodes.forEach(code => {
+                const now = new Date();
+                const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
+                const isExpired = expiresAt && expiresAt < now;
+                const cardClass = !code.is_active || isExpired ? 'inactive' : '';
+                
+                html += `
+                    <div class="promo-card ${cardClass}" onclick="viewPromoDetails('${code.id}')">
+                        ${code.is_active && !isExpired ? '<div class="promo-badge">Actif</div>' : '<div class="promo-badge" style="background: var(--danger);">Inactif</div>'}
+                        <div class="promo-code">${code.code}</div>
+                        <div class="promo-description">${code.description || 'Aucune description'}</div>
+                        <div class="promo-details">
+                            <div class="promo-detail-item">
+                                <span>Réduction</span>
+                                <span class="promo-value">${code.discount_type === 'percentage' ? code.discount_value + '%' : code.discount_value + ' FCFA'}</span>
+                            </div>
+                            <div class="promo-detail-item">
+                                <span>Utilisations</span>
+                                <span class="promo-value">${code.used_count || 0} / ${code.usage_limit || '∞'}</span>
+                            </div>
+                            <div class="promo-detail-item">
+                                <span>Expiration</span>
+                                <span class="promo-value">${expiresAt ? expiresAt.toLocaleDateString('fr-FR') : 'Jamais'}</span>
+                            </div>
+                        </div>
+                        <div class="promo-actions">
+                            <button class="action-btn edit" onclick="event.stopPropagation(); editPromoCode('${code.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="event.stopPropagation(); togglePromoStatus('${code.id}', ${!code.is_active})">
+                                <i class="fas ${code.is_active ? 'fa-pause' : 'fa-play'}"></i>
+                            </button>
+                            <button class="action-btn" onclick="event.stopPropagation(); sendPromoEmail('${code.id}')">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="event.stopPropagation(); deletePromoCode('${code.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="promo-stats">
+                            <div class="promo-stat">
+                                <span class="promo-stat-number">${code.used_count || 0}</span>
+                                <span class="promo-stat-label">Utilisations</span>
+                            </div>
+                            <div class="promo-stat">
+                                <span class="promo-stat-number">${code.total_discount || 0}</span>
+                                <span class="promo-stat-label">Réductions</span>
+                            </div>
+                            <div class="promo-stat">
+                                <span class="promo-stat-number">${code.email_sent ? '✓' : '✗'}</span>
+                                <span class="promo-stat-label">Email</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            tabContainer.innerHTML = html;
+        }
+
+        // ===== PROMO CODE FUNCTIONS =====
+        function showCreatePromoModal() {
+            document.getElementById('promoModalTitle').textContent = 'Créer un code promo';
+            document.getElementById('promoCode').value = '';
+            document.getElementById('promoDescription').value = '';
+            document.getElementById('promoDiscountType').value = 'percentage';
+            document.getElementById('promoDiscountValue').value = '';
+            document.getElementById('promoMinPurchase').value = '0';
+            document.getElementById('promoMaxDiscount').value = '';
+            document.getElementById('promoUsageLimit').value = '1';
+            document.getElementById('promoPerUserLimit').value = '1';
+            document.getElementById('promoExpiresAt').value = '';
+            document.getElementById('promoActive').checked = true;
+            document.getElementById('promoSendEmail').checked = false;
+            
+            // Sélectionner les plans par défaut
+            const plansSelect = document.getElementById('promoPlans');
+            for (let option of plansSelect.options) {
+                option.selected = option.value === '1gb' || option.value === '2gb' || option.value === '4gb';
+            }
+            
+            document.getElementById('savePromoBtn').textContent = 'Créer le code';
+            currentPromoId = null;
+            openModal('promoModal');
+        }
+
+        function editPromoCode(codeId) {
+            const code = allPromoCodes.find(c => c.id === codeId);
+            if (!code) return;
+
+            currentPromoId = codeId;
+            document.getElementById('promoModalTitle').textContent = 'Modifier le code promo';
+            document.getElementById('promoCode').value = code.code;
+            document.getElementById('promoDescription').value = code.description || '';
+            document.getElementById('promoDiscountType').value = code.discount_type || 'percentage';
+            document.getElementById('promoDiscountValue').value = code.discount_value || '';
+            document.getElementById('promoMinPurchase').value = code.min_purchase || 0;
+            document.getElementById('promoMaxDiscount').value = code.max_discount || '';
+            document.getElementById('promoUsageLimit').value = code.usage_limit || 1;
+            document.getElementById('promoPerUserLimit').value = code.per_user_limit || 1;
+            document.getElementById('promoActive').checked = code.is_active !== false;
+            document.getElementById('promoSendEmail').checked = false;
+
+            // Sélectionner les plans
+            const plansSelect = document.getElementById('promoPlans');
+            const applicablePlans = code.applicable_plans || ['1gb', '2gb', '4gb'];
+            for (let option of plansSelect.options) {
+                option.selected = applicablePlans.includes(option.value);
+            }
+
+            if (code.expires_at) {
+                const date = new Date(code.expires_at);
+                const formatted = date.toISOString().slice(0, 16);
+                document.getElementById('promoExpiresAt').value = formatted;
+            } else {
+                document.getElementById('promoExpiresAt').value = '';
+            }
+
+            document.getElementById('savePromoBtn').textContent = 'Modifier';
+            openModal('promoModal');
+        }
+
+        async function viewPromoDetails(codeId) {
+            try {
+                const res = await fetch(`/api/admin/promo-codes/${codeId}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentPromoId = codeId;
+                    const promo = data.promo;
+                    const stats = data.stats;
+
+                    const expiresAt = promo.expires_at ? new Date(promo.expires_at).toLocaleString('fr-FR') : 'Jamais';
+                    
+                    let detailsHtml = `
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Code</span>
+                            <span class="modal-info-value" style="font-size: 1.2rem;">${promo.code}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Description</span>
+                            <span class="modal-info-value">${promo.description || 'Aucune'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Réduction</span>
+                            <span class="modal-info-value">${promo.discount_type === 'percentage' ? promo.discount_value + '%' : promo.discount_value + ' FCFA'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Plans</span>
+                            <span class="modal-info-value">${(promo.applicable_plans || []).join(', ')}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Min. achat</span>
+                            <span class="modal-info-value">${promo.min_purchase || 0} FCFA</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Utilisations</span>
+                            <span class="modal-info-value">${stats.total_uses} / ${promo.usage_limit || '∞'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Réductions totales</span>
+                            <span class="modal-info-value">${stats.total_discount} FCFA</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Expiration</span>
+                            <span class="modal-info-value">${expiresAt}</span>
+                        </div>
+                    `;
+
+                    document.getElementById('promoDetailsContent').innerHTML = detailsHtml;
+
+                    let usageHtml = '';
+                    if (stats.usage_details && stats.usage_details.length > 0) {
+                        stats.usage_details.forEach(usage => {
+                            usageHtml += `
+                                <div class="server-mini-card">
+                                    <div class="server-mini-info">
+                                        <h4>${usage.profiles?.username || 'Inconnu'}</h4>
+                                        <p>${usage.profiles?.email || ''}</p>
+                                        <p>Réduction: ${usage.discount_applied} FCFA</p>
+                                        <p>Date: ${new Date(usage.used_at).toLocaleString('fr-FR')}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        usageHtml = '<p style="color: var(--text-secondary); text-align: center;">Aucune utilisation</p>';
+                    }
+                    document.getElementById('promoUsageList').innerHTML = usageHtml;
+
+                    openModal('promoDetailsModal');
+                }
+            } catch (error) {
+                console.error('Erreur chargement détails promo:', error);
+                showToast('error', 'Erreur de chargement');
+            }
+        }
+
+        async function savePromoCode() {
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const description = document.getElementById('promoDescription').value.trim();
+            const discountType = document.getElementById('promoDiscountType').value;
+            const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
+            const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
+            const maxDiscount = document.getElementById('promoMaxDiscount').value ? parseInt(document.getElementById('promoMaxDiscount').value) : null;
+            const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || 1;
+            const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
+            const expiresAt = document.getElementById('promoExpiresAt').value;
+            const isActive = document.getElementById('promoActive').checked;
+            const sendEmail = document.getElementById('promoSendEmail').checked;
+
+            const plansSelect = document.getElementById('promoPlans');
+            const applicablePlans = Array.from(plansSelect.selectedOptions).map(opt => opt.value);
+
+            if (!code) {
+                showToast('error', 'Le code promo est requis');
+                return;
+            }
+
+            if (!discountValue || discountValue < 1) {
+                showToast('error', 'Valeur de réduction invalide');
+                return;
+            }
+
+            if (discountType === 'percentage' && (discountValue < 1 || discountValue > 100)) {
+                showToast('error', 'Le pourcentage doit être entre 1 et 100');
+                return;
+            }
+
+            if (applicablePlans.length === 0) {
+                showToast('error', 'Sélectionnez au moins un plan');
+                return;
+            }
+
+            const data = {
+                code,
+                description,
+                discount_type: discountType,
+                discount_value: discountValue,
+                applicable_plans: applicablePlans,
+                min_purchase: minPurchase,
+                max_discount: maxDiscount,
+                usage_limit: usageLimit,
+                per_user_limit: perUserLimit,
+                is_active: isActive,
+                send_email: sendEmail
+            };
+
+            if (expiresAt) {
+                data.expires_at = new Date(expiresAt).toISOString();
+            }
+
+            try {
+                const url = currentPromoId ? `/api/admin/promo-codes/${currentPromoId}` : '/api/admin/promo-codes';
+                const method = currentPromoId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast('success', result.message || 'Code promo enregistré');
+                    closeModal('promoModal');
+                    loadPromoCodes();
+                    
+                    if (result.emails_sent) {
+                        showToast('info', `Email envoyé à ${result.emails_sent} utilisateurs`);
+                    }
+                } else {
+                    showToast('error', result.error || 'Erreur lors de l\'enregistrement');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde promo:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function togglePromoStatus(codeId, newStatus) {
+            try {
+                const res = await fetch(`/api/admin/promo-codes/${codeId}/toggle`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ is_active: newStatus })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', `Code ${newStatus ? 'activé' : 'désactivé'}`);
+                    loadPromoCodes();
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function sendPromoEmail(codeId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-envelope" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Envoyer un email';
+            document.getElementById('confirmMessage').textContent = 'Voulez-vous envoyer ce code promo par email à tous les utilisateurs ?';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    const res = await fetch(`/api/admin/promo-codes/${codeId}/send-email`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast('success', `Email envoyé à ${data.sent} utilisateurs`);
+                        loadPromoCodes();
+                        if (document.getElementById('promoDetailsModal').classList.contains('active')) {
+                            closeModal('promoDetailsModal');
+                        }
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        async function deletePromoCode(codeId) {
+            const id = codeId || currentPromoId;
+            
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer le code promo';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce code promo ? Cette action est irréversible.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    const res = await fetch(`/api/admin/promo-codes/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast('success', 'Code promo supprimé');
+                        loadPromoCodes();
+                        if (document.getElementById('promoDetailsModal').classList.contains('active')) {
+                            closeModal('promoDetailsModal');
+                        }
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        function toggleDiscountFields() {
+            const type = document.getElementById('promoDiscountType').value;
+            const maxDiscountField = document.getElementById('promoMaxDiscount').parentElement;
+            
+            if (type === 'percentage') {
+                maxDiscountField.style.display = 'block';
+            } else {
+                maxDiscountField.style.display = 'none';
             }
         }
 
@@ -2269,7 +2944,6 @@
                 if (data.success) {
                     financialStats = data.financial;
 
-                    // Mettre à jour les cartes financières
                     document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
@@ -2277,12 +2951,11 @@
                     
                     document.getElementById('financialTodaySub').textContent = data.financial.total_transactions + ' transactions';
                     
-                    // Mettre à jour les stats par type
                     document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type.coins_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialServerPurchases').textContent = (data.financial.by_type.server_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialRenewals').textContent = (data.financial.by_type.server_renewal || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialPromoUsage').textContent = (data.financial.by_type.promo_discount || 0).toLocaleString() + ' FCFA';
 
-                    // Afficher les top acheteurs
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
                         document.getElementById('topBuyers').style.display = 'block';
                         
@@ -2308,7 +2981,6 @@
                         document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
                     }
 
-                    // Mettre à jour les graphiques
                     updateCharts(data.financial);
                 }
             } catch (error) {
@@ -2318,11 +2990,9 @@
 
         // ===== UPDATE CHARTS =====
         function updateCharts(financial) {
-            // Détruire les anciens graphiques
             if (charts.revenue) charts.revenue.destroy();
             if (charts.type) charts.type.destroy();
 
-            // Graphique des revenus mensuels
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             charts.revenue = new Chart(revenueCtx, {
                 type: 'line',
@@ -2361,22 +3031,23 @@
                 }
             });
 
-            // Graphique de répartition par type
             const typeCtx = document.getElementById('typeChart').getContext('2d');
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Achats de coins', 'Achats de serveurs', 'Renouvellements'],
+                    labels: ['Achats de coins', 'Achats de serveurs', 'Renouvellements', 'Réductions promo'],
                     datasets: [{
                         data: [
                             financial.by_type?.coins_purchase || 0,
                             financial.by_type?.server_purchase || 0,
-                            financial.by_type?.server_renewal || 0
+                            financial.by_type?.server_renewal || 0,
+                            financial.by_type?.promo_discount || 0
                         ],
                         backgroundColor: [
                             '#F59E0B',
                             '#7C3AED',
-                            '#10B981'
+                            '#10B981',
+                            '#EF4444'
                         ],
                         borderWidth: 0
                     }]
@@ -2396,7 +3067,6 @@
         // ===== LOAD ADMIN DATA =====
         async function loadAdminData() {
             try {
-                // Stats générales
                 const statsRes = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2415,7 +3085,6 @@
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
 
-                // Utilisateurs
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2428,7 +3097,6 @@
                     displayUsers();
                 }
 
-                // Serveurs
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2440,7 +3108,6 @@
                     displayServers();
                 }
 
-                // Transactions
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2452,7 +3119,6 @@
                     displayTransactions();
                 }
 
-                // Logs
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2464,11 +3130,7 @@
                     displayLogs();
                 }
 
-                // Stats financières
                 await loadFinancialStats();
-
-                // Stats Pterodactyl
-                loadPterodactylStats();
 
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
@@ -2476,33 +3138,7 @@
             }
         }
 
-        // ===== LOAD PTERODACTYL STATS =====
-        async function loadPterodactylStats() {
-            try {
-                const res = await fetch('/api/admin/pterodactyl/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    document.getElementById('pteroCPU').textContent = data.cpu_used + '%';
-                    document.getElementById('pteroRAM').textContent = (data.ram_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroDisk').textContent = (data.disk_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroNodes').textContent = data.nodes || 0;
-                    document.getElementById('pteroUsers').textContent = data.ptero_users || 0;
-                    document.getElementById('pteroTotalServers').textContent = data.ptero_servers || 0;
-                    document.getElementById('pteroLoad').textContent = (data.average_load || 0) + '%';
-
-                    if (data.nodes_list) {
-                        displayPterodactylNodes(data.nodes_list);
-                    }
-                }
-            } catch (error) {
-                console.error('Erreur chargement Pterodactyl:', error);
-            }
-        }
-
-        // ===== DISPLAY USERS (AVEC PAGINATION) =====
+        // ===== DISPLAY USERS =====
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             
@@ -2514,7 +3150,6 @@
 
             document.getElementById('userPagination').style.display = 'flex';
 
-            // Pagination
             const startIndex = (currentUserPage - 1) * usersPerPage;
             const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
             const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
@@ -2712,54 +3347,6 @@
             tbody.innerHTML = html;
         }
 
-        // ===== DISPLAY PTERODACTYL NODES =====
-        function displayPterodactylNodes(nodes) {
-            const tbody = document.getElementById('pteroNodesBody');
-            
-            if (!nodes || nodes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun nœud</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            nodes.forEach(node => {
-                const ramPercent = (node.ram_used / node.ram_total) * 100;
-                const diskPercent = (node.disk_used / node.disk_total) * 100;
-                
-                html += `
-                    <tr>
-                        <td><strong>${node.name}</strong></td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
-                                    <div style="width: ${ramPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
-                                </div>
-                                <span>${(node.ram_used / 1024).toFixed(1)}/${(node.ram_total / 1024).toFixed(1)} GB</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
-                                    <div style="width: ${diskPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
-                                </div>
-                                <span>${(node.disk_used / 1024).toFixed(1)}/${(node.disk_total / 1024).toFixed(1)} GB</span>
-                            </div>
-                        </td>
-                        <td>${node.servers_count}</td>
-                        <td><span class="badge ${node.is_active ? 'badge-success' : 'badge-danger'}">${node.is_active ? 'Actif' : 'Inactif'}</span></td>
-                        <td>
-                            <button class="action-btn" title="Voir détails" onclick="viewNode('${node.id}')">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
         // ===== FILTER FUNCTIONS =====
         function filterUsers() {
             const search = document.getElementById('userSearch').value.toLowerCase();
@@ -2871,6 +3458,7 @@
                     case 'coins': return (log.action_type || '').includes('coins');
                     case 'server': return (log.action_type || '').includes('server');
                     case 'delete': return (log.action_type || '').includes('delete');
+                    case 'promo': return (log.action_type || '').includes('promo');
                     default: return true;
                 }
             });
@@ -2879,7 +3467,6 @@
             displayFilteredLogs(filtered);
         }
 
-        // ===== DISPLAY FILTERED FUNCTIONS =====
         function displayFilteredServers(servers) {
             const tbody = document.getElementById('serversTableBody');
             
@@ -3112,10 +3699,6 @@
             `;
 
             openModal('transactionModal');
-        }
-
-        function viewNode(nodeId) {
-            showToast('info', 'Détails du nœud: ' + nodeId);
         }
 
         async function toggleBan(userId, currentBanned) {
@@ -3449,6 +4032,7 @@
         function refreshAllData() {
             showToast('info', 'Actualisation des données...');
             loadAdminData();
+            loadPromoCodes();
         }
 
         // ===== LOGOUT =====
@@ -3489,7 +4073,6 @@
         window.viewUserTransactions = viewUserTransactions;
         window.viewUser = viewUser;
         window.viewTransaction = viewTransaction;
-        window.viewNode = viewNode;
         window.toggleBan = toggleBan;
         window.deleteUser = deleteUser;
         window.addCoinsToUser = addCoinsToUser;
@@ -3505,6 +4088,16 @@
         window.openModal = openModal;
         window.exportUsers = exportUsers;
         window.changeUserPage = changeUserPage;
+        
+        // Promo functions
+        window.showCreatePromoModal = showCreatePromoModal;
+        window.editPromoCode = editPromoCode;
+        window.viewPromoDetails = viewPromoDetails;
+        window.togglePromoStatus = togglePromoStatus;
+        window.sendPromoEmail = sendPromoEmail;
+        window.deletePromoCode = deletePromoCode;
+        window.savePromoCode = savePromoCode;
+        window.toggleDiscountFields = toggleDiscountFields;
     </script>
 </body>
 </html>
