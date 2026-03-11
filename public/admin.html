@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="Administration KermHosting - Gérez les utilisateurs et serveurs">
+    <meta name="description" content="Administration KermHosting - Gérez les utilisateurs, serveurs et codes promo">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
     <!-- Favicon / Icônes -->
@@ -707,7 +707,7 @@
             background: var(--primary);
         }
 
-        /* ===== SEARCH BAR OPTIMISÉE ===== */
+        /* ===== SEARCH BAR ===== */
         .search-bar {
             display: flex;
             flex-direction: column;
@@ -784,7 +784,7 @@
             color: var(--danger);
         }
 
-        /* ===== TABLES OPTIMISÉES ===== */
+        /* ===== TABLES ===== */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -861,16 +861,6 @@
             color: var(--info);
         }
 
-        .badge-purple {
-            background: rgba(139, 92, 246, 0.1);
-            color: #8B5CF6;
-        }
-
-        .badge-pink {
-            background: rgba(236, 72, 153, 0.1);
-            color: #EC4899;
-        }
-
         .action-group {
             display: flex;
             gap: 4px;
@@ -889,6 +879,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 0.8rem;
         }
 
         .action-btn:hover {
@@ -913,12 +904,8 @@
             background: var(--info);
         }
 
-        .action-btn.email:hover {
+        .action-btn.send:hover {
             background: var(--accent);
-        }
-
-        .action-btn.copy:hover {
-            background: var(--secondary);
         }
 
         /* ===== TOP BUYERS ===== */
@@ -986,23 +973,112 @@
             font-size: 1rem;
         }
 
-        /* ===== PROGRESS BAR ===== */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: var(--border-color);
-            border-radius: var(--radius-full);
-            margin: 8px 0;
+        /* ===== PROMO CODE CARDS ===== */
+        .promo-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-full);
-            transition: width 0.3s ease;
+        .promo-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s;
         }
 
-        /* ===== MODALS OPTIMISÉS ===== */
+        .promo-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .promo-header {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .promo-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        .promo-status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .promo-body {
+            padding: 16px;
+        }
+
+        .promo-description {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .promo-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+        }
+
+        .promo-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .promo-detail-label {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .promo-detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .promo-validity {
+            background: var(--bg-hover);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+        }
+
+        .promo-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .promo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            background: var(--accent);
+            color: black;
+        }
+
+        /* ===== MODALS ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -1130,14 +1206,14 @@
             font-size: 0.95rem;
         }
 
-        .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
         .modal-textarea {
             min-height: 80px;
             resize: vertical;
+        }
+
+        .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .modal-actions {
@@ -1147,33 +1223,6 @@
             flex-wrap: wrap;
         }
 
-        .server-mini-card {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .server-mini-info h4 {
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-
-        .server-mini-info p {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .server-mini-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        /* ===== CHECKBOX GROUP ===== */
         .checkbox-group {
             display: flex;
             flex-wrap: wrap;
@@ -1185,12 +1234,37 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: var(--bg-hover);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
         }
 
         .checkbox-item input[type="checkbox"] {
             width: 18px;
             height: 18px;
             accent-color: var(--primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .email-status {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
         /* ===== TOAST ===== */
@@ -1368,74 +1442,6 @@
             color: white;
         }
 
-        /* ===== EMAIL PROGRESS ===== */
-        .email-progress {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            left: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            border: 1px solid var(--primary);
-            box-shadow: var(--shadow-glow);
-            z-index: 10000;
-            display: none;
-        }
-
-        .email-progress.active {
-            display: block;
-        }
-
-        .email-progress-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .email-progress-title {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .email-progress-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .email-progress-bar {
-            width: 100%;
-            height: 8px;
-            background: var(--border-color);
-            border-radius: var(--radius-full);
-            margin-bottom: 8px;
-        }
-
-        .email-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-full);
-            transition: width 0.3s ease;
-        }
-
-        .email-progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .email-progress-current {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .page-content {
@@ -1452,6 +1458,10 @@
             }
 
             .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .promo-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
@@ -1474,19 +1484,17 @@
                 flex: none;
             }
 
-            .server-mini-card {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .toast, .email-progress {
+            .toast {
                 left: auto;
                 right: 20px;
             }
         }
 
         @media (min-width: 1024px) {
+            .promo-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
             .menu-toggle {
                 display: none;
             }
@@ -1637,6 +1645,10 @@
                         <span class="gradient-text">Administration</span> KermHosting
                     </h1>
                     <div class="header-actions">
+                        <button class="btn btn-success" onclick="showCreatePromoModal()">
+                            <i class="fas fa-tags"></i>
+                            <span class="btn-text">Nouveau code promo</span>
+                        </button>
                         <button class="btn btn-danger" onclick="showDeleteAllServersModal()">
                             <i class="fas fa-trash-alt"></i>
                             <span class="btn-text">Supprimer tous</span>
@@ -1760,7 +1772,7 @@
                     <div class="tab" onclick="switchTab('servers')">Serveurs</div>
                     <div class="tab" onclick="switchTab('transactions')">Transactions</div>
                     <div class="tab" onclick="switchTab('financial')">Finances</div>
-                    <div class="tab" onclick="switchTab('promo')">Codes Promo</div>
+                    <div class="tab" onclick="switchTab('promos')">Codes Promo</div>
                     <div class="tab" onclick="switchTab('logs')">Logs</div>
                 </div>
 
@@ -1972,7 +1984,7 @@
                         </div>
                     </div>
 
-                    <!-- Top Acheteurs (détaillé) -->
+                    <!-- Top Acheteurs -->
                     <div class="top-buyers">
                         <h3>
                             <i class="fas fa-trophy" style="color: var(--warning);"></i>
@@ -1984,93 +1996,30 @@
                     </div>
                 </div>
 
-                <!-- Tab: Codes Promo -->
-                <div class="tab-pane" id="tab-promo">
-                    <!-- Header avec bouton de création -->
-                    <div class="search-bar" style="flex-direction: row; justify-content: space-between;">
-                        <div class="search-row" style="flex: 1;">
-                            <input type="text" class="search-input" id="promoSearch" placeholder="Rechercher un code promo..." onkeyup="filterPromoCodes()">
-                            <select class="filter-select" id="promoFilter" onchange="filterPromoCodes()">
-                                <option value="all">Tous</option>
+                <!-- Tab: Codes Promo (NOUVEAU) -->
+                <div class="tab-pane" id="tab-promos">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="promoSearch" placeholder="Rechercher un code promo..." onkeyup="filterPromos()">
+                            <select class="filter-select" id="promoFilter" onchange="filterPromos()">
+                                <option value="all">Tous les codes</option>
                                 <option value="active">Actifs</option>
                                 <option value="inactive">Inactifs</option>
-                                <option value="percentage">Pourcentage</option>
-                                <option value="fixed">Montant fixe</option>
+                                <option value="percentage">Réduction %</option>
+                                <option value="fixed">Réduction fixe</option>
                                 <option value="expired">Expirés</option>
                                 <option value="email_sent">Email envoyé</option>
+                                <option value="email_not_sent">Email non envoyé</option>
                             </select>
                         </div>
-                        <button class="btn btn-primary" onclick="openCreatePromoModal()">
-                            <i class="fas fa-plus"></i>
-                            <span class="btn-text">Nouveau code</span>
-                        </button>
-                    </div>
-
-                    <!-- Stats des codes promo -->
-                    <div class="stats-grid" style="margin-bottom: 16px;">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-tags"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="promoTotalCount">0</div>
-                            <div class="stat-label">Codes total</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="promoActiveCount">0</div>
-                            <div class="stat-label">Codes actifs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="promoTotalUses">0</div>
-                            <div class="stat-label">Utilisations total</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="promoEmailsSent">0</div>
-                            <div class="stat-label">Emails envoyés</div>
+                        <div class="search-badge">
+                            <i class="fas fa-tags"></i>
+                            <span id="promoCount">0</span> codes promo
                         </div>
                     </div>
 
-                    <!-- Tableau des codes promo -->
-                    <div class="table-container">
-                        <table id="promoCodesTable">
-                            <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Description</th>
-                                    <th>Réduction</th>
-                                    <th>Plans</th>
-                                    <th>Utilisations</th>
-                                    <th>Validité</th>
-                                    <th>Statut</th>
-                                    <th>Email</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="promoCodesTableBody">
-                                <tr>
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des codes promo...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="promo-grid" id="promoCodesList">
+                        <!-- Rempli dynamiquement -->
                     </div>
                 </div>
 
@@ -2086,6 +2035,7 @@
                                 <option value="coins">Ajouts/retraits coins</option>
                                 <option value="server">Actions serveurs</option>
                                 <option value="delete">Suppressions</option>
+                                <option value="promo">Codes promo</option>
                             </select>
                         </div>
                         <div class="search-badge">
@@ -2267,7 +2217,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Création/Édition code promo -->
+    <!-- MODAL: Création/Édition code promo (NOUVEAU) -->
     <div class="modal" id="promoModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2277,100 +2227,99 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="promoForm" onsubmit="event.preventDefault(); savePromoCode();">
-                    <div class="modal-form-group">
-                        <label>Code *</label>
-                        <input type="text" class="modal-input" id="promoCode" placeholder="EX: BIENVENUE2024" required maxlength="30" style="text-transform: uppercase;">
-                    </div>
+                <input type="hidden" id="promoId" value="">
+                
+                <div class="modal-form-group">
+                    <label>Code promo *</label>
+                    <input type="text" class="modal-input" id="promoCode" placeholder="Ex: PROMO10" maxlength="50" required>
+                </div>
 
-                    <div class="modal-form-group">
-                        <label>Description</label>
-                        <textarea class="modal-textarea" id="promoDescription" placeholder="Description du code promo..." rows="2"></textarea>
-                    </div>
+                <div class="modal-form-group">
+                    <label>Description</label>
+                    <textarea class="modal-textarea" id="promoDescription" placeholder="Description du code promo..."></textarea>
+                </div>
 
-                    <div class="modal-form-group">
-                        <label>Type de réduction *</label>
-                        <select class="modal-select" id="promoDiscountType" required onchange="toggleDiscountFields()">
-                            <option value="percentage">Pourcentage (%)</option>
-                            <option value="fixed">Montant fixe (FCFA)</option>
-                        </select>
-                    </div>
+                <div class="modal-form-group">
+                    <label>Type de réduction *</label>
+                    <select class="modal-select" id="promoDiscountType" onchange="toggleDiscountFields()">
+                        <option value="percentage">Pourcentage (%)</option>
+                        <option value="fixed">Montant fixe (FCFA)</option>
+                    </select>
+                </div>
 
-                    <div class="modal-form-group">
-                        <label>Valeur de la réduction *</label>
-                        <input type="number" class="modal-input" id="promoDiscountValue" placeholder="Ex: 20" min="1" required>
-                    </div>
+                <div class="modal-form-group">
+                    <label>Valeur de la réduction *</label>
+                    <input type="number" class="modal-input" id="promoDiscountValue" placeholder="Ex: 10" min="1" required>
+                </div>
 
-                    <div class="modal-form-group" id="maxDiscountField" style="display: none;">
-                        <label>Réduction maximale (FCFA) - optionnel</label>
-                        <input type="number" class="modal-input" id="promoMaxDiscount" placeholder="Ex: 1000" min="1">
-                    </div>
+                <div class="modal-form-group" id="maxDiscountField">
+                    <label>Réduction maximum (optionnel)</label>
+                    <input type="number" class="modal-input" id="promoMaxDiscount" placeholder="Laisser vide pour illimité" min="1">
+                </div>
 
-                    <div class="modal-form-group">
-                        <label>Plans applicables *</label>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="planFree" value="free">
-                                <label for="planFree">Free</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="plan1gb" value="1gb" checked>
-                                <label for="plan1gb">Starter</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="plan2gb" value="2gb" checked>
-                                <label for="plan2gb">Basic</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="plan4gb" value="4gb" checked>
-                                <label for="plan4gb">Pro</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="plan8gb" value="8gb">
-                                <label for="plan8gb">Business</label>
-                            </div>
+                <div class="modal-form-group">
+                    <label>Plans applicables *</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="1gb" checked> Starter (1GB)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="2gb" checked> Basic (2GB)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="4gb" checked> Pro (4GB)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="8gb" checked> Business (8GB)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Achat minimum (optionnel)</label>
+                    <input type="number" class="modal-input" id="promoMinPurchase" placeholder="0 = pas de minimum" min="0" value="0">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Limite d'utilisations totales</label>
+                    <input type="number" class="modal-input" id="promoUsageLimit" placeholder="Laisser vide pour illimité" min="1">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Limite par utilisateur</label>
+                    <input type="number" class="modal-input" id="promoPerUserLimit" placeholder="1" min="1" value="1">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Date de début</label>
+                    <input type="datetime-local" class="modal-input" id="promoStartsAt">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Date d'expiration (optionnel)</label>
+                    <input type="datetime-local" class="modal-input" id="promoExpiresAt">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Statut</label>
+                    <select class="modal-select" id="promoIsActive">
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group" id="emailNotificationGroup">
+                    <label class="checkbox-item" style="justify-content: flex-start; padding: 12px;">
+                        <input type="checkbox" id="promoSendEmail"> 
+                        <span>Envoyer un email promotionnel à tous les utilisateurs vérifiés (délai de 5s entre chaque)</span>
+                    </label>
+                    <div id="emailProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="emailProgressFill" style="width: 0%"></div>
                         </div>
+                        <div class="email-status" id="emailStatus"></div>
                     </div>
-
-                    <div class="modal-form-group">
-                        <label>Achat minimum (FCFA) - optionnel</label>
-                        <input type="number" class="modal-input" id="promoMinPurchase" placeholder="0 = aucun minimum" min="0" value="0">
-                    </div>
-
-                    <div class="modal-form-group">
-                        <label>Limite d'utilisations</label>
-                        <input type="number" class="modal-input" id="promoUsageLimit" placeholder="Ex: 100" min="1" value="1">
-                    </div>
-
-                    <div class="modal-form-group">
-                        <label>Limite par utilisateur</label>
-                        <input type="number" class="modal-input" id="promoPerUserLimit" placeholder="Ex: 1" min="1" value="1">
-                    </div>
-
-                    <div class="modal-form-group">
-                        <label>Date de début</label>
-                        <input type="datetime-local" class="modal-input" id="promoStartsAt">
-                    </div>
-
-                    <div class="modal-form-group">
-                        <label>Date d'expiration (optionnel)</label>
-                        <input type="datetime-local" class="modal-input" id="promoExpiresAt">
-                    </div>
-
-                    <div class="modal-form-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="promoIsActive" checked>
-                            <label for="promoIsActive">Actif immédiatement</label>
-                        </div>
-                    </div>
-
-                    <div class="modal-form-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="promoSendEmail">
-                            <label for="promoSendEmail">Envoyer une notification par email à tous les utilisateurs (avec délai de 3s entre chaque)</label>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('promoModal')">Annuler</button>
@@ -2379,7 +2328,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Détails code promo -->
+    <!-- MODAL: Détails code promo (NOUVEAU) -->
     <div class="modal" id="promoDetailsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2389,17 +2338,60 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-info" id="promoDetails">
+                <div class="modal-info" id="promoDetailsInfo">
                     <!-- Rempli dynamiquement -->
                 </div>
 
-                <h3 style="margin: 16px 0 8px;">Historique des utilisations</h3>
-                <div id="promoUsageList">
-                    <!-- Rempli dynamiquement -->
+                <h3 style="margin: 16px 0 8px;">Utilisations</h3>
+                <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                    <table id="promoUsageTable">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Réduction</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promoUsageBody">
+                            <tr>
+                                <td colspan="3" class="loading-state">Aucune utilisation</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-primary" onclick="closeModal('promoDetailsModal')">Fermer</button>
+                <button class="btn btn-outline" onclick="closeModal('promoDetailsModal')">Fermer</button>
+                <button class="btn btn-warning" onclick="editPromoFromDetails()">Modifier</button>
+                <button class="btn btn-danger" onclick="deletePromoFromDetails()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Envoi email promo (NOUVEAU) -->
+    <div class="modal" id="sendPromoEmailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Envoi d'email promotionnel</h2>
+                <button class="modal-close" onclick="closeModal('sendPromoEmailModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="sendPromoEmailMessage">Êtes-vous sûr de vouloir envoyer un email pour ce code promo à tous les utilisateurs vérifiés ?</p>
+                <p style="color: var(--warning); margin-top: 8px;">
+                    <i class="fas fa-clock"></i> Les emails seront envoyés avec un délai de 5 secondes entre chaque pour éviter le spam.
+                </p>
+                <div id="sendEmailProgress" style="display: none; margin-top: 16px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="sendEmailProgressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="email-status" id="sendEmailStatus"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('sendPromoEmailModal')">Annuler</button>
+                <button class="btn btn-success" onclick="confirmSendPromoEmail()">Envoyer</button>
             </div>
         </div>
     </div>
@@ -2439,23 +2431,6 @@
         </div>
     </div>
 
-    <!-- Email Progress Bar -->
-    <div class="email-progress" id="emailProgress">
-        <div class="email-progress-header">
-            <span class="email-progress-title">Envoi des emails promo</span>
-            <button class="email-progress-close" onclick="document.getElementById('emailProgress').classList.remove('active')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="email-progress-bar">
-            <div class="email-progress-fill" id="emailProgressFill" style="width: 0%;"></div>
-        </div>
-        <div class="email-progress-stats">
-            <span><span id="emailProgressCurrent">0</span> / <span id="emailProgressTotal">0</span></span>
-            <span class="email-progress-current" id="emailProgressStatus">En attente...</span>
-        </div>
-    </div>
-
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -2468,11 +2443,11 @@
         let allServers = [];
         let allTransactions = [];
         let allLogs = [];
-        let allPromoCodes = [];
+        let allPromoCodes = []; // NOUVEAU
         let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
-        let currentPromoId = null;
+        let currentPromoId = null; // NOUVEAU
         let charts = {};
 
         // Pagination
@@ -2536,7 +2511,8 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
             
-            if (tabId === 'promo') {
+            // Charger les codes promo si on passe sur cet onglet
+            if (tabId === 'promos' && allPromoCodes.length === 0) {
                 loadPromoCodes();
             }
         }
@@ -2581,7 +2557,6 @@
                 if (data.success) {
                     financialStats = data.financial;
 
-                    // Mettre à jour les cartes financières
                     document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
@@ -2589,12 +2564,10 @@
                     
                     document.getElementById('financialTodaySub').textContent = data.financial.total_transactions + ' transactions';
                     
-                    // Mettre à jour les stats par type
                     document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type.coins_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialServerPurchases').textContent = (data.financial.by_type.server_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialRenewals').textContent = (data.financial.by_type.server_renewal || 0).toLocaleString() + ' FCFA';
 
-                    // Afficher les top acheteurs
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
                         document.getElementById('topBuyers').style.display = 'block';
                         
@@ -2620,7 +2593,6 @@
                         document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
                     }
 
-                    // Mettre à jour les graphiques
                     updateCharts(data.financial);
                 }
             } catch (error) {
@@ -2630,11 +2602,9 @@
 
         // ===== UPDATE CHARTS =====
         function updateCharts(financial) {
-            // Détruire les anciens graphiques
             if (charts.revenue) charts.revenue.destroy();
             if (charts.type) charts.type.destroy();
 
-            // Graphique des revenus mensuels
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             charts.revenue = new Chart(revenueCtx, {
                 type: 'line',
@@ -2673,7 +2643,6 @@
                 }
             });
 
-            // Graphique de répartition par type
             const typeCtx = document.getElementById('typeChart').getContext('2d');
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
@@ -2705,10 +2674,600 @@
             });
         }
 
+        // ===== LOAD PROMO CODES (NOUVEAU) =====
+        async function loadPromoCodes() {
+            try {
+                const res = await fetch('/api/admin/promo-codes', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    allPromoCodes = data.codes || [];
+                    document.getElementById('promoCount').textContent = allPromoCodes.length;
+                    displayPromoCodes();
+                }
+            } catch (error) {
+                console.error('Erreur chargement codes promo:', error);
+                showToast('error', 'Erreur de chargement des codes promo');
+            }
+        }
+
+        // ===== DISPLAY PROMO CODES (NOUVEAU) =====
+        function displayPromoCodes() {
+            const container = document.getElementById('promoCodesList');
+            
+            if (!allPromoCodes || allPromoCodes.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Aucun code promo</div>';
+                return;
+            }
+
+            let html = '';
+            
+            allPromoCodes.forEach(promo => {
+                const now = new Date();
+                const startsAt = new Date(promo.starts_at);
+                const expiresAt = promo.expires_at ? new Date(promo.expires_at) : null;
+                
+                let statusClass = 'badge-success';
+                let statusText = 'Actif';
+                
+                if (!promo.is_active) {
+                    statusClass = 'badge-danger';
+                    statusText = 'Inactif';
+                } else if (expiresAt && now > expiresAt) {
+                    statusClass = 'badge-danger';
+                    statusText = 'Expiré';
+                } else if (now < startsAt) {
+                    statusClass = 'badge-warning';
+                    statusText = 'À venir';
+                }
+                
+                const discountText = promo.discount_type === 'percentage' 
+                    ? `${promo.discount_value}%` 
+                    : `${promo.discount_value} FCFA`;
+                
+                const usageText = promo.usage_limit 
+                    ? `${promo.used_count || 0}/${promo.usage_limit}` 
+                    : `${promo.used_count || 0}/∞`;
+                
+                html += `
+                    <div class="promo-card">
+                        <div class="promo-header">
+                            <span class="promo-code">${promo.code}</span>
+                            <span class="promo-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="promo-body">
+                            <div class="promo-description">${promo.description || 'Aucune description'}</div>
+                            
+                            <div class="promo-details">
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Réduction</span>
+                                    <span class="promo-detail-value">${discountText}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Utilisations</span>
+                                    <span class="promo-detail-value">${usageText}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Début</span>
+                                    <span class="promo-detail-value">${new Date(promo.starts_at).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Fin</span>
+                                    <span class="promo-detail-value">${promo.expires_at ? new Date(promo.expires_at).toLocaleDateString('fr-FR') : 'Jamais'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="promo-validity">
+                                <strong>Plans:</strong> ${promo.applicable_plans.map(p => {
+                                    const names = {'1gb':'Starter','2gb':'Basic','4gb':'Pro','8gb':'Business'};
+                                    return names[p] || p;
+                                }).join(', ')}
+                                ${promo.min_purchase > 0 ? `<br><strong>Achat minimum:</strong> ${promo.min_purchase} FCFA` : ''}
+                                ${promo.email_sent ? '<br><span class="promo-badge"><i class="fas fa-envelope"></i> Email envoyé</span>' : ''}
+                            </div>
+                            
+                            <div class="promo-actions">
+                                <button class="action-btn view" onclick="viewPromoDetails('${promo.id}')" title="Voir détails">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn edit" onclick="editPromo('${promo.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn send" onclick="showSendPromoEmail('${promo.id}')" title="Envoyer email" ${promo.email_sent ? 'disabled style="opacity:0.5;"' : ''}>
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="deletePromo('${promo.id}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ===== FILTER PROMOS (NOUVEAU) =====
+        function filterPromos() {
+            const search = document.getElementById('promoSearch').value.toLowerCase();
+            const filter = document.getElementById('promoFilter').value;
+            
+            const filtered = allPromoCodes.filter(promo => {
+                const matchesSearch = (promo.code || '').toLowerCase().includes(search) ||
+                                    (promo.description || '').toLowerCase().includes(search);
+                
+                if (!matchesSearch) return false;
+                
+                const now = new Date();
+                const startsAt = new Date(promo.starts_at);
+                const expiresAt = promo.expires_at ? new Date(promo.expires_at) : null;
+                
+                switch(filter) {
+                    case 'active':
+                        return promo.is_active && (!expiresAt || now <= expiresAt) && now >= startsAt;
+                    case 'inactive':
+                        return !promo.is_active;
+                    case 'percentage':
+                        return promo.discount_type === 'percentage';
+                    case 'fixed':
+                        return promo.discount_type === 'fixed';
+                    case 'expired':
+                        return expiresAt && now > expiresAt;
+                    case 'email_sent':
+                        return promo.email_sent;
+                    case 'email_not_sent':
+                        return !promo.email_sent;
+                    default:
+                        return true;
+                }
+            });
+            
+            displayFilteredPromos(filtered);
+        }
+
+        function displayFilteredPromos(promos) {
+            const container = document.getElementById('promoCodesList');
+            
+            if (!promos || promos.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Aucun code promo trouvé</div>';
+                return;
+            }
+
+            let html = '';
+            
+            promos.forEach(promo => {
+                const now = new Date();
+                const startsAt = new Date(promo.starts_at);
+                const expiresAt = promo.expires_at ? new Date(promo.expires_at) : null;
+                
+                let statusClass = 'badge-success';
+                let statusText = 'Actif';
+                
+                if (!promo.is_active) {
+                    statusClass = 'badge-danger';
+                    statusText = 'Inactif';
+                } else if (expiresAt && now > expiresAt) {
+                    statusClass = 'badge-danger';
+                    statusText = 'Expiré';
+                } else if (now < startsAt) {
+                    statusClass = 'badge-warning';
+                    statusText = 'À venir';
+                }
+                
+                const discountText = promo.discount_type === 'percentage' 
+                    ? `${promo.discount_value}%` 
+                    : `${promo.discount_value} FCFA`;
+                
+                const usageText = promo.usage_limit 
+                    ? `${promo.used_count || 0}/${promo.usage_limit}` 
+                    : `${promo.used_count || 0}/∞`;
+                
+                html += `
+                    <div class="promo-card">
+                        <div class="promo-header">
+                            <span class="promo-code">${promo.code}</span>
+                            <span class="promo-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="promo-body">
+                            <div class="promo-description">${promo.description || 'Aucune description'}</div>
+                            
+                            <div class="promo-details">
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Réduction</span>
+                                    <span class="promo-detail-value">${discountText}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Utilisations</span>
+                                    <span class="promo-detail-value">${usageText}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Début</span>
+                                    <span class="promo-detail-value">${new Date(promo.starts_at).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                                <div class="promo-detail-item">
+                                    <span class="promo-detail-label">Fin</span>
+                                    <span class="promo-detail-value">${promo.expires_at ? new Date(promo.expires_at).toLocaleDateString('fr-FR') : 'Jamais'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="promo-validity">
+                                <strong>Plans:</strong> ${promo.applicable_plans.map(p => {
+                                    const names = {'1gb':'Starter','2gb':'Basic','4gb':'Pro','8gb':'Business'};
+                                    return names[p] || p;
+                                }).join(', ')}
+                                ${promo.min_purchase > 0 ? `<br><strong>Achat minimum:</strong> ${promo.min_purchase} FCFA` : ''}
+                                ${promo.email_sent ? '<br><span class="promo-badge"><i class="fas fa-envelope"></i> Email envoyé</span>' : ''}
+                            </div>
+                            
+                            <div class="promo-actions">
+                                <button class="action-btn view" onclick="viewPromoDetails('${promo.id}')" title="Voir détails">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                                <button class="action-btn edit" onclick="editPromo('${promo.id}')" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn send" onclick="showSendPromoEmail('${promo.id}')" title="Envoyer email" ${promo.email_sent ? 'disabled style="opacity:0.5;"' : ''}>
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="deletePromo('${promo.id}')" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ===== PROMO ACTIONS (NOUVEAU) =====
+        function showCreatePromoModal() {
+            document.getElementById('promoModalTitle').textContent = 'Créer un code promo';
+            document.getElementById('promoId').value = '';
+            document.getElementById('promoCode').value = '';
+            document.getElementById('promoDescription').value = '';
+            document.getElementById('promoDiscountType').value = 'percentage';
+            document.getElementById('promoDiscountValue').value = '';
+            document.getElementById('promoMaxDiscount').value = '';
+            document.getElementById('promoMinPurchase').value = '0';
+            document.getElementById('promoUsageLimit').value = '';
+            document.getElementById('promoPerUserLimit').value = '1';
+            document.getElementById('promoStartsAt').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('promoExpiresAt').value = '';
+            document.getElementById('promoIsActive').value = 'true';
+            document.getElementById('promoSendEmail').checked = false;
+            document.getElementById('emailProgress').style.display = 'none';
+            
+            document.querySelectorAll('#promoModal .checkbox-item input[type="checkbox"]').forEach(cb => cb.checked = true);
+            
+            toggleDiscountFields();
+            openModal('promoModal');
+        }
+
+        function editPromo(promoId) {
+            const promo = allPromoCodes.find(p => p.id === promoId);
+            if (!promo) return;
+
+            currentPromoId = promoId;
+            
+            document.getElementById('promoModalTitle').textContent = 'Modifier le code promo';
+            document.getElementById('promoId').value = promo.id;
+            document.getElementById('promoCode').value = promo.code;
+            document.getElementById('promoDescription').value = promo.description || '';
+            document.getElementById('promoDiscountType').value = promo.discount_type;
+            document.getElementById('promoDiscountValue').value = promo.discount_value;
+            document.getElementById('promoMaxDiscount').value = promo.max_discount || '';
+            document.getElementById('promoMinPurchase').value = promo.min_purchase || 0;
+            document.getElementById('promoUsageLimit').value = promo.usage_limit || '';
+            document.getElementById('promoPerUserLimit').value = promo.per_user_limit || 1;
+            document.getElementById('promoStartsAt').value = promo.starts_at ? new Date(promo.starts_at).toISOString().slice(0, 16) : '';
+            document.getElementById('promoExpiresAt').value = promo.expires_at ? new Date(promo.expires_at).toISOString().slice(0, 16) : '';
+            document.getElementById('promoIsActive').value = promo.is_active ? 'true' : 'false';
+            document.getElementById('promoSendEmail').checked = false;
+            document.getElementById('emailProgress').style.display = 'none';
+            
+            document.querySelectorAll('#promoModal .checkbox-item input[type="checkbox"]').forEach(cb => {
+                cb.checked = promo.applicable_plans.includes(cb.value);
+            });
+            
+            toggleDiscountFields();
+            openModal('promoModal');
+        }
+
+        function toggleDiscountFields() {
+            const type = document.getElementById('promoDiscountType').value;
+            const maxField = document.getElementById('maxDiscountField');
+            
+            if (type === 'percentage') {
+                maxField.style.display = 'block';
+            } else {
+                maxField.style.display = 'none';
+            }
+        }
+
+        async function savePromoCode() {
+            const promoId = document.getElementById('promoId').value;
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const description = document.getElementById('promoDescription').value.trim();
+            const discount_type = document.getElementById('promoDiscountType').value;
+            const discount_value = parseInt(document.getElementById('promoDiscountValue').value);
+            const max_discount = document.getElementById('promoMaxDiscount').value ? parseInt(document.getElementById('promoMaxDiscount').value) : null;
+            const min_purchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
+            const usage_limit = document.getElementById('promoUsageLimit').value ? parseInt(document.getElementById('promoUsageLimit').value) : null;
+            const per_user_limit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
+            const starts_at = document.getElementById('promoStartsAt').value;
+            const expires_at = document.getElementById('promoExpiresAt').value || null;
+            const is_active = document.getElementById('promoIsActive').value === 'true';
+            const send_email = document.getElementById('promoSendEmail').checked;
+            
+            const applicable_plans = [];
+            document.querySelectorAll('#promoModal .checkbox-item input[type="checkbox"]:checked').forEach(cb => {
+                applicable_plans.push(cb.value);
+            });
+
+            if (!code) {
+                showToast('error', 'Le code promo est requis');
+                return;
+            }
+
+            if (!discount_value || discount_value < 1) {
+                showToast('error', 'La valeur de réduction est invalide');
+                return;
+            }
+
+            if (discount_type === 'percentage' && discount_value > 100) {
+                showToast('error', 'Le pourcentage ne peut pas dépasser 100%');
+                return;
+            }
+
+            if (applicable_plans.length === 0) {
+                showToast('error', 'Sélectionnez au moins un plan');
+                return;
+            }
+
+            const url = promoId ? `/api/admin/promo-codes/${promoId}` : '/api/admin/promo-codes';
+            const method = promoId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code,
+                        description,
+                        discount_type,
+                        discount_value,
+                        applicable_plans,
+                        min_purchase,
+                        max_discount,
+                        usage_limit,
+                        per_user_limit,
+                        starts_at: starts_at || new Date().toISOString(),
+                        expires_at: expires_at || null,
+                        is_active,
+                        send_email
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('success', promoId ? 'Code promo modifié' : 'Code promo créé');
+                    closeModal('promoModal');
+                    
+                    if (send_email && data.emails_sent) {
+                        showToast('info', `Emails envoyés à ${data.emails_sent} utilisateurs (délai de 5s entre chaque)`);
+                    }
+                    
+                    loadPromoCodes();
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde promo:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function viewPromoDetails(promoId) {
+            try {
+                const res = await fetch(`/api/admin/promo-codes/${promoId}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const promo = data.promo;
+                    const stats = data.stats;
+                    
+                    const discountText = promo.discount_type === 'percentage' 
+                        ? `${promo.discount_value}%` 
+                        : `${promo.discount_value} FCFA`;
+                    
+                    const now = new Date();
+                    const startsAt = new Date(promo.starts_at);
+                    const expiresAt = promo.expires_at ? new Date(promo.expires_at) : null;
+                    
+                    let statusText = promo.is_active ? 'Actif' : 'Inactif';
+                    if (!promo.is_active) {
+                        statusText = 'Inactif';
+                    } else if (expiresAt && now > expiresAt) {
+                        statusText = 'Expiré';
+                    } else if (now < startsAt) {
+                        statusText = 'À venir';
+                    }
+                    
+                    const detailsHtml = `
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Code</span>
+                            <span class="modal-info-value">${promo.code}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Description</span>
+                            <span class="modal-info-value">${promo.description || 'Aucune'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Réduction</span>
+                            <span class="modal-info-value">${discountText}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Statut</span>
+                            <span class="modal-info-value"><span class="badge ${promo.is_active ? 'badge-success' : 'badge-danger'}">${statusText}</span></span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Plans</span>
+                            <span class="modal-info-value">${promo.applicable_plans.map(p => {
+                                const names = {'1gb':'Starter','2gb':'Basic','4gb':'Pro','8gb':'Business'};
+                                return names[p] || p;
+                            }).join(', ')}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Achat minimum</span>
+                            <span class="modal-info-value">${promo.min_purchase ? promo.min_purchase + ' FCFA' : 'Aucun'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Utilisations</span>
+                            <span class="modal-info-value">${stats.total_uses} utilisations - Total réduction: ${stats.total_discount} FCFA</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Limite</span>
+                            <span class="modal-info-value">${promo.usage_limit ? promo.usage_limit + ' utilisations' : 'Illimité'} (${stats.remaining_uses} restantes)</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Période</span>
+                            <span class="modal-info-value">${new Date(promo.starts_at).toLocaleDateString('fr-FR')} - ${promo.expires_at ? new Date(promo.expires_at).toLocaleDateString('fr-FR') : 'Jamais'}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Email</span>
+                            <span class="modal-info-value">${promo.email_sent ? 'Envoyé le ' + new Date(promo.updated_at).toLocaleDateString('fr-FR') : 'Non envoyé'}</span>
+                        </div>
+                    `;
+                    
+                    document.getElementById('promoDetailsInfo').innerHTML = detailsHtml;
+                    
+                    // Afficher les utilisations
+                    let usageHtml = '';
+                    if (stats.usage_details && stats.usage_details.length > 0) {
+                        stats.usage_details.forEach(usage => {
+                            usageHtml += `
+                                <tr>
+                                    <td>${usage.profiles?.username || 'Inconnu'}</td>
+                                    <td>${usage.discount_applied} FCFA</td>
+                                    <td>${new Date(usage.used_at).toLocaleString('fr-FR')}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        usageHtml = '<tr><td colspan="3" style="text-align: center;">Aucune utilisation</td></tr>';
+                    }
+                    document.getElementById('promoUsageBody').innerHTML = usageHtml;
+                    
+                    currentPromoId = promoId;
+                    openModal('promoDetailsModal');
+                }
+            } catch (error) {
+                console.error('Erreur chargement détails promo:', error);
+                showToast('error', 'Erreur de chargement');
+            }
+        }
+
+        function editPromoFromDetails() {
+            closeModal('promoDetailsModal');
+            editPromo(currentPromoId);
+        }
+
+        function deletePromoFromDetails() {
+            closeModal('promoDetailsModal');
+            deletePromo(currentPromoId);
+        }
+
+        function showSendPromoEmail(promoId) {
+            currentPromoId = promoId;
+            document.getElementById('sendEmailProgress').style.display = 'none';
+            openModal('sendPromoEmailModal');
+        }
+
+        async function confirmSendPromoEmail() {
+            closeModal('sendPromoEmailModal');
+            
+            const progressDiv = document.getElementById('sendEmailProgress');
+            const progressFill = document.getElementById('sendEmailProgressFill');
+            const statusDiv = document.getElementById('sendEmailStatus');
+            
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '0%';
+            statusDiv.textContent = 'Préparation de l\'envoi...';
+            
+            try {
+                const res = await fetch(`/api/admin/promo-codes/${currentPromoId}/send-email`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+
+                if (data.success) {
+                    progressFill.style.width = '100%';
+                    statusDiv.textContent = `✅ Emails envoyés à ${data.sent} utilisateurs (délai de 5s respecté)`;
+                    showToast('success', `Emails envoyés à ${data.sent} utilisateurs`);
+                    loadPromoCodes();
+                    
+                    setTimeout(() => {
+                        progressDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    statusDiv.textContent = `❌ Erreur: ${data.error}`;
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                console.error('Erreur envoi email promo:', error);
+                statusDiv.textContent = '❌ Erreur réseau';
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function deletePromo(promoId) {
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
+            document.getElementById('confirmTitle').textContent = 'Supprimer le code promo';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce code promo ? Cette action est irréversible !';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    const res = await fetch(`/api/admin/promo-codes/${promoId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Code promo supprimé');
+                        loadPromoCodes();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
         // ===== LOAD ADMIN DATA =====
         async function loadAdminData() {
             try {
-                // Stats générales
                 const statsRes = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2727,7 +3286,6 @@
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
 
-                // Utilisateurs
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2740,7 +3298,6 @@
                     displayUsers();
                 }
 
-                // Serveurs
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2752,7 +3309,6 @@
                     displayServers();
                 }
 
-                // Transactions
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2764,7 +3320,6 @@
                     displayTransactions();
                 }
 
-                // Logs
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2776,43 +3331,12 @@
                     displayLogs();
                 }
 
-                // Stats financières
                 await loadFinancialStats();
-
-                // Codes promo
                 await loadPromoCodes();
 
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
                 showToast('error', 'Erreur de chargement des données');
-            }
-        }
-
-        // ===== LOAD PROMO CODES =====
-        async function loadPromoCodes() {
-            try {
-                const res = await fetch('/api/admin/promo-codes', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    allPromoCodes = data.codes || [];
-                    
-                    // Calculer les stats
-                    const activeCount = allPromoCodes.filter(c => c.is_active).length;
-                    const totalUses = allPromoCodes.reduce((sum, c) => sum + (c.used_count || 0), 0);
-                    const emailsSent = allPromoCodes.filter(c => c.email_sent).length;
-                    
-                    document.getElementById('promoTotalCount').textContent = allPromoCodes.length;
-                    document.getElementById('promoActiveCount').textContent = activeCount;
-                    document.getElementById('promoTotalUses').textContent = totalUses;
-                    document.getElementById('promoEmailsSent').textContent = emailsSent;
-                    
-                    displayPromoCodes();
-                }
-            } catch (error) {
-                console.error('Erreur chargement codes promo:', error);
             }
         }
 
@@ -2828,7 +3352,6 @@
 
             document.getElementById('userPagination').style.display = 'flex';
 
-            // Pagination
             const startIndex = (currentUserPage - 1) * usersPerPage;
             const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
             const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
@@ -2869,7 +3392,7 @@
                                 <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button class="action-btn view" title="Voir transactions" onclick="viewUserTransactions('${user.id}')">
+                                <button class="action-btn" title="Voir transactions" onclick="viewUserTransactions('${user.id}')">
                                     <i class="fas fa-history"></i>
                                 </button>
                             </div>
@@ -2989,100 +3512,6 @@
                                 </button>
                                 <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
                                     <i class="fas fa-user"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
-        // ===== DISPLAY PROMO CODES =====
-        function displayPromoCodes() {
-            const tbody = document.getElementById('promoCodesTableBody');
-            
-            if (!allPromoCodes || allPromoCodes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun code promo</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            allPromoCodes.forEach(code => {
-                const now = new Date();
-                const startsAt = new Date(code.starts_at);
-                const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
-                
-                let validityClass = 'badge-success';
-                let validityText = 'Valide';
-                
-                if (!code.is_active) {
-                    validityClass = 'badge-danger';
-                    validityText = 'Inactif';
-                } else if (now < startsAt) {
-                    validityClass = 'badge-warning';
-                    validityText = 'À venir';
-                } else if (expiresAt && now > expiresAt) {
-                    validityClass = 'badge-danger';
-                    validityText = 'Expiré';
-                }
-                
-                const discountText = code.discount_type === 'percentage' 
-                    ? `${code.discount_value}%` 
-                    : `${code.discount_value.toLocaleString()} FCFA`;
-                
-                const plans = code.applicable_plans || [];
-                const plansText = plans.map(p => window.PLANS?.[p]?.name || p).join(', ');
-                
-                const usagePercent = code.usage_limit ? Math.round((code.used_count / code.usage_limit) * 100) : 0;
-                
-                html += `
-                    <tr>
-                        <td><strong style="color: var(--accent);">${code.code}</strong></td>
-                        <td>${code.description || '-'}</td>
-                        <td><span class="badge badge-purple">${discountText}</span></td>
-                        <td><span class="badge badge-info">${plansText || 'Tous'}</span></td>
-                        <td>
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <span>${code.used_count || 0} / ${code.usage_limit || '∞'}</span>
-                                ${code.usage_limit ? `
-                                    <div class="progress-bar" style="width: 80px;">
-                                        <div class="progress-fill" style="width: ${usagePercent}%;"></div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div>Début: ${new Date(code.starts_at).toLocaleDateString('fr-FR')}</div>
-                            ${code.expires_at ? `<div>Fin: ${new Date(code.expires_at).toLocaleDateString('fr-FR')}</div>` : ''}
-                        </td>
-                        <td><span class="badge ${validityClass}">${validityText}</span></td>
-                        <td>
-                            ${code.email_sent 
-                                ? '<span class="badge badge-success"><i class="fas fa-check"></i> Envoyé</span>' 
-                                : '<span class="badge badge-warning">Non envoyé</span>'}
-                        </td>
-                        <td>
-                            <div class="action-group">
-                                <button class="action-btn view" title="Détails" onclick="viewPromoDetails('${code.id}')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn edit" title="Modifier" onclick="editPromoCode('${code.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn copy" title="Copier le code" onclick="copyPromoCode('${code.code}')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button class="action-btn email" title="Envoyer par email (3s délai)" onclick="sendPromoEmail('${code.id}')">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
-                                <button class="action-btn ban" title="${code.is_active ? 'Désactiver' : 'Activer'}" onclick="togglePromoStatus('${code.id}', ${!code.is_active})">
-                                    <i class="fas fa-power-off"></i>
-                                </button>
-                                <button class="action-btn delete" title="Supprimer" onclick="deletePromoCode('${code.id}')">
-                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -3215,35 +3644,6 @@
             displayFilteredTransactions(filtered);
         }
 
-        function filterPromoCodes() {
-            const search = document.getElementById('promoSearch').value.toLowerCase();
-            const filter = document.getElementById('promoFilter').value;
-            
-            const filtered = allPromoCodes.filter(code => {
-                const matchesSearch = code.code.toLowerCase().includes(search) ||
-                                    (code.description || '').toLowerCase().includes(search);
-                
-                if (!matchesSearch) return false;
-                
-                const now = new Date();
-                const startsAt = new Date(code.starts_at);
-                const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
-                
-                switch(filter) {
-                    case 'active': return code.is_active && now >= startsAt && (!expiresAt || now <= expiresAt);
-                    case 'inactive': return !code.is_active;
-                    case 'percentage': return code.discount_type === 'percentage';
-                    case 'fixed': return code.discount_type === 'fixed';
-                    case 'expired': return expiresAt && now > expiresAt;
-                    case 'email_sent': return code.email_sent;
-                    default: return true;
-                }
-            });
-            
-            document.getElementById('promoCount').textContent = filtered.length;
-            displayFilteredPromoCodes(filtered);
-        }
-
         function filterLogs() {
             const search = document.getElementById('logSearch').value.toLowerCase();
             const filter = document.getElementById('logFilter').value;
@@ -3260,6 +3660,7 @@
                     case 'coins': return (log.action_type || '').includes('coins');
                     case 'server': return (log.action_type || '').includes('server');
                     case 'delete': return (log.action_type || '').includes('delete');
+                    case 'promo': return (log.action_type || '').includes('promo');
                     default: return true;
                 }
             });
@@ -3268,7 +3669,6 @@
             displayFilteredLogs(filtered);
         }
 
-        // ===== DISPLAY FILTERED FUNCTIONS =====
         function displayFilteredServers(servers) {
             const tbody = document.getElementById('serversTableBody');
             
@@ -3360,99 +3760,6 @@
                                 </button>
                                 <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
                                     <i class="fas fa-user"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
-        function displayFilteredPromoCodes(codes) {
-            const tbody = document.getElementById('promoCodesTableBody');
-            
-            if (!codes || codes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun code promo trouvé</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            codes.forEach(code => {
-                const now = new Date();
-                const startsAt = new Date(code.starts_at);
-                const expiresAt = code.expires_at ? new Date(code.expires_at) : null;
-                
-                let validityClass = 'badge-success';
-                let validityText = 'Valide';
-                
-                if (!code.is_active) {
-                    validityClass = 'badge-danger';
-                    validityText = 'Inactif';
-                } else if (now < startsAt) {
-                    validityClass = 'badge-warning';
-                    validityText = 'À venir';
-                } else if (expiresAt && now > expiresAt) {
-                    validityClass = 'badge-danger';
-                    validityText = 'Expiré';
-                }
-                
-                const discountText = code.discount_type === 'percentage' 
-                    ? `${code.discount_value}%` 
-                    : `${code.discount_value.toLocaleString()} FCFA`;
-                
-                const plans = code.applicable_plans || [];
-                const plansText = plans.map(p => window.PLANS?.[p]?.name || p).join(', ');
-                
-                const usagePercent = code.usage_limit ? Math.round((code.used_count / code.usage_limit) * 100) : 0;
-                
-                html += `
-                    <tr>
-                        <td><strong style="color: var(--accent);">${code.code}</strong></td>
-                        <td>${code.description || '-'}</td>
-                        <td><span class="badge badge-purple">${discountText}</span></td>
-                        <td><span class="badge badge-info">${plansText || 'Tous'}</span></td>
-                        <td>
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <span>${code.used_count || 0} / ${code.usage_limit || '∞'}</span>
-                                ${code.usage_limit ? `
-                                    <div class="progress-bar" style="width: 80px;">
-                                        <div class="progress-fill" style="width: ${usagePercent}%;"></div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div>Début: ${new Date(code.starts_at).toLocaleDateString('fr-FR')}</div>
-                            ${code.expires_at ? `<div>Fin: ${new Date(code.expires_at).toLocaleDateString('fr-FR')}</div>` : ''}
-                        </td>
-                        <td><span class="badge ${validityClass}">${validityText}</span></td>
-                        <td>
-                            ${code.email_sent 
-                                ? '<span class="badge badge-success"><i class="fas fa-check"></i> Envoyé</span>' 
-                                : '<span class="badge badge-warning">Non envoyé</span>'}
-                        </td>
-                        <td>
-                            <div class="action-group">
-                                <button class="action-btn view" title="Détails" onclick="viewPromoDetails('${code.id}')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn edit" title="Modifier" onclick="editPromoCode('${code.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn copy" title="Copier le code" onclick="copyPromoCode('${code.code}')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button class="action-btn email" title="Envoyer par email (3s délai)" onclick="sendPromoEmail('${code.id}')">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
-                                <button class="action-btn ban" title="${code.is_active ? 'Désactiver' : 'Activer'}" onclick="togglePromoStatus('${code.id}', ${!code.is_active})">
-                                    <i class="fas fa-power-off"></i>
-                                </button>
-                                <button class="action-btn delete" title="Supprimer" onclick="deletePromoCode('${code.id}')">
-                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -3850,474 +4157,6 @@
             openModal('confirmModal');
         }
 
-        // ===== PROMO CODE ACTIONS =====
-        function openCreatePromoModal() {
-            currentPromoId = null;
-            document.getElementById('promoModalTitle').textContent = 'Créer un code promo';
-            document.getElementById('promoCode').value = '';
-            document.getElementById('promoDescription').value = '';
-            document.getElementById('promoDiscountType').value = 'percentage';
-            document.getElementById('promoDiscountValue').value = '';
-            document.getElementById('promoMaxDiscount').value = '';
-            document.getElementById('promoMinPurchase').value = '0';
-            document.getElementById('promoUsageLimit').value = '1';
-            document.getElementById('promoPerUserLimit').value = '1';
-            document.getElementById('promoStartsAt').value = '';
-            document.getElementById('promoExpiresAt').value = '';
-            document.getElementById('promoIsActive').checked = true;
-            document.getElementById('promoSendEmail').checked = false;
-            
-            // Cocher les plans par défaut
-            document.getElementById('planFree').checked = false;
-            document.getElementById('plan1gb').checked = true;
-            document.getElementById('plan2gb').checked = true;
-            document.getElementById('plan4gb').checked = true;
-            document.getElementById('plan8gb').checked = false;
-            
-            toggleDiscountFields();
-            openModal('promoModal');
-        }
-
-        function editPromoCode(promoId) {
-            const promo = allPromoCodes.find(p => p.id === promoId);
-            if (!promo) return;
-
-            currentPromoId = promoId;
-            document.getElementById('promoModalTitle').textContent = 'Modifier le code promo';
-            document.getElementById('promoCode').value = promo.code;
-            document.getElementById('promoDescription').value = promo.description || '';
-            document.getElementById('promoDiscountType').value = promo.discount_type;
-            document.getElementById('promoDiscountValue').value = promo.discount_value;
-            document.getElementById('promoMaxDiscount').value = promo.max_discount || '';
-            document.getElementById('promoMinPurchase').value = promo.min_purchase || 0;
-            document.getElementById('promoUsageLimit').value = promo.usage_limit || 1;
-            document.getElementById('promoPerUserLimit').value = promo.per_user_limit || 1;
-            
-            if (promo.starts_at) {
-                document.getElementById('promoStartsAt').value = new Date(promo.starts_at).toISOString().slice(0, 16);
-            } else {
-                document.getElementById('promoStartsAt').value = '';
-            }
-            
-            if (promo.expires_at) {
-                document.getElementById('promoExpiresAt').value = new Date(promo.expires_at).toISOString().slice(0, 16);
-            } else {
-                document.getElementById('promoExpiresAt').value = '';
-            }
-            
-            document.getElementById('promoIsActive').checked = promo.is_active;
-            document.getElementById('promoSendEmail').checked = false; // Ne pas renvoyer par défaut
-            
-            // Plans applicables
-            const plans = promo.applicable_plans || [];
-            document.getElementById('planFree').checked = plans.includes('free');
-            document.getElementById('plan1gb').checked = plans.includes('1gb');
-            document.getElementById('plan2gb').checked = plans.includes('2gb');
-            document.getElementById('plan4gb').checked = plans.includes('4gb');
-            document.getElementById('plan8gb').checked = plans.includes('8gb');
-            
-            toggleDiscountFields();
-            openModal('promoModal');
-        }
-
-        function toggleDiscountFields() {
-            const type = document.getElementById('promoDiscountType').value;
-            const maxDiscountField = document.getElementById('maxDiscountField');
-            
-            if (type === 'percentage') {
-                maxDiscountField.style.display = 'block';
-            } else {
-                maxDiscountField.style.display = 'none';
-            }
-        }
-
-        // Remplacer cette partie dans la fonction savePromoCode() :
-
-async function savePromoCode() {
-    // Récupérer les valeurs
-    const code = document.getElementById('promoCode').value.toUpperCase().trim();
-    const description = document.getElementById('promoDescription').value.trim();
-    const discountType = document.getElementById('promoDiscountType').value;
-    const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
-    const maxDiscount = discountType === 'percentage' ? parseInt(document.getElementById('promoMaxDiscount').value) || null : null;
-    const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
-    const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || null;
-    const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
-    const isActive = document.getElementById('promoIsActive').checked;
-    const sendEmail = document.getElementById('promoSendEmail').checked;
-    
-    // Plans applicables
-    const applicablePlans = [];
-    if (document.getElementById('planFree').checked) applicablePlans.push('free');
-    if (document.getElementById('plan1gb').checked) applicablePlans.push('1gb');
-    if (document.getElementById('plan2gb').checked) applicablePlans.push('2gb');
-    if (document.getElementById('plan4gb').checked) applicablePlans.push('4gb');
-    if (document.getElementById('plan8gb').checked) applicablePlans.push('8gb');
-    
-    // Dates
-    const startsAt = document.getElementById('promoStartsAt').value || new Date().toISOString();
-    const expiresAt = document.getElementById('promoExpiresAt').value || null;
-
-    // Validations
-    if (!code) {
-        showToast('error', 'Le code est requis');
-        return;
-    }
-    
-    if (!discountValue || discountValue < 1) {
-        showToast('error', 'La valeur de réduction est invalide');
-        return;
-    }
-    
-    if (discountType === 'percentage' && discountValue > 100) {
-        showToast('error', 'Le pourcentage ne peut pas dépasser 100%');
-        return;
-    }
-    
-    if (applicablePlans.length === 0) {
-        showToast('error', 'Sélectionnez au moins un plan');
-        return;
-    }
-
-    // CORRECTION ICI : utiliser send_email_notification au lieu de send_email
-    const payload = {
-        code,
-        description,
-        discount_type: discountType,
-        discount_value: discountValue,
-        applicable_plans: applicablePlans,
-        min_purchase: minPurchase,
-        max_discount: maxDiscount,
-        usage_limit: usageLimit,
-        per_user_limit: perUserLimit,
-        starts_at: startsAt,
-        expires_at: expiresAt,
-        is_active: isActive,
-        send_email_notification: sendEmail  // ← CHANGÉ ICI
-    };
-
-    try {
-        const url = currentPromoId 
-            ? `/api/admin/promo-codes/${currentPromoId}`
-            : '/api/admin/promo-codes';
-        
-        const method = currentPromoId ? 'PUT' : 'POST';
-        
-        const res = await fetch(url, {
-            method,
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const data = await res.json();
-        
-        if (data.success) {
-            showToast('success', currentPromoId ? 'Code promo modifié' : 'Code promo créé');
-            closeModal('promoModal');
-            loadPromoCodes();
-            
-            if (sendEmail && !currentPromoId) {
-                // Attendre un peu avant de commencer l'envoi des emails
-                setTimeout(() => sendPromoEmail(data.code.id), 2000);
-            }
-        } else {
-            showToast('error', data.error);
-        }
-    } catch (error) {
-        console.error('Erreur sauvegarde code promo:', error);
-        showToast('error', 'Erreur réseau');
-    }
-}
-
-        function copyPromoCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('success', 'Code copié !');
-            }).catch(() => {
-                showToast('error', 'Erreur de copie');
-            });
-        }
-
-        async function togglePromoStatus(promoId, newStatus) {
-            const action = newStatus ? 'activer' : 'désactiver';
-            
-            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-power-off" style="color: var(--warning);"></i>`;
-            document.getElementById('confirmTitle').textContent = newStatus ? 'Activer' : 'Désactiver';
-            document.getElementById('confirmMessage').textContent = `Êtes-vous sûr de vouloir ${action} ce code promo ?`;
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-warning';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                
-                try {
-                    const res = await fetch(`/api/admin/promo-codes/${promoId}/toggle`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ is_active: newStatus })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (data.success) {
-                        showToast('success', `Code promo ${action} avec succès`);
-                        loadPromoCodes();
-                    } else {
-                        showToast('error', data.error);
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                }
-            };
-            
-            openModal('confirmModal');
-        }
-
-        async function deletePromoCode(promoId) {
-            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
-            document.getElementById('confirmTitle').textContent = 'Supprimer code promo';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce code promo ? Cette action est irréversible !';
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-danger';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                
-                try {
-                    const res = await fetch(`/api/admin/promo-codes/${promoId}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (data.success) {
-                        showToast('success', 'Code promo supprimé');
-                        loadPromoCodes();
-                    } else {
-                        showToast('error', data.error);
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                }
-            };
-            
-            openModal('confirmModal');
-        }
-
-        async function viewPromoDetails(promoId) {
-            try {
-                const res = await fetch(`/api/admin/promo-codes/${promoId}/stats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (!data.success) {
-                    showToast('error', data.error);
-                    return;
-                }
-
-                const promo = data.promo;
-                const stats = data.stats;
-
-                const detailsDiv = document.getElementById('promoDetails');
-                const usageDiv = document.getElementById('promoUsageList');
-
-                detailsDiv.innerHTML = `
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Code</span>
-                        <span class="modal-info-value" style="color: var(--accent);">${promo.code}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Description</span>
-                        <span class="modal-info-value">${promo.description || '-'}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Réduction</span>
-                        <span class="modal-info-value">${promo.discount_type === 'percentage' ? promo.discount_value + '%' : promo.discount_value.toLocaleString() + ' FCFA'}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Plans</span>
-                        <span class="modal-info-value">${(promo.applicable_plans || []).map(p => window.PLANS?.[p]?.name || p).join(', ') || 'Tous'}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Achat min</span>
-                        <span class="modal-info-value">${promo.min_purchase ? promo.min_purchase.toLocaleString() + ' FCFA' : 'Aucun'}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Utilisations</span>
-                        <span class="modal-info-value">${promo.used_count || 0} / ${promo.usage_limit || '∞'}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Par utilisateur</span>
-                        <span class="modal-info-value">${promo.per_user_limit || 1}</span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Validité</span>
-                        <span class="modal-info-value">
-                            Du ${new Date(promo.starts_at).toLocaleString('fr-FR')}
-                            ${promo.expires_at ? `<br>Au ${new Date(promo.expires_at).toLocaleString('fr-FR')}` : ''}
-                        </span>
-                    </div>
-                    <div class="modal-info-item">
-                        <span class="modal-info-label">Statistiques</span>
-                        <span class="modal-info-value">
-                            <div>Utilisations: ${stats.total_uses}</div>
-                            <div>Réduction totale: ${stats.total_discount.toLocaleString()} FCFA</div>
-                            <div>Reste: ${stats.remaining_uses}</div>
-                        </span>
-                    </div>
-                `;
-
-                if (stats.usage_details && stats.usage_details.length > 0) {
-                    let usageHtml = '';
-                    stats.usage_details.forEach(usage => {
-                        usageHtml += `
-                            <div class="server-mini-card">
-                                <div><strong>${usage.profiles?.username || 'Inconnu'}</strong> (${usage.profiles?.email || ''})</div>
-                                <div>Réduction: ${usage.discount_applied} FCFA</div>
-                                <div>Le: ${new Date(usage.used_at).toLocaleString('fr-FR')}</div>
-                            </div>
-                        `;
-                    });
-                    usageDiv.innerHTML = usageHtml;
-                } else {
-                    usageDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Aucune utilisation</p>';
-                }
-
-                openModal('promoDetailsModal');
-            } catch (error) {
-                console.error('Erreur chargement détails promo:', error);
-                showToast('error', 'Erreur de chargement');
-            }
-        }
-
-        // ===== ENVOI D'EMAIL AVEC DÉLAI DE 3 SECONDES =====
-        async function sendPromoEmail(promoId) {
-            const promo = allPromoCodes.find(p => p.id === promoId);
-            if (!promo) return;
-
-            if (promo.email_sent) {
-                document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-envelope" style="color: var(--warning);"></i>`;
-                document.getElementById('confirmTitle').textContent = 'Email déjà envoyé';
-                document.getElementById('confirmMessage').textContent = 'Un email a déjà été envoyé pour ce code. Voulez-vous vraiment renvoyer ?';
-                
-                const confirmBtn = document.getElementById('confirmActionBtn');
-                confirmBtn.className = 'btn btn-warning';
-                confirmBtn.onclick = async () => {
-                    closeModal('confirmModal');
-                    await startEmailSending(promoId);
-                };
-                
-                openModal('confirmModal');
-            } else {
-                await startEmailSending(promoId);
-            }
-        }
-
-        async function startEmailSending(promoId) {
-            // Afficher la barre de progression
-            const progressDiv = document.getElementById('emailProgress');
-            const progressFill = document.getElementById('emailProgressFill');
-            const progressCurrent = document.getElementById('emailProgressCurrent');
-            const progressTotal = document.getElementById('emailProgressTotal');
-            const progressStatus = document.getElementById('emailProgressStatus');
-
-            progressDiv.classList.add('active');
-            progressFill.style.width = '0%';
-            progressCurrent.textContent = '0';
-            progressStatus.textContent = 'Préparation...';
-
-            try {
-                // Récupérer le nombre total d'utilisateurs
-                const usersRes = await fetch('/api/admin/users?verified=true', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const usersData = await usersRes.json();
-
-                if (!usersData.success) {
-                    throw new Error('Impossible de récupérer les utilisateurs');
-                }
-
-                const verifiedUsers = usersData.users.filter(u => u.email_verified && !u.banned);
-                const totalUsers = verifiedUsers.length;
-
-                progressTotal.textContent = totalUsers;
-                progressStatus.textContent = 'Envoi en cours...';
-
-                let sent = 0;
-                let errors = 0;
-
-                // Envoyer les emails avec un délai de 3 secondes
-                for (let i = 0; i < verifiedUsers.length; i++) {
-                    const user = verifiedUsers[i];
-                    
-                    try {
-                        const res = await fetch(`/api/admin/promo-codes/${promoId}/send-email-to-user`, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ user_id: user.id })
-                        });
-
-                        const data = await res.json();
-                        
-                        if (data.success) {
-                            sent++;
-                        } else {
-                            errors++;
-                        }
-                    } catch (error) {
-                        console.error(`Erreur envoi à ${user.email}:`, error);
-                        errors++;
-                    }
-
-                    // Mettre à jour la progression
-                    const progress = Math.round(((i + 1) / totalUsers) * 100);
-                    progressFill.style.width = progress + '%';
-                    progressCurrent.textContent = i + 1;
-                    
-                    // Attendre 3 secondes avant le prochain envoi (sauf pour le dernier)
-                    if (i < verifiedUsers.length - 1) {
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                    }
-                }
-
-                // Marquer l'email comme envoyé
-                await fetch(`/api/admin/promo-codes/${promoId}/mark-email-sent`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                progressStatus.textContent = `Terminé ! ${sent} envoyés, ${errors} échecs`;
-                
-                setTimeout(() => {
-                    progressDiv.classList.remove('active');
-                }, 5000);
-
-                showToast('success', `Emails envoyés: ${sent} succès, ${errors} échecs`);
-                
-                // Recharger les codes promo
-                loadPromoCodes();
-
-            } catch (error) {
-                console.error('Erreur envoi emails:', error);
-                progressStatus.textContent = 'Erreur lors de l\'envoi';
-                showToast('error', 'Erreur lors de l\'envoi des emails');
-                
-                setTimeout(() => {
-                    progressDiv.classList.remove('active');
-                }, 5000);
-            }
-        }
-
         // ===== BULK ACTIONS =====
         function showDeleteAllServersModal() {
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
@@ -4429,8 +4268,8 @@ async function savePromoCode() {
         window.clearUserSearch = clearUserSearch;
         window.filterServers = filterServers;
         window.filterTransactions = filterTransactions;
-        window.filterPromoCodes = filterPromoCodes;
         window.filterLogs = filterLogs;
+        window.filterPromos = filterPromos;
         window.editUser = editUser;
         window.viewUserServers = viewUserServers;
         window.viewUserTransactions = viewUserTransactions;
@@ -4451,14 +4290,18 @@ async function savePromoCode() {
         window.openModal = openModal;
         window.exportUsers = exportUsers;
         window.changeUserPage = changeUserPage;
-        window.openCreatePromoModal = openCreatePromoModal;
-        window.editPromoCode = editPromoCode;
-        window.togglePromoStatus = togglePromoStatus;
-        window.deletePromoCode = deletePromoCode;
+        
+        // Promo functions
+        window.showCreatePromoModal = showCreatePromoModal;
+        window.editPromo = editPromo;
         window.viewPromoDetails = viewPromoDetails;
-        window.copyPromoCode = copyPromoCode;
-        window.sendPromoEmail = sendPromoEmail;
+        window.editPromoFromDetails = editPromoFromDetails;
+        window.deletePromoFromDetails = deletePromoFromDetails;
+        window.showSendPromoEmail = showSendPromoEmail;
+        window.confirmSendPromoEmail = confirmSendPromoEmail;
+        window.deletePromo = deletePromo;
         window.toggleDiscountFields = toggleDiscountFields;
+        window.savePromoCode = savePromoCode;
     </script>
 </body>
 </html>
