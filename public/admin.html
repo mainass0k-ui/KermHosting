@@ -3931,103 +3931,106 @@
             }
         }
 
-        async function savePromoCode() {
-            // Récupérer les valeurs
-            const code = document.getElementById('promoCode').value.toUpperCase().trim();
-            const description = document.getElementById('promoDescription').value.trim();
-            const discountType = document.getElementById('promoDiscountType').value;
-            const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
-            const maxDiscount = discountType === 'percentage' ? parseInt(document.getElementById('promoMaxDiscount').value) || null : null;
-            const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
-            const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || null;
-            const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
-            const isActive = document.getElementById('promoIsActive').checked;
-            const sendEmail = document.getElementById('promoSendEmail').checked;
-            
-            // Plans applicables
-            const applicablePlans = [];
-            if (document.getElementById('planFree').checked) applicablePlans.push('free');
-            if (document.getElementById('plan1gb').checked) applicablePlans.push('1gb');
-            if (document.getElementById('plan2gb').checked) applicablePlans.push('2gb');
-            if (document.getElementById('plan4gb').checked) applicablePlans.push('4gb');
-            if (document.getElementById('plan8gb').checked) applicablePlans.push('8gb');
-            
-            // Dates
-            const startsAt = document.getElementById('promoStartsAt').value || new Date().toISOString();
-            const expiresAt = document.getElementById('promoExpiresAt').value || null;
+        // Remplacer cette partie dans la fonction savePromoCode() :
 
-            // Validations
-            if (!code) {
-                showToast('error', 'Le code est requis');
-                return;
-            }
-            
-            if (!discountValue || discountValue < 1) {
-                showToast('error', 'La valeur de réduction est invalide');
-                return;
-            }
-            
-            if (discountType === 'percentage' && discountValue > 100) {
-                showToast('error', 'Le pourcentage ne peut pas dépasser 100%');
-                return;
-            }
-            
-            if (applicablePlans.length === 0) {
-                showToast('error', 'Sélectionnez au moins un plan');
-                return;
-            }
+async function savePromoCode() {
+    // Récupérer les valeurs
+    const code = document.getElementById('promoCode').value.toUpperCase().trim();
+    const description = document.getElementById('promoDescription').value.trim();
+    const discountType = document.getElementById('promoDiscountType').value;
+    const discountValue = parseInt(document.getElementById('promoDiscountValue').value);
+    const maxDiscount = discountType === 'percentage' ? parseInt(document.getElementById('promoMaxDiscount').value) || null : null;
+    const minPurchase = parseInt(document.getElementById('promoMinPurchase').value) || 0;
+    const usageLimit = parseInt(document.getElementById('promoUsageLimit').value) || null;
+    const perUserLimit = parseInt(document.getElementById('promoPerUserLimit').value) || 1;
+    const isActive = document.getElementById('promoIsActive').checked;
+    const sendEmail = document.getElementById('promoSendEmail').checked;
+    
+    // Plans applicables
+    const applicablePlans = [];
+    if (document.getElementById('planFree').checked) applicablePlans.push('free');
+    if (document.getElementById('plan1gb').checked) applicablePlans.push('1gb');
+    if (document.getElementById('plan2gb').checked) applicablePlans.push('2gb');
+    if (document.getElementById('plan4gb').checked) applicablePlans.push('4gb');
+    if (document.getElementById('plan8gb').checked) applicablePlans.push('8gb');
+    
+    // Dates
+    const startsAt = document.getElementById('promoStartsAt').value || new Date().toISOString();
+    const expiresAt = document.getElementById('promoExpiresAt').value || null;
 
-            const payload = {
-                code,
-                description,
-                discount_type: discountType,
-                discount_value: discountValue,
-                applicable_plans: applicablePlans,
-                min_purchase: minPurchase,
-                max_discount: maxDiscount,
-                usage_limit: usageLimit,
-                per_user_limit: perUserLimit,
-                starts_at: startsAt,
-                expires_at: expiresAt,
-                is_active: isActive,
-                send_email: sendEmail
-            };
+    // Validations
+    if (!code) {
+        showToast('error', 'Le code est requis');
+        return;
+    }
+    
+    if (!discountValue || discountValue < 1) {
+        showToast('error', 'La valeur de réduction est invalide');
+        return;
+    }
+    
+    if (discountType === 'percentage' && discountValue > 100) {
+        showToast('error', 'Le pourcentage ne peut pas dépasser 100%');
+        return;
+    }
+    
+    if (applicablePlans.length === 0) {
+        showToast('error', 'Sélectionnez au moins un plan');
+        return;
+    }
 
-            try {
-                const url = currentPromoId 
-                    ? `/api/admin/promo-codes/${currentPromoId}`
-                    : '/api/admin/promo-codes';
-                
-                const method = currentPromoId ? 'PUT' : 'POST';
-                
-                const res = await fetch(url, {
-                    method,
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast('success', currentPromoId ? 'Code promo modifié' : 'Code promo créé');
-                    closeModal('promoModal');
-                    loadPromoCodes();
-                    
-                    if (sendEmail && !currentPromoId) {
-                        // Attendre un peu avant de commencer l'envoi des emails
-                        setTimeout(() => sendPromoEmail(data.code.id), 2000);
-                    }
-                } else {
-                    showToast('error', data.error);
-                }
-            } catch (error) {
-                console.error('Erreur sauvegarde code promo:', error);
-                showToast('error', 'Erreur réseau');
+    // CORRECTION ICI : utiliser send_email_notification au lieu de send_email
+    const payload = {
+        code,
+        description,
+        discount_type: discountType,
+        discount_value: discountValue,
+        applicable_plans: applicablePlans,
+        min_purchase: minPurchase,
+        max_discount: maxDiscount,
+        usage_limit: usageLimit,
+        per_user_limit: perUserLimit,
+        starts_at: startsAt,
+        expires_at: expiresAt,
+        is_active: isActive,
+        send_email_notification: sendEmail  // ← CHANGÉ ICI
+    };
+
+    try {
+        const url = currentPromoId 
+            ? `/api/admin/promo-codes/${currentPromoId}`
+            : '/api/admin/promo-codes';
+        
+        const method = currentPromoId ? 'PUT' : 'POST';
+        
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast('success', currentPromoId ? 'Code promo modifié' : 'Code promo créé');
+            closeModal('promoModal');
+            loadPromoCodes();
+            
+            if (sendEmail && !currentPromoId) {
+                // Attendre un peu avant de commencer l'envoi des emails
+                setTimeout(() => sendPromoEmail(data.code.id), 2000);
             }
+        } else {
+            showToast('error', data.error);
         }
+    } catch (error) {
+        console.error('Erreur sauvegarde code promo:', error);
+        showToast('error', 'Erreur réseau');
+    }
+}
 
         function copyPromoCode(code) {
             navigator.clipboard.writeText(code).then(() => {
