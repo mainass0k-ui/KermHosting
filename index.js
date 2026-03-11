@@ -4085,88 +4085,46 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
-// TÉLÉCHARGEMENT KERM-MD-V1 - VERSION ULTRA ROBUSTE
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1 CORRIGÉE
 // =============================================
-app.get('/api/download-kerm', (req, res) => {
+app.get('/api/download-bot', async (req, res) => {
     try {
-        // Nom exact du fichier
         const fileName = 'KERM-MD-V1.zip';
         
-        // Chemins à vérifier (ordre de priorité)
-        const pathsToCheck = [
+        // Chemins à vérifier
+        const possiblePaths = [
             path.join(__dirname, 'public', 'downloads', fileName),
-            path.join(__dirname, 'downloads', fileName),
             path.join(__dirname, 'bots', fileName),
-            path.join(__dirname, fileName),
-            path.join(process.cwd(), 'public', 'downloads', fileName),
-            path.join(process.cwd(), fileName)
+            path.join(__dirname, fileName)
         ];
         
         let filePath = null;
-        console.log('🔍 Recherche du fichier...');
-        
-        for (const testPath of pathsToCheck) {
-            console.log('📁 Vérification:', testPath);
+        for (const testPath of possiblePaths) {
             if (fs.existsSync(testPath)) {
                 filePath = testPath;
-                console.log('✅ Fichier trouvé à:', filePath);
                 break;
             }
         }
         
         if (!filePath) {
-            console.error('❌ Fichier non trouvé dans les chemins:', pathsToCheck);
-            
-            // Liste tous les fichiers .zip disponibles pour debug
-            const allZips = [];
-            const searchDir = (dir) => {
-                try {
-                    if (fs.existsSync(dir)) {
-                        const files = fs.readdirSync(dir);
-                        files.forEach(file => {
-                            if (file.endsWith('.zip')) {
-                                allZips.push(path.join(dir, file));
-                            }
-                        });
-                    }
-                } catch (e) {}
-            };
-            
-            searchDir(__dirname);
-            searchDir(path.join(__dirname, 'public'));
-            searchDir(path.join(__dirname, 'public', 'downloads'));
-            
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Fichier ZIP introuvable',
-                searchedPaths: pathsToCheck,
-                foundZips: allZips
-            });
+            return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
         }
         
-        // Lire le fichier en mémoire
+        // Lire le fichier en buffer
         const fileBuffer = fs.readFileSync(filePath);
         
-        // Headers TRÈS stricts pour forcer le téléchargement
-        res.setHeader('Content-Type', 'application/octet-stream'); // Type générique
+        // Configuration des headers pour forcer le téléchargement
+        res.setHeader('Content-Type', 'application/zip');
         res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
         res.setHeader('Content-Length', fileBuffer.length);
-        res.setHeader('Content-Transfer-Encoding', 'binary');
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Expires', '0');
-        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Cache-Control', 'no-cache');
         
         // Envoyer le buffer
         res.end(fileBuffer);
         
     } catch (error) {
-        console.error('❌ Erreur téléchargement:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message,
-            stack: error.stack 
-        });
+        console.error('❌ Erreur:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
