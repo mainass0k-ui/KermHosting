@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
     <meta name="description" content="KERM MD V1 - Bot WhatsApp puissant avec plus de 200 commandes. Développé par Kerm avant la naissance de KermHosting.">
-	<meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
-	
-	<!-- Favicon / Icônes (ajoutées) -->
-    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
@@ -106,7 +99,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR (identique aux autres pages) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -1441,9 +1434,9 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li>
-                        <a href="/dashboard" id="navDashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
                         </a>
                     </li>
                     <li>
@@ -1456,6 +1449,12 @@
                         <a href="/buy-coins">
                             <i class="fas fa-coins"></i>
                             <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard" id="navDashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
                         </a>
                     </li>
                     <li>
@@ -1628,18 +1627,19 @@
                     <p class="download-subtitle">
                         Obtenez la dernière version du bot et rejoignez des milliers d'utilisateurs satisfaits
                     </p>
-					<div class="download-buttons">
-                         <a href="/downloads/KERM-MD-V1.zip" class="download-btn primary" download>
+                    
+                    <div class="download-buttons">
+                        <a href="https://github.com/hostt11/KermHosting/raw/refs/heads/main/bot/KERM-MD-V1.zip" class="download-btn primary" id="downloadBtn">
                             <i class="fas fa-download"></i>
-                             Télécharger KERM-MD-V1
+                            Télécharger (ZIP)
                         </a>
-                        <a href="https://github.com/hostt11" class="download-btn secondary" id="githubBtn">
+                        <a href="https://github.com/hostt11/KermHosting/tree/main/bot" class="download-btn secondary" id="githubBtn" target="_blank">
                             <i class="fab fa-github"></i>
                             Voir sur GitHub
                         </a>
                     </div>
                     <div class="file-info">
-                        <i class="fas fa-file-archive"></i> kerm-md-v1.zip • 45 MB • Version 1.0.0 • Node.js 20+
+                        <i class="fas fa-file-archive"></i> KERM-MD-V1.zip • 45 MB • Version 1.0.0 • Node.js 20+
                     </div>
                 </div>
 
@@ -1858,8 +1858,8 @@
                             <div class="step-content">
                                 <h3>Télécharger le bot</h3>
                                 <p>Téléchargez le fichier ZIP du bot et extrayez-le</p>
-                                <code class="step-code">unzip kerm-md-v1.zip -d ~/kerm-md</code>
-                                <button class="copy-btn" onclick="copyToClipboard('unzip kerm-md-v1.zip -d ~/kerm-md')">
+                                <code class="step-code">unzip KERM-MD-V1.zip -d ~/kerm-md</code>
+                                <button class="copy-btn" onclick="copyToClipboard('unzip KERM-MD-V1.zip -d ~/kerm-md')">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -1885,35 +1885,6 @@
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Screenshots (simulés) -->
-                <div class="screenshots-section">
-                    <h2 class="specs-title">Aperçu du <span class="gradient-text">bot</span></h2>
-                    
-                    <div class="screenshots-grid">
-                        <div class="screenshot-card">
-                            <div class="screenshot-icon">
-                                <i class="fas fa-image"></i>
-                            </div>
-                            <div class="screenshot-title">Commandes de téléchargement</div>
-                            <div class="screenshot-desc">YouTube, Instagram, TikTok, Facebook</div>
-                        </div>
-                        <div class="screenshot-card">
-                            <div class="screenshot-icon">
-                                <i class="fas fa-magic"></i>
-                            </div>
-                            <div class="screenshot-title">Édition d'images</div>
-                            <div class="screenshot-desc">Effets, filtres, transformations</div>
-                        </div>
-                        <div class="screenshot-card">
-                            <div class="screenshot-icon">
-                                <i class="fas fa-gamepad"></i>
-                            </div>
-                            <div class="screenshot-title">Jeux interactifs</div>
-                            <div class="screenshot-desc">Jouez avec vos amis directement sur WhatsApp</div>
                         </div>
                     </div>
                 </div>
@@ -1969,7 +1940,7 @@
                         Rejoignez des milliers d'utilisateurs qui utilisent déjà le bot au quotidien
                     </p>
                     <div class="cta-buttons">
-                        <a href="#" class="cta-btn primary" id="finalDownloadBtn">
+                        <a href="https://github.com/hostt11/KermHosting/raw/refs/heads/main/bot/KERM-MD-V1.zip" class="cta-btn primary" id="finalDownloadBtn">
                             <i class="fas fa-download"></i>
                             Télécharger maintenant
                         </a>
@@ -2027,9 +1998,9 @@
                 <div class="footer-bottom">
                     <p>&copy; 2025 KermHosting. Tous droits réservés.</p>
                     <div class="footer-social">
-                        <a href="wa.me/237659535227"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
                         <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="https://github.com/hostt11"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
@@ -2154,29 +2125,12 @@
         });
 
         // ===== DOWNLOAD BUTTON =====
-        document.getElementById('downloadBtn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            showToast('info', 'Préparation du téléchargement...');
-            
-            // Simulation - à remplacer par vrai lien
-            setTimeout(() => {
-                showToast('success', 'Téléchargement démarré !');
-                // window.location.href = '/downloads/kerm-md-v1.zip';
-            }, 1500);
+        document.getElementById('downloadBtn')?.addEventListener('click', function(e) {
+            showToast('success', 'Téléchargement démarré !');
         });
 
-        document.getElementById('finalDownloadBtn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            showToast('info', 'Préparation du téléchargement...');
-            
-            setTimeout(() => {
-                showToast('success', 'Téléchargement démarré !');
-            }, 1500);
-        });
-
-        document.getElementById('githubBtn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.open('https://github.com/kermhosting/kerm-md-v1', '_blank');
+        document.getElementById('finalDownloadBtn')?.addEventListener('click', function(e) {
+            showToast('success', 'Téléchargement démarré !');
         });
 
         // ===== INIT =====
