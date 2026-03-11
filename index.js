@@ -4085,6 +4085,43 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
+// ROUTE DE TÉLÉCHARGEMENT DU BOT KERM MD V1
+// =============================================
+app.get('/api/download-bot', async (req, res) => {
+    try {
+        // Chemin vers ton fichier ZIP (à ajuster)
+        const filePath = path.join(__dirname, 'bots', 'KERM-MD-V1.zip');
+        
+        // Vérifier si le fichier existe
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Fichier non trouvé' 
+            });
+        }
+
+        // Statistiques du fichier
+        const stats = fs.statSync(filePath);
+        
+        // En-têtes pour forcer le téléchargement
+        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Length', stats.size);
+        
+        // Envoyer le fichier
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+        
+    } catch (error) {
+        console.error('❌ Erreur téléchargement bot:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur lors du téléchargement' 
+        });
+    }
+});
+
+// =============================================
 // ROUTES PAGES HTML
 // =============================================
 
