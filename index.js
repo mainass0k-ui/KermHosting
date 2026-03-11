@@ -4085,96 +4085,49 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
-// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1 CORRIGÉE
 // =============================================
 app.get('/api/download-bot', async (req, res) => {
     try {
-        // Nom exact du fichier avec majuscules et tirets
         const fileName = 'KERM-MD-V1.zip';
         
-        // Chemins possibles
+        // Chemins à vérifier
         const possiblePaths = [
             path.join(__dirname, 'public', 'downloads', fileName),
             path.join(__dirname, 'bots', fileName),
-            path.join(__dirname, 'public', 'bots', fileName),
             path.join(__dirname, fileName)
         ];
         
         let filePath = null;
-        
-        // Chercher le fichier
         for (const testPath of possiblePaths) {
-            console.log('🔍 Vérification:', testPath);
             if (fs.existsSync(testPath)) {
                 filePath = testPath;
-                console.log('✅ Fichier trouvé à:', filePath);
                 break;
             }
         }
         
         if (!filePath) {
-            console.error('❌ Fichier non trouvé dans les chemins:', possiblePaths);
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Fichier non trouvé'
-            });
+            return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
         }
-
-        const stats = fs.statSync(filePath);
         
-        // Forcer le nom du fichier dans le téléchargement
-        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
+        // Lire le fichier en buffer
+        const fileBuffer = fs.readFileSync(filePath);
+        
+        // Configuration des headers pour forcer le téléchargement
         res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-Length', stats.size);
+        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
+        res.setHeader('Content-Length', fileBuffer.length);
+        res.setHeader('Cache-Control', 'no-cache');
         
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
+        // Envoyer le buffer
+        res.end(fileBuffer);
         
     } catch (error) {
-        console.error('❌ Erreur téléchargement bot:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur lors du téléchargement' 
-        });
+        console.error('❌ Erreur:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
-// =============================================
-// ROUTE POUR TROUVER LE FICHIER
-// =============================================
-app.get('/api/find-bot', (req, res) => {
-    const fileName = 'KERM-MD-V1.zip';
-    
-    const paths = {
-        'public/downloads/': path.join(__dirname, 'public', 'downloads', fileName),
-        'bots/': path.join(__dirname, 'bots', fileName),
-        'public/bots/': path.join(__dirname, 'public', 'bots', fileName),
-        'racine/': path.join(__dirname, fileName),
-        '__dirname': __dirname
-    };
-    
-    const results = {};
-    
-    for (const [key, filePath] of Object.entries(paths)) {
-        if (key !== '__dirname') {
-            results[`exists_${key}`] = fs.existsSync(filePath);
-            results[`path_${key}`] = filePath;
-        }
-    }
-    
-    results.current_dir = __dirname;
-    results.files_in_current = fs.readdirSync(__dirname).filter(f => f.includes('.zip'));
-    
-    if (fs.existsSync(path.join(__dirname, 'public'))) {
-        results.files_in_public = fs.readdirSync(path.join(__dirname, 'public')).filter(f => f.includes('.zip'));
-    }
-    
-    if (fs.existsSync(path.join(__dirname, 'public', 'downloads'))) {
-        results.files_in_downloads = fs.readdirSync(path.join(__dirname, 'public', 'downloads')).filter(f => f.includes('.zip'));
-    }
-    
-    res.json(results);
-});
 
 // =============================================
 // ROUTES PAGES HTML
