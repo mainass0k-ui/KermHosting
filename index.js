@@ -4085,30 +4085,48 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
-// ROUTE DE TÉLÉCHARGEMENT DU BOT KERM MD V1
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
 app.get('/api/download-bot', async (req, res) => {
     try {
-        // Chemin vers ton fichier ZIP (à ajuster)
-        const filePath = path.join(__dirname, 'bots', 'KERM-MD-V1.zip');
+        // Nom exact du fichier avec majuscules et tirets
+        const fileName = 'KERM-MD-V1.zip';
         
-        // Vérifier si le fichier existe
-        if (!fs.existsSync(filePath)) {
+        // Chemins possibles
+        const possiblePaths = [
+            path.join(__dirname, 'public', 'downloads', fileName),
+            path.join(__dirname, 'bots', fileName),
+            path.join(__dirname, 'public', 'bots', fileName),
+            path.join(__dirname, fileName)
+        ];
+        
+        let filePath = null;
+        
+        // Chercher le fichier
+        for (const testPath of possiblePaths) {
+            console.log('🔍 Vérification:', testPath);
+            if (fs.existsSync(testPath)) {
+                filePath = testPath;
+                console.log('✅ Fichier trouvé à:', filePath);
+                break;
+            }
+        }
+        
+        if (!filePath) {
+            console.error('❌ Fichier non trouvé dans les chemins:', possiblePaths);
             return res.status(404).json({ 
                 success: false, 
-                error: 'Fichier non trouvé' 
+                error: 'Fichier non trouvé'
             });
         }
 
-        // Statistiques du fichier
         const stats = fs.statSync(filePath);
         
-        // En-têtes pour forcer le téléchargement
+        // Forcer le nom du fichier dans le téléchargement
         res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
         res.setHeader('Content-Type', 'application/zip');
         res.setHeader('Content-Length', stats.size);
         
-        // Envoyer le fichier
         const fileStream = fs.createReadStream(filePath);
         fileStream.pipe(res);
         
@@ -4119,6 +4137,43 @@ app.get('/api/download-bot', async (req, res) => {
             error: 'Erreur lors du téléchargement' 
         });
     }
+});
+
+// =============================================
+// ROUTE POUR TROUVER LE FICHIER
+// =============================================
+app.get('/api/find-bot', (req, res) => {
+    const fileName = 'KERM-MD-V1.zip';
+    
+    const paths = {
+        'public/downloads/': path.join(__dirname, 'public', 'downloads', fileName),
+        'bots/': path.join(__dirname, 'bots', fileName),
+        'public/bots/': path.join(__dirname, 'public', 'bots', fileName),
+        'racine/': path.join(__dirname, fileName),
+        '__dirname': __dirname
+    };
+    
+    const results = {};
+    
+    for (const [key, filePath] of Object.entries(paths)) {
+        if (key !== '__dirname') {
+            results[`exists_${key}`] = fs.existsSync(filePath);
+            results[`path_${key}`] = filePath;
+        }
+    }
+    
+    results.current_dir = __dirname;
+    results.files_in_current = fs.readdirSync(__dirname).filter(f => f.includes('.zip'));
+    
+    if (fs.existsSync(path.join(__dirname, 'public'))) {
+        results.files_in_public = fs.readdirSync(path.join(__dirname, 'public')).filter(f => f.includes('.zip'));
+    }
+    
+    if (fs.existsSync(path.join(__dirname, 'public', 'downloads'))) {
+        results.files_in_downloads = fs.readdirSync(path.join(__dirname, 'public', 'downloads')).filter(f => f.includes('.zip'));
+    }
+    
+    res.json(results);
 });
 
 // =============================================
