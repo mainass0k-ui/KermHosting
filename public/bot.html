@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="KERM MD V1 - Bot WhatsApp puissant avec plus de 200 commandes. Développé par Kerm avant la naissance de KermHosting.">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>KERM MD V1 - Bot WhatsApp</title>
+    
+    <style>
+        /* ===== VARIABLES (identiques au site) ===== */
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+        }
+
+        /* ===== SIDEBAR (identique aux autres pages) ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            transition: all 0.2s;
+        }
+
+        .close-sidebar:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 4px 8px;
+        }
+
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav li.active a {
+            color: white;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .sidebar-social {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .sidebar-social a {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-social a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-hover);
+        }
+
+        .top-bar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.625rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-sidebar);
+        }
+
+        .user-menu {
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        /* ===== NOTIFICATIONS PANEL ===== */
+        .notifications-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notifications-panel.active {
+            transform: translateX(0);
+        }
+
+        .notifications-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notifications-header h3 {
+            font-size: 1.2rem;
+        }
+
+        .notifications-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background: var(--bg-hover);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .notification-item.unread {
+            border-left-color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-glow), transparent);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== BOT HERO SECTION ===== */
+        .bot-hero {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            margin-bottom: 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .bot-badge i {
+            font-size: 1rem;
+        }
+
+        .bot-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .bot-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 32px;
+        }
+
+        /* ===== BOT STATS ===== */
+        .bot-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== BOT CARD PRINCIPALE ===== */
+        .bot-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 48px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bot-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+            animation: rotate 25s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .bot-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .bot-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bot-description {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bot-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bot-tag {
+            background: var(--bg-hover);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .bot-tag i {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+
+        /* ===== DOWNLOAD SECTION ===== */
+        .download-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+        }
+
+        .download-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .download-btn.primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .download-btn.secondary {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .download-btn.secondary:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .file-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .file-info i {
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        /* ===== SPECIFICATIONS ===== */
+        .specs-section {
+            margin-bottom: 48px;
+        }
+
+        .specs-title {
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .spec-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .spec-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .spec-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .spec-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .spec-label {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .spec-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== COMMANDES SECTION ===== */
+        .commands-section {
+            margin-bottom: 48px;
+        }
+
+        .commands-title {
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .commands-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .command-category {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .category-commands {
+            list-style: none;
+        }
+
+        .category-commands li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .category-commands li:last-child {
+            border-bottom: none;
+        }
+
+        .category-commands .command-name {
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .category-commands .command-desc {
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .commands-note {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ===== FEATURES GRID ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== INSTALLATION STEPS ===== */
+        .steps-section {
+            margin-bottom: 48px;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .step-code {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+            display: inline-block;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            margin-left: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ===== SCREENSHOTS ===== */
+        .screenshots-section {
+            margin-bottom: 48px;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .screenshot-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .screenshot-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .screenshot-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .screenshot-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== FAQ SECTION ===== */
+        .faq-section {
+            margin-bottom: 48px;
+        }
+
+        .faq-title {
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--primary);
+        }
+
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .faq-question i {
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius-xl);
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+            margin-bottom: 48px;
+        }
+
+        .cta-title {
+            font-size: 2.2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .cta-btn.primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .cta-btn.primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .cta-btn.secondary:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-4px);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            padding: 40px 16px 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .footer-logo i {
+            color: var(--primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 8px;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+
+        .toast.success {
+            background: rgba(16, 185, 129, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+
+        .toast.info {
+            background: rgba(59, 130, 246, 0.95);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .top-bar-logo {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .specs-grid,
+            .commands-grid,
+            .features-grid,
+            .screenshots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .bot-title {
+                font-size: 2.2rem;
+            }
+
+            .bot-name {
+                font-size: 2rem;
+            }
+
+            .specs-grid,
+            .commands-grid,
+            .features-grid,
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step-number {
+                align-self: flex-start;
+            }
+
+            .cta-title {
+                font-size: 1.8rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Invité</div>
+                    <div class="user-email" id="sidebarUserEmail">Non connecté</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>Tarifs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard" id="navDashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/transactions">
+                            <i class="fas fa-history"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile" id="navProfile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>KERM MD V1</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="navLogin">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="navRegister">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Inscription</span>
+                        </a>
+                    </li>
+                    <li class="divider" id="logoutDivider" style="display: none;"></li>
+                    <li id="navLogout" style="display: none;">
+                        <a href="#">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value">10K+</span>
+                        <span class="stat-label">Utilisateurs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">200+</span>
+                        <span class="stat-label">Commandes</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">2</span>
+                    </button>
+                    <div class="user-menu" id="userMenu">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notifications Panel -->
+            <div class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-header">
+                    <h3>Notifications</h3>
+                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="notifications-list">
+                    <div class="notification-item unread">
+                        <i class="fab fa-whatsapp notification-icon"></i>
+                        <div class="notification-content">
+                            <div class="notification-title">KERM MD V1 - Nouvelle version</div>
+                            <div class="notification-message">Mise à jour disponible avec 20 nouvelles commandes !</div>
+                            <div class="notification-time">Il y a 2 heures</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <i class="fas fa-download notification-icon"></i>
+                        <div class="notification-content">
+                            <div class="notification-title">Tutoriel disponible</div>
+                            <div class="notification-message">Guide d'installation vidéo maintenant disponible</div>
+                            <div class="notification-time">Hier</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Hero Section -->
+                <div class="bot-hero">
+                    <div class="bot-badge">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>KERM MD V1 - WhatsApp Bot</span>
+                    </div>
+                    <h1 class="bot-title">
+                        Le bot WhatsApp <span class="gradient-text">le plus puissant</span>
+                    </h1>
+                    <p class="bot-subtitle">
+                        Développé par Kerm avant même la naissance de KermHosting. Plus de 200 commandes, 
+                        une stabilité à toute épreuve et une communauté de milliers d'utilisateurs.
+                    </p>
+                    
+                    <!-- Stats -->
+                    <div class="bot-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">200+</div>
+                            <div class="stat-label">Commandes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Utilisateurs</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bot Card -->
+                <div class="bot-card">
+                    <div class="bot-avatar">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h2 class="bot-name">KERM MD V1</h2>
+                    <p class="bot-description">
+                        Un bot WhatsApp Multi-Device complet avec des fonctionnalités avancées : 
+                        téléchargement de vidéos/musiques, édition d'images, jeux, prévisions météo, 
+                        et bien plus encore. Compatible avec Node.js 20+.
+                    </p>
+                    
+                    <div class="bot-tags">
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> Multi-Device</span>
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> 200+ Commandes</span>
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> Open Source</span>
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> Node.js 20</span>
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> 1GB RAM min</span>
+                        <span class="bot-tag"><i class="fas fa-check-circle"></i> 4GB Stockage</span>
+                    </div>
+                </div>
+
+                <!-- Download Section -->
+                <div class="download-section">
+                    <h2 class="download-title">Télécharger <span class="gradient-text">KERM MD V1</span></h2>
+                    <p class="download-subtitle">
+                        Obtenez la dernière version du bot et rejoignez des milliers d'utilisateurs satisfaits
+                    </p>
+                    
+                    <div class="download-buttons">
+                        <a href="/downloads/kerm-md-v1.zip" class="download-btn primary" id="downloadBtn">
+                            <i class="fas fa-download"></i>
+                            Télécharger (ZIP)
+                        </a>
+                        <a href="https://github.com/hostt11" class="download-btn secondary" id="githubBtn">
+                            <i class="fab fa-github"></i>
+                            Voir sur GitHub
+                        </a>
+                    </div>
+                    <div class="file-info">
+                        <i class="fas fa-file-archive"></i> kerm-md-v1.zip • 45 MB • Version 1.0.0 • Node.js 20+
+                    </div>
+                </div>
+
+                <!-- Specifications -->
+                <div class="specs-section">
+                    <h2 class="specs-title">Spécifications <span class="gradient-text">techniques</span></h2>
+                    
+                    <div class="specs-grid">
+                        <div class="spec-card">
+                            <div class="spec-icon">
+                                <i class="fab fa-node-js"></i>
+                            </div>
+                            <div class="spec-value">20.x</div>
+                            <div class="spec-label">Node.js</div>
+                            <div class="spec-note">Version 20 ou supérieure requise</div>
+                        </div>
+                        
+                        <div class="spec-card">
+                            <div class="spec-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="spec-value">1 GB</div>
+                            <div class="spec-label">RAM Minimum</div>
+                            <div class="spec-note">2 GB recommandé pour performances optimales</div>
+                        </div>
+                        
+                        <div class="spec-card">
+                            <div class="spec-icon">
+                                <i class="fas fa-hdd"></i>
+                            </div>
+                            <div class="spec-value">4 GB</div>
+                            <div class="spec-label">Stockage</div>
+                            <div class="spec-note">Pour les médias et la base de données</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commandes Categories -->
+                <div class="commands-section">
+                    <h2 class="commands-title">Plus de <span class="gradient-text">200 commandes</span></h2>
+                    <p class="commands-subtitle">Organisées en catégories pour une utilisation intuitive</p>
+                    
+                    <div class="commands-grid">
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="category-title">Téléchargement</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.yt</span> <span class="command-desc">YouTube MP3/MP4</span></li>
+                                <li><span class="command-name">.fb</span> <span class="command-desc">Facebook Video</span></li>
+                                <li><span class="command-name">.ig</span> <span class="command-desc">Instagram</span></li>
+                                <li><span class="command-name">.tt</span> <span class="command-desc">TikTok</span></li>
+                                <li><span class="command-name">.tw</span> <span class="command-desc">Twitter/X</span></li>
+                                <li><span class="command-name">.pin</span> <span class="command-desc">Pinterest</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="category-title">Édition</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.toanime</span> <span class="command-desc">Photo en anime</span></li>
+                                <li><span class="command-name">.circle</span> <span class="command-desc">Photo ronde</span></li>
+                                <li><span class="command-name">.blur</span> <span class="command-desc">Flou artistique</span></li>
+                                <li><span class="command-name">.neon</span> <span class="command-desc">Effet néon</span></li>
+                                <li><span class="command-name">.pixel</span> <span class="command-desc">Pixelisation</span></li>
+                                <li><span class="command-name">.sepia</span> <span class="command-desc">Filtre sépia</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <div class="category-title">Jeux</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.tictactoe</span> <span class="command-desc">Morpion</span></li>
+                                <li><span class="command-name">.chess</span> <span class="command-desc">Échecs</span></li>
+                                <li><span class="command-name">.quiz</span> <span class="command-desc">Quiz culture</span></li>
+                                <li><span class="command-name">.rps</span> <span class="command-desc">Pierre-feuille</span></li>
+                                <li><span class="command-name">.hangman</span> <span class="command-desc">Pendu</span></li>
+                                <li><span class="command-name">.math</span> <span class="command-desc">Calcul mental</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-cloud-sun"></i>
+                                </div>
+                                <div class="category-title">Utilitaires</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.weather</span> <span class="command-desc">Météo</span></li>
+                                <li><span class="command-name">.translate</span> <span class="command-desc">Traduction</span></li>
+                                <li><span class="command-name">.define</span> <span class="command-desc">Dictionnaire</span></li>
+                                <li><span class="command-name">.calc</span> <span class="command-desc">Calculatrice</span></li>
+                                <li><span class="command-name">.qrcode</span> <span class="command-desc">Générer QR</span></li>
+                                <li><span class="command-name">.shorturl</span> <span class="command-desc">Raccourcir lien</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-film"></i>
+                                </div>
+                                <div class="category-title">Divertissement</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.movie</span> <span class="command-desc">Infos film</span></li>
+                                <li><span class="command-name">.anime</span> <span class="command-desc">Recherche anime</span></li>
+                                <li><span class="command-name">.joke</span> <span class="command-desc">Blague aléatoire</span></li>
+                                <li><span class="command-name">.fact</span> <span class="command-desc">Fait insolite</span></li>
+                                <li><span class="command-name">.quote</span> <span class="command-desc">Citation</span></li>
+                                <li><span class="command-name">.meme</span> <span class="command-desc">Mème aléatoire</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="command-category">
+                            <div class="category-header">
+                                <div class="category-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="category-title">Administration</div>
+                            </div>
+                            <ul class="category-commands">
+                                <li><span class="command-name">.ban</span> <span class="command-desc">Bannir membre</span></li>
+                                <li><span class="command-name">.kick</span> <span class="command-desc">Expulser</span></li>
+                                <li><span class="command-name">.promote</span> <span class="command-desc">Promouvoir admin</span></li>
+                                <li><span class="command-name">.demote</span> <span class="command-desc">Rétrograder</span></li>
+                                <li><span class="command-name">.group</span> <span class="command-desc">Paramètres groupe</span></li>
+                                <li><span class="command-name">.welcome</span> <span class="command-desc">Message bienvenue</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="commands-note">
+                        Et plus de 150 autres commandes... Le bot est constamment mis à jour !
+                    </p>
+                </div>
+
+                <!-- Features Grid -->
+                <h2 class="specs-title">Fonctionnalités <span class="gradient-text">principales</span></h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Ultra rapide</h3>
+                        <p>Réponses instantanées grâce à une architecture optimisée et légère.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Sécurisé</h3>
+                        <p>Connexion sécurisée, pas de stockage de données sensibles.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3>Multi-Device</h3>
+                        <p>Fonctionne sur tous vos appareils simultanément.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3>Base de données</h3>
+                        <p>Sauvegarde automatique des paramètres et préférences.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <h3>Extensible</h3>
+                        <p>Ajoutez facilement vos propres commandes et plugins.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Support 24/7</h3>
+                        <p>Communauté active et support technique réactif.</p>
+                    </div>
+                </div>
+
+                <!-- Installation Steps -->
+                <div class="steps-section">
+                    <h2 class="specs-title">Installation en <span class="gradient-text">4 étapes</span></h2>
+                    
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Installer Node.js 20+</h3>
+                                <p>Téléchargez et installez Node.js version 20 ou supérieure depuis nodejs.org</p>
+                                <code class="step-code">node --version</code>
+                                <button class="copy-btn" onclick="copyToClipboard('node --version')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Télécharger le bot</h3>
+                                <p>Téléchargez le fichier ZIP du bot et extrayez-le</p>
+                                <code class="step-code">unzip kerm-md-v1.zip -d ~/kerm-md</code>
+                                <button class="copy-btn" onclick="copyToClipboard('unzip kerm-md-v1.zip -d ~/kerm-md')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Installer les dépendances</h3>
+                                <p>Installez toutes les dépendances nécessaires</p>
+                                <code class="step-code">cd ~/kerm-md && npm install</code>
+                                <button class="copy-btn" onclick="copyToClipboard('cd ~/kerm-md && npm install')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Lancer le bot</h3>
+                                <p>Démarrez le bot et scannez le QR code avec WhatsApp</p>
+                                <code class="step-code">npm start</code>
+                                <button class="copy-btn" onclick="copyToClipboard('npm start')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screenshots (simulés) -->
+                <div class="screenshots-section">
+                    <h2 class="specs-title">Aperçu du <span class="gradient-text">bot</span></h2>
+                    
+                    <div class="screenshots-grid">
+                        <div class="screenshot-card">
+                            <div class="screenshot-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="screenshot-title">Commandes de téléchargement</div>
+                            <div class="screenshot-desc">YouTube, Instagram, TikTok, Facebook</div>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="screenshot-title">Édition d'images</div>
+                            <div class="screenshot-desc">Effets, filtres, transformations</div>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <div class="screenshot-title">Jeux interactifs</div>
+                            <div class="screenshot-desc">Jouez avec vos amis directement sur WhatsApp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="faq-section">
+                    <h2 class="faq-title">Questions <span class="gradient-text">fréquentes</span></h2>
+                    
+                    <div class="faq-grid">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Le bot est-il gratuit ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, KERM MD V1 est complètement gratuit et open-source. Vous pouvez l'utiliser sans aucune limite.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Puis-je l'héberger sur KermHosting ?
+                            </div>
+                            <div class="faq-answer">
+                                Absolument ! Nos plans 1GB (500 FCFA/semaine) sont parfaits pour héberger le bot avec Node.js 20.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Comment mettre à jour le bot ?
+                            </div>
+                            <div class="faq-answer">
+                                Téléchargez simplement la nouvelle version et remplacez les fichiers. Vos données sont sauvegardées.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Le bot fonctionne-t-il 24/7 ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui, si hébergé sur un serveur comme KermHosting, le bot tourne 24h/24 sans interruption.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Section -->
+                <div class="cta-section">
+                    <h2 class="cta-title">Prêt à utiliser KERM MD V1 ?</h2>
+                    <p class="cta-subtitle">
+                        Rejoignez des milliers d'utilisateurs qui utilisent déjà le bot au quotidien
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="#" class="cta-btn primary" id="finalDownloadBtn">
+                            <i class="fas fa-download"></i>
+                            Télécharger maintenant
+                        </a>
+                        <a href="/pricing" class="cta-btn secondary">
+                            <i class="fas fa-server"></i>
+                            Voir les offres d'hébergement
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <div class="footer-logo">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>KermHosting</span>
+                        </div>
+                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA.</p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <div class="footer-column">
+                            <h4>Produit</h4>
+                            <ul>
+                                <li><a href="/pricing">Tarifs</a></li>
+                                <li><a href="/buy-coins">Acheter des coins</a></li>
+                                <li><a href="/bot">KERM MD V1</a></li>
+                                <li><a href="#">Statut</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-column">
+                            <h4>Ressources</h4>
+                            <ul>
+                                <li><a href="/support">FAQ & Support</a></li>
+                                <li><a href="#">Documentation</a></li>
+                                <li><a href="#">Blog</a></li>
+                                <li><a href="#">Communauté</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-column">
+                            <h4>Légal</h4>
+                            <ul>
+                                <li><a href="#">CGU</a></li>
+                                <li><a href="#">Confidentialité</a></li>
+                                <li><a href="#">Mentions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2025 KermHosting. Tous droits réservés.</p>
+                    <div class="footer-social">
+                        <a href="wa.me/237659535227"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="https://github.com/hostt11"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        // ===== SIDEBAR FUNCTIONS =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== NOTIFICATIONS TOGGLE =====
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+
+        notificationBtn.addEventListener('click', () => {
+            notificationsPanel.classList.toggle('active');
+        });
+
+        closeNotifications.addEventListener('click', () => {
+            notificationsPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
+        // ===== COPY TO CLIPBOARD =====
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('success', 'Commande copiée !');
+            }).catch(() => {
+                showToast('error', 'Erreur lors de la copie');
+            });
+        }
+
+        // ===== TOAST =====
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ===== CHECK AUTH =====
+        function checkAuth() {
+            if (token) {
+                fetch('/api/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('sidebarUserName').textContent = data.user.username;
+                        document.getElementById('sidebarUserEmail').textContent = data.user.email;
+                        document.getElementById('sidebarUserBadge').textContent = data.user.role;
+                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                        
+                        document.getElementById('navLogin').style.display = 'none';
+                        document.getElementById('navRegister').style.display = 'none';
+                        document.getElementById('logoutDivider').style.display = 'block';
+                        document.getElementById('navLogout').style.display = 'block';
+                        document.getElementById('navDashboard').style.display = 'block';
+                        document.getElementById('navProfile').style.display = 'block';
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('token');
+                });
+            }
+        }
+
+        // ===== LOGOUT =====
+        document.getElementById('navLogout')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.reload();
+        });
+
+        // ===== NAVIGATION =====
+        document.getElementById('navLogin')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = '/login';
+        });
+
+        document.getElementById('navRegister')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = '/register';
+        });
+
+        // ===== DOWNLOAD BUTTON =====
+        document.getElementById('downloadBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('info', 'Préparation du téléchargement...');
+            
+            // Simulation - à remplacer par vrai lien
+            setTimeout(() => {
+                showToast('success', 'Téléchargement démarré !');
+                // window.location.href = '/downloads/kerm-md-v1.zip';
+            }, 1500);
+        });
+
+        document.getElementById('finalDownloadBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('info', 'Préparation du téléchargement...');
+            
+            setTimeout(() => {
+                showToast('success', 'Téléchargement démarré !');
+            }, 1500);
+        });
+
+        document.getElementById('githubBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open('https://github.com/kermhosting/kerm-md-v1', '_blank');
+        });
+
+        // ===== INIT =====
+        checkAuth();
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebarFunc();
+            }
+        });
+
+        // Animation d'entrée
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.feature-card, .spec-card, .command-category, .step, .faq-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.5s ease-out';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Exposer les fonctions globalement
+        window.copyToClipboard = copyToClipboard;
+        window.showToast = showToast;
+    </script>
+</body>
+</html>
