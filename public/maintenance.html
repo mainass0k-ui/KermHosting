@@ -315,12 +315,8 @@
             </div>
 
             <div class="countdown-container">
-                <div class="countdown-title">Retour dans</div>
+                <div class="countdown-title">Retour estimé dans</div>
                 <div class="countdown" id="countdown">
-                    <div class="countdown-item">
-                        <div class="countdown-number" id="days">00</div>
-                        <div class="countdown-label">Jours</div>
-                    </div>
                     <div class="countdown-item">
                         <div class="countdown-number" id="hours">00</div>
                         <div class="countdown-label">Heures</div>
@@ -349,37 +345,36 @@
                         <i class="fas fa-envelope"></i>
                     </a>
                 </div>
-                <button class="refresh-btn" onclick="checkStatus()">
+                <button class="refresh-btn" onclick="window.location.reload()">
                     <i class="fas fa-sync-alt"></i>
-                    Vérifier le statut
+                    Actualiser
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        let countdownInterval;
-
         async function loadMaintenanceInfo() {
             try {
                 const response = await fetch('/api/maintenance/status');
                 const data = await response.json();
 
-                if (data.success && data.maintenance) {
+                if (data.success && data.maintenance && data.maintenance.is_enabled) {
                     const m = data.maintenance;
                     
-                    document.getElementById('maintenanceTitle').textContent = m.title;
-                    document.getElementById('maintenanceMessage').textContent = m.message;
-                    document.getElementById('estimatedDuration').textContent = m.estimated_duration;
+                    document.getElementById('maintenanceTitle').textContent = m.title || 'Maintenance en cours';
+                    document.getElementById('maintenanceMessage').textContent = m.message || 'Notre site est actuellement en maintenance.';
+                    document.getElementById('estimatedDuration').textContent = m.estimated_duration || 'Quelques heures';
                     
-                    document.getElementById('startTime').textContent = new Date(m.start_time).toLocaleString('fr-FR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        day: '2-digit',
-                        month: '2-digit'
-                    });
+                    if (m.start_time) {
+                        document.getElementById('startTime').textContent = new Date(m.start_time).toLocaleString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            day: '2-digit',
+                            month: '2-digit'
+                        });
+                    }
 
-                    // Mettre à jour les liens sociaux
                     if (m.social_discord) {
                         document.getElementById('discordLink').href = m.social_discord;
                     }
@@ -390,10 +385,12 @@
                         document.getElementById('emailLink').href = `mailto:${m.contact_email}`;
                     }
 
-                    // Démarrer le compte à rebours
                     if (m.expected_end_time) {
                         startCountdown(new Date(m.expected_end_time));
                     }
+                } else {
+                    // Si la maintenance est terminée, rediriger vers l'accueil
+                    window.location.href = '/';
                 }
             } catch (error) {
                 console.error('Erreur chargement maintenance:', error);
@@ -401,60 +398,34 @@
         }
 
         function startCountdown(endTime) {
-            if (countdownInterval) clearInterval(countdownInterval);
-
             function updateCountdown() {
                 const now = new Date();
                 const diff = endTime - now;
 
                 if (diff <= 0) {
-                    document.getElementById('days').textContent = '00';
                     document.getElementById('hours').textContent = '00';
                     document.getElementById('minutes').textContent = '00';
                     document.getElementById('seconds').textContent = '00';
                     
                     // Vérifier si la maintenance est terminée
-                    checkStatus();
+                    setTimeout(() => window.location.reload(), 5000);
                     return;
                 }
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const hours = Math.floor(diff / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                document.getElementById('days').textContent = days.toString().padStart(2, '0');
                 document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
                 document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
                 document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
             }
 
             updateCountdown();
-            countdownInterval = setInterval(updateCountdown, 1000);
+            setInterval(updateCountdown, 1000);
         }
 
-        async function checkStatus() {
-            try {
-                const response = await fetch('/api/maintenance/status');
-                const data = await response.json();
-
-                if (!data.maintenance?.is_enabled) {
-                    // Maintenance terminée, rediriger vers l'accueil
-                    window.location.href = '/';
-                } else {
-                    // Recharger les infos
-                    loadMaintenanceInfo();
-                }
-            } catch (error) {
-                console.error('Erreur vérification statut:', error);
-            }
-        }
-
-        // Charger au démarrage
         loadMaintenanceInfo();
-
-        // Vérifier toutes les 30 secondes
-        setInterval(checkStatus, 30000);
     </script>
 </body>
 </html>
