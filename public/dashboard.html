@@ -616,11 +616,14 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
         }
 
         .btn-outline {
@@ -660,10 +663,20 @@
         .btn-danger {
             background: var(--danger);
             color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .btn-danger:hover {
             background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* ===== QUICK ACTIONS ===== */
@@ -1720,9 +1733,9 @@
                         <i class="fas fa-server"></i>
                         Mes serveurs
                     </h2>
-                    <a href="/pricing" class="btn btn-primary btn-small">
-                        <i class="fas fa-plus"></i>
-                        Nouveau
+                    <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <i class="fas fa-plus-circle"></i>
+                        Nouveau serveur
                     </a>
                 </div>
 
@@ -1739,6 +1752,15 @@
                         <i class="fas fa-history"></i>
                         Activité récente
                     </h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline btn-small" id="refreshActivitiesBtn" title="Actualiser">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" id="clearActivitiesBtn" title="Tout supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                            Effacer
+                        </button>
+                    </div>
                 </div>
 
                 <div class="activity-list" id="activityContainer">
@@ -2585,6 +2607,8 @@
                             icon = 'fa-user-edit';
                         } else if (activity.activity_type.includes('credentials')) {
                             icon = 'fa-key';
+                        } else if (activity.activity_type.includes('activities_cleared')) {
+                            icon = 'fa-trash-alt';
                         }
                     }
 
@@ -2626,6 +2650,46 @@
                 `;
             }
         }
+
+        // ===== SUPPRIMER TOUTES LES ACTIVITÉS =====
+        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => {
+            if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer tout l\'historique des activités ? Cette action est irréversible.')) {
+                return;
+            }
+
+            const clearBtn = document.getElementById('clearActivitiesBtn');
+            const originalText = clearBtn.innerHTML;
+            clearBtn.disabled = true;
+            clearBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suppression...';
+
+            try {
+                const res = await fetch('/api/user/activities', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', 'Historique effacé avec succès');
+                    loadActivities(); // Recharger la liste vide
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la suppression');
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                showToast('error', 'Erreur réseau');
+            } finally {
+                clearBtn.disabled = false;
+                clearBtn.innerHTML = originalText;
+            }
+        });
+
+        // ===== ACTUALISER LES ACTIVITÉS =====
+        document.getElementById('refreshActivitiesBtn').addEventListener('click', () => {
+            loadActivities();
+            showToast('info', 'Actualisation...');
+        });
 
         // ===== CREATE SERVER =====
         function prepareFreeServer() {
