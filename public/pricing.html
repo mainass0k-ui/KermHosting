@@ -1710,10 +1710,10 @@
                         <div class="comparison-cell">4 GB</div>
 
                         <div class="comparison-cell">Stockage SSD</div>
+                        <div class="comparison-cell">1 GB</div>
+                        <div class="comparison-cell">3 GB</div>
                         <div class="comparison-cell">5 GB</div>
                         <div class="comparison-cell">10 GB</div>
-                        <div class="comparison-cell">20 GB</div>
-                        <div class="comparison-cell">40 GB</div>
 
                         <div class="comparison-cell">CPU</div>
                         <div class="comparison-cell">50%</div>
@@ -2115,24 +2115,24 @@
             updatePrices();
         });
 
-        // ===== PLANS DATA AVEC DURÉES CORRECTES =====
+        // ===== PLANS DATA AVEC NOUVEAUX DISQUES =====
         const PLANS = {
             'free': {
                 name: 'Free',
                 memory: 256,
-                disk: 5120,
+                disk: 1024,        // ✅ 1 GB
                 cpu: 50,
                 price_weekly: 0,
                 price_monthly: 0,
                 coins_needed: 0,
-                duration_days: 1, // 24h
+                duration_days: 1,
                 features: [
                     '256 MB RAM', 
-                    '5 GB SSD', 
+                    '1 GB SSD',     // ✅ Mis à jour
                     '50% CPU', 
                     '1 DB', 
                     '1 backup',
-                    '⏰ Expire après 24h'
+                    '⏰ 24h d\'essai'
                 ],
                 icon: 'fa-gift',
                 color: 'gray'
@@ -2140,15 +2140,15 @@
             '1gb': {
                 name: 'Starter',
                 memory: 1024,
-                disk: 10240,
+                disk: 3072,        // ✅ 3 GB
                 cpu: 100,
                 price_weekly: 500,
-                price_monthly: 1800, // 500 × 4 -20% = 1600
+                price_monthly: 1600, // 500 × 4 = 2000, -20% = 1600
                 coins_needed: 100,
                 duration_days: 7,
                 features: [
                     '1 GB RAM', 
-                    '10 GB SSD', 
+                    '3 GB SSD',     // ✅ Mis à jour
                     '100% CPU', 
                     '3 DB', 
                     '3 backups',
@@ -2162,15 +2162,15 @@
             '2gb': {
                 name: 'Basic',
                 memory: 2048,
-                disk: 20480,
+                disk: 5120,        // ✅ 5 GB
                 cpu: 200,
                 price_weekly: 800,
-                price_monthly: 2900, // 800 × 4 -10% = 2880
+                price_monthly: 2600, // 800 × 4 = 3200, -20% = 2560 ≈ 2600
                 coins_needed: 160,
                 duration_days: 7,
                 features: [
                     '2 GB RAM', 
-                    '20 GB SSD', 
+                    '5 GB SSD',     // ✅ Mis à jour
                     '200% CPU', 
                     '5 DB', 
                     '5 backups',
@@ -2183,23 +2183,47 @@
             '4gb': {
                 name: 'Pro',
                 memory: 4096,
-                disk: 40960,
+                disk: 10240,       // ✅ 10 GB
                 cpu: 400,
                 price_weekly: 1300,
-                price_monthly: 4700, // 1300 × 4 -10% = 4680
+                price_monthly: 4200, // 1300 × 4 = 5200, -20% = 4160 ≈ 4200
                 coins_needed: 260,
                 duration_days: 7,
                 features: [
                     '4 GB RAM', 
-                    '40 GB SSD', 
+                    '10 GB SSD',    // ✅ Mis à jour
                     '400% CPU', 
                     '10 DB', 
                     '10 backups',
                     '📅 7 jours',
-                    'Support VIP 24/7'
+                    'Support VIP 24/7',
+                    'Domaine gratuit'
                 ],
                 icon: 'fa-crown',
                 color: 'purple'
+            },
+            '8gb': {
+                name: 'Business',
+                memory: 8192,
+                disk: 20480,       // ✅ 20 GB
+                cpu: 800,
+                price_weekly: 1700,
+                price_monthly: 5500, // 1700 × 4 = 6800, -20% = 5440 ≈ 5500
+                coins_needed: 340,
+                duration_days: 7,
+                features: [
+                    '8 GB RAM', 
+                    '20 GB SSD',    // ✅ Mis à jour
+                    '800% CPU', 
+                    '15 DB', 
+                    '15 backups',
+                    '📅 7 jours',
+                    'Support VIP 24/7',
+                    'Domaine gratuit',
+                    'SSL dédié'
+                ],
+                icon: 'fa-star',
+                color: 'gold'
             }
         };
 
