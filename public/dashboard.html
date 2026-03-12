@@ -1894,14 +1894,14 @@
             window.location.href = '/login';
         }
 
-         // ===== CONSTANTES ===== 
-const PLANS = {
-    'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0, duration: 1 },
-    '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 },
-    '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 },
-    '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 },
-    '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 }
-};
+        // ===== CONSTANTES =====
+        const PLANS = {
+            'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0, duration: 1 },
+            '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 },
+            '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 },
+            '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 },
+            '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 }
+        };
 
         // ===== VARIABLES GLOBALES =====
         let userData = null;
@@ -2516,46 +2516,96 @@ const PLANS = {
             }
         }
 
-        // ===== ACTIVITIES =====
+        // ===== ACTIVITIES CORRIGÉE =====
         async function loadActivities() {
             try {
                 const container = document.getElementById('activityContainer');
                 
-                const activities = [];
+                // Afficher un loader
+                container.innerHTML = `
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement des activités...</p>
+                    </div>
+                `;
 
-                if (userServers.length > 0) {
-                    activities.push({
-                        icon: 'fa-plus-circle',
-                        description: `Création du serveur "${userServers[0].server_name}"`,
-                        time: 'Il y a 1j',
-                        coins: -PLANS[userServers[0].server_type]?.coins || 0
-                    });
+                // Appel API pour récupérer les vraies activités
+                const res = await fetch('/api/user/activities', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+
+                if (!data.success || !data.activities || data.activities.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 20px;">
+                            <i class="fas fa-history" style="font-size: 2rem;"></i>
+                            <h3 style="font-size: 1rem; margin: 8px 0;">Aucune activité récente</h3>
+                            <p style="font-size: 0.8rem;">Les actions que vous effectuerez apparaîtront ici.</p>
+                        </div>
+                    `;
+                    return;
                 }
 
-                activities.push({
-                    icon: 'fa-calendar-check',
-                    description: 'Connexion quotidienne',
-                    time: 'Il y a 2h',
-                    coins: 5
-                });
+                // Fonction pour formater le temps relatif (il y a X minutes, etc.)
+                function formatRelativeTime(dateString) {
+                    const now = new Date();
+                    const activityDate = new Date(dateString);
+                    const diffMs = now - activityDate;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    const diffDays = Math.floor(diffMs / 86400000);
 
+                    if (diffMins < 1) return "À l'instant";
+                    if (diffMins < 60) return `Il y a ${diffMins} min`;
+                    if (diffHours < 24) return `Il y a ${diffHours} h`;
+                    if (diffDays === 1) return "Hier";
+                    return `Il y a ${diffDays} jours`;
+                }
+
+                // Générer le HTML des activités
                 let html = '';
 
-                activities.forEach(activity => {
-                    const coinsClass = activity.coins > 0 ? 'positive' : activity.coins < 0 ? 'negative' : '';
+                data.activities.forEach(activity => {
+                    // Déterminer l'icône en fonction du type d'activité
+                    let icon = 'fa-history';
+                    if (activity.activity_type) {
+                        if (activity.activity_type.includes('server')) {
+                            if (activity.activity_type.includes('creation')) icon = 'fa-plus-circle';
+                            else if (activity.activity_type.includes('start')) icon = 'fa-play';
+                            else if (activity.activity_type.includes('stop')) icon = 'fa-stop';
+                            else if (activity.activity_type.includes('restart')) icon = 'fa-sync-alt';
+                            else if (activity.activity_type.includes('renewal')) icon = 'fa-sync-alt';
+                            else icon = 'fa-server';
+                        } else if (activity.activity_type.includes('daily')) {
+                            icon = 'fa-calendar-check';
+                        } else if (activity.activity_type.includes('coins')) {
+                            icon = 'fa-coins';
+                        } else if (activity.activity_type.includes('profile')) {
+                            icon = 'fa-user-edit';
+                        } else if (activity.activity_type.includes('credentials')) {
+                            icon = 'fa-key';
+                        }
+                    }
+
+                    // Déterminer la classe des coins (positif/négatif)
+                    const coinsClass = activity.coins_earned > 0 ? 'positive' : 
+                                      activity.coins_earned < 0 ? 'negative' : '';
+
+                    const timeAgo = formatRelativeTime(activity.created_at);
 
                     html += `
                         <div class="activity-item">
                             <div class="activity-icon">
-                                <i class="fas ${activity.icon}"></i>
+                                <i class="fas ${icon}"></i>
                             </div>
                             <div class="activity-content">
-                                <div class="activity-title">${activity.description}</div>
-                                <div class="activity-time">${activity.time}</div>
+                                <div class="activity-title">${activity.description || 'Action inconnue'}</div>
+                                <div class="activity-time">${timeAgo}</div>
                             </div>
-                            ${activity.coins !== 0 ? `
+                            ${activity.coins_earned !== 0 ? `
                                 <div class="activity-coins ${coinsClass}">
-                                    ${activity.coins > 0 ? '+' : ''}${activity.coins}
+                                    ${activity.coins_earned > 0 ? '+' : ''}${activity.coins_earned}
                                 </div>
                             ` : ''}
                         </div>
@@ -2563,8 +2613,17 @@ const PLANS = {
                 });
 
                 container.innerHTML = html;
+
             } catch (error) {
-                console.error('Erreur chargement activités:', error);
+                console.error('❌ Erreur chargement activités:', error);
+                
+                // En cas d'erreur, afficher un message
+                document.getElementById('activityContainer').innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                        <p style="margin-top: 8px;">Erreur de chargement</p>
+                    </div>
+                `;
             }
         }
 
