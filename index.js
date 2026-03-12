@@ -95,7 +95,7 @@ const PLANS = {
         id: 'free',
         name: 'Free',
         memory: 256,
-        disk: 5120,
+        disk: 1024,        // 1 GB
         cpu: 50,
         swap: 0,
         io: 500,
@@ -106,7 +106,7 @@ const PLANS = {
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '256 MB RAM',
-            '5 GB Stockage SSD',
+            '1 GB Stockage SSD',
             '50% CPU',
             '24h d\'essai',
             '1 base de données',
@@ -119,7 +119,7 @@ const PLANS = {
         id: '1gb',
         name: 'Starter',
         memory: 1024,
-        disk: 10240,
+        disk: 3072,        // 3 GB
         cpu: 100,
         swap: 0,
         io: 500,
@@ -130,7 +130,7 @@ const PLANS = {
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '1 GB RAM DDR4',
-            '10 GB Stockage NVMe',
+            '3 GB Stockage NVMe',
             '100% CPU',
             '30 jours',
             '3 bases de données',
@@ -145,7 +145,7 @@ const PLANS = {
         id: '2gb',
         name: 'Basic',
         memory: 2048,
-        disk: 20480,
+        disk: 5120,        // 5 GB
         cpu: 200,
         swap: 0,
         io: 500,
@@ -156,7 +156,7 @@ const PLANS = {
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '2 GB RAM DDR4',
-            '20 GB Stockage NVMe',
+            '5 GB Stockage NVMe',
             '200% CPU',
             '30 jours',
             '5 bases de données',
@@ -170,7 +170,7 @@ const PLANS = {
         id: '4gb',
         name: 'Pro',
         memory: 4096,
-        disk: 40960,
+        disk: 10240,       // 10 GB
         cpu: 400,
         swap: 0,
         io: 500,
@@ -181,7 +181,7 @@ const PLANS = {
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '4 GB RAM DDR4',
-            '40 GB Stockage NVMe',
+            '10 GB Stockage NVMe',
             '400% CPU',
             '30 jours',
             '10 bases de données',
@@ -196,7 +196,7 @@ const PLANS = {
         id: '8gb',
         name: 'Business',
         memory: 8192,
-        disk: 81920,
+        disk: 20480,       // 20 GB
         cpu: 800,
         swap: 0,
         io: 500,
@@ -207,7 +207,7 @@ const PLANS = {
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
         features: [
             '8 GB RAM DDR4',
-            '80 GB Stockage NVMe',
+            '20 GB Stockage NVMe',
             '800% CPU',
             '30 jours',
             '15 bases de données',
@@ -261,66 +261,6 @@ const COIN_PACKS = {
 };
 
 // =============================================
-// MIDDLEWARE DE MAINTENANCE (DÉFINI AVANT SON UTILISATION)
-// =============================================
-const maintenanceMiddleware = async (req, res, next) => {
-    // Pages autorisées même en maintenance
-    const allowedPaths = [
-        '/admin',
-        '/api/admin/',
-        '/api/maintenance/status',
-        '/maintenance',
-        '/login',
-        '/api/login',
-        '/api/register',
-        '/api/health'
-    ];
-
-    // Vérifier si la route est autorisée
-    const isAllowed = allowedPaths.some(path => 
-        req.path.startsWith(path) || req.path === '/'
-    );
-
-    if (isAllowed) {
-        return next();
-    }
-
-    try {
-        // Vérifier si la maintenance est active
-        const { data: maintenance } = await supabase
-            .from('maintenance_settings')
-            .select('*')
-            .eq('id', 1)
-            .maybeSingle();
-
-        if (maintenance?.is_enabled) {
-            // Si c'est une requête API, retourner une erreur
-            if (req.path.startsWith('/api/')) {
-                return res.status(503).json({
-                    success: false,
-                    error: 'Site en maintenance',
-                    maintenance: {
-                        title: maintenance.title,
-                        message: maintenance.message,
-                        expected_end: maintenance.expected_end_time,
-                        estimated_duration: maintenance.estimated_duration
-                    },
-                    code: 'MAINTENANCE_MODE'
-                });
-            }
-
-            // Sinon, rediriger vers la page de maintenance
-            return res.redirect('/maintenance');
-        }
-    } catch (error) {
-        console.error('❌ Erreur middleware maintenance:', error);
-    }
-
-    next();
-};
-
-
-// =============================================
 // MIDDLEWARE
 // =============================================
 
@@ -330,9 +270,6 @@ app.use(cors({
     origin: SITE_CONFIG.url,
     credentials: true
 }));
-
-app.use(maintenanceMiddleware);
-
 app.use(express.static('public'));
 
 const upload = multer({
@@ -4148,118 +4085,46 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
-// ROUTES DE MAINTENANCE
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1 CORRIGÉE
 // =============================================
-
-// Obtenir le statut de la maintenance (public)
-app.get('/api/maintenance/status', async (req, res) => {
+app.get('/api/download-bot', async (req, res) => {
     try {
-        const { data: maintenance, error } = await supabase
-            .from('maintenance_settings')
-            .select('*')
-            .eq('id', 1)
-            .single();
-
-        if (error) {
-            return res.json({ 
-                success: true, 
-                maintenance: { is_enabled: false } 
-            });
-        }
-
-        res.json({ 
-            success: true, 
-            maintenance: {
-                is_enabled: maintenance.is_enabled,
-                title: maintenance.title,
-                message: maintenance.message,
-                start_time: maintenance.start_time,
-                expected_end_time: maintenance.expected_end_time,
-                estimated_duration: maintenance.estimated_duration,
-                contact_email: maintenance.contact_email,
-                social_discord: maintenance.social_discord,
-                social_whatsapp: maintenance.social_whatsapp
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Récupérer les paramètres de maintenance (admin)
-app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: maintenance, error } = await supabase
-            .from('maintenance_settings')
-            .select('*')
-            .eq('id', 1)
-            .single();
-
-        if (error) throw error;
-        res.json({ success: true, maintenance });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Mettre à jour les paramètres de maintenance (admin)
-app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const {
-            is_enabled,
-            title,
-            message,
-            expected_end_time,
-            estimated_duration,
-            contact_email,
-            social_discord,
-            social_whatsapp
-        } = req.body;
-
-        const updates = {
-            updated_by: req.user.id,
-            updated_at: new Date().toISOString()
-        };
-
-        if (is_enabled !== undefined) {
-            updates.is_enabled = is_enabled;
-            if (is_enabled) {
-                updates.start_time = new Date().toISOString();
+        const fileName = 'KERM-MD-V1.zip';
+        
+        // Chemins à vérifier
+        const possiblePaths = [
+            path.join(__dirname, 'public', 'downloads', fileName),
+            path.join(__dirname, 'bots', fileName),
+            path.join(__dirname, fileName)
+        ];
+        
+        let filePath = null;
+        for (const testPath of possiblePaths) {
+            if (fs.existsSync(testPath)) {
+                filePath = testPath;
+                break;
             }
         }
-        if (title !== undefined) updates.title = title;
-        if (message !== undefined) updates.message = message;
-        if (expected_end_time !== undefined) updates.expected_end_time = expected_end_time;
-        if (estimated_duration !== undefined) updates.estimated_duration = estimated_duration;
-        if (contact_email !== undefined) updates.contact_email = contact_email;
-        if (social_discord !== undefined) updates.social_discord = social_discord;
-        if (social_whatsapp !== undefined) updates.social_whatsapp = social_whatsapp;
-
-        const { data, error } = await supabase
-            .from('maintenance_settings')
-            .update(updates)
-            .eq('id', 1)
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        // Journaliser l'action
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'maintenance_update',
-                description: `Modification maintenance: ${is_enabled ? 'Activée' : 'Désactivée'}`,
-                metadata: updates,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, maintenance: data });
+        
+        if (!filePath) {
+            return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
+        }
+        
+        // Lire le fichier en buffer
+        const fileBuffer = fs.readFileSync(filePath);
+        
+        // Configuration des headers pour forcer le téléchargement
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
+        res.setHeader('Content-Length', fileBuffer.length);
+        res.setHeader('Cache-Control', 'no-cache');
+        
+        // Envoyer le buffer
+        res.end(fileBuffer);
+        
     } catch (error) {
-        console.error('❌ Erreur maintenance:', error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('❌ Erreur:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
@@ -4283,9 +4148,6 @@ app.get('/email-verification', (req, res) => res.sendFile(path.join(__dirname, '
 app.get('/support', (req, res) => res.sendFile(path.join(__dirname, 'public', 'support.html')));
 app.get('/transactions', (req, res) => res.sendFile(path.join(__dirname, 'public', 'transactions.html')));
 app.get('/bot', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bot.html')));
-app.get('/maintenance', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'maintenance.html'));
-});
 app.get('/server/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'view.html')));
 app.get('/server/:id/files', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'files.html')));
 
