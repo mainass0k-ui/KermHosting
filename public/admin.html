@@ -7,7 +7,7 @@
     <meta name="description" content="Administration KermHosting - Gérez les utilisateurs et serveurs">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes -->
+    <!-- Favicon / Icônes (ajoutées) -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -968,220 +968,6 @@
             font-size: 1rem;
         }
 
-        /* ===== MAINTENANCE SECTION ===== */
-        .maintenance-section {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            border: 1px solid var(--border-color);
-        }
-
-        .maintenance-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .maintenance-header h2 {
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .maintenance-header h2 i {
-            color: var(--primary);
-        }
-
-        .maintenance-toggle {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border-color);
-            transition: .3s;
-            border-radius: 30px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 24px;
-            width: 24px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(30px);
-        }
-
-        .toggle-status {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .toggle-status.active {
-            color: var(--danger);
-        }
-
-        .toggle-status.inactive {
-            color: var(--success);
-        }
-
-        .maintenance-preview {
-            background: var(--bg-hover);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 24px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .preview-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            color: var(--primary);
-        }
-
-        .preview-header i {
-            font-size: 1.5rem;
-        }
-
-        .preview-header h3 {
-            font-size: 1.2rem;
-        }
-
-        .preview-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        .preview-title {
-            font-size: 1.5rem;
-            font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-
-        .preview-message {
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-
-        .preview-info {
-            display: flex;
-            gap: 24px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .preview-info-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-        }
-
-        .preview-info-item i {
-            color: var(--primary);
-        }
-
-        .maintenance-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .form-group label i {
-            color: var(--primary);
-        }
-
-        .form-input, .form-textarea {
-            padding: 12px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            width: 100%;
-        }
-
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 16px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
         /* ===== MODALS OPTIMISÉS ===== */
         .modal {
             position: fixed;
@@ -1571,10 +1357,6 @@
                 left: auto;
                 right: 20px;
             }
-
-            .form-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         @media (min-width: 1024px) {
@@ -1851,11 +1633,11 @@
                     <div class="tab" onclick="switchTab('servers')">Serveurs</div>
                     <div class="tab" onclick="switchTab('transactions')">Transactions</div>
                     <div class="tab" onclick="switchTab('financial')">Finances</div>
+                    <div class="tab" onclick="switchTab('pterodactyl')">Pterodactyl</div>
                     <div class="tab" onclick="switchTab('logs')">Logs</div>
-                    <div class="tab" onclick="switchTab('maintenance')">🔧 Maintenance</div>
                 </div>
 
-                <!-- Tab: Utilisateurs -->
+                <!-- Tab: Utilisateurs (OPTIMISÉ) -->
                 <div class="tab-pane active" id="tab-users">
                     <div class="search-bar">
                         <div class="search-row">
@@ -2075,6 +1857,71 @@
                     </div>
                 </div>
 
+                <!-- Tab: Pterodactyl -->
+                <div class="tab-pane" id="tab-pterodactyl">
+                    <div class="stats-grid" style="margin-bottom: 16px;">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="pteroNodes">0</div>
+                            <div class="stat-label">Nœuds</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="pteroUsers">0</div>
+                            <div class="stat-label">Utilisateurs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="pteroTotalServers">0</div>
+                            <div class="stat-label">Serveurs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="pteroLoad">0%</div>
+                            <div class="stat-label">Charge</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nœud</th>
+                                    <th>RAM</th>
+                                    <th>Disque</th>
+                                    <th>Serveurs</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pteroNodesBody">
+                                <tr>
+                                    <td colspan="6" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des nœuds...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Tab: Logs Admin -->
                 <div class="tab-pane" id="tab-logs">
                     <div class="search-bar">
@@ -2116,120 +1963,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-
-                <!-- Tab: Maintenance (NOUVEAU) -->
-                <div class="tab-pane" id="tab-maintenance">
-                    <div class="maintenance-section">
-                        <div class="maintenance-header">
-                            <h2>
-                                <i class="fas fa-tools"></i>
-                                Mode Maintenance
-                            </h2>
-                            <div class="maintenance-toggle">
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenance()">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                                <span class="toggle-status" id="maintenanceStatus">Inactive</span>
-                            </div>
-                        </div>
-
-                        <!-- Aperçu en temps réel -->
-                        <div class="maintenance-preview" id="maintenancePreview" style="display: none;">
-                            <div class="preview-header">
-                                <i class="fas fa-eye"></i>
-                                <h3>Aperçu de la page de maintenance</h3>
-                            </div>
-                            <div class="preview-content">
-                                <div class="preview-title" id="previewTitle">🚧 Maintenance en cours</div>
-                                <div class="preview-message" id="previewMessage">Notre site est actuellement en maintenance pour vous offrir une meilleure expérience.</div>
-                                <div class="preview-info">
-                                    <div class="preview-info-item">
-                                        <i class="fas fa-clock"></i>
-                                        <span>Fin estimée: <span id="previewEndTime">-</span></span>
-                                    </div>
-                                    <div class="preview-info-item">
-                                        <i class="fas fa-hourglass-half"></i>
-                                        <span>Durée: <span id="previewDuration">-</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Formulaire de configuration -->
-                        <div class="maintenance-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-heading"></i>
-                                        Titre de la maintenance
-                                    </label>
-                                    <input type="text" class="form-input" id="maintenanceTitle" placeholder="Ex: 🚧 Maintenance en cours" value="🚧 Maintenance en cours">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-clock"></i>
-                                        Heure de fin estimée
-                                    </label>
-                                    <input type="datetime-local" class="form-input" id="maintenanceEndTime">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-hourglass-half"></i>
-                                        Durée estimée
-                                    </label>
-                                    <input type="text" class="form-input" id="maintenanceDuration" placeholder="Ex: 2 heures" value="2 heures">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-envelope"></i>
-                                        Email de contact
-                                    </label>
-                                    <input type="email" class="form-input" id="maintenanceEmail" placeholder="support@kermhosting.com" value="support@kermhosting.com">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fab fa-discord"></i>
-                                        Lien Discord
-                                    </label>
-                                    <input type="url" class="form-input" id="maintenanceDiscord" placeholder="https://discord.gg/kermhosting" value="https://discord.gg/kermhosting">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fab fa-whatsapp"></i>
-                                        Lien WhatsApp
-                                    </label>
-                                    <input type="url" class="form-input" id="maintenanceWhatsapp" placeholder="https://wa.me/237600000000" value="https://wa.me/237600000000">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>
-                                    <i class="fas fa-comment"></i>
-                                    Message de maintenance
-                                </label>
-                                <textarea class="form-textarea" id="maintenanceMessage" placeholder="Expliquez la raison de la maintenance...">Notre site est actuellement en maintenance pour vous offrir une meilleure expérience. Nous travaillons à améliorer nos services et serons de retour très bientôt.</textarea>
-                            </div>
-
-                            <div class="form-actions">
-                                <button class="btn btn-outline" onclick="resetMaintenanceForm()">
-                                    <i class="fas fa-undo"></i>
-                                    Réinitialiser
-                                </button>
-                                <button class="btn btn-primary" onclick="saveMaintenanceSettings()">
-                                    <i class="fas fa-save"></i>
-                                    Enregistrer
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -2433,15 +2166,6 @@
         let currentUserId = null;
         let currentServerId = null;
         let charts = {};
-        let maintenanceSettings = {
-            is_enabled: false,
-            title: '🚧 Maintenance en cours',
-            message: 'Notre site est actuellement en maintenance pour vous offrir une meilleure expérience.',
-            estimated_duration: '2 heures',
-            contact_email: 'support@kermhosting.com',
-            social_discord: 'https://discord.gg/kermhosting',
-            social_whatsapp: 'https://wa.me/237600000000'
-        };
 
         // Pagination
         let currentUserPage = 1;
@@ -2503,11 +2227,6 @@
             
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            // Si on va dans l'onglet maintenance, charger les paramètres
-            if (tabId === 'maintenance') {
-                loadMaintenanceSettings();
-            }
         }
 
         // ===== LOAD USER DATA =====
@@ -2550,6 +2269,7 @@
                 if (data.success) {
                     financialStats = data.financial;
 
+                    // Mettre à jour les cartes financières
                     document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
@@ -2557,10 +2277,12 @@
                     
                     document.getElementById('financialTodaySub').textContent = data.financial.total_transactions + ' transactions';
                     
+                    // Mettre à jour les stats par type
                     document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type.coins_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialServerPurchases').textContent = (data.financial.by_type.server_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialRenewals').textContent = (data.financial.by_type.server_renewal || 0).toLocaleString() + ' FCFA';
 
+                    // Afficher les top acheteurs
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
                         document.getElementById('topBuyers').style.display = 'block';
                         
@@ -2586,6 +2308,7 @@
                         document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
                     }
 
+                    // Mettre à jour les graphiques
                     updateCharts(data.financial);
                 }
             } catch (error) {
@@ -2595,9 +2318,11 @@
 
         // ===== UPDATE CHARTS =====
         function updateCharts(financial) {
+            // Détruire les anciens graphiques
             if (charts.revenue) charts.revenue.destroy();
             if (charts.type) charts.type.destroy();
 
+            // Graphique des revenus mensuels
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             charts.revenue = new Chart(revenueCtx, {
                 type: 'line',
@@ -2636,6 +2361,7 @@
                 }
             });
 
+            // Graphique de répartition par type
             const typeCtx = document.getElementById('typeChart').getContext('2d');
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
@@ -2670,6 +2396,7 @@
         // ===== LOAD ADMIN DATA =====
         async function loadAdminData() {
             try {
+                // Stats générales
                 const statsRes = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2688,6 +2415,7 @@
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
 
+                // Utilisateurs
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2700,6 +2428,7 @@
                     displayUsers();
                 }
 
+                // Serveurs
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2711,6 +2440,7 @@
                     displayServers();
                 }
 
+                // Transactions
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2722,6 +2452,7 @@
                     displayTransactions();
                 }
 
+                // Logs
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2733,11 +2464,41 @@
                     displayLogs();
                 }
 
+                // Stats financières
                 await loadFinancialStats();
+
+                // Stats Pterodactyl
+                loadPterodactylStats();
 
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
                 showToast('error', 'Erreur de chargement des données');
+            }
+        }
+
+        // ===== LOAD PTERODACTYL STATS =====
+        async function loadPterodactylStats() {
+            try {
+                const res = await fetch('/api/admin/pterodactyl/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('pteroCPU').textContent = data.cpu_used + '%';
+                    document.getElementById('pteroRAM').textContent = (data.ram_used / 1024).toFixed(1) + ' GB';
+                    document.getElementById('pteroDisk').textContent = (data.disk_used / 1024).toFixed(1) + ' GB';
+                    document.getElementById('pteroNodes').textContent = data.nodes || 0;
+                    document.getElementById('pteroUsers').textContent = data.ptero_users || 0;
+                    document.getElementById('pteroTotalServers').textContent = data.ptero_servers || 0;
+                    document.getElementById('pteroLoad').textContent = (data.average_load || 0) + '%';
+
+                    if (data.nodes_list) {
+                        displayPterodactylNodes(data.nodes_list);
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur chargement Pterodactyl:', error);
             }
         }
 
@@ -2753,6 +2514,7 @@
 
             document.getElementById('userPagination').style.display = 'flex';
 
+            // Pagination
             const startIndex = (currentUserPage - 1) * usersPerPage;
             const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
             const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
@@ -2950,6 +2712,54 @@
             tbody.innerHTML = html;
         }
 
+        // ===== DISPLAY PTERODACTYL NODES =====
+        function displayPterodactylNodes(nodes) {
+            const tbody = document.getElementById('pteroNodesBody');
+            
+            if (!nodes || nodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun nœud</td></tr>';
+                return;
+            }
+
+            let html = '';
+            
+            nodes.forEach(node => {
+                const ramPercent = (node.ram_used / node.ram_total) * 100;
+                const diskPercent = (node.disk_used / node.disk_total) * 100;
+                
+                html += `
+                    <tr>
+                        <td><strong>${node.name}</strong></td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
+                                    <div style="width: ${ramPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
+                                </div>
+                                <span>${(node.ram_used / 1024).toFixed(1)}/${(node.ram_total / 1024).toFixed(1)} GB</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
+                                    <div style="width: ${diskPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
+                                </div>
+                                <span>${(node.disk_used / 1024).toFixed(1)}/${(node.disk_total / 1024).toFixed(1)} GB</span>
+                            </div>
+                        </td>
+                        <td>${node.servers_count}</td>
+                        <td><span class="badge ${node.is_active ? 'badge-success' : 'badge-danger'}">${node.is_active ? 'Actif' : 'Inactif'}</span></td>
+                        <td>
+                            <button class="action-btn" title="Voir détails" onclick="viewNode('${node.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
         // ===== FILTER FUNCTIONS =====
         function filterUsers() {
             const search = document.getElementById('userSearch').value.toLowerCase();
@@ -3069,6 +2879,7 @@
             displayFilteredLogs(filtered);
         }
 
+        // ===== DISPLAY FILTERED FUNCTIONS =====
         function displayFilteredServers(servers) {
             const tbody = document.getElementById('serversTableBody');
             
@@ -3196,81 +3007,6 @@
             tbody.innerHTML = html;
         }
 
-       // ===== MAINTENANCE FUNCTIONS AVEC API RÉELLES =====
-async function loadMaintenanceSettings() {
-    try {
-        const res = await fetch('/api/admin/maintenance', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            const m = data.maintenance;
-            maintenanceSettings = m;
-            
-            document.getElementById('maintenanceToggle').checked = m.is_enabled;
-            document.getElementById('maintenanceStatus').textContent = m.is_enabled ? 'Activée' : 'Inactive';
-            document.getElementById('maintenanceStatus').className = `toggle-status ${m.is_enabled ? 'active' : 'inactive'}`;
-            
-            document.getElementById('maintenanceTitle').value = m.title || '🚧 Maintenance en cours';
-            document.getElementById('maintenanceMessage').value = m.message || 'Notre site est actuellement en maintenance pour vous offrir une meilleure expérience.';
-            document.getElementById('maintenanceEndTime').value = m.expected_end_time ? new Date(m.expected_end_time).toISOString().slice(0, 16) : '';
-            document.getElementById('maintenanceDuration').value = m.estimated_duration || '2 heures';
-            document.getElementById('maintenanceEmail').value = m.contact_email || 'bookmakerp@gmail.com';
-            document.getElementById('maintenanceDiscord').value = m.social_discord || 'https://discord.gg/kinglion4490';
-            document.getElementById('maintenanceWhatsapp').value = m.social_whatsapp || 'https://wa.me/237659535227';
-            
-            updateMaintenancePreview();
-        }
-    } catch (error) {
-        console.error('Erreur chargement maintenance:', error);
-        showToast('error', 'Erreur chargement maintenance');
-    }
-}
-
-async function toggleMaintenance() {
-    const isEnabled = document.getElementById('maintenanceToggle').checked;
-    await saveMaintenanceSettings();
-}
-
-async function saveMaintenanceSettings() {
-    const data = {
-        is_enabled: document.getElementById('maintenanceToggle').checked,
-        title: document.getElementById('maintenanceTitle').value,
-        message: document.getElementById('maintenanceMessage').value,
-        expected_end_time: document.getElementById('maintenanceEndTime').value || null,
-        estimated_duration: document.getElementById('maintenanceDuration').value,
-        contact_email: document.getElementById('maintenanceEmail').value,
-        social_discord: document.getElementById('maintenanceDiscord').value,
-        social_whatsapp: document.getElementById('maintenanceWhatsapp').value
-    };
-
-    try {
-        const res = await fetch('/api/admin/maintenance', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-            maintenanceSettings = result.maintenance;
-            document.getElementById('maintenanceStatus').textContent = data.is_enabled ? 'Activée' : 'Inactive';
-            document.getElementById('maintenanceStatus').className = `toggle-status ${data.is_enabled ? 'active' : 'inactive'}`;
-            updateMaintenancePreview();
-            showToast('success', 'Paramètres de maintenance enregistrés');
-        } else {
-            showToast('error', result.error || 'Erreur');
-        }
-    } catch (error) {
-        showToast('error', 'Erreur réseau');
-    }
-}
-
         // ===== USER ACTIONS =====
         function editUser(userId) {
             const user = allUsers.find(u => u.id === userId);
@@ -3376,6 +3112,10 @@ async function saveMaintenanceSettings() {
             `;
 
             openModal('transactionModal');
+        }
+
+        function viewNode(nodeId) {
+            showToast('info', 'Détails du nœud: ' + nodeId);
         }
 
         async function toggleBan(userId, currentBanned) {
@@ -3749,6 +3489,7 @@ async function saveMaintenanceSettings() {
         window.viewUserTransactions = viewUserTransactions;
         window.viewUser = viewUser;
         window.viewTransaction = viewTransaction;
+        window.viewNode = viewNode;
         window.toggleBan = toggleBan;
         window.deleteUser = deleteUser;
         window.addCoinsToUser = addCoinsToUser;
@@ -3764,9 +3505,6 @@ async function saveMaintenanceSettings() {
         window.openModal = openModal;
         window.exportUsers = exportUsers;
         window.changeUserPage = changeUserPage;
-        window.toggleMaintenance = toggleMaintenance;
-        window.resetMaintenanceForm = resetMaintenanceForm;
-        window.saveMaintenanceSettings = saveMaintenanceSettings;
     </script>
 </body>
 </html>
