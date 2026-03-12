@@ -1961,7 +1961,7 @@
 
         notificationBtn.addEventListener('click', () => {
             notificationsPanel.classList.toggle('active');
-            loadNotifications();
+            if (userServers.length > 0) loadNotifications();
         });
 
         closeNotifications.addEventListener('click', () => {
@@ -2042,57 +2042,74 @@
             if (!userData) return;
 
             // Sidebar
-            document.getElementById('sidebarUserName').textContent = userData.username;
-            document.getElementById('sidebarUserEmail').textContent = userData.email;
-            document.getElementById('sidebarUserBadge').textContent = userData.role;
-            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
-            document.getElementById('sidebarCoins').textContent = userData.coins;
+            document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
+            document.getElementById('sidebarUserEmail').textContent = userData.email || 'email@example.com';
+            document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
+            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username || 'User'}&background=7C3AED&color=fff&size=40`;
+            document.getElementById('sidebarCoins').textContent = userData.coins || 0;
             document.getElementById('sidebarServers').textContent = userServers.length;
 
             // Welcome banner
-            document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username} !`;
-            document.getElementById('welcomeCoins').textContent = userData.coins;
+            document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
+            document.getElementById('welcomeCoins').textContent = userData.coins || 0;
             document.getElementById('welcomeServers').textContent = userServers.length;
             document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
 
             // Stats
-            document.getElementById('statCoins').textContent = userData.coins;
+            document.getElementById('statCoins').textContent = userData.coins || 0;
             document.getElementById('statServers').textContent = userServers.length;
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
 
+            // Calcul des serveurs bientôt expirés (3 jours ou moins)
             const expiringCount = userServers.filter(s => {
+                if (!s.expires_at) return false;
                 const daysLeft = calculateDaysLeft(s.expires_at);
                 return daysLeft > 0 && daysLeft <= 3;
             }).length;
             
             document.getElementById('serversExpiring').textContent = expiringCount + ' bientôt expirés';
+            document.getElementById('notificationBadge').textContent = expiringCount;
 
             displayServers();
             loadActivities();
         }
 
         function calculateDaysLeft(expiresAt) {
-            const now = new Date();
-            const expiry = new Date(expiresAt);
-            const diffTime = expiry - now;
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (!expiresAt) return 0;
+            try {
+                const now = new Date();
+                const expiry = new Date(expiresAt);
+                if (isNaN(expiry.getTime())) return 0;
+                const diffTime = expiry - now;
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } catch (e) {
+                console.error('Erreur calcul jours:', e);
+                return 0;
+            }
         }
 
         function formatTimeLeft(expiresAt) {
-            const now = new Date();
-            const expiry = new Date(expiresAt);
-            const diffTime = expiry - now;
-            
-            if (diffTime < 0) return 'Expiré';
-            
-            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            
-            if (days > 0) {
-                return `${days}j ${hours}h`;
-            } else {
-                return `${hours}h`;
+            if (!expiresAt) return 'Inconnu';
+            try {
+                const now = new Date();
+                const expiry = new Date(expiresAt);
+                if (isNaN(expiry.getTime())) return 'Invalide';
+                
+                const diffTime = expiry - now;
+                
+                if (diffTime < 0) return 'Expiré';
+                
+                const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                if (days > 0) {
+                    return `${days}j ${hours}h`;
+                } else {
+                    return `${hours}h`;
+                }
+            } catch (e) {
+                return 'Erreur';
             }
         }
 
@@ -2123,23 +2140,27 @@
             const statusText = document.getElementById(`statusText-${serverId}`);
 
             if (diskUsage && diskBar && resources) {
-                const diskUsed = Math.round(resources.resources.disk_bytes / 1024 / 1024);
-                const diskLimit = Math.round(resources.resources.disk_limit_bytes / 1024 / 1024);
-                const diskPercent = Math.min(100, Math.round((diskUsed / diskLimit) * 100));
-                
-                diskUsage.textContent = diskPercent + '% utilisé';
-                diskBar.style.width = diskPercent + '%';
-                
-                const state = resources.state;
-                if (state === 'running') {
-                    statusDot.className = 'status-dot status-running';
-                    statusText.textContent = 'En ligne';
-                } else if (state === 'stopped') {
-                    statusDot.className = 'status-dot status-stopped';
-                    statusText.textContent = 'Arrêté';
-                } else {
-                    statusDot.className = 'status-dot status-error';
-                    statusText.textContent = 'Erreur';
+                try {
+                    const diskUsed = Math.round(resources.resources.disk_bytes / 1024 / 1024);
+                    const diskLimit = Math.round(resources.resources.disk_limit_bytes / 1024 / 1024);
+                    const diskPercent = Math.min(100, Math.round((diskUsed / (diskLimit || 1)) * 100));
+                    
+                    diskUsage.textContent = diskPercent + '% utilisé';
+                    diskBar.style.width = diskPercent + '%';
+                    
+                    const state = resources.state;
+                    if (state === 'running') {
+                        statusDot.className = 'status-dot status-running';
+                        statusText.textContent = 'En ligne';
+                    } else if (state === 'stopped') {
+                        statusDot.className = 'status-dot status-stopped';
+                        statusText.textContent = 'Arrêté';
+                    } else {
+                        statusDot.className = 'status-dot status-error';
+                        statusText.textContent = 'Erreur';
+                    }
+                } catch (e) {
+                    console.error('Erreur mise à jour ressources:', e);
                 }
             }
         }
@@ -2169,15 +2190,29 @@
                 const daysLeft = calculateDaysLeft(server.expires_at);
                 const timeLeft = formatTimeLeft(server.expires_at);
                 
-                let statusClass = 'status-running';
-                let statusText = 'En ligne';
+                // Déterminer le statut
+                let statusClass = 'status-stopped';
+                let statusText = 'Arrêté';
+                let statusForAction = 'stopped';
                 
-                if (server.status === 'stopped') {
+                if (server.status === 'active') {
+                    if (daysLeft < 0) {
+                        statusClass = 'status-error';
+                        statusText = 'Expiré';
+                        statusForAction = 'expired';
+                    } else {
+                        statusClass = 'status-running';
+                        statusText = 'En ligne';
+                        statusForAction = 'running';
+                    }
+                } else if (server.status === 'stopped') {
                     statusClass = 'status-stopped';
                     statusText = 'Arrêté';
-                } else if (daysLeft < 0) {
+                    statusForAction = 'stopped';
+                } else {
                     statusClass = 'status-error';
-                    statusText = 'Expiré';
+                    statusText = 'Inactif';
+                    statusForAction = 'error';
                 }
 
                 let cardClass = '';
@@ -2188,10 +2223,10 @@
                 }
 
                 const plan = PLANS[server.server_type] || { 
-                    name: server.server_type, 
-                    memory: '?', 
+                    name: server.server_type || 'Inconnu', 
+                    memory: 0, 
                     disk: 0, 
-                    cpu: '?' 
+                    cpu: 0 
                 };
 
                 html += `
@@ -2199,7 +2234,7 @@
                         <div class="server-header">
                             <div class="server-name">
                                 <i class="fas fa-cloud"></i>
-                                ${server.server_name}
+                                ${server.server_name || 'Sans nom'}
                                 ${daysLeft <= 3 && daysLeft > 0 ? '<span class="renewal-badge warning">⚠️</span>' : ''}
                                 ${daysLeft < 0 ? '<span class="renewal-badge danger">❌</span>' : ''}
                             </div>
@@ -2240,13 +2275,13 @@
 
                             <div class="server-info-item" style="margin-top: 8px;">
                                 <i class="fas fa-calendar-alt"></i>
-                                <span>Exp: ${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${timeLeft})</span>
+                                <span>Exp: ${server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'N/A'} (${timeLeft})</span>
                             </div>
                         </div>
                         <div class="server-footer">
                             <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}">
                                 <i class="fas fa-clock"></i>
-                                ${daysLeft < 0 ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : `${daysLeft}j`}
+                                ${daysLeft < 0 ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}
                             </div>
                             <div class="server-actions">
                                 <button class="server-action-btn" title="Détails" onclick="showServerDetails('${server.id}')">
@@ -2266,7 +2301,8 @@
                             </div>
                         </div>
                         <div class="server-console" id="console-${server.id}" style="display: none;">
-                            <div class="console-line">> Connexion...</div>
+                            <div class="console-line">> Console du serveur ${server.server_name}</div>
+                            <div class="console-line">> Connecté le ${new Date().toLocaleString()}</div>
                         </div>
                     </div>
                 `;
@@ -2282,13 +2318,13 @@
             if (!server) return;
 
             currentServer = server;
-            const plan = PLANS[server.server_type] || { name: server.server_type };
+            const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu' };
             const daysLeft = calculateDaysLeft(server.expires_at);
             
-            document.getElementById('detailsServerName').textContent = server.server_name;
+            document.getElementById('detailsServerName').textContent = server.server_name || 'Sans nom';
             document.getElementById('detailsPlan').textContent = plan.name;
-            document.getElementById('detailsStatus').textContent = server.status === 'active' ? 'Actif' : 'Inactif';
-            document.getElementById('detailsExpiry').textContent = new Date(server.expires_at).toLocaleDateString('fr-FR');
+            document.getElementById('detailsStatus').textContent = server.status === 'active' && daysLeft >= 0 ? 'Actif' : 'Inactif';
+            document.getElementById('detailsExpiry').textContent = server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'Non définie';
             document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
 
             try {
@@ -2305,8 +2341,8 @@
                                 <i class="fas fa-user"></i>
                                 Utilisateur
                             </span>
-                            <span class="credential-value">${creds.username}</span>
-                            <button class="copy-btn" onclick="copyToClipboard('${creds.username}')">
+                            <span class="credential-value">${creds.username || 'Non disponible'}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.username || ''}')">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -2315,8 +2351,8 @@
                                 <i class="fas fa-lock"></i>
                                 Mot de passe
                             </span>
-                            <span class="credential-value">${creds.password}</span>
-                            <button class="copy-btn" onclick="copyToClipboard('${creds.password}')">
+                            <span class="credential-value">${creds.password || 'Non disponible'}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.password || ''}')">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -2325,8 +2361,8 @@
                                 <i class="fas fa-globe"></i>
                                 Panel
                             </span>
-                            <span class="credential-value">${creds.panel_url}</span>
-                            <button class="copy-btn" onclick="copyToClipboard('${creds.panel_url}')">
+                            <span class="credential-value">${creds.panel_url || 'Non disponible'}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${creds.panel_url || ''}')">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -2335,12 +2371,15 @@
                                 <i class="fas fa-id"></i>
                                 ID
                             </span>
-                            <span class="credential-value">${creds.identifier}</span>
+                            <span class="credential-value">${creds.identifier || server.id}</span>
                         </div>
                     `;
+                } else {
+                    document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--text-secondary);">Identifiants non disponibles</p>';
                 }
             } catch (error) {
                 console.error('Erreur chargement identifiants:', error);
+                document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--warning);">Erreur de chargement des identifiants</p>';
             }
 
             const renewBtn = document.getElementById('renewBtn');
@@ -2359,12 +2398,12 @@
         function renewServer() {
             closeModal('serverDetailsModal');
             
-            const plan = PLANS[currentServer.server_type];
-            document.getElementById('renewServerName').textContent = currentServer.server_name;
+            const plan = PLANS[currentServer.server_type] || { name: 'Inconnu', price: 0, coins: 0 };
+            document.getElementById('renewServerName').textContent = currentServer.server_name || 'Sans nom';
             document.getElementById('renewPlan').textContent = plan.name;
-            document.getElementById('renewPrice').textContent = plan.price + ' FCFA';
-            document.getElementById('renewCoins').textContent = plan.coins + ' coins';
-            document.getElementById('renewBalance').textContent = userData.coins + ' coins';
+            document.getElementById('renewPrice').textContent = (plan.price || 0) + ' FCFA';
+            document.getElementById('renewCoins').textContent = (plan.coins || 0) + ' coins';
+            document.getElementById('renewBalance').textContent = (userData?.coins || 0) + ' coins';
 
             openModal('renewModal');
         }
@@ -2372,9 +2411,9 @@
         async function confirmRenew() {
             if (!currentServer) return;
 
-            const plan = PLANS[currentServer.server_type];
+            const plan = PLANS[currentServer.server_type] || { coins: 0 };
             
-            if (userData.coins < plan.coins) {
+            if ((userData?.coins || 0) < (plan.coins || 0)) {
                 showToast('error', 'Coins insuffisants');
                 closeModal('renewModal');
                 return;
@@ -2423,7 +2462,7 @@
             };
             
             document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action';
-            document.getElementById('actionMessage').textContent = `Confirmer ${actionTitles[action].toLowerCase()} ?`;
+            document.getElementById('actionMessage').textContent = `Confirmer ${(actionTitles[action] || 'action').toLowerCase()} le serveur ?`;
             
             const confirmBtn = document.getElementById('actionConfirmBtn');
             confirmBtn.className = action === 'stop' ? 'btn btn-danger' : 'btn btn-warning';
@@ -2466,7 +2505,9 @@
         // ===== CONSOLE =====
         function toggleConsole(serverId) {
             const console = document.getElementById(`console-${serverId}`);
-            console.style.display = console.style.display === 'none' ? 'block' : 'none';
+            if (console) {
+                console.style.display = console.style.display === 'none' ? 'block' : 'none';
+            }
         }
 
         // ===== DAILY REWARD =====
@@ -2497,6 +2538,7 @@
                 const notificationsList = document.getElementById('notificationsList');
                 
                 const expiringServers = userServers.filter(s => {
+                    if (!s.expires_at) return false;
                     const daysLeft = calculateDaysLeft(s.expires_at);
                     return daysLeft > 0 && daysLeft <= 3;
                 });
@@ -2532,7 +2574,6 @@
                 `;
 
                 notificationsList.innerHTML = html;
-                document.getElementById('notificationBadge').textContent = expiringServers.length;
             } catch (error) {
                 console.error('Erreur chargement notifications:', error);
             }
@@ -2543,7 +2584,6 @@
             try {
                 const container = document.getElementById('activityContainer');
                 
-                // Afficher un loader
                 container.innerHTML = `
                     <div class="loading-state">
                         <i class="fas fa-circle-notch fa-spin"></i>
@@ -2551,7 +2591,6 @@
                     </div>
                 `;
 
-                // Appel API pour récupérer les vraies activités
                 const res = await fetch('/api/user/activities', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2569,27 +2608,30 @@
                     return;
                 }
 
-                // Fonction pour formater le temps relatif (il y a X minutes, etc.)
                 function formatRelativeTime(dateString) {
-                    const now = new Date();
-                    const activityDate = new Date(dateString);
-                    const diffMs = now - activityDate;
-                    const diffMins = Math.floor(diffMs / 60000);
-                    const diffHours = Math.floor(diffMs / 3600000);
-                    const diffDays = Math.floor(diffMs / 86400000);
+                    try {
+                        const now = new Date();
+                        const activityDate = new Date(dateString);
+                        if (isNaN(activityDate.getTime())) return 'Date inconnue';
+                        
+                        const diffMs = now - activityDate;
+                        const diffMins = Math.floor(diffMs / 60000);
+                        const diffHours = Math.floor(diffMs / 3600000);
+                        const diffDays = Math.floor(diffMs / 86400000);
 
-                    if (diffMins < 1) return "À l'instant";
-                    if (diffMins < 60) return `Il y a ${diffMins} min`;
-                    if (diffHours < 24) return `Il y a ${diffHours} h`;
-                    if (diffDays === 1) return "Hier";
-                    return `Il y a ${diffDays} jours`;
+                        if (diffMins < 1) return "À l'instant";
+                        if (diffMins < 60) return `Il y a ${diffMins} min`;
+                        if (diffHours < 24) return `Il y a ${diffHours} h`;
+                        if (diffDays === 1) return "Hier";
+                        return `Il y a ${diffDays} jours`;
+                    } catch (e) {
+                        return 'Date inconnue';
+                    }
                 }
 
-                // Générer le HTML des activités
                 let html = '';
 
                 data.activities.forEach(activity => {
-                    // Déterminer l'icône en fonction du type d'activité
                     let icon = 'fa-history';
                     if (activity.activity_type) {
                         if (activity.activity_type.includes('server')) {
@@ -2612,7 +2654,6 @@
                         }
                     }
 
-                    // Déterminer la classe des coins (positif/négatif)
                     const coinsClass = activity.coins_earned > 0 ? 'positive' : 
                                       activity.coins_earned < 0 ? 'negative' : '';
 
@@ -2640,8 +2681,6 @@
 
             } catch (error) {
                 console.error('❌ Erreur chargement activités:', error);
-                
-                // En cas d'erreur, afficher un message
                 document.getElementById('activityContainer').innerHTML = `
                     <div class="empty-state" style="padding: 20px;">
                         <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
@@ -2672,7 +2711,7 @@
 
                 if (data.success) {
                     showToast('success', 'Historique effacé avec succès');
-                    loadActivities(); // Recharger la liste vide
+                    loadActivities();
                 } else {
                     showToast('error', data.error || 'Erreur lors de la suppression');
                 }
@@ -2693,7 +2732,7 @@
 
         // ===== CREATE SERVER =====
         function prepareFreeServer() {
-            if (userData.free_panel_created) {
+            if (userData?.free_panel_created) {
                 showToast('error', 'Serveur gratuit déjà utilisé');
                 return;
             }
@@ -2708,8 +2747,8 @@
 
         async function createServer() {
             const plan = document.getElementById('planSelect').value;
-            const name = document.getElementById('serverName').value;
-            const username = document.getElementById('serverUsername').value;
+            const name = document.getElementById('serverName').value?.trim();
+            const username = document.getElementById('serverUsername').value?.trim();
 
             if (!plan || !name || !username) {
                 showToast('error', 'Veuillez remplir tous les champs');
@@ -2717,12 +2756,12 @@
             }
 
             if (name.length < 3 || name.length > 30) {
-                showToast('error', 'Nom invalide (3-30)');
+                showToast('error', 'Nom invalide (3-30 caractères)');
                 return;
             }
 
             if (username.length < 3 || username.length > 20) {
-                showToast('error', "Nom d'utilisateur invalide (3-20)");
+                showToast('error', "Nom d'utilisateur invalide (3-20 caractères)");
                 return;
             }
 
@@ -2753,14 +2792,14 @@
 
                 if (data.success) {
                     showToast('success', 'Serveur créé !');
-                    if (data.credentials) {
+                    if (data.credentials && data.server) {
                         setTimeout(() => {
                             showServerDetails(data.server.id);
                         }, 1000);
                     }
                     loadUserData();
                 } else {
-                    showToast('error', data.error || 'Erreur');
+                    showToast('error', data.error || 'Erreur lors de la création');
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
@@ -2779,6 +2818,9 @@
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) {
+            // Vider les options existantes
+            planSelect.innerHTML = '<option value="">Choisissez un plan</option>';
+            
             Object.entries(PLANS).forEach(([key, plan]) => {
                 if (key !== 'free') {
                     const option = document.createElement('option');
