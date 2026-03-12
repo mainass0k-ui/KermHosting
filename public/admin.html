@@ -3196,90 +3196,80 @@
             tbody.innerHTML = html;
         }
 
-        // ===== MAINTENANCE FUNCTIONS (NOUVELLES) =====
-        function loadMaintenanceSettings() {
-            // Simuler le chargement depuis l'API
-            document.getElementById('maintenanceToggle').checked = maintenanceSettings.is_enabled;
-            document.getElementById('maintenanceStatus').textContent = maintenanceSettings.is_enabled ? 'Activée' : 'Inactive';
-            document.getElementById('maintenanceStatus').className = `toggle-status ${maintenanceSettings.is_enabled ? 'active' : 'inactive'}`;
+       // ===== MAINTENANCE FUNCTIONS AVEC API RÉELLES =====
+async function loadMaintenanceSettings() {
+    try {
+        const res = await fetch('/api/admin/maintenance', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            const m = data.maintenance;
+            maintenanceSettings = m;
             
-            document.getElementById('maintenanceTitle').value = maintenanceSettings.title;
-            document.getElementById('maintenanceMessage').value = maintenanceSettings.message;
-            document.getElementById('maintenanceDuration').value = maintenanceSettings.estimated_duration;
-            document.getElementById('maintenanceEmail').value = maintenanceSettings.contact_email;
-            document.getElementById('maintenanceDiscord').value = maintenanceSettings.social_discord;
-            document.getElementById('maintenanceWhatsapp').value = maintenanceSettings.social_whatsapp;
+            document.getElementById('maintenanceToggle').checked = m.is_enabled;
+            document.getElementById('maintenanceStatus').textContent = m.is_enabled ? 'Activée' : 'Inactive';
+            document.getElementById('maintenanceStatus').className = `toggle-status ${m.is_enabled ? 'active' : 'inactive'}`;
+            
+            document.getElementById('maintenanceTitle').value = m.title || '🚧 Maintenance en cours';
+            document.getElementById('maintenanceMessage').value = m.message || 'Notre site est actuellement en maintenance pour vous offrir une meilleure expérience.';
+            document.getElementById('maintenanceEndTime').value = m.expected_end_time ? new Date(m.expected_end_time).toISOString().slice(0, 16) : '';
+            document.getElementById('maintenanceDuration').value = m.estimated_duration || '2 heures';
+            document.getElementById('maintenanceEmail').value = m.contact_email || 'bookmakerp@gmail.com';
+            document.getElementById('maintenanceDiscord').value = m.social_discord || 'https://discord.gg/kinglion4490';
+            document.getElementById('maintenanceWhatsapp').value = m.social_whatsapp || 'https://wa.me/237659535227';
             
             updateMaintenancePreview();
         }
+    } catch (error) {
+        console.error('Erreur chargement maintenance:', error);
+        showToast('error', 'Erreur chargement maintenance');
+    }
+}
 
-        function updateMaintenancePreview() {
-            const isEnabled = document.getElementById('maintenanceToggle').checked;
-            const preview = document.getElementById('maintenancePreview');
-            
-            if (isEnabled) {
-                preview.style.display = 'block';
-                
-                document.getElementById('previewTitle').textContent = document.getElementById('maintenanceTitle').value;
-                document.getElementById('previewMessage').textContent = document.getElementById('maintenanceMessage').value;
-                
-                const endTime = document.getElementById('maintenanceEndTime').value;
-                if (endTime) {
-                    const date = new Date(endTime);
-                    document.getElementById('previewEndTime').textContent = date.toLocaleString('fr-FR');
-                } else {
-                    document.getElementById('previewEndTime').textContent = 'Non définie';
-                }
-                
-                document.getElementById('previewDuration').textContent = document.getElementById('maintenanceDuration').value;
-            } else {
-                preview.style.display = 'none';
-            }
-        }
+async function toggleMaintenance() {
+    const isEnabled = document.getElementById('maintenanceToggle').checked;
+    await saveMaintenanceSettings();
+}
 
-        function toggleMaintenance() {
-            const isEnabled = document.getElementById('maintenanceToggle').checked;
-            maintenanceSettings.is_enabled = isEnabled;
-            
-            document.getElementById('maintenanceStatus').textContent = isEnabled ? 'Activée' : 'Inactive';
-            document.getElementById('maintenanceStatus').className = `toggle-status ${isEnabled ? 'active' : 'inactive'}`;
-            
-            updateMaintenancePreview();
-            
-            // Ici, tu appellerais ton API pour sauvegarder
-            showToast(isEnabled ? 'warning' : 'success', 
-                     isEnabled ? 'Mode maintenance activé' : 'Mode maintenance désactivé');
-        }
+async function saveMaintenanceSettings() {
+    const data = {
+        is_enabled: document.getElementById('maintenanceToggle').checked,
+        title: document.getElementById('maintenanceTitle').value,
+        message: document.getElementById('maintenanceMessage').value,
+        expected_end_time: document.getElementById('maintenanceEndTime').value || null,
+        estimated_duration: document.getElementById('maintenanceDuration').value,
+        contact_email: document.getElementById('maintenanceEmail').value,
+        social_discord: document.getElementById('maintenanceDiscord').value,
+        social_whatsapp: document.getElementById('maintenanceWhatsapp').value
+    };
 
-        function resetMaintenanceForm() {
-            document.getElementById('maintenanceTitle').value = '🚧 Maintenance en cours';
-            document.getElementById('maintenanceMessage').value = 'Notre site est actuellement en maintenance pour vous offrir une meilleure expérience.';
-            document.getElementById('maintenanceEndTime').value = '';
-            document.getElementById('maintenanceDuration').value = '2 heures';
-            document.getElementById('maintenanceEmail').value = 'bookmakerp@gmail.com';
-            document.getElementById('maintenanceDiscord').value = 'https://discord.gg/kinglion4490';
-            document.getElementById('maintenanceWhatsapp').value = 'https://wa.me/237659535227';
-            
-            updateMaintenancePreview();
-            showToast('info', 'Formulaire réinitialisé');
-        }
+    try {
+        const res = await fetch('/api/admin/maintenance', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
 
-        function saveMaintenanceSettings() {
-            maintenanceSettings = {
-                is_enabled: document.getElementById('maintenanceToggle').checked,
-                title: document.getElementById('maintenanceTitle').value,
-                message: document.getElementById('maintenanceMessage').value,
-                estimated_duration: document.getElementById('maintenanceDuration').value,
-                contact_email: document.getElementById('maintenanceEmail').value,
-                social_discord: document.getElementById('maintenanceDiscord').value,
-                social_whatsapp: document.getElementById('maintenanceWhatsapp').value
-            };
-            
+        const result = await res.json();
+
+        if (result.success) {
+            maintenanceSettings = result.maintenance;
+            document.getElementById('maintenanceStatus').textContent = data.is_enabled ? 'Activée' : 'Inactive';
+            document.getElementById('maintenanceStatus').className = `toggle-status ${data.is_enabled ? 'active' : 'inactive'}`;
             updateMaintenancePreview();
             showToast('success', 'Paramètres de maintenance enregistrés');
-            
-            // Ici, tu appellerais ton API pour sauvegarder
+        } else {
+            showToast('error', result.error || 'Erreur');
         }
+    } catch (error) {
+        showToast('error', 'Erreur réseau');
+    }
+}
 
         // ===== USER ACTIONS =====
         function editUser(userId) {
