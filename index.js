@@ -261,28 +261,8 @@ const COIN_PACKS = {
 };
 
 // =============================================
-// MIDDLEWARE
+// MIDDLEWARE DE MAINTENANCE (DÉFINI AVANT SON UTILISATION)
 // =============================================
-
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true }));
-app.use(maintenanceMiddleware);
-app.use(cors({
-    origin: SITE_CONFIG.url,
-    credentials: true
-}));
-app.use(express.static('public'));
-
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 100 * 1024 * 1024 }
-});
-
-// =============================================
-// ROUTES DE MAINTENANCE
-// =============================================
-
-// Middleware de maintenance (à placer avant les autres routes)
 const maintenanceMiddleware = async (req, res, next) => {
     // Pages autorisées même en maintenance
     const allowedPaths = [
@@ -305,149 +285,59 @@ const maintenanceMiddleware = async (req, res, next) => {
         return next();
     }
 
-    // Vérifier si la maintenance est active
-    const { data: maintenance } = await supabase
-        .from('maintenance_settings')
-        .select('*')
-        .eq('id', 1)
-        .single();
+    try {
+        // Vérifier si la maintenance est active
+        const { data: maintenance } = await supabase
+            .from('maintenance_settings')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
 
-    if (maintenance?.is_enabled) {
-        // Si c'est une requête API, retourner une erreur
-        if (req.path.startsWith('/api/')) {
-            return res.status(503).json({
-                success: false,
-                error: 'Site en maintenance',
-                maintenance: {
-                    title: maintenance.title,
-                    message: maintenance.message,
-                    expected_end: maintenance.expected_end_time,
-                    estimated_duration: maintenance.estimated_duration
-                },
-                code: 'MAINTENANCE_MODE'
-            });
+        if (maintenance?.is_enabled) {
+            // Si c'est une requête API, retourner une erreur
+            if (req.path.startsWith('/api/')) {
+                return res.status(503).json({
+                    success: false,
+                    error: 'Site en maintenance',
+                    maintenance: {
+                        title: maintenance.title,
+                        message: maintenance.message,
+                        expected_end: maintenance.expected_end_time,
+                        estimated_duration: maintenance.estimated_duration
+                    },
+                    code: 'MAINTENANCE_MODE'
+                });
+            }
+
+            // Sinon, rediriger vers la page de maintenance
+            return res.redirect('/maintenance');
         }
-
-        // Sinon, rediriger vers la page de maintenance
-        return res.redirect('/maintenance');
+    } catch (error) {
+        console.error('❌ Erreur middleware maintenance:', error);
     }
 
     next();
 };
 
-// Appliquer le middleware (après les routes d'authentification)
-// app.use(maintenanceMiddleware); // À décommenter quand la page maintenance.html est prête
 
-// Obtenir le statut de la maintenance (public)
-app.get('/api/maintenance/status', async (req, res) => {
-    try {
-        const { data: maintenance, error } = await supabase
-            .from('maintenance_settings')
-            .select('*')
-            .eq('id', 1)
-            .single();
+// =============================================
+// MIDDLEWARE
+// =============================================
 
-        if (error) {
-            return res.json({ 
-                success: true, 
-                maintenance: { is_enabled: false } 
-            });
-        }
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: SITE_CONFIG.url,
+    credentials: true
+}));
 
-        res.json({ 
-            success: true, 
-            maintenance: {
-                is_enabled: maintenance.is_enabled,
-                title: maintenance.title,
-                message: maintenance.message,
-                start_time: maintenance.start_time,
-                expected_end_time: maintenance.expected_end_time,
-                estimated_duration: maintenance.estimated_duration,
-                contact_email: maintenance.contact_email,
-                social_discord: maintenance.social_discord,
-                social_whatsapp: maintenance.social_whatsapp
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+app.use(maintenanceMiddleware);
 
-// Récupérer les paramètres de maintenance (admin)
-app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: maintenance, error } = await supabase
-            .from('maintenance_settings')
-            .select('*')
-            .eq('id', 1)
-            .single();
+app.use(express.static('public'));
 
-        if (error) throw error;
-        res.json({ success: true, maintenance });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// Mettre à jour les paramètres de maintenance (admin)
-app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const {
-            is_enabled,
-            title,
-            message,
-            expected_end_time,
-            estimated_duration,
-            contact_email,
-            social_discord,
-            social_whatsapp
-        } = req.body;
-
-        const updates = {
-            updated_by: req.user.id,
-            updated_at: new Date().toISOString()
-        };
-
-        if (is_enabled !== undefined) {
-            updates.is_enabled = is_enabled;
-            if (is_enabled && !is_enabled === false) {
-                updates.start_time = new Date().toISOString();
-            }
-        }
-        if (title !== undefined) updates.title = title;
-        if (message !== undefined) updates.message = message;
-        if (expected_end_time !== undefined) updates.expected_end_time = expected_end_time;
-        if (estimated_duration !== undefined) updates.estimated_duration = estimated_duration;
-        if (contact_email !== undefined) updates.contact_email = contact_email;
-        if (social_discord !== undefined) updates.social_discord = social_discord;
-        if (social_whatsapp !== undefined) updates.social_whatsapp = social_whatsapp;
-
-        const { data, error } = await supabase
-            .from('maintenance_settings')
-            .update(updates)
-            .eq('id', 1)
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        // Journaliser l'action
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'maintenance_update',
-                description: `Modification maintenance: ${is_enabled ? 'Activée' : 'Désactivée'}`,
-                metadata: updates,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-
-        res.json({ success: true, maintenance: data });
-    } catch (error) {
-        console.error('❌ Erreur maintenance:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 100 * 1024 * 1024 }
 });
 
 // =============================================
