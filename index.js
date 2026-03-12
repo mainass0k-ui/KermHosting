@@ -2168,6 +2168,39 @@ app.get('/api/user/activities', authenticateToken, async (req, res) => {
     }
 });
 
+app.delete('/api/user/activities', authenticateToken, async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('user_activities')
+            .delete()
+            .eq('user_id', req.user.id);
+
+        if (error) throw error;
+
+        // Ajouter une activité pour dire que les activités ont été supprimées
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'activities_cleared',
+                description: 'Historique des activités effacé',
+                coins_earned: 0
+            }]);
+
+        res.json({ 
+            success: true, 
+            message: 'Toutes les activités ont été supprimées' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur suppression activités:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur lors de la suppression des activités' 
+        });
+    }
+});
+
 app.post('/api/user/regenerate-api-key', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const newApiKey = generateApiKey();
