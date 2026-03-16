@@ -4161,6 +4161,128 @@ app.get('/api/download-bot', async (req, res) => {
     }
 });
 
+// =============================================
+// ROUTE DE VÉRIFICATION DU NOM D'UTILISATEUR PTERODACTYL
+// =============================================
+app.post('/api/check-username', async (req, res) => {
+    try {
+        const { username } = req.body;
+
+        if (!username) {
+            return res.status(400).json({ 
+                success: false, 
+                available: false, 
+                error: 'Nom d\'utilisateur requis' 
+            });
+        }
+
+        if (username.length < 3 || username.length > 20) {
+            return res.status(400).json({ 
+                success: false, 
+                available: false, 
+                error: 'Le nom d\'utilisateur doit contenir entre 3 et 20 caractères' 
+            });
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return res.status(400).json({ 
+                success: false, 
+                available: false, 
+                error: 'Caractères autorisés: lettres, chiffres et underscore (_)' 
+            });
+        }
+
+        try {
+            // Vérifier via l'API Pterodactyl si l'utilisateur existe déjà
+            // On essaie de récupérer les utilisateurs avec un filtre (si supporté)
+            let userExists = false;
+            
+            try {
+                // Essayer de récupérer par email (plus fiable)
+                const emailToCheck = `${username.toLowerCase()}@kermhosting.local`;
+                const userByEmail = await callPterodactylAPI(`/api/application/users?filter[email]=${encodeURIComponent(emailToCheck)}`);
+                
+                if (userByEmail.data && userByEmail.data.length > 0) {
+                    userExists = true;
+                }
+            } catch (emailError) {
+                console.log('⚠️ Erreur recherche par email, tentative par username...');
+            }
+
+            if (!userExists) {
+                // Essayer de récupérer par username
+                try {
+                    const userByUsername = await callPterodactylAPI(`/api/application/users?filter[username]=${encodeURIComponent(username.toLowerCase())}`);
+                    
+                    if (userByUsername.data && userByUsername.data.length > 0) {
+                        userExists = true;
+                    }
+                } catch (usernameError) {
+                    console.log('⚠️ Erreur recherche par username');
+                }
+            }
+
+            // Vérifier aussi dans notre base de données locale (serveurs existants)
+            if (!userExists) {
+                const { data: existingServers } = await supabase
+                    .from('servers')
+                    .select('username')
+                    .ilike('username', username);
+
+                if (existingServers && existingServers.length > 0) {
+                    userExists = true;
+                }
+            }
+
+            if (userExists) {
+                return res.json({ 
+                    success: true, 
+                    available: false, 
+                    error: 'Ce nom d\'utilisateur est déjà utilisé sur Pterodactyl' 
+                });
+            }
+
+            // Si on arrive ici, le nom est disponible
+            return res.json({ 
+                success: true, 
+                available: true 
+            });
+
+        } catch (pteroError) {
+            console.error('❌ Erreur API Pterodactyl:', pteroError);
+            
+            // En cas d'erreur avec Pterodactyl, on vérifie uniquement dans notre base
+            const { data: existingServers } = await supabase
+                .from('servers')
+                .select('username')
+                .ilike('username', username);
+
+            if (existingServers && existingServers.length > 0) {
+                return res.json({ 
+                    success: true, 
+                    available: false, 
+                    error: 'Ce nom d\'utilisateur est déjà utilisé' 
+                });
+            }
+
+            // Si pas trouvé dans notre base, on considère disponible
+            return res.json({ 
+                success: true, 
+                available: true,
+                warning: 'Vérification limitée à notre base de données'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur vérification username:', error);
+        res.status(500).json({ 
+            success: false, 
+            available: false, 
+            error: 'Erreur serveur lors de la vérification' 
+        });
+    }
+});
+
 
 // =============================================
 // ROUTES PAGES HTML
