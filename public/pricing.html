@@ -7,7 +7,7 @@
     <meta name="description" content="Tarifs KermHosting - Hébergement Node.js à partir de 500 FCFA/7 jours. Payez en FCFA par Mobile Money.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -1001,6 +1001,53 @@
             margin-right: 4px;
         }
 
+        /* ===== USERNAME VALIDATION ===== */
+        .username-warning {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .username-warning i {
+            font-size: 0.9rem;
+        }
+
+        .username-warning.success {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .username-warning.error {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .username-warning.info {
+            color: var(--info);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .username-warning.warning {
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
         /* ===== MODALS ===== */
         .modal {
             position: fixed;
@@ -1913,6 +1960,7 @@
 
                 <div style="margin: 20px 0;">
                     <input type="text" class="phone-input" id="serverUsernameInput" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                    <div class="username-warning" id="usernameWarning" style="display: none;"></div>
                     <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
                 </div>
             </div>
@@ -1971,6 +2019,8 @@
 
                 <div style="margin: 20px 0;">
                     <input type="text" class="phone-input" id="mobileServerUsername" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                    <div class="username-warning" id="mobileUsernameWarning" style="display: none;"></div>
+                    <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
                 </div>
                 
                 <p style="color: var(--text-secondary); font-size: 0.9rem;">
@@ -2391,6 +2441,9 @@
                         
                         document.getElementById('balanceCard').style.display = 'block';
                         document.getElementById('userBalance').textContent = userCoins;
+                        
+                        // Activer la validation des usernames
+                        setupUsernameValidation();
                     }
                 })
                 .catch(() => {
@@ -2415,6 +2468,127 @@
             document.getElementById('navRegister').style.display = 'block';
             document.getElementById('logoutDivider').style.display = 'none';
             document.getElementById('navLogout').style.display = 'none';
+        }
+
+        // ===== VÉRIFICATION DU NOM D'UTILISATEUR PTERODACTYL =====
+        async function checkPterodactylUsername(username) {
+            try {
+                const response = await fetch('/api/check-username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                });
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Erreur vérification username:', error);
+                return { available: false, error: 'Erreur de connexion' };
+            }
+        }
+
+        // Debounce pour éviter trop d'appels API
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function validateUsernameField(event) {
+            const input = event.target;
+            const username = input.value;
+            const warning = document.getElementById('usernameWarning');
+            
+            if (!warning) return;
+            
+            if (username.length < 3) {
+                warning.style.display = 'none';
+                input.setAttribute('data-valid', 'false');
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                warning.style.display = 'flex';
+                warning.className = 'username-warning error';
+                warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
+                input.setAttribute('data-valid', 'false');
+                return;
+            }
+            
+            warning.style.display = 'flex';
+            warning.className = 'username-warning info';
+            warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            
+            const result = await checkPterodactylUsername(username);
+            
+            if (result.available) {
+                warning.className = 'username-warning success';
+                warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
+                input.setAttribute('data-valid', 'true');
+            } else {
+                warning.className = 'username-warning error';
+                warning.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.error || 'Nom d\'utilisateur déjà utilisé'}`;
+                input.setAttribute('data-valid', 'false');
+            }
+        }
+
+        async function validateMobileUsernameField(event) {
+            const input = event.target;
+            const username = input.value;
+            const warning = document.getElementById('mobileUsernameWarning');
+            
+            if (!warning) return;
+            
+            if (username.length < 3) {
+                warning.style.display = 'none';
+                input.setAttribute('data-valid', 'false');
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                warning.style.display = 'flex';
+                warning.className = 'username-warning error';
+                warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
+                input.setAttribute('data-valid', 'false');
+                return;
+            }
+            
+            warning.style.display = 'flex';
+            warning.className = 'username-warning info';
+            warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            
+            const result = await checkPterodactylUsername(username);
+            
+            if (result.available) {
+                warning.className = 'username-warning success';
+                warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
+                input.setAttribute('data-valid', 'true');
+            } else {
+                warning.className = 'username-warning error';
+                warning.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.error || 'Nom d\'utilisateur déjà utilisé'}`;
+                input.setAttribute('data-valid', 'false');
+            }
+        }
+
+        function setupUsernameValidation() {
+            const usernameInput = document.getElementById('serverUsernameInput');
+            const mobileUsernameInput = document.getElementById('mobileServerUsername');
+            
+            if (usernameInput) {
+                usernameInput.addEventListener('input', debounce(validateUsernameField, 500));
+            }
+            
+            if (mobileUsernameInput) {
+                mobileUsernameInput.addEventListener('input', debounce(validateMobileUsernameField, 500));
+            }
         }
 
         // ===== PLAN SELECTION =====
@@ -2544,6 +2718,7 @@
         async function confirmCoinPayment() {
             const serverName = document.getElementById('serverNameInput').value;
             const serverUsername = document.getElementById('serverUsernameInput').value;
+            const usernameValid = document.getElementById('serverUsernameInput').getAttribute('data-valid') === 'true';
             
             if (!serverName || serverName.length < 3 || serverName.length > 30) {
                 showToast('error', 'Nom de serveur invalide');
@@ -2557,6 +2732,12 @@
             
             if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
                 showToast('error', "Lettres, chiffres et _ uniquement");
+                return;
+            }
+
+            // 🔍 VÉRIFICATION FINALE DU NOM D'UTILISATEUR
+            if (!usernameValid) {
+                showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur');
                 return;
             }
 
@@ -2610,6 +2791,7 @@
             const phone = document.getElementById('mobilePhone').value;
             const serverName = document.getElementById('mobileServerName').value;
             const serverUsername = document.getElementById('mobileServerUsername').value;
+            const usernameValid = document.getElementById('mobileServerUsername').getAttribute('data-valid') === 'true';
             
             if (!phone || phone.length !== 9) {
                 showToast('error', 'Numéro invalide');
@@ -2623,6 +2805,17 @@
             
             if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
                 showToast('error', "Nom d'utilisateur invalide");
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
+                showToast('error', "Lettres, chiffres et _ uniquement");
+                return;
+            }
+
+            // 🔍 VÉRIFICATION FINALE DU NOM D'UTILISATEUR
+            if (!usernameValid) {
+                showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur');
                 return;
             }
 
