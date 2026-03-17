@@ -1,0 +1,339 @@
+{
+  "common": {
+    "app_name": "KermHosting",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and"
+  },
+  "nav": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "buy_coins": "Buy coins",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "support": "Support",
+    "admin": "Admin",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "hero": {
+    "badge": "🇨🇲 FCFA Payment",
+    "title": "<span class=\"gradient-text\">Node.js</span> Hosting in FCFA",
+    "subtitle": "Create your server in 1 minute. Pay in FCFA via Mobile Money or Card. Intuitive mobile interface, complete management.",
+    "cta_start": "Get Started",
+    "cta_pricing": "View Pricing",
+    "stats_users": "Users",
+    "stats_servers": "Active Servers",
+    "stats_uptime": "Uptime"
+  },
+  "features": {
+    "title": "Why choose <span class=\"gradient-text\">KermHosting</span>?",
+    "subtitle": "Hosting tailored for African needs",
+    "payment": {
+      "title": "FCFA Payment",
+      "desc": "Pay in FCFA via Orange Money, MTN Mobile Money, or bank card. No hidden fees."
+    },
+    "instant": {
+      "title": "Instant Setup",
+      "desc": "Create your server in less than a minute after payment. Everything is automated."
+    },
+    "mobile": {
+      "title": "Mobile First",
+      "desc": "Interface optimized for smartphones. Manage your servers anywhere in Africa."
+    },
+    "coins": {
+      "title": "Coin System",
+      "desc": "Earn coins daily and refer friends to pay less."
+    },
+    "files": {
+      "title": "File Management",
+      "desc": "Integrated code editor, file upload, environment variables management."
+    },
+    "support": {
+      "title": "WhatsApp Support",
+      "desc": "Responsive support via WhatsApp and email. A team listening to your needs."
+    }
+  },
+  "pricing": {
+    "title": "Plans starting from <span class=\"gradient-text\">500 FCFA</span>",
+    "subtitle": "From simple Discord bots to enterprise applications",
+    "badge_free": "FREE",
+    "badge_popular": "POPULAR",
+    "badge_pro": "PRO",
+    "free": {
+      "name": "Free",
+      "price": "0",
+      "period": "FCFA",
+      "features": {
+        "ram": "256 MB RAM",
+        "storage": "5 GB Storage",
+        "cpu": "50% CPU",
+        "trial": "24h trial"
+      }
+    },
+    "starter": {
+      "name": "Starter",
+      "price": "500",
+      "period": "FCFA/month",
+      "features": {
+        "ram": "1 GB RAM",
+        "storage": "10 GB Storage",
+        "cpu": "100% CPU",
+        "days": "30 days",
+        "support": "Standard support"
+      }
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "1,300",
+      "period": "FCFA/month",
+      "features": {
+        "ram": "4 GB RAM",
+        "storage": "40 GB Storage",
+        "cpu": "400% CPU",
+        "days": "30 days",
+        "support": "Priority support"
+      }
+    },
+    "note": "💰 Save up to 20% by buying coin packs!",
+    "cta": "View all plans"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back!",
+      "subtitle": "Login to manage your servers",
+      "email": "Email address",
+      "password": "Password",
+      "forgot": "Forgot password?",
+      "button": "Login",
+      "no_account": "Don't have an account?",
+      "signup": "Create a free account"
+    },
+    "register": {
+      "title": "Join the adventure",
+      "subtitle": "Create your account and get 10 free coins",
+      "username": "Username",
+      "email": "Email address",
+      "password": "Password",
+      "referral": "Referral code (optional)",
+      "terms": "I accept the terms of use",
+      "privacy": "privacy policy",
+      "newsletter": "Receive promotional offers by email",
+      "button": "Create account",
+      "have_account": "Already have an account?",
+      "login": "Login"
+    },
+    "forgot": {
+      "title": "Forgot password?",
+      "subtitle": "Receive a reset code by email",
+      "email": "Email address",
+      "button": "Send code",
+      "back": "Back to login"
+    },
+    "reset": {
+      "title": "New password",
+      "subtitle": "Enter the code received by email and your new password",
+      "email": "Email address",
+      "code": "Reset code",
+      "new_password": "New password",
+      "confirm": "Confirm password",
+      "button": "Reset"
+    },
+    "verify": {
+      "title": "Email verification",
+      "subtitle": "Enter the 6-digit code sent to your email",
+      "code": "Verification code",
+      "button": "Verify",
+      "resend": "Resend code",
+      "not_received": "Didn't receive the code?"
+    }
+  },
+  "dashboard": {
+    "welcome": "Hello",
+    "subtitle": "Welcome to your dashboard",
+    "coins": "Available coins",
+    "servers": "Active servers",
+    "streak": "Day streak",
+    "stats": {
+      "total_coins": "Total coins",
+      "today": "today",
+      "expiring": "expiring soon",
+      "next_reward": "coins tomorrow"
+    },
+    "quick_actions": {
+      "new_server": "New server",
+      "new_server_desc": "Create a server immediately",
+      "buy_coins": "Buy coins",
+      "buy_coins_desc": "Top up your balance in FCFA",
+      "daily_reward": "Daily reward",
+      "daily_reward_desc": "Click to claim",
+      "profile": "My profile",
+      "profile_desc": "Manage your account"
+    },
+    "my_servers": "My servers",
+    "no_servers": "No servers",
+    "no_servers_desc": "You haven't created any servers yet. Get started now!",
+    "create_server": "Create a server",
+    "recent_activity": "Recent activity",
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "stopped": "Stopped",
+      "suspended": "Suspended",
+      "expired": "Expired"
+    },
+    "time": {
+      "days_left": "days left",
+      "expires_today": "Expires today",
+      "expired": "Expired"
+    }
+  },
+  "server": {
+    "details": "Server details",
+    "credentials": "Login credentials",
+    "username": "Username",
+    "password": "Password",
+    "panel_url": "Panel URL",
+    "server_id": "Server ID",
+    "expires": "Expires on",
+    "time_left": "Time left",
+    "actions": {
+      "start": "Start",
+      "stop": "Stop",
+      "restart": "Restart",
+      "kill": "Kill",
+      "renew": "Renew",
+      "files": "Files",
+      "console": "Console"
+    },
+    "resources": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Disk",
+      "uptime": "Uptime"
+    },
+    "console": {
+      "title": "Console",
+      "clear": "Clear",
+      "placeholder": "Enter a command...",
+      "connected": "Connected to server console"
+    },
+    "warning": "Keep these credentials safe. They will never be shown again!"
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage your personal information and preferences",
+    "info": "Personal information",
+    "username": "Username",
+    "email": "Email",
+    "role": "Role",
+    "member_since": "Member since",
+    "badges": "Badges",
+    "security": "Security",
+    "api_key": "API Key",
+    "api_key_desc": "Your API key is used to access the KermHosting API. Keep it secret.",
+    "regenerate": "Regenerate API key",
+    "change_password": "Change password",
+    "transactions": "Transactions",
+    "referrals": "Referrals",
+    "referral_link": "Your referral link",
+    "referral_desc": "Invite your friends and earn 20 coins per referral!",
+    "referral_count": "People referred",
+    "coins_earned": "Coins earned",
+    "no_transactions": "No transactions",
+    "no_referrals": "No referrals"
+  },
+  "support": {
+    "title": "How can we help you?",
+    "subtitle": "Find answers to your questions or contact our support team",
+    "search": "Search our knowledge base",
+    "placeholder": "Ex: how to create a server, payment, renewal...",
+    "contact": {
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "discord": "Discord",
+      "ticket": "Ticket"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "payment": "How to pay in FCFA?",
+      "payment_answer": "We accept Orange Money, MTN Mobile Money, and bank cards (Visa/Mastercard). Payment is instant and secure.",
+      "coins": "What are coins?",
+      "coins_answer": "Coins are our virtual currency. You can buy them in FCFA and get discounts. 100 coins = 500 FCFA, with bonuses depending on packs.",
+      "domain": "Can I use my own domain name?",
+      "domain_answer": "Yes! You can configure your own domain names for your servers. We also provide free subdomains.",
+      "expiration": "What happens when my server expires?",
+      "expiration_answer": "You receive an email 3 days before expiration. If you don't renew, the server is automatically deleted after 7 days."
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "servers": "Servers",
+    "transactions": "Transactions",
+    "logs": "Logs",
+    "stats": "Statistics",
+    "total_users": "Users",
+    "verified_users": "Verified",
+    "banned_users": "Banned",
+    "total_servers": "Servers",
+    "active_servers": "Active servers",
+    "total_coins": "Coins in circulation",
+    "total_revenue": "FCFA Revenue",
+    "actions": {
+      "edit": "Edit",
+      "ban": "Ban",
+      "unban": "Unban",
+      "delete": "Delete",
+      "add_coins": "Add coins",
+      "remove_coins": "Remove coins"
+    }
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalid_email": "Invalid email",
+    "password_short": "Password must be at least 6 characters",
+    "password_mismatch": "Passwords do not match",
+    "user_exists": "Username or email already exists",
+    "invalid_credentials": "Incorrect email or password",
+    "unauthorized": "Unauthorized",
+    "not_found": "Page not found",
+    "server_error": "Server error",
+    "network_error": "Network error"
+  },
+  "footer": {
+    "product": "Product",
+    "pricing": "Pricing",
+    "buy_coins": "Buy coins",
+    "features": "Features",
+    "status": "Status",
+    "resources": "Resources",
+    "support": "FAQ & Support",
+    "docs": "Documentation",
+    "blog": "Blog",
+    "community": "Community",
+    "legal": "Legal",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "mentions": "Legal notices",
+    "copyright": "All rights reserved"
+  }
+}
