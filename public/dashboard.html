@@ -753,6 +753,12 @@
             opacity: 0.7;
         }
 
+        .server-card.suspended {
+            border-left: 4px solid var(--danger);
+            opacity: 0.8;
+            background: linear-gradient(135deg, var(--bg-card), rgba(239, 68, 68, 0.1));
+        }
+
         .server-header {
             padding: 14px;
             background: var(--bg-hover);
@@ -796,6 +802,11 @@
             background: var(--text-muted);
         }
 
+        .status-suspended {
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
         .status-error {
             background: var(--danger);
         }
@@ -822,33 +833,6 @@
         .server-info-item i {
             color: var(--primary);
             width: 16px;
-        }
-
-        .server-progress {
-            margin: 12px 0;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: var(--border-color);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-full);
-            width: 0%;
-            transition: width 0.3s;
         }
 
         .server-footer {
@@ -907,6 +891,18 @@
 
         .server-action-btn.start:hover {
             background: var(--success);
+        }
+
+        .server-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .server-action-btn:disabled:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border-color: var(--border-color);
         }
 
         .server-console {
@@ -1249,6 +1245,24 @@
 
         .warning-message i {
             font-size: 1.2rem;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin: 16px 0;
+            color: var(--danger);
+            font-size: 0.85rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .error-message i {
+            margin-right: 8px;
+            font-size: 1rem;
         }
 
         /* ===== NOTIFICATIONS PANEL ===== */
@@ -1835,6 +1849,9 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Conservez ces identifiants précieusement.</span>
                 </div>
+
+                <!-- Zone d'erreur pour les actions -->
+                <div id="actionErrorContainer" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button>
@@ -1854,6 +1871,7 @@
             </div>
             <div class="modal-body">
                 <p id="actionMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+                <div id="actionErrorInModal" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button>
@@ -2026,8 +2044,6 @@
                     if (createPlan === 'free') {
                         prepareFreeServer();
                     }
-                    
-                    loadServerResources();
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
@@ -2113,59 +2129,7 @@
             }
         }
 
-        // ===== LOAD SERVER RESOURCES =====
-        async function loadServerResources() {
-            for (const server of userServers) {
-                if (server.status === 'active') {
-                    try {
-                        const res = await fetch(`/api/servers/${server.id}/resources`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        const data = await res.json();
-
-                        if (data.success && data.resources) {
-                            updateServerResources(server.id, data.resources);
-                        }
-                    } catch (error) {
-                        console.error('Erreur chargement ressources:', error);
-                    }
-                }
-            }
-        }
-
-        function updateServerResources(serverId, resources) {
-            const diskUsage = document.getElementById(`diskUsage-${serverId}`);
-            const diskBar = document.getElementById(`diskBar-${serverId}`);
-            const statusDot = document.getElementById(`status-${serverId}`);
-            const statusText = document.getElementById(`statusText-${serverId}`);
-
-            if (diskUsage && diskBar && resources) {
-                try {
-                    const diskUsed = Math.round(resources.resources.disk_bytes / 1024 / 1024);
-                    const diskLimit = Math.round(resources.resources.disk_limit_bytes / 1024 / 1024);
-                    const diskPercent = Math.min(100, Math.round((diskUsed / (diskLimit || 1)) * 100));
-                    
-                    diskUsage.textContent = diskPercent + '% utilisé';
-                    diskBar.style.width = diskPercent + '%';
-                    
-                    const state = resources.state;
-                    if (state === 'running') {
-                        statusDot.className = 'status-dot status-running';
-                        statusText.textContent = 'En ligne';
-                    } else if (state === 'stopped') {
-                        statusDot.className = 'status-dot status-stopped';
-                        statusText.textContent = 'Arrêté';
-                    } else {
-                        statusDot.className = 'status-dot status-error';
-                        statusText.textContent = 'Erreur';
-                    }
-                } catch (e) {
-                    console.error('Erreur mise à jour ressources:', e);
-                }
-            }
-        }
-
-        // ===== DISPLAY SERVERS =====
+        // ===== DISPLAY SERVERS - MODIFIÉ POUR AFFICHER LE STATUT CORRECT =====
         function displayServers() {
             const container = document.getElementById('serversContainer');
 
@@ -2190,35 +2154,46 @@
                 const daysLeft = calculateDaysLeft(server.expires_at);
                 const timeLeft = formatTimeLeft(server.expires_at);
                 
-                // Déterminer le statut
-                let statusClass = 'status-stopped';
-                let statusText = 'Arrêté';
-                let statusForAction = 'stopped';
+                // Déterminer le statut basé sur server.status de la BDD
+                let statusClass = '';
+                let statusDotClass = '';
+                let statusText = '';
+                let cardClass = '';
+                let isSuspended = false;
+                let isExpired = daysLeft < 0;
                 
-                if (server.status === 'active') {
-                    if (daysLeft < 0) {
+                switch(server.status) {
+                    case 'suspended':
+                        statusClass = 'status-suspended';
+                        statusDotClass = 'status-suspended';
+                        statusText = 'Suspendu';
+                        cardClass = 'suspended';
+                        isSuspended = true;
+                        break;
+                    case 'stopped':
+                        statusClass = 'status-stopped';
+                        statusDotClass = 'status-stopped';
+                        statusText = 'Arrêté';
+                        break;
+                    case 'active':
+                        if (isExpired) {
+                            statusClass = 'status-error';
+                            statusDotClass = 'status-error';
+                            statusText = 'Expiré';
+                            cardClass = 'expired';
+                        } else {
+                            statusClass = 'status-running';
+                            statusDotClass = 'status-running';
+                            statusText = 'En ligne';
+                        }
+                        break;
+                    default:
                         statusClass = 'status-error';
-                        statusText = 'Expiré';
-                        statusForAction = 'expired';
-                    } else {
-                        statusClass = 'status-running';
-                        statusText = 'En ligne';
-                        statusForAction = 'running';
-                    }
-                } else if (server.status === 'stopped') {
-                    statusClass = 'status-stopped';
-                    statusText = 'Arrêté';
-                    statusForAction = 'stopped';
-                } else {
-                    statusClass = 'status-error';
-                    statusText = 'Inactif';
-                    statusForAction = 'error';
+                        statusDotClass = 'status-error';
+                        statusText = 'Inconnu';
                 }
 
-                let cardClass = '';
-                if (daysLeft < 0) {
-                    cardClass = 'expired';
-                } else if (daysLeft <= 3) {
+                if (daysLeft <= 3 && daysLeft > 0 && server.status === 'active' && !isExpired) {
                     cardClass = 'expiring';
                 }
 
@@ -2235,11 +2210,12 @@
                             <div class="server-name">
                                 <i class="fas fa-cloud"></i>
                                 ${server.server_name || 'Sans nom'}
-                                ${daysLeft <= 3 && daysLeft > 0 ? '<span class="renewal-badge warning">⚠️</span>' : ''}
-                                ${daysLeft < 0 ? '<span class="renewal-badge danger">❌</span>' : ''}
+                                ${daysLeft <= 3 && daysLeft > 0 && !isExpired && !isSuspended ? '<span class="renewal-badge warning">⚠️</span>' : ''}
+                                ${isExpired ? '<span class="renewal-badge danger">❌</span>' : ''}
+                                ${isSuspended ? '<span class="renewal-badge danger">🔒</span>' : ''}
                             </div>
                             <div class="server-status">
-                                <span class="status-dot ${statusClass}" id="status-${server.id}"></span>
+                                <span class="status-dot ${statusDotClass}" id="status-${server.id}"></span>
                                 <span id="statusText-${server.id}">${statusText}</span>
                             </div>
                         </div>
@@ -2262,16 +2238,6 @@
                                     <span>${plan.name}</span>
                                 </div>
                             </div>
-                            
-                            <div class="server-progress">
-                                <div class="progress-label">
-                                    <span>Disque</span>
-                                    <span id="diskUsage-${server.id}">0%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="diskBar-${server.id}" style="width: 0%"></div>
-                                </div>
-                            </div>
 
                             <div class="server-info-item" style="margin-top: 8px;">
                                 <i class="fas fa-calendar-alt"></i>
@@ -2281,7 +2247,7 @@
                         <div class="server-footer">
                             <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}">
                                 <i class="fas fa-clock"></i>
-                                ${daysLeft < 0 ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}
+                                ${isExpired ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}
                             </div>
                             <div class="server-actions">
                                 <button class="server-action-btn" title="Détails" onclick="showServerDetails('${server.id}')">
@@ -2290,14 +2256,20 @@
                                 <button class="server-action-btn" title="Console" onclick="toggleConsole('${server.id}')">
                                     <i class="fas fa-terminal"></i>
                                 </button>
-                                <button class="server-action-btn" title="Redémarrer" onclick="powerAction('${server.id}', 'restart')">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" 
-                                        title="${statusText === 'En ligne' ? 'Arrêter' : 'Démarrer'}" 
-                                        onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')">
-                                    <i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i>
-                                </button>
+                                ${!isSuspended && !isExpired ? `
+                                    <button class="server-action-btn" title="Redémarrer" onclick="powerAction('${server.id}', 'restart')">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" 
+                                            title="${statusText === 'En ligne' ? 'Arrêter' : 'Démarrer'}" 
+                                            onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')">
+                                        <i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i>
+                                    </button>
+                                ` : `
+                                    <button class="server-action-btn" disabled title="Action non disponible">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                `}
                             </div>
                         </div>
                         <div class="server-console" id="console-${server.id}" style="display: none;">
@@ -2321,11 +2293,26 @@
             const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu' };
             const daysLeft = calculateDaysLeft(server.expires_at);
             
+            // Déterminer le statut
+            let statusDisplay = '';
+            if (server.status === 'suspended') {
+                statusDisplay = 'Suspendu';
+            } else if (server.status === 'stopped') {
+                statusDisplay = 'Arrêté';
+            } else if (daysLeft < 0) {
+                statusDisplay = 'Expiré';
+            } else {
+                statusDisplay = 'Actif';
+            }
+            
             document.getElementById('detailsServerName').textContent = server.server_name || 'Sans nom';
             document.getElementById('detailsPlan').textContent = plan.name;
-            document.getElementById('detailsStatus').textContent = server.status === 'active' && daysLeft >= 0 ? 'Actif' : 'Inactif';
+            document.getElementById('detailsStatus').textContent = statusDisplay;
             document.getElementById('detailsExpiry').textContent = server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'Non définie';
             document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
+
+            // Cacher les erreurs précédentes
+            document.getElementById('actionErrorContainer').style.display = 'none';
 
             try {
                 const res = await fetch(`/api/servers/${serverId}/credentials`, {
@@ -2383,7 +2370,10 @@
             }
 
             const renewBtn = document.getElementById('renewBtn');
-            if (daysLeft < 0) {
+            if (server.status === 'suspended') {
+                renewBtn.textContent = 'Réactiver';
+                renewBtn.className = 'btn btn-warning';
+            } else if (daysLeft < 0) {
                 renewBtn.textContent = 'Réactiver';
                 renewBtn.className = 'btn btn-warning';
             } else {
@@ -2450,8 +2440,24 @@
             }
         }
 
-        // ===== POWER ACTIONS =====
+        // ===== POWER ACTIONS - MODIFIÉ POUR GÉRER L'ERREUR DE SUSPENSION =====
         function powerAction(serverId, action) {
+            const server = userServers.find(s => s.id === serverId);
+            
+            // Vérifier si le serveur est suspendu avant d'ouvrir le modal
+            if (server && server.status === 'suspended') {
+                const errorMessage = `❌ Erreur Pterodactyl: Le serveur est suspendu et cette action n'est pas disponible.`;
+                showToast('error', errorMessage);
+                
+                // Afficher l'erreur détaillée dans la console
+                console.error('Action impossible - Serveur suspendu:', {
+                    code: 'ServerStateConflictException',
+                    status: '409',
+                    detail: 'This server is currently suspended and the functionality requested is unavailable.'
+                });
+                return;
+            }
+            
             currentServerId = serverId;
             currentAction = action;
             
@@ -2463,6 +2469,9 @@
             
             document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action';
             document.getElementById('actionMessage').textContent = `Confirmer ${(actionTitles[action] || 'action').toLowerCase()} le serveur ?`;
+            
+            // Cacher les erreurs précédentes
+            document.getElementById('actionErrorInModal').style.display = 'none';
             
             const confirmBtn = document.getElementById('actionConfirmBtn');
             confirmBtn.className = action === 'stop' ? 'btn btn-danger' : 'btn btn-warning';
@@ -2492,10 +2501,36 @@
                     showToast('success', 'Action effectuée');
                     setTimeout(() => loadUserData(), 2000);
                 } else {
-                    showToast('error', data.error || 'Erreur');
+                    // Afficher l'erreur détaillée si disponible
+                    let errorMsg = data.error || 'Erreur inconnue';
+                    
+                    // Si c'est une erreur de suspension, afficher le message complet
+                    if (errorMsg.includes('suspended') || errorMsg.includes('ServerStateConflictException')) {
+                        const fullError = `❌ Erreur Pterodactyl: Le serveur est suspendu. Cette action n'est pas disponible.`;
+                        showToast('error', fullError);
+                        
+                        // Afficher dans la console pour le débogage
+                        console.error('Détails de l\'erreur:', data);
+                    } else {
+                        showToast('error', errorMsg);
+                    }
                 }
             } catch (error) {
-                showToast('error', 'Erreur réseau');
+                // Gérer l'erreur réseau ou l'erreur de l'API
+                let errorMessage = 'Erreur réseau';
+                
+                // Si l'erreur contient une réponse de l'API
+                if (error.response && error.response.data) {
+                    const apiError = error.response.data;
+                    if (apiError.errors && apiError.errors[0]) {
+                        errorMessage = `❌ Erreur Pterodactyl: ${apiError.errors[0].detail || 'Action impossible'}`;
+                    } else if (apiError.error) {
+                        errorMessage = apiError.error;
+                    }
+                }
+                
+                showToast('error', errorMessage);
+                console.error('Erreur détaillée:', error);
             }
 
             currentServerId = null;
