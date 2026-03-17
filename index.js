@@ -1,5 +1,5 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS SIMPLIFIÉS
+// index.js - KERMHOSTING BACKEND ULTIME - VERSION CORRIGÉE
 // =============================================
 
 import express from 'express';
@@ -17,6 +17,7 @@ import http from 'http';
 import axios from 'axios';
 import FormData from 'form-data';
 import { Resend } from 'resend';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -103,7 +104,7 @@ const PLANS = {
         coins_needed: 0,
         duration_days: 1,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
             '256 MB RAM',
             '1 GB Stockage SSD',
@@ -127,12 +128,12 @@ const PLANS = {
         coins_needed: 100,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
             '1 GB RAM DDR4',
             '3 GB Stockage NVMe',
             '100% CPU',
-            '30 jours',
+            '7 jours',
             '3 bases de données',
             '3 backups',
             'Support standard'
@@ -153,12 +154,12 @@ const PLANS = {
         coins_needed: 160,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
             '2 GB RAM DDR4',
             '5 GB Stockage NVMe',
             '200% CPU',
-            '30 jours',
+            '7 jours',
             '5 bases de données',
             '5 backups',
             'Support prioritaire'
@@ -178,12 +179,12 @@ const PLANS = {
         coins_needed: 260,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
             '4 GB RAM DDR4',
             '10 GB Stockage NVMe',
             '400% CPU',
-            '30 jours',
+            '7 jours',
             '10 bases de données',
             '10 backups',
             'Support prioritaire',
@@ -204,12 +205,12 @@ const PLANS = {
         coins_needed: 340,
         duration_days: 7,
         egg_id: 15,
-        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_21',
+        docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
             '8 GB RAM DDR4',
             '20 GB Stockage NVMe',
             '800% CPU',
-            '30 jours',
+            '7 jours',
             '15 bases de données',
             '15 backups',
             'Support VIP 24/7',
@@ -289,10 +290,23 @@ const generateTransactionId = () => crypto.randomUUID();
 const generateUsername = () => `user_${crypto.randomBytes(4).toString('hex')}`;
 const generatePassword = () => crypto.randomBytes(12).toString('hex');
 
-// Fonction pour générer un mot de passe avec préfixe Kh-
+// =============================================
+// FONCTION CORRIGÉE - GÉNÉRATION MOT DE PASSE SERVEUR
+// Format: Kh-XXXXXX (où XXXXXX = 6 caractères alphanumériques)
+// =============================================
 function generateServerPassword() {
-    const randomPart = crypto.randomBytes(2).toString('hex');
-    return `Kh-${randomPart}`;
+    // Caractères autorisés : lettres majuscules, minuscules et chiffres
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    
+    // Générer 6 caractères aléatoires
+    for (let i = 0; i < 6; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        password += chars[randomIndex];
+    }
+    
+    // Retourner avec le préfixe Kh-
+    return `Kh-${password}`;
 }
 
 // Fonction de validation du nom d'utilisateur
@@ -308,7 +322,7 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL SIMPLIFIÉES (ANTI-SPAM)
+// FONCTIONS EMAIL AVEC RESEND
 // =============================================
 async function sendEmail(to, subject, htmlContent) {
     try {
@@ -394,7 +408,7 @@ function getBaseEmailTemplate(title, content) {
 </html>`;
 }
 
-// Template de vérification d'email - VERSION SIMPLIFIÉE
+// Template de vérification d'email
 function getVerificationEmailHtml(username, code) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Bienvenue ${username} !</h2>
@@ -417,7 +431,7 @@ function getVerificationEmailHtml(username, code) {
     return getBaseEmailTemplate('Vérification de votre compte', content);
 }
 
-// Template de bienvenue - VERSION SIMPLIFIÉE
+// Template de bienvenue
 function getWelcomeEmailHtml(username) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Félicitations ${username} !</h2>
@@ -439,7 +453,7 @@ function getWelcomeEmailHtml(username) {
     return getBaseEmailTemplate('Bienvenue sur KermHosting !', content);
 }
 
-// Template de réinitialisation de mot de passe - VERSION SIMPLIFIÉE
+// Template de réinitialisation de mot de passe
 function getResetEmailHtml(username, code) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Réinitialisation de mot de passe</h2>
@@ -463,7 +477,7 @@ function getResetEmailHtml(username, code) {
     return getBaseEmailTemplate('Réinitialisation de mot de passe', content);
 }
 
-// Template de confirmation d'achat de serveur - VERSION SIMPLIFIÉE
+// Template de confirmation d'achat de serveur
 function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Serveur créé avec succès</h2>
@@ -496,7 +510,9 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
             </table>
         </div>
         
-        <p style="color: #c0392b; font-size: 14px; background-color: #fee; padding: 10px; border-radius: 5px;">Important : conservez ces informations précieusement. Elles ne seront plus affichées.</p>
+        <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #856404;"><strong>Important :</strong> conservez ces informations précieusement. Elles ne seront plus affichées.</p>
+        </div>
         
         <p style="text-align: center; margin: 25px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Gérer mon serveur</a>
@@ -505,28 +521,59 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     return getBaseEmailTemplate('Confirmation de création de serveur', content);
 }
 
-// Template de confirmation d'achat de coins - VERSION SIMPLIFIÉE
-function getCoinsPurchaseHtml(username, pack, totalCoins) {
+// Template de confirmation d'achat de coins - VERSION AMÉLIORÉE
+function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Achat de coins confirmé</h2>
+        <h2 style="color: #333; margin-top: 0;">Achat de coins confirmé !</h2>
         <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre achat de coins a été crédité avec succès sur votre compte.</p>
+        <p style="color: #555; line-height: 1.6;">Votre achat de coins a été traité avec succès et crédité sur votre compte.</p>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0; text-align: center;">
+        <div style="background: linear-gradient(135deg, #f6f9fc, #e6f0f9); border: 1px solid #7C3AED; border-radius: 10px; padding: 25px; margin: 25px 0; text-align: center;">
+            <div style="font-size: 20px; color: #7C3AED; margin-bottom: 10px;">💰 Total de coins crédités</div>
             <div style="font-size: 48px; font-weight: bold; color: #7C3AED; margin-bottom: 10px;">${totalCoins}</div>
-            <div style="color: #666;">Coins crédités</div>
-            <div style="margin-top: 15px; color: #555;">Pack : ${pack.name}</div>
-            ${pack.bonus > 0 ? `<div style="color: #27ae60;">Bonus : +${pack.bonus} coins</div>` : ''}
+            <div style="color: #666;">coins</div>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Créer un serveur</a>
-        </p>
+        <table width="100%" cellpadding="10" cellspacing="0" style="margin: 20px 0;">
+            <tr>
+                <td style="color: #666;">Pack acheté :</td>
+                <td style="font-weight: bold;">${pack.name}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Coins de base :</td>
+                <td style="font-weight: bold;">${pack.coins}</td>
+            </tr>
+            ${pack.bonus > 0 ? `
+            <tr>
+                <td style="color: #666;">Bonus offert :</td>
+                <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
+            </tr>
+            ` : ''}
+            <tr>
+                <td style="color: #666;">Montant payé :</td>
+                <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">ID de transaction :</td>
+                <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
+            </tr>
+        </table>
+        
+        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #2e7d32;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 0 5px;">Créer un serveur</a>
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #f0f0f0; color: #333; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 0 5px;">Voir mon solde</a>
+        </div>
+        
+        <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">Si vous avez des questions, n'hésitez pas à contacter notre support.</p>
     `;
     return getBaseEmailTemplate('Achat de coins confirmé', content);
 }
 
-// Template de notification de parrainage - AVEC LIEN CORRIGÉ
+// Template de notification de parrainage
 function getReferralNotificationHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Nouveau filleul !</h2>
@@ -550,7 +597,7 @@ function getReferralNotificationHtml(username, referrerName, referralLink) {
     return getBaseEmailTemplate('Nouveau filleul !', content);
 }
 
-// Template de bienvenue pour filleul - AVEC LIEN CORRIGÉ
+// Template de bienvenue pour filleul
 function getReferralWelcomeHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin-top: 0;">Bienvenue sur KermHosting !</h2>
@@ -583,15 +630,15 @@ function getReferralWelcomeHtml(username, referrerName, referralLink) {
     return getBaseEmailTemplate('Bienvenue sur KermHosting !', content);
 }
 
-// Template d'expiration de serveur
+// Template d'expiration de serveur (J-3)
 function getServerExpiringHtml(username, server, daysLeft) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Votre serveur expire bientôt</h2>
+        <h2 style="color: #333; margin-top: 0;">⚠️ Votre serveur expire bientôt</h2>
         <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> expirera dans <strong>${daysLeft} jours</strong>.</p>
+        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> expirera dans <strong style="color: #e67e22;">${daysLeft} jours</strong>.</p>
         
         <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #856404;">Pour éviter la suppression de votre serveur, veuillez le renouveler avant la date d'expiration.</p>
+            <p style="margin: 0; color: #856404;"><strong>Action requise :</strong> Pour éviter la suspension de votre serveur, veuillez le renouveler avant la date d'expiration.</p>
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
@@ -605,31 +652,97 @@ function getServerExpiringHtml(username, server, daysLeft) {
             </tr>
         </table>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Renouveler maintenant</a>
-        </p>
-    `;
-    return getBaseEmailTemplate('Alerte expiration', content);
-}
-
-// Template de confirmation de changement d'email
-function getEmailChangedConfirmationHtml(username, newEmail) {
-    const content = `
-        <h2 style="color: #333; margin-top: 0;">Email modifié avec succès</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre adresse email a été modifiée avec succès.</p>
-        
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
-            <p style="margin: 0; color: #555;">Nouvelle adresse : <strong>${newEmail}</strong></p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Renouveler maintenant</a>
         </div>
         
-        <p style="color: #666; font-size: 14px;">Pour vous connecter, utilisez désormais cette nouvelle adresse email.</p>
+        <p style="color: #999; font-size: 13px; text-align: center;">Si vous ne renouvelez pas, votre serveur sera suspendu à la date d'expiration puis supprimé définitivement après 7 jours.</p>
+    `;
+    return getBaseEmailTemplate('Alerte expiration de serveur', content);
+}
+
+// Template de suspension de serveur (J0)
+function getServerSuspendedHtml(username, server) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">🔴 Votre serveur a été suspendu</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été suspendu car il a atteint sa date d'expiration.</p>
+        
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #721c24;"><strong>Important :</strong> Vous avez jusqu'au <strong>${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</strong> pour renouveler votre serveur. Passé ce délai, il sera définitivement supprimé avec toutes ses données.</p>
+        </div>
+        
+        <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
+            <tr>
+                <td style="color: #666;">Date d'expiration :</td>
+                <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Date limite de renouvellement :</td>
+                <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Prix de renouvellement :</td>
+                <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
+            </tr>
+        </table>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Renouveler maintenant</a>
+        </div>
+        
+        <p style="color: #999; font-size: 13px; text-align: center;">Une fois renouvelé, votre serveur sera automatiquement réactivé.</p>
+    `;
+    return getBaseEmailTemplate('Serveur suspendu', content);
+}
+
+// Template de suppression de serveur (J+7)
+function getServerDeletedHtml(username, server) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">🗑️ Votre serveur a été supprimé</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les délais.</p>
+        
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #721c24;">Toutes les données associées à ce serveur ont été effacées de nos systèmes.</p>
+        </div>
+        
+        <p style="color: #555; line-height: 1.6;">Vous pouvez toujours créer un nouveau serveur quand vous le souhaitez. Vos coins et votre compte sont toujours actifs.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Créer un nouveau serveur</a>
+        </div>
+        
+        <p style="color: #999; font-size: 13px; text-align: center;">Si vous pensez qu'il s'agit d'une erreur, contactez notre support.</p>
+    `;
+    return getBaseEmailTemplate('Serveur supprimé', content);
+}
+
+// Template de suspension de compte
+function getAccountSuspendedHtml(username, reason) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">🔒 Compte suspendu</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #721c24;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
+        </div>
+        
+        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
+        
+        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
+            <p style="margin: 5px 0;"><strong>Support :</strong></p>
+            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
+            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
+            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
+        </div>
         
         <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/login" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Se connecter</a>
+            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
         </p>
     `;
-    return getBaseEmailTemplate('Email modifié', content);
+    return getBaseEmailTemplate('Compte suspendu', content);
 }
 
 // Template de suppression de compte
@@ -652,26 +765,44 @@ function getAccountDeletedHtml(username) {
     return getBaseEmailTemplate('Compte supprimé', content);
 }
 
-// =============================================
-// ROUTE DE TEST RESEND
-// =============================================
-app.get('/api/test-resend', async (req, res) => {
-    try {
-        const result = await sendEmail(
-            'bookmakerp@gmail.com',
-            'Test Resend - KermHosting',
-            '<p>Test réussi !</p>'
-        );
+// Template de confirmation de changement d'email
+function getEmailChangedConfirmationHtml(username, newEmail) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">Email modifié avec succès</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Votre adresse email a été modifiée avec succès.</p>
+        
+        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
+            <p style="margin: 0; color: #555;">Nouvelle adresse : <strong>${newEmail}</strong></p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px;">Pour vous connecter, utilisez désormais cette nouvelle adresse email.</p>
+        
+        <p style="text-align: center; margin: 25px 0;">
+            <a href="${SITE_CONFIG.url}/login" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Se connecter</a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Email modifié', content);
+}
 
-        if (result.success) {
-            res.json({ success: true, message: 'Email envoyé avec succès !' });
-        } else {
-            res.status(500).json({ success: false, error: result.error });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+// Template de renouvellement de serveur
+function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
+    const content = `
+        <h2 style="color: #333; margin-top: 0;">Renouvellement confirmé !</h2>
+        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
+        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été renouvelé avec succès.</p>
+        
+        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 5px; padding: 20px; margin: 25px 0;">
+            <p style="margin: 5px 0;"><strong>Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+            <p style="margin: 5px 0;"><strong>Coins déduits :</strong> ${coins}</p>
+        </div>
+        
+        <p style="text-align: center; margin: 25px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Voir mon serveur</a>
+        </p>
+    `;
+    return getBaseEmailTemplate('Renouvellement confirmé', content);
+}
 
 // =============================================
 // FONCTIONS PTERODACTYL
@@ -721,12 +852,15 @@ async function callPterodactylClientAPI(endpoint, method = 'GET', data = null) {
 
 async function createPterodactylUser(username, email) {
     try {
+        // Utiliser la fonction corrigée pour générer le mot de passe
+        const password = generateServerPassword();
+        
         const payload = {
             username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
             email: email,
             first_name: username.substring(0, 10),
             last_name: 'KermHosting',
-            password: generatePassword()
+            password: password
         };
 
         const result = await callPterodactylAPI('/api/application/users', 'POST', payload);
@@ -735,7 +869,7 @@ async function createPterodactylUser(username, email) {
             id: result.attributes.id,
             username: result.attributes.username,
             email: result.attributes.email,
-            password: payload.password
+            password: password
         };
     } catch (error) {
         console.error('❌ Erreur création utilisateur Pterodactyl:', error);
@@ -832,6 +966,30 @@ async function getServerAllocations(serverId) {
     }
 }
 
+async function suspendPterodactylServer(serverId) {
+    try {
+        if (!serverId) return true;
+        // Suspendre le serveur (désactiver)
+        await callPterodactylAPI(`/api/application/servers/${serverId}/suspend`, 'POST');
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur suspension serveur:', error);
+        return false;
+    }
+}
+
+async function unsuspendPterodactylServer(serverId) {
+    try {
+        if (!serverId) return true;
+        // Réactiver le serveur
+        await callPterodactylAPI(`/api/application/servers/${serverId}/unsuspend`, 'POST');
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur réactivation serveur:', error);
+        return false;
+    }
+}
+
 async function deletePterodactylServer(serverId) {
     try {
         if (!serverId) return true;
@@ -857,20 +1015,15 @@ async function getServerResources(serverIdentifier) {
     }
 }
 
-// Récupérer les serveurs d'un node spécifique via l'API Application
+// Récupérer les serveurs d'un node spécifique
 async function getServersByNode(nodeId) {
     try {
-        // Récupérer tous les serveurs
         const allServers = await callPterodactylAPI('/api/application/servers');
         
-        // Filtrer ceux qui sont sur le node spécifié
-        // Note: Cette info peut être dans relationships ou dans les attributs selon la version
         const servers = allServers.data.filter(server => {
-            // Vérifier si le serveur a des relations et contient le node_id
             if (server.attributes.relationships?.node?.attributes?.id === parseInt(nodeId)) {
                 return true;
             }
-            // Alternative: certains endpoints renvoient node_id directement
             if (server.attributes.node === parseInt(nodeId)) {
                 return true;
             }
@@ -1968,7 +2121,8 @@ app.get('/api/payment/status/:transId', async (req, res) => {
                         getCoinsPurchaseHtml(
                             user.username, 
                             { name: transaction.metadata?.pack?.name || 'Pack de coins' }, 
-                            coinsToAdd
+                            coinsToAdd,
+                            transaction.id
                         )
                     );
                 }
@@ -2101,7 +2255,8 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
                                 getCoinsPurchaseHtml(
                                     user.username, 
                                     { name: transaction.metadata?.pack?.name || 'Pack de coins' }, 
-                                    coinsToAdd
+                                    coinsToAdd,
+                                    transaction.id
                                 )
                             );
                         }
@@ -2177,7 +2332,6 @@ app.delete('/api/user/activities', authenticateToken, async (req, res) => {
 
         if (error) throw error;
 
-        // Ajouter une activité pour dire que les activités ont été supprimées
         await supabase
             .from('user_activities')
             .insert([{
@@ -2914,9 +3068,15 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
             .from('servers')
             .update({ 
                 expires_at: newExpiry.toISOString(),
-                warning_sent: false
+                warning_sent: false,
+                status: 'active' // Réactiver si suspendu
             })
             .eq('id', serverId);
+
+        // Réactiver sur Pterodactyl si nécessaire
+        if (server.status === 'suspended') {
+            await unsuspendPterodactylServer(server.pterodactyl_id);
+        }
 
         const transactionId = generateTransactionId();
         await supabase
@@ -2946,6 +3106,12 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
                 coins_earned: -coins,
                 description: `Renouvellement du serveur "${server.server_name}" pour ${coins} coins`
             }]);
+
+        await sendEmail(
+            req.user.email,
+            'Serveur renouvelé avec succès',
+            getRenewalConfirmationHtml(req.user.username, server, newExpiry, coins)
+        );
 
         res.json({
             success: true,
@@ -3100,7 +3266,6 @@ app.get('/api/health', (req, res) => {
 // ROUTES PTERODACTYL - STATS & NODES
 // =============================================
 
-// Route pour récupérer tous les nodes
 app.get('/api/pterodactyl/nodes', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const nodes = await callPterodactylAPI('/api/application/nodes');
@@ -3111,17 +3276,14 @@ app.get('/api/pterodactyl/nodes', authenticateToken, requireAdmin, async (req, r
     }
 });
 
-// Route pour récupérer les serveurs d'un node spécifique (solution alternative sans filtre)
 app.get('/api/pterodactyl/nodes/:nodeId/servers', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { nodeId } = req.params;
         
-        // Essayer d'abord l'endpoint spécifique (si disponible)
         try {
             const nodeServers = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
             return res.json({ success: true, servers: nodeServers.data || [] });
         } catch (specificError) {
-            // Si l'endpoint spécifique échoue, on utilise notre fonction de filtrage
             console.log('⚠️ Endpoint spécifique non disponible, utilisation du filtrage manuel');
             const servers = await getServersByNode(nodeId);
             return res.json({ success: true, servers });
@@ -3132,12 +3294,10 @@ app.get('/api/pterodactyl/nodes/:nodeId/servers', authenticateToken, requireAdmi
     }
 });
 
-// Route pour récupérer les stats détaillées d'un serveur (Client API)
 app.get('/api/pterodactyl/servers/:identifier/resources', authenticateToken, async (req, res) => {
     try {
         const { identifier } = req.params;
         
-        // Vérifier que l'utilisateur a accès à ce serveur
         const { data: server } = await supabase
             .from('servers')
             .select('*')
@@ -3166,12 +3326,10 @@ app.get('/api/pterodactyl/servers/:identifier/resources', authenticateToken, asy
     }
 });
 
-// Route pour récupérer les allocations d'un serveur
 app.get('/api/pterodactyl/servers/:serverId/allocations', authenticateToken, async (req, res) => {
     try {
         const { serverId } = req.params;
         
-        // Vérifier l'accès
         const { data: server } = await supabase
             .from('servers')
             .select('*')
@@ -3351,6 +3509,11 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
             .select('*', { count: 'exact', head: true })
             .eq('status', 'active');
 
+        const { count: suspendedServers } = await supabase
+            .from('servers')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'suspended');
+
         const { data: allUsers } = await supabase
             .from('profiles')
             .select('coins');
@@ -3365,6 +3528,7 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
                 banned_users: bannedUsers || 0,
                 total_servers: totalServers || 0,
                 active_servers: activeServers || 0,
+                suspended_servers: suspendedServers || 0,
                 total_coins: totalCoins
             }
         });
@@ -3391,14 +3555,11 @@ app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (
             
             const allocations = await callPterodactylAPI(`/api/application/nodes/${nodeId}/allocations`);
             
-            // Solution alternative sans filtre non supporté
             let nodeServers = [];
             try {
-                // Essayer l'endpoint spécifique d'abord
                 const serversResponse = await callPterodactylAPI(`/api/application/nodes/${nodeId}/servers`);
                 nodeServers = serversResponse.data || [];
             } catch (specificError) {
-                // Fallback: récupérer tous les serveurs et filtrer manuellement
                 console.log(`⚠️ Fallback: filtrage manuel pour le node ${nodeId}`);
                 const allServers = await callPterodactylAPI('/api/application/servers');
                 nodeServers = allServers.data.filter(s => {
@@ -3987,39 +4148,13 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
 });
 
 // =============================================
-// TEMPLATE DE SUSPENSION DE COMPTE
-// =============================================
-function getAccountSuspendedHtml(username, reason) {
-    const content = `
-        <h2 style="color: #333; margin-top: 0;">Compte suspendu</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
-        
-        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #c0392b;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
-        </div>
-        
-        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
-        
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 5px 0;"><strong>Support :</strong></p>
-            <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
-            <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
-            <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
-        </div>
-        
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
-        </p>
-    `;
-    return getBaseEmailTemplate('Compte suspendu', content);
-}
-
-// =============================================
-// CRON JOBS
+// CRON JOBS POUR LA GESTION DES EXPIRATIONS
 // =============================================
 
+// Vérification des serveurs expirant bientôt (toutes les 6 heures) - J-3
 cron.schedule('0 */6 * * *', async () => {
+    console.log('🔍 Vérification des serveurs expirant bientôt...');
+    
     const warningDate = new Date();
     warningDate.setDate(warningDate.getDate() + 3);
 
@@ -4032,6 +4167,8 @@ cron.schedule('0 */6 * * *', async () => {
 
     for (const server of expiringServers || []) {
         const daysLeft = Math.ceil((new Date(server.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
+        
+        console.log(`📧 Envoi rappel expiration pour ${server.server_name} (${daysLeft} jours)`);
         
         await sendEmail(
             server.profiles.email,
@@ -4046,27 +4183,91 @@ cron.schedule('0 */6 * * *', async () => {
     }
 });
 
-cron.schedule('0 2 * * *', async () => {
+// Vérification des serveurs expirés aujourd'hui (toutes les heures) - J0
+cron.schedule('0 * * * *', async () => {
+    console.log('🔍 Vérification des serveurs expirés aujourd\'hui...');
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const { data: expiredServers } = await supabase
         .from('servers')
         .select('*, profiles(*)')
-        .lte('expires_at', new Date().toISOString())
+        .gte('expires_at', today.toISOString())
+        .lt('expires_at', tomorrow.toISOString())
         .eq('status', 'active');
 
     for (const server of expiredServers || []) {
-        await deletePterodactylServer(server.pterodactyl_id);
+        console.log(`🔴 Suspension du serveur ${server.server_name}`);
         
+        // Suspendre sur Pterodactyl
+        await suspendPterodactylServer(server.pterodactyl_id);
+        
+        // Mettre à jour le statut dans la base
         await supabase
             .from('servers')
-            .update({ status: 'deleted' })
+            .update({ 
+                status: 'suspended',
+                suspension_date: new Date().toISOString()
+            })
             .eq('id', server.id);
 
+        // Envoyer un email de notification
         await sendEmail(
             server.profiles.email,
-            'Votre serveur a été supprimé',
+            'Votre serveur a été suspendu',
+            getServerSuspendedHtml(server.profiles.username, server)
+        );
+    }
+});
+
+// Suppression des serveurs suspendus depuis plus de 7 jours (tous les jours à 2h)
+cron.schedule('0 2 * * *', async () => {
+    console.log('🗑️ Suppression des serveurs suspendus depuis plus de 7 jours...');
+    
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: serversToDelete } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .eq('status', 'suspended')
+        .lte('suspension_date', sevenDaysAgo.toISOString());
+
+    for (const server of serversToDelete || []) {
+        console.log(`🗑️ Suppression définitive du serveur ${server.server_name}`);
+        
+        // Supprimer de Pterodactyl
+        await deletePterodactylServer(server.pterodactyl_id);
+        
+        // Supprimer de la base
+        await supabase
+            .from('servers')
+            .delete()
+            .eq('id', server.id);
+
+        // Envoyer un email de notification
+        await sendEmail(
+            server.profiles.email,
+            'Votre serveur a été définitivement supprimé',
             getServerDeletedHtml(server.profiles.username, server)
         );
     }
+});
+
+// Nettoyage des transactions en attente (toutes les heures)
+cron.schedule('0 * * * *', async () => {
+    const oneHourAgo = new Date();
+    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+    await supabase
+        .from('transactions')
+        .update({ status: 'expired' })
+        .eq('status', 'pending')
+        .lt('created_at', oneHourAgo.toISOString());
 });
 
 // =============================================
@@ -4118,13 +4319,12 @@ wss.on('connection', (ws) => {
 });
 
 // =============================================
-// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1 CORRIGÉE
+// ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
 app.get('/api/download-bot', async (req, res) => {
     try {
         const fileName = 'KERM-MD-V1.zip';
         
-        // Chemins à vérifier
         const possiblePaths = [
             path.join(__dirname, 'public', 'downloads', fileName),
             path.join(__dirname, 'bots', fileName),
@@ -4143,16 +4343,13 @@ app.get('/api/download-bot', async (req, res) => {
             return res.status(404).json({ success: false, error: 'Fichier non trouvé' });
         }
         
-        // Lire le fichier en buffer
         const fileBuffer = fs.readFileSync(filePath);
         
-        // Configuration des headers pour forcer le téléchargement
         res.setHeader('Content-Type', 'application/zip');
         res.setHeader('Content-Disposition', 'attachment; filename="KERM-MD-V1.zip"');
         res.setHeader('Content-Length', fileBuffer.length);
         res.setHeader('Cache-Control', 'no-cache');
         
-        // Envoyer le buffer
         res.end(fileBuffer);
         
     } catch (error) {
@@ -4193,12 +4390,9 @@ app.post('/api/check-username', async (req, res) => {
         }
 
         try {
-            // Vérifier via l'API Pterodactyl si l'utilisateur existe déjà
-            // On essaie de récupérer les utilisateurs avec un filtre (si supporté)
             let userExists = false;
             
             try {
-                // Essayer de récupérer par email (plus fiable)
                 const emailToCheck = `${username.toLowerCase()}@kermhosting.local`;
                 const userByEmail = await callPterodactylAPI(`/api/application/users?filter[email]=${encodeURIComponent(emailToCheck)}`);
                 
@@ -4210,7 +4404,6 @@ app.post('/api/check-username', async (req, res) => {
             }
 
             if (!userExists) {
-                // Essayer de récupérer par username
                 try {
                     const userByUsername = await callPterodactylAPI(`/api/application/users?filter[username]=${encodeURIComponent(username.toLowerCase())}`);
                     
@@ -4222,7 +4415,6 @@ app.post('/api/check-username', async (req, res) => {
                 }
             }
 
-            // Vérifier aussi dans notre base de données locale (serveurs existants)
             if (!userExists) {
                 const { data: existingServers } = await supabase
                     .from('servers')
@@ -4238,11 +4430,10 @@ app.post('/api/check-username', async (req, res) => {
                 return res.json({ 
                     success: true, 
                     available: false, 
-                    error: 'Ce nom d\'utilisateur est déjà utilisé sur Pterodactyl' 
+                    error: 'Ce nom d\'utilisateur est déjà utilisé' 
                 });
             }
 
-            // Si on arrive ici, le nom est disponible
             return res.json({ 
                 success: true, 
                 available: true 
@@ -4251,7 +4442,6 @@ app.post('/api/check-username', async (req, res) => {
         } catch (pteroError) {
             console.error('❌ Erreur API Pterodactyl:', pteroError);
             
-            // En cas d'erreur avec Pterodactyl, on vérifie uniquement dans notre base
             const { data: existingServers } = await supabase
                 .from('servers')
                 .select('username')
@@ -4265,7 +4455,6 @@ app.post('/api/check-username', async (req, res) => {
                 });
             }
 
-            // Si pas trouvé dans notre base, on considère disponible
             return res.json({ 
                 success: true, 
                 available: true,
@@ -4282,7 +4471,6 @@ app.post('/api/check-username', async (req, res) => {
         });
     }
 });
-
 
 // =============================================
 // ROUTES PAGES HTML
