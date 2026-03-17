@@ -7,7 +7,7 @@
     <meta name="description" content="Administration KermHosting - Gérez les utilisateurs et serveurs">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -968,7 +968,47 @@
             font-size: 1rem;
         }
 
-        /* ===== MODALS OPTIMISÉS ===== */
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .page-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== MODALS ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -1241,49 +1281,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== PAGINATION ===== */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .page-btn {
-            padding: 8px 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .page-btn:hover:not(:disabled) {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .page-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .page-info {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin: 0 12px;
-        }
-
         /* ===== EXPORT BUTTONS ===== */
         .export-btns {
             display: flex;
@@ -1512,7 +1509,7 @@
                     <div class="header-actions">
                         <button class="btn btn-danger" onclick="showDeleteAllServersModal()">
                             <i class="fas fa-trash-alt"></i>
-                            <span class="btn-text">Supprimer tous</span>
+                            <span class="btn-text">Supprimer tous les serveurs</span>
                         </button>
                         <button class="btn btn-primary" onclick="refreshAllData()">
                             <i class="fas fa-sync-alt"></i>
@@ -1558,7 +1555,7 @@
                             </div>
                         </div>
                         <div class="stat-value" id="statTotalCoins">0</div>
-                        <div class="stat-label">Coins total</div>
+                        <div class="stat-label">Coins en circulation</div>
                         <div class="stat-change">
                             <i class="fas fa-chart-line"></i>
                             <span id="statAvgCoins">0 par user</span>
@@ -1577,30 +1574,6 @@
                             <i class="fas fa-exclamation-triangle"></i>
                             <span id="statBannedPercent">0%</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Financial Stats -->
-                <div class="financial-stats" id="financialStats">
-                    <div class="financial-card">
-                        <div class="financial-label">Revenus totaux</div>
-                        <div class="financial-amount" id="financialTotal">0 FCFA</div>
-                        <div class="financial-sub" id="financialTotalSub">Tous temps</div>
-                    </div>
-                    <div class="financial-card">
-                        <div class="financial-label">Aujourd'hui</div>
-                        <div class="financial-amount" id="financialToday">0 FCFA</div>
-                        <div class="financial-sub" id="financialTodaySub">0 transactions</div>
-                    </div>
-                    <div class="financial-card">
-                        <div class="financial-label">Moyenne</div>
-                        <div class="financial-amount" id="financialAvg">0 FCFA</div>
-                        <div class="financial-sub" id="financialAvgSub">par transaction</div>
-                    </div>
-                    <div class="financial-card">
-                        <div class="financial-label">Total transactions</div>
-                        <div class="financial-amount" id="financialCount">0</div>
-                        <div class="financial-sub" id="financialCountSub">paiements réussis</div>
                     </div>
                 </div>
 
@@ -1629,15 +1602,14 @@
 
                 <!-- Tabs -->
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab('users')">Utilisateurs</div>
-                    <div class="tab" onclick="switchTab('servers')">Serveurs</div>
-                    <div class="tab" onclick="switchTab('transactions')">Transactions</div>
-                    <div class="tab" onclick="switchTab('financial')">Finances</div>
-                    <div class="tab" onclick="switchTab('pterodactyl')">Pterodactyl</div>
-                    <div class="tab" onclick="switchTab('logs')">Logs</div>
+                    <div class="tab active" onclick="switchTab('users')">👥 Utilisateurs</div>
+                    <div class="tab" onclick="switchTab('servers')">🖥️ Serveurs</div>
+                    <div class="tab" onclick="switchTab('transactions')">💰 Transactions</div>
+                    <div class="tab" onclick="switchTab('financial')">📊 Finances</div>
+                    <div class="tab" onclick="switchTab('logs')">📝 Logs Admin</div>
                 </div>
 
-                <!-- Tab: Utilisateurs (OPTIMISÉ) -->
+                <!-- Tab: Utilisateurs -->
                 <div class="tab-pane active" id="tab-users">
                     <div class="search-bar">
                         <div class="search-row">
@@ -1698,11 +1670,11 @@
 
                     <!-- Pagination -->
                     <div class="pagination" id="userPagination">
-                        <button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn">
+                        <button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn" disabled>
                             <i class="fas fa-chevron-left"></i>
                         </button>
                         <span class="page-info" id="userPageInfo">Page 1 / 1</span>
-                        <button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn">
+                        <button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn" disabled>
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -1755,6 +1727,17 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="serverPagination">
+                        <button class="page-btn" onclick="changeServerPage('prev')" id="serverPrevBtn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="page-info" id="serverPageInfo">Page 1 / 1</span>
+                        <button class="page-btn" onclick="changeServerPage('next')" id="serverNextBtn" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tab: Transactions -->
@@ -1802,11 +1785,45 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="transactionPagination">
+                        <button class="page-btn" onclick="changeTransactionPage('prev')" id="transactionPrevBtn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="page-info" id="transactionPageInfo">Page 1 / 1</span>
+                        <button class="page-btn" onclick="changeTransactionPage('next')" id="transactionNextBtn" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tab: Finances -->
                 <div class="tab-pane" id="tab-financial">
-                    <div class="stats-grid" style="margin-bottom: 16px;">
+                    <div class="financial-stats">
+                        <div class="financial-card">
+                            <div class="financial-label">Revenus totaux</div>
+                            <div class="financial-amount" id="financialTotal">0 FCFA</div>
+                            <div class="financial-sub">Tous temps</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Aujourd'hui</div>
+                            <div class="financial-amount" id="financialToday">0 FCFA</div>
+                            <div class="financial-sub" id="financialTodaySub">0 transactions</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Moyenne</div>
+                            <div class="financial-amount" id="financialAvg">0 FCFA</div>
+                            <div class="financial-sub">par transaction</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Total transactions</div>
+                            <div class="financial-amount" id="financialCount">0</div>
+                            <div class="financial-sub">paiements réussis</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-header">
                                 <div class="stat-icon">
@@ -1845,7 +1862,7 @@
                         </div>
                     </div>
 
-                    <!-- Top Acheteurs (détaillé) -->
+                    <!-- Top Acheteurs -->
                     <div class="top-buyers">
                         <h3>
                             <i class="fas fa-trophy" style="color: var(--warning);"></i>
@@ -1854,71 +1871,6 @@
                         <div class="buyer-list" id="detailedTopBuyers">
                             <!-- Rempli dynamiquement -->
                         </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Pterodactyl -->
-                <div class="tab-pane" id="tab-pterodactyl">
-                    <div class="stats-grid" style="margin-bottom: 16px;">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-database"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroNodes">0</div>
-                            <div class="stat-label">Nœuds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-users-cog"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroUsers">0</div>
-                            <div class="stat-label">Utilisateurs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-server"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroTotalServers">0</div>
-                            <div class="stat-label">Serveurs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="pteroLoad">0%</div>
-                            <div class="stat-label">Charge</div>
-                        </div>
-                    </div>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nœud</th>
-                                    <th>RAM</th>
-                                    <th>Disque</th>
-                                    <th>Serveurs</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pteroNodesBody">
-                                <tr>
-                                    <td colspan="6" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des nœuds...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
 
@@ -1935,6 +1887,10 @@
                                 <option value="server">Actions serveurs</option>
                                 <option value="delete">Suppressions</option>
                             </select>
+                            <button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left: auto;">
+                                <i class="fas fa-trash-alt"></i>
+                                Supprimer les logs
+                            </button>
                         </div>
                         <div class="search-badge">
                             <i class="fas fa-history"></i>
@@ -1946,7 +1902,7 @@
                         <table id="logsTable">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Date (Cameroun)</th>
                                     <th>Admin</th>
                                     <th>Action</th>
                                     <th>Cible</th>
@@ -1963,6 +1919,17 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="logsPagination">
+                        <button class="page-btn" onclick="changeLogsPage('prev')" id="logsPrevBtn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="page-info" id="logsPageInfo">Page 1 / 1</span>
+                        <button class="page-btn" onclick="changeLogsPage('next')" id="logsNextBtn" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2168,9 +2135,23 @@
         let charts = {};
 
         // Pagination
-        let currentUserPage = 1;
-        const usersPerPage = 20;
+        const itemsPerPage = 5;
+        
+        // Users pagination
         let filteredUsers = [];
+        let currentUserPage = 1;
+        
+        // Servers pagination
+        let filteredServers = [];
+        let currentServerPage = 1;
+        
+        // Transactions pagination
+        let filteredTransactions = [];
+        let currentTransactionPage = 1;
+        
+        // Logs pagination
+        let filteredLogs = [];
+        let currentLogsPage = 1;
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -2218,6 +2199,22 @@
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        // ===== FORMAT DATE CAMEROUN (UTC+1) =====
+        function formatDateCameroon(dateString) {
+            const date = new Date(dateString);
+            // Le Cameroun est en UTC+1 toute l'année
+            const options = {
+                timeZone: 'Africa/Douala',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return date.toLocaleString('fr-FR', options);
         }
 
         // ===== TABS =====
@@ -2269,25 +2266,22 @@
                 if (data.success) {
                     financialStats = data.financial;
 
-                    // Mettre à jour les cartes financières
                     document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
                     document.getElementById('financialCount').textContent = data.financial.total_transactions;
                     
-                    document.getElementById('financialTodaySub').textContent = data.financial.total_transactions + ' transactions';
+                    document.getElementById('financialTodaySub').textContent = data.financial.today_transactions + ' transactions';
                     
-                    // Mettre à jour les stats par type
-                    document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type.coins_purchase || 0).toLocaleString() + ' FCFA';
-                    document.getElementById('financialServerPurchases').textContent = (data.financial.by_type.server_purchase || 0).toLocaleString() + ' FCFA';
-                    document.getElementById('financialRenewals').textContent = (data.financial.by_type.server_renewal || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type?.coins_purchase || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialServerPurchases').textContent = (data.financial.by_type?.server_purchase || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialRenewals').textContent = (data.financial.by_type?.server_renewal || 0).toLocaleString() + ' FCFA';
 
-                    // Afficher les top acheteurs
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
                         document.getElementById('topBuyers').style.display = 'block';
                         
                         let buyersHtml = '';
-                        data.financial.top_buyers.forEach((buyer, index) => {
+                        data.financial.top_buyers.slice(0, 5).forEach((buyer, index) => {
                             buyersHtml += `
                                 <div class="buyer-item">
                                     <div class="buyer-rank">${index + 1}</div>
@@ -2308,7 +2302,6 @@
                         document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
                     }
 
-                    // Mettre à jour les graphiques
                     updateCharts(data.financial);
                 }
             } catch (error) {
@@ -2318,11 +2311,9 @@
 
         // ===== UPDATE CHARTS =====
         function updateCharts(financial) {
-            // Détruire les anciens graphiques
             if (charts.revenue) charts.revenue.destroy();
             if (charts.type) charts.type.destroy();
 
-            // Graphique des revenus mensuels
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             charts.revenue = new Chart(revenueCtx, {
                 type: 'line',
@@ -2361,7 +2352,6 @@
                 }
             });
 
-            // Graphique de répartition par type
             const typeCtx = document.getElementById('typeChart').getContext('2d');
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
@@ -2396,7 +2386,6 @@
         // ===== LOAD ADMIN DATA =====
         async function loadAdminData() {
             try {
-                // Stats générales
                 const statsRes = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2408,14 +2397,16 @@
                     document.getElementById('statTotalServers').textContent = statsData.stats.total_servers || 0;
                     document.getElementById('statActiveServers').textContent = (statsData.stats.active_servers || 0) + ' actifs';
                     document.getElementById('statTotalCoins').textContent = statsData.stats.total_coins || 0;
-                    document.getElementById('statAvgCoins').textContent = statsData.stats.total_users ? Math.round(statsData.stats.total_coins / statsData.stats.total_users) + ' par user' : '0 par user';
+                    
+                    const avgCoins = statsData.stats.total_users ? Math.round(statsData.stats.total_coins / statsData.stats.total_users) : 0;
+                    document.getElementById('statAvgCoins').textContent = avgCoins + ' par user';
+                    
                     document.getElementById('statBannedUsers').textContent = statsData.stats.banned_users || 0;
                     
                     const bannedPercent = statsData.stats.total_users ? Math.round((statsData.stats.banned_users / statsData.stats.total_users) * 100) : 0;
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
 
-                // Utilisateurs
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2425,10 +2416,10 @@
                     allUsers = usersData.users;
                     filteredUsers = [...allUsers];
                     document.getElementById('userCount').textContent = allUsers.length;
+                    currentUserPage = 1;
                     displayUsers();
                 }
 
-                // Serveurs
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2436,11 +2427,12 @@
 
                 if (serversData.success) {
                     allServers = serversData.servers;
+                    filteredServers = [...allServers];
                     document.getElementById('serverCount').textContent = allServers.length;
+                    currentServerPage = 1;
                     displayServers();
                 }
 
-                // Transactions
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2448,11 +2440,12 @@
 
                 if (transData.success) {
                     allTransactions = transData.transactions;
+                    filteredTransactions = [...allTransactions];
                     document.getElementById('transactionCount').textContent = allTransactions.length;
+                    currentTransactionPage = 1;
                     displayTransactions();
                 }
 
-                // Logs
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -2460,15 +2453,13 @@
 
                 if (logsData.success) {
                     allLogs = logsData.logs;
+                    filteredLogs = [...allLogs];
                     document.getElementById('logCount').textContent = allLogs.length;
+                    currentLogsPage = 1;
                     displayLogs();
                 }
 
-                // Stats financières
                 await loadFinancialStats();
-
-                // Stats Pterodactyl
-                loadPterodactylStats();
 
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
@@ -2476,33 +2467,7 @@
             }
         }
 
-        // ===== LOAD PTERODACTYL STATS =====
-        async function loadPterodactylStats() {
-            try {
-                const res = await fetch('/api/admin/pterodactyl/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    document.getElementById('pteroCPU').textContent = data.cpu_used + '%';
-                    document.getElementById('pteroRAM').textContent = (data.ram_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroDisk').textContent = (data.disk_used / 1024).toFixed(1) + ' GB';
-                    document.getElementById('pteroNodes').textContent = data.nodes || 0;
-                    document.getElementById('pteroUsers').textContent = data.ptero_users || 0;
-                    document.getElementById('pteroTotalServers').textContent = data.ptero_servers || 0;
-                    document.getElementById('pteroLoad').textContent = (data.average_load || 0) + '%';
-
-                    if (data.nodes_list) {
-                        displayPterodactylNodes(data.nodes_list);
-                    }
-                }
-            } catch (error) {
-                console.error('Erreur chargement Pterodactyl:', error);
-            }
-        }
-
-        // ===== DISPLAY USERS (AVEC PAGINATION) =====
+        // ===== DISPLAY USERS =====
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             
@@ -2514,12 +2479,11 @@
 
             document.getElementById('userPagination').style.display = 'flex';
 
-            // Pagination
-            const startIndex = (currentUserPage - 1) * usersPerPage;
-            const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
+            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+            const startIndex = (currentUserPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
             const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
-            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
             document.getElementById('userPageInfo').textContent = `Page ${currentUserPage} / ${totalPages}`;
             document.getElementById('userPrevBtn').disabled = currentUserPage === 1;
             document.getElementById('userNextBtn').disabled = currentUserPage === totalPages;
@@ -2568,13 +2532,12 @@
         }
 
         function changeUserPage(direction) {
+            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+            
             if (direction === 'prev' && currentUserPage > 1) {
                 currentUserPage--;
-            } else if (direction === 'next') {
-                const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-                if (currentUserPage < totalPages) {
-                    currentUserPage++;
-                }
+            } else if (direction === 'next' && currentUserPage < totalPages) {
+                currentUserPage++;
             }
             displayUsers();
         }
@@ -2583,14 +2546,26 @@
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
             
-            if (!allServers || allServers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur</td></tr>';
+            if (!filteredServers || filteredServers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
+                document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
 
+            document.getElementById('serverPagination').style.display = 'flex';
+
+            const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
+            const startIndex = (currentServerPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredServers.length);
+            const paginatedServers = filteredServers.slice(startIndex, endIndex);
+
+            document.getElementById('serverPageInfo').textContent = `Page ${currentServerPage} / ${totalPages}`;
+            document.getElementById('serverPrevBtn').disabled = currentServerPage === 1;
+            document.getElementById('serverNextBtn').disabled = currentServerPage === totalPages;
+
             let html = '';
             
-            allServers.forEach(server => {
+            paginatedServers.forEach(server => {
                 const now = new Date();
                 const expiry = new Date(server.expires_at);
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
@@ -2635,18 +2610,41 @@
             tbody.innerHTML = html;
         }
 
+        function changeServerPage(direction) {
+            const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
+            
+            if (direction === 'prev' && currentServerPage > 1) {
+                currentServerPage--;
+            } else if (direction === 'next' && currentServerPage < totalPages) {
+                currentServerPage++;
+            }
+            displayServers();
+        }
+
         // ===== DISPLAY TRANSACTIONS =====
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             
-            if (!allTransactions || allTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction</td></tr>';
+            if (!filteredTransactions || filteredTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
+                document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
 
+            document.getElementById('transactionPagination').style.display = 'flex';
+
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            const startIndex = (currentTransactionPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredTransactions.length);
+            const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+            document.getElementById('transactionPageInfo').textContent = `Page ${currentTransactionPage} / ${totalPages}`;
+            document.getElementById('transactionPrevBtn').disabled = currentTransactionPage === 1;
+            document.getElementById('transactionNextBtn').disabled = currentTransactionPage === totalPages;
+
             let html = '';
             
-            allTransactions.forEach(transaction => {
+            paginatedTransactions.forEach(transaction => {
                 const statusClass = transaction.status === 'successful' ? 'badge-success' : 
                                    transaction.status === 'pending' ? 'badge-warning' : 'badge-danger';
                 
@@ -2656,9 +2654,6 @@
                     'server_renewal': 'Renouvellement'
                 }[transaction.type] || transaction.type;
                 
-                const mediumIcon = transaction.medium === 'MTN' ? '📱 MTN' : 
-                                  transaction.medium === 'ORANGE' ? '📱 Orange' : '💳';
-                
                 html += `
                     <tr>
                         <td><code>${transaction.id.substring(0, 8)}...</code></td>
@@ -2666,8 +2661,8 @@
                         <td>${typeText}</td>
                         <td><strong>${transaction.amount.toLocaleString()} ${transaction.currency}</strong></td>
                         <td><span class="badge ${statusClass}">${transaction.status}</span></td>
-                        <td>${transaction.medium || mediumIcon}</td>
-                        <td>${new Date(transaction.created_at).toLocaleString('fr-FR')}</td>
+                        <td>${transaction.medium || 'N/A'}</td>
+                        <td>${formatDateCameroon(transaction.created_at)}</td>
                         <td>
                             <div class="action-group">
                                 <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')">
@@ -2685,21 +2680,44 @@
             tbody.innerHTML = html;
         }
 
+        function changeTransactionPage(direction) {
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            
+            if (direction === 'prev' && currentTransactionPage > 1) {
+                currentTransactionPage--;
+            } else if (direction === 'next' && currentTransactionPage < totalPages) {
+                currentTransactionPage++;
+            }
+            displayTransactions();
+        }
+
         // ===== DISPLAY LOGS =====
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
             
-            if (!allLogs || allLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log</td></tr>';
+            if (!filteredLogs || filteredLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
+                document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
 
+            document.getElementById('logsPagination').style.display = 'flex';
+
+            const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+            const startIndex = (currentLogsPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredLogs.length);
+            const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
+
+            document.getElementById('logsPageInfo').textContent = `Page ${currentLogsPage} / ${totalPages}`;
+            document.getElementById('logsPrevBtn').disabled = currentLogsPage === 1;
+            document.getElementById('logsNextBtn').disabled = currentLogsPage === totalPages;
+
             let html = '';
             
-            allLogs.forEach(log => {
+            paginatedLogs.forEach(log => {
                 html += `
                     <tr>
-                        <td>${new Date(log.created_at).toLocaleString('fr-FR')}</td>
+                        <td>${formatDateCameroon(log.created_at)}</td>
                         <td>${log.admin_username || 'Inconnu'}</td>
                         <td>${log.action_type}</td>
                         <td>${log.target_type || ''}: ${log.target_id ? log.target_id.substring(0, 8) + '...' : ''}</td>
@@ -2712,52 +2730,15 @@
             tbody.innerHTML = html;
         }
 
-        // ===== DISPLAY PTERODACTYL NODES =====
-        function displayPterodactylNodes(nodes) {
-            const tbody = document.getElementById('pteroNodesBody');
+        function changeLogsPage(direction) {
+            const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
             
-            if (!nodes || nodes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun nœud</td></tr>';
-                return;
+            if (direction === 'prev' && currentLogsPage > 1) {
+                currentLogsPage--;
+            } else if (direction === 'next' && currentLogsPage < totalPages) {
+                currentLogsPage++;
             }
-
-            let html = '';
-            
-            nodes.forEach(node => {
-                const ramPercent = (node.ram_used / node.ram_total) * 100;
-                const diskPercent = (node.disk_used / node.disk_total) * 100;
-                
-                html += `
-                    <tr>
-                        <td><strong>${node.name}</strong></td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
-                                    <div style="width: ${ramPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
-                                </div>
-                                <span>${(node.ram_used / 1024).toFixed(1)}/${(node.ram_total / 1024).toFixed(1)} GB</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: var(--radius-full);">
-                                    <div style="width: ${diskPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full);"></div>
-                                </div>
-                                <span>${(node.disk_used / 1024).toFixed(1)}/${(node.disk_total / 1024).toFixed(1)} GB</span>
-                            </div>
-                        </td>
-                        <td>${node.servers_count}</td>
-                        <td><span class="badge ${node.is_active ? 'badge-success' : 'badge-danger'}">${node.is_active ? 'Actif' : 'Inactif'}</span></td>
-                        <td>
-                            <button class="action-btn" title="Voir détails" onclick="viewNode('${node.id}')">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
+            displayLogs();
         }
 
         // ===== FILTER FUNCTIONS =====
@@ -2802,7 +2783,7 @@
             const search = document.getElementById('serverSearch').value.toLowerCase();
             const filter = document.getElementById('serverFilter').value;
             
-            const filtered = allServers.filter(server => {
+            filteredServers = allServers.filter(server => {
                 const matchesSearch = (server.server_name?.toLowerCase() || '').includes(search) ||
                                     (server.owner_username || '').toLowerCase().includes(search) ||
                                     (server.id || '').includes(search);
@@ -2826,15 +2807,16 @@
                 }
             });
             
-            document.getElementById('serverCount').textContent = filtered.length;
-            displayFilteredServers(filtered);
+            currentServerPage = 1;
+            document.getElementById('serverCount').textContent = filteredServers.length;
+            displayServers();
         }
 
         function filterTransactions() {
             const search = document.getElementById('transactionSearch').value.toLowerCase();
             const filter = document.getElementById('transactionFilter').value;
             
-            const filtered = allTransactions.filter(trans => {
+            filteredTransactions = allTransactions.filter(trans => {
                 const matchesSearch = (trans.id || '').includes(search) ||
                                     (trans.user_username || '').toLowerCase().includes(search);
                 
@@ -2851,15 +2833,16 @@
                 }
             });
             
-            document.getElementById('transactionCount').textContent = filtered.length;
-            displayFilteredTransactions(filtered);
+            currentTransactionPage = 1;
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
+            displayTransactions();
         }
 
         function filterLogs() {
             const search = document.getElementById('logSearch').value.toLowerCase();
             const filter = document.getElementById('logFilter').value;
             
-            const filtered = allLogs.filter(log => {
+            filteredLogs = allLogs.filter(log => {
                 const matchesSearch = (log.description || '').toLowerCase().includes(search) ||
                                     (log.admin_username || '').toLowerCase().includes(search);
                 
@@ -2875,136 +2858,9 @@
                 }
             });
             
-            document.getElementById('logCount').textContent = filtered.length;
-            displayFilteredLogs(filtered);
-        }
-
-        // ===== DISPLAY FILTERED FUNCTIONS =====
-        function displayFilteredServers(servers) {
-            const tbody = document.getElementById('serversTableBody');
-            
-            if (!servers || servers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            servers.forEach(server => {
-                const now = new Date();
-                const expiry = new Date(server.expires_at);
-                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-                
-                let statusClass = 'badge-success';
-                let statusText = 'Actif';
-                
-                if (daysLeft < 0) {
-                    statusClass = 'badge-danger';
-                    statusText = 'Expiré';
-                } else if (daysLeft <= 3) {
-                    statusClass = 'badge-warning';
-                    statusText = 'Expire bientôt';
-                }
-                
-                html += `
-                    <tr>
-                        <td><code>${server.id.substring(0, 8)}...</code></td>
-                        <td><strong>${server.server_name}</strong></td>
-                        <td>${server.owner_username || 'Inconnu'}</td>
-                        <td>${window.PLANS?.[server.server_type]?.name || server.server_type}</td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
-                        <td>${new Date(server.created_at).toLocaleDateString('fr-FR')}</td>
-                        <td>${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td>
-                        <td>
-                            <div class="action-group">
-                                <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
-                                    <i class="fas fa-user"></i>
-                                </button>
-                                <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
-        function displayFilteredTransactions(transactions) {
-            const tbody = document.getElementById('transactionsTableBody');
-            
-            if (!transactions || transactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            transactions.forEach(transaction => {
-                const statusClass = transaction.status === 'successful' ? 'badge-success' : 
-                                   transaction.status === 'pending' ? 'badge-warning' : 'badge-danger';
-                
-                const typeText = {
-                    'coins_purchase': 'Achat de coins',
-                    'server_purchase': 'Achat de serveur',
-                    'server_renewal': 'Renouvellement'
-                }[transaction.type] || transaction.type;
-                
-                html += `
-                    <tr>
-                        <td><code>${transaction.id.substring(0, 8)}...</code></td>
-                        <td>${transaction.user_username || 'Inconnu'}</td>
-                        <td>${typeText}</td>
-                        <td><strong>${transaction.amount.toLocaleString()} ${transaction.currency}</strong></td>
-                        <td><span class="badge ${statusClass}">${transaction.status}</span></td>
-                        <td>${transaction.medium || 'N/A'}</td>
-                        <td>${new Date(transaction.created_at).toLocaleString('fr-FR')}</td>
-                        <td>
-                            <div class="action-group">
-                                <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
-                                    <i class="fas fa-user"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
-        function displayFilteredLogs(logs) {
-            const tbody = document.getElementById('logsTableBody');
-            
-            if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
-                return;
-            }
-
-            let html = '';
-            
-            logs.forEach(log => {
-                html += `
-                    <tr>
-                        <td>${new Date(log.created_at).toLocaleString('fr-FR')}</td>
-                        <td>${log.admin_username || 'Inconnu'}</td>
-                        <td>${log.action_type}</td>
-                        <td>${log.target_type || ''}: ${log.target_id ? log.target_id.substring(0, 8) + '...' : ''}</td>
-                        <td>${log.description || ''}</td>
-                        <td>${log.ip_address || 'N/A'}</td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
+            currentLogsPage = 1;
+            document.getElementById('logCount').textContent = filteredLogs.length;
+            displayLogs();
         }
 
         // ===== USER ACTIONS =====
@@ -3029,7 +2885,7 @@
                 serversDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Aucun serveur</p>';
             } else {
                 let html = '';
-                userServers.forEach(server => {
+                userServers.slice(0, 3).forEach(server => {
                     html += `
                         <div class="server-mini-card">
                             <div class="server-mini-info">
@@ -3047,6 +2903,9 @@
                         </div>
                     `;
                 });
+                if (userServers.length > 3) {
+                    html += `<p style="text-align: center; color: var(--text-secondary); margin-top: 8px;">... et ${userServers.length - 3} autres</p>`;
+                }
                 serversDiv.innerHTML = html;
             }
             
@@ -3103,7 +2962,7 @@
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Date</span>
-                    <span class="modal-info-value">${new Date(transaction.created_at).toLocaleString('fr-FR')}</span>
+                    <span class="modal-info-value">${formatDateCameroon(transaction.created_at)}</span>
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Fapshi ID</span>
@@ -3112,10 +2971,6 @@
             `;
 
             openModal('transactionModal');
-        }
-
-        function viewNode(nodeId) {
-            showToast('info', 'Détails du nœud: ' + nodeId);
         }
 
         async function toggleBan(userId, currentBanned) {
@@ -3408,6 +3263,41 @@
             }
         }
 
+        function showDeleteAllLogsModal() {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer tous les logs';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer TOUS les logs d\'administration ? Cette action est irréversible !';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = deleteAllLogs;
+            
+            openModal('confirmModal');
+        }
+
+        async function deleteAllLogs() {
+            closeModal('confirmModal');
+            showToast('info', 'Suppression des logs...');
+            
+            try {
+                const res = await fetch('/api/admin/logs/delete-all', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('success', 'Tous les logs ont été supprimés');
+                    loadAdminData();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la suppression');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
         // ===== EXPORT FUNCTIONS =====
         function exportUsers(format) {
             const data = filteredUsers.map(u => ({
@@ -3489,7 +3379,6 @@
         window.viewUserTransactions = viewUserTransactions;
         window.viewUser = viewUser;
         window.viewTransaction = viewTransaction;
-        window.viewNode = viewNode;
         window.toggleBan = toggleBan;
         window.deleteUser = deleteUser;
         window.addCoinsToUser = addCoinsToUser;
@@ -3500,11 +3389,17 @@
         window.deleteServer = deleteServer;
         window.showDeleteAllServersModal = showDeleteAllServersModal;
         window.deleteAllServers = deleteAllServers;
+        window.showDeleteAllLogsModal = showDeleteAllLogsModal;
+        window.deleteAllLogs = deleteAllLogs;
         window.refreshAllData = refreshAllData;
         window.closeModal = closeModal;
         window.openModal = openModal;
         window.exportUsers = exportUsers;
         window.changeUserPage = changeUserPage;
+        window.changeServerPage = changeServerPage;
+        window.changeTransactionPage = changeTransactionPage;
+        window.changeLogsPage = changeLogsPage;
+        window.formatDateCameroon = formatDateCameroon;
     </script>
 </body>
 </html>
