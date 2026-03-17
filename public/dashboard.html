@@ -325,7 +325,7 @@
             min-width: 0;
         }
 
-        /* ===== TOP BAR OPTIMISÉE ===== */
+        /* ===== TOP BAR OPTIMISÉE AVEC SÉLECTEUR DE LANGUE ===== */
         .top-bar {
             position: sticky;
             top: 0;
@@ -375,6 +375,91 @@
             align-items: center;
             gap: 8px;
         }
+
+        /* ===== LANGUAGE SELECTOR (AJOUTÉ) ===== */
+        .language-selector {
+            position: relative;
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        .language-btn {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            height: 40px;
+        }
+
+        .language-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+        }
+
+        .flag-icon {
+            width: 20px;
+            height: 15px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            min-width: 160px;
+            display: none;
+        }
+
+        .language-dropdown.active {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .language-option {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .language-option:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .language-option:first-child {
+            border-top-left-radius: var(--radius-md);
+            border-top-right-radius: var(--radius-md);
+        }
+
+        .language-option:last-child {
+            border-bottom-left-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+        }
+
+        .language-option .flag-icon {
+            width: 24px;
+            height: 18px;
+        }
+
+        /* ===== FIN LANGUAGE SELECTOR ===== */
 
         .notification-btn {
             background: none;
@@ -1490,6 +1575,20 @@
                 grid-template-columns: repeat(4, 1fr);
             }
         }
+
+        @media (max-width: 768px) {
+            .language-btn span {
+                display: none;
+            }
+            
+            .language-btn {
+                padding: 8px;
+            }
+            
+            .language-btn i.fa-chevron-down {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1591,7 +1690,7 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
+            <!-- Top Bar AVEC SÉLECTEUR DE LANGUE -->
             <header class="top-bar">
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
@@ -1601,6 +1700,34 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
+                    <!-- SÉLECTEUR DE LANGUE AJOUTÉ ICI -->
+                    <div class="language-selector">
+                        <button class="language-btn" id="languageBtn">
+                            <img src="https://flagcdn.com/w40/fr.png" alt="Français" class="flag-icon" id="currentFlag">
+                            <span id="currentLang">FR</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <div class="language-option" data-lang="fr" data-flag="https://flagcdn.com/w40/fr.png">
+                                <img src="https://flagcdn.com/w40/fr.png" alt="Français" class="flag-icon">
+                                <span>Français</span>
+                            </div>
+                            <div class="language-option" data-lang="en" data-flag="https://flagcdn.com/w40/gb.png">
+                                <img src="https://flagcdn.com/w40/gb.png" alt="English" class="flag-icon">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="es" data-flag="https://flagcdn.com/w40/es.png">
+                                <img src="https://flagcdn.com/w40/es.png" alt="Español" class="flag-icon">
+                                <span>Español</span>
+                            </div>
+                            <div class="language-option" data-lang="de" data-flag="https://flagcdn.com/w40/de.png">
+                                <img src="https://flagcdn.com/w40/de.png" alt="Deutsch" class="flag-icon">
+                                <span>Deutsch</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN SÉLECTEUR DE LANGUE -->
+                    
                     <button class="notification-btn" id="notificationBtn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">0</span>
@@ -1934,6 +2061,67 @@
             window.location.href = '/login';
         }
 
+        // ===== LANGUAGE SELECTOR SCRIPT (AJOUTÉ) =====
+        const languageBtn = document.getElementById('languageBtn');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const currentFlag = document.getElementById('currentFlag');
+        const currentLang = document.getElementById('currentLang');
+
+        // Langues disponibles
+        const languages = {
+            'fr': { name: 'Français', flag: 'https://flagcdn.com/w40/fr.png', short: 'FR' },
+            'en': { name: 'English', flag: 'https://flagcdn.com/w40/gb.png', short: 'EN' },
+            'es': { name: 'Español', flag: 'https://flagcdn.com/w40/es.png', short: 'ES' },
+            'de': { name: 'Deutsch', flag: 'https://flagcdn.com/w40/de.png', short: 'DE' }
+        };
+
+        // Langue par défaut
+        let currentLanguage = localStorage.getItem('language') || 'fr';
+
+        // Mettre à jour l'affichage du bouton
+        function updateLanguageButton(lang) {
+            const langData = languages[lang] || languages['fr'];
+            currentFlag.src = langData.flag;
+            currentFlag.alt = langData.name;
+            currentLang.textContent = langData.short;
+            localStorage.setItem('language', lang);
+            
+            // Ici tu pourrais appeler une fonction pour changer la langue du site
+            // changeSiteLanguage(lang);
+        }
+
+        // Initialiser avec la langue sauvegardée
+        updateLanguageButton(currentLanguage);
+
+        // Ouvrir/fermer le dropdown
+        languageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            languageDropdown.classList.toggle('active');
+        });
+
+        // Fermer le dropdown en cliquant ailleurs
+        document.addEventListener('click', () => {
+            languageDropdown.classList.remove('active');
+        });
+
+        // Empêcher la fermeture quand on clique dans le dropdown
+        languageDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Gérer la sélection d'une langue
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.dataset.lang;
+                updateLanguageButton(lang);
+                languageDropdown.classList.remove('active');
+                
+                // Ici tu pourrais recharger les textes traduits
+                // loadTranslations(lang);
+            });
+        });
+        // ===== FIN LANGUAGE SELECTOR SCRIPT =====
+
         // ===== CONSTANTES =====
         const PLANS = {
             'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0, duration: 1 },
@@ -2129,7 +2317,7 @@
             }
         }
 
-        // ===== DISPLAY SERVERS - MODIFIÉ POUR AFFICHER LE STATUT CORRECT =====
+        // ===== DISPLAY SERVERS =====
         function displayServers() {
             const container = document.getElementById('serversContainer');
 
@@ -2440,7 +2628,7 @@
             }
         }
 
-        // ===== POWER ACTIONS - MODIFIÉ POUR GÉRER L'ERREUR DE SUSPENSION =====
+        // ===== POWER ACTIONS =====
         function powerAction(serverId, action) {
             const server = userServers.find(s => s.id === serverId);
             
