@@ -104,7 +104,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR (optimisée mobile) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -659,12 +659,78 @@
         .chart-card h3 {
             margin-bottom: 16px;
             font-size: 1rem;
-            text-align: center;
+            display: flex;
+            align-items: center;
         }
 
         canvas {
             max-height: 250px;
             width: 100% !important;
+        }
+
+        /* ===== TOP BUYERS ===== */
+        .top-buyers {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .top-buyers h3 {
+            margin-bottom: 16px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buyer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .buyer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+
+        .buyer-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .buyer-info {
+            flex: 1;
+        }
+
+        .buyer-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .buyer-email {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .buyer-total {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
         }
 
         /* ===== TABS ===== */
@@ -691,6 +757,13 @@
             position: relative;
             white-space: nowrap;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .tab i {
+            margin-right: 6px;
+            font-size: 1rem;
         }
 
         .tab.active {
@@ -707,7 +780,16 @@
             background: var(--primary);
         }
 
-        /* ===== SEARCH BAR OPTIMISÉE ===== */
+        /* ===== TAB PANES ===== */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* ===== SEARCH BAR ===== */
         .search-bar {
             display: flex;
             flex-direction: column;
@@ -784,7 +866,7 @@
             color: var(--danger);
         }
 
-        /* ===== TABLES OPTIMISÉES ===== */
+        /* ===== TABLES ===== */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -903,71 +985,6 @@
             background: var(--info);
         }
 
-        /* ===== TOP BUYERS ===== */
-        .top-buyers {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 24px;
-        }
-
-        .top-buyers h3 {
-            margin-bottom: 16px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .buyer-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .buyer-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px;
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-        }
-
-        .buyer-rank {
-            width: 24px;
-            height: 24px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .buyer-info {
-            flex: 1;
-        }
-
-        .buyer-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .buyer-email {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-        }
-
-        .buyer-total {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1rem;
-        }
-
         /* ===== PAGINATION ===== */
         .pagination {
             display: flex;
@@ -1006,6 +1023,31 @@
         .page-info {
             color: var(--text-secondary);
             font-size: 0.9rem;
+        }
+
+        /* ===== EXPORT BUTTONS ===== */
+        .export-btns {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .export-btn {
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: var(--primary);
+            color: white;
         }
 
         /* ===== MODALS ===== */
@@ -1281,31 +1323,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== EXPORT BUTTONS ===== */
-        .export-btns {
-            display: flex;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .export-btn {
-            padding: 8px 12px;
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .export-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .page-content {
@@ -1518,7 +1535,7 @@
                     </div>
                 </div>
 
-                <!-- Stats Cards -->
+                <!-- STATS GLOBALES (toujours visibles) -->
                 <div class="stats-grid" id="statsContainer">
                     <div class="stat-card">
                         <div class="stat-header">
@@ -1577,20 +1594,44 @@
                     </div>
                 </div>
 
-                <!-- Charts -->
+                <!-- Financial Stats (toujours visibles) -->
+                <div class="financial-stats" id="financialStats">
+                    <div class="financial-card">
+                        <div class="financial-label"><i class="fas fa-chart-pie" style="margin-right: 5px;"></i>Revenus totaux</div>
+                        <div class="financial-amount" id="financialTotal">0 FCFA</div>
+                        <div class="financial-sub">Tous temps</div>
+                    </div>
+                    <div class="financial-card">
+                        <div class="financial-label"><i class="fas fa-calendar-day" style="margin-right: 5px;"></i>Aujourd'hui</div>
+                        <div class="financial-amount" id="financialToday">0 FCFA</div>
+                        <div class="financial-sub" id="financialTodaySub">0 transactions</div>
+                    </div>
+                    <div class="financial-card">
+                        <div class="financial-label"><i class="fas fa-chart-bar" style="margin-right: 5px;"></i>Moyenne</div>
+                        <div class="financial-amount" id="financialAvg">0 FCFA</div>
+                        <div class="financial-sub">par transaction</div>
+                    </div>
+                    <div class="financial-card">
+                        <div class="financial-label"><i class="fas fa-exchange-alt" style="margin-right: 5px;"></i>Total transactions</div>
+                        <div class="financial-amount" id="financialCount">0</div>
+                        <div class="financial-sub">paiements réussis</div>
+                    </div>
+                </div>
+
+                <!-- Charts (toujours visibles) -->
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h3>Revenus (30 jours)</h3>
+                        <h3><i class="fas fa-chart-line" style="color: var(--primary); margin-right: 8px;"></i>Revenus (30 jours)</h3>
                         <canvas id="revenueChart"></canvas>
                     </div>
                     <div class="chart-card">
-                        <h3>Répartition par type</h3>
+                        <h3><i class="fas fa-chart-pie" style="color: var(--secondary); margin-right: 8px;"></i>Répartition par type</h3>
                         <canvas id="typeChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Top Acheteurs -->
-                <div class="top-buyers" id="topBuyers" style="display: none;">
+                <!-- Top Acheteurs (toujours visibles) -->
+                <div class="top-buyers" id="topBuyers">
                     <h3>
                         <i class="fas fa-crown" style="color: var(--warning);"></i>
                         Top 10 acheteurs
@@ -1600,13 +1641,23 @@
                     </div>
                 </div>
 
-                <!-- Tabs -->
+                <!-- Tabs avec icônes -->
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab('users')">👥 Utilisateurs</div>
-                    <div class="tab" onclick="switchTab('servers')">🖥️ Serveurs</div>
-                    <div class="tab" onclick="switchTab('transactions')">💰 Transactions</div>
-                    <div class="tab" onclick="switchTab('financial')">📊 Finances</div>
-                    <div class="tab" onclick="switchTab('logs')">📝 Logs Admin</div>
+                    <div class="tab active" onclick="switchTab('users')">
+                        <i class="fas fa-users"></i>Utilisateurs
+                    </div>
+                    <div class="tab" onclick="switchTab('servers')">
+                        <i class="fas fa-server"></i>Serveurs
+                    </div>
+                    <div class="tab" onclick="switchTab('transactions')">
+                        <i class="fas fa-exchange-alt"></i>Transactions
+                    </div>
+                    <div class="tab" onclick="switchTab('financial')">
+                        <i class="fas fa-chart-pie"></i>Finances
+                    </div>
+                    <div class="tab" onclick="switchTab('logs')">
+                        <i class="fas fa-history"></i>Logs
+                    </div>
                 </div>
 
                 <!-- Tab: Utilisateurs -->
@@ -1800,29 +1851,6 @@
 
                 <!-- Tab: Finances -->
                 <div class="tab-pane" id="tab-financial">
-                    <div class="financial-stats">
-                        <div class="financial-card">
-                            <div class="financial-label">Revenus totaux</div>
-                            <div class="financial-amount" id="financialTotal">0 FCFA</div>
-                            <div class="financial-sub">Tous temps</div>
-                        </div>
-                        <div class="financial-card">
-                            <div class="financial-label">Aujourd'hui</div>
-                            <div class="financial-amount" id="financialToday">0 FCFA</div>
-                            <div class="financial-sub" id="financialTodaySub">0 transactions</div>
-                        </div>
-                        <div class="financial-card">
-                            <div class="financial-label">Moyenne</div>
-                            <div class="financial-amount" id="financialAvg">0 FCFA</div>
-                            <div class="financial-sub">par transaction</div>
-                        </div>
-                        <div class="financial-card">
-                            <div class="financial-label">Total transactions</div>
-                            <div class="financial-amount" id="financialCount">0</div>
-                            <div class="financial-sub">paiements réussis</div>
-                        </div>
-                    </div>
-
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-header">
@@ -1859,17 +1887,6 @@
                             </div>
                             <div class="stat-value" id="financialOther">0 FCFA</div>
                             <div class="stat-label">Autres</div>
-                        </div>
-                    </div>
-
-                    <!-- Top Acheteurs -->
-                    <div class="top-buyers">
-                        <h3>
-                            <i class="fas fa-trophy" style="color: var(--warning);"></i>
-                            Top acheteurs
-                        </h3>
-                        <div class="buyer-list" id="detailedTopBuyers">
-                            <!-- Rempli dynamiquement -->
                         </div>
                     </div>
                 </div>
@@ -2204,7 +2221,6 @@
         // ===== FORMAT DATE CAMEROUN (UTC+1) =====
         function formatDateCameroon(dateString) {
             const date = new Date(dateString);
-            // Le Cameroun est en UTC+1 toute l'année
             const options = {
                 timeZone: 'Africa/Douala',
                 year: 'numeric',
@@ -2276,12 +2292,11 @@
                     document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type?.coins_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialServerPurchases').textContent = (data.financial.by_type?.server_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialRenewals').textContent = (data.financial.by_type?.server_renewal || 0).toLocaleString() + ' FCFA';
+                    document.getElementById('financialOther').textContent = (data.financial.by_type?.other || 0).toLocaleString() + ' FCFA';
 
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
-                        document.getElementById('topBuyers').style.display = 'block';
-                        
                         let buyersHtml = '';
-                        data.financial.top_buyers.slice(0, 5).forEach((buyer, index) => {
+                        data.financial.top_buyers.slice(0, 10).forEach((buyer, index) => {
                             buyersHtml += `
                                 <div class="buyer-item">
                                     <div class="buyer-rank">${index + 1}</div>
@@ -2299,7 +2314,6 @@
                             `;
                         });
                         document.getElementById('topBuyersList').innerHTML = buyersHtml;
-                        document.getElementById('detailedTopBuyers').innerHTML = buyersHtml;
                     }
 
                     updateCharts(data.financial);
