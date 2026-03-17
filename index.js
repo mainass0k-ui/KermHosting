@@ -4146,12 +4146,14 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
         res.status(500).json({ success: false, error: 'Erreur suppression serveurs' });
     }
 });
+
+// =============================================
+// ROUTE SUPPRESSION LOGS
 // =============================================
 app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (req, res) => {
     try {
         console.log('🗑️ Suppression de tous les logs par', req.user.username);
 
-        // Compter le nombre de logs avant suppression
         const { count: beforeCount, error: countError } = await supabase
             .from('admin_actions')
             .select('*', { count: 'exact', head: true });
@@ -4161,21 +4163,18 @@ app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (r
             return res.status(500).json({ success: false, error: 'Erreur lors du comptage des logs' });
         }
 
-        // Supprimer tous les logs
         const { error: deleteError } = await supabase
             .from('admin_actions')
             .delete()
-            .neq('id', '00000000-0000-0000-0000-000000000000'); // Supprime tous les logs
+            .neq('id', '00000000-0000-0000-0000-000000000000');
 
         if (deleteError) {
             console.error('❌ Erreur suppression logs:', deleteError);
             return res.status(500).json({ success: false, error: 'Erreur lors de la suppression des logs' });
         }
 
-        // Journaliser l'action (optionnel - mais ne pourra pas être loggé car les logs sont supprimés)
         console.log(`✅ ${beforeCount} logs supprimés avec succès par ${req.user.username}`);
 
-        // Optionnel : créer une entrée dans les activités utilisateur
         await supabase
             .from('user_activities')
             .insert([{
@@ -4201,10 +4200,10 @@ app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (r
 });
 
 // =============================================
-// CRON JOBS POUR LA GESTION DES EXPIRATIONS
+// CRON JOBS CORRIGÉS POUR LA GESTION DES EXPIRATIONS
 // =============================================
 
-// Vérification des serveurs expirant bientôt (toutes les 6 heures) - J-3
+// 1. Vérification des serveurs expirant bientôt (toutes les 6 heures) - J-3
 cron.schedule('0 */6 * * *', async () => {
     console.log('🔍 Vérification des serveurs expirant bientôt...');
     
@@ -4215,6 +4214,7 @@ cron.schedule('0 */6 * * *', async () => {
         .from('servers')
         .select('*, profiles(*)')
         .lte('expires_at', warningDate.toISOString())
+        .gt('expires_at', new Date().toISOString())
         .eq('warning_sent', false)
         .eq('status', 'active');
 
@@ -4225,7 +4225,7 @@ cron.schedule('0 */6 * * *', async () => {
         
         await sendEmail(
             server.profiles.email,
-            'Votre serveur expire bientôt',
+            `⚠️ Votre serveur expire dans ${daysLeft} jours`,
             getServerExpiringHtml(server.profiles.username, server, daysLeft)
         );
 
@@ -4236,82 +4236,74 @@ cron.schedule('0 */6 * * *', async () => {
     }
 });
 
-// Vérification des serveurs expirés aujourd'hui (toutes les heures) - J0
+// 2. Vérification des serveurs expirés (toutes les heures) - CORRIGÉ
 cron.schedule('0 * * * *', async () => {
-    console.log('🔍 Vérification des serveurs expirés aujourd\'hui...');
+    console.log('🔍 Vérification des serveurs expirés...');
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const maintenant = new Date();
 
     const { data: expiredServers } = await supabase
         .from('servers')
         .select('*, profiles(*)')
-        .gte('expires_at', today.toISOString())
-        .lt('expires_at', tomorrow.toISOString())
+        .lt('expires_at', maintenant.toISOString())
         .eq('status', 'active');
 
+    console.log(`📊 ${expiredServers?.length || 0} serveurs expirés trouvés`);
+
     for (const server of expiredServers || []) {
-        console.log(`🔴 Suspension du serveur ${server.server_name}`);
+        console.log(`🔴 Suspension du serveur ${server.server_name} (expiré le ${server.expires_at})`);
         
-        // Suspendre sur Pterodactyl
         await suspendPterodactylServer(server.pterodactyl_id);
         
-        // Mettre à jour le statut dans la base
         await supabase
             .from('servers')
             .update({ 
-                status: 'suspended',
-                suspension_date: new Date().toISOString()
+                status: 'suspended'
             })
             .eq('id', server.id);
 
-        // Envoyer un email de notification
         await sendEmail(
             server.profiles.email,
-            'Votre serveur a été suspendu',
+            '🔴 Votre serveur a été suspendu',
             getServerSuspendedHtml(server.profiles.username, server)
         );
     }
 });
 
-// Suppression des serveurs suspendus depuis plus de 7 jours (tous les jours à 2h)
+// 3. Suppression des serveurs suspendus depuis plus de 7 jours (tous les jours à 2h) - CORRIGÉ
 cron.schedule('0 2 * * *', async () => {
     console.log('🗑️ Suppression des serveurs suspendus depuis plus de 7 jours...');
     
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const septJoursAvant = new Date();
+    septJoursAvant.setDate(septJoursAvant.getDate() - 7);
 
     const { data: serversToDelete } = await supabase
         .from('servers')
         .select('*, profiles(*)')
         .eq('status', 'suspended')
-        .lte('suspension_date', sevenDaysAgo.toISOString());
+        .lt('expires_at', septJoursAvant.toISOString());
+
+    console.log(`📊 ${serversToDelete?.length || 0} serveurs à supprimer définitivement`);
 
     for (const server of serversToDelete || []) {
         console.log(`🗑️ Suppression définitive du serveur ${server.server_name}`);
         
-        // Supprimer de Pterodactyl
         await deletePterodactylServer(server.pterodactyl_id);
         
-        // Supprimer de la base
         await supabase
             .from('servers')
             .delete()
             .eq('id', server.id);
 
-        // Envoyer un email de notification
         await sendEmail(
             server.profiles.email,
-            'Votre serveur a été définitivement supprimé',
+            '🗑️ Votre serveur a été définitivement supprimé',
             getServerDeletedHtml(server.profiles.username, server)
         );
     }
 });
 
-// Nettoyage des transactions en attente (toutes les heures)
+// 4. Nettoyage des transactions en attente (toutes les heures) - INCHANGÉ
 cron.schedule('0 * * * *', async () => {
     const oneHourAgo = new Date();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
