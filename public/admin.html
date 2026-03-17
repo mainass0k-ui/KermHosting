@@ -985,6 +985,14 @@
             background: var(--info);
         }
 
+        .action-btn.suspend:hover {
+            background: var(--warning);
+        }
+
+        .action-btn.unsuspend:hover {
+            background: var(--success);
+        }
+
         /* ===== PAGINATION ===== */
         .pagination {
             display: flex;
@@ -2631,6 +2639,14 @@
                                 <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
                                     <i class="fas fa-user"></i>
                                 </button>
+                                ${server.status === 'suspended' ? 
+                                    `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendServer('${server.id}')">
+                                        <i class="fas fa-play"></i>
+                                    </button>` : 
+                                    `<button class="action-btn suspend" title="Suspendre" onclick="suspendServer('${server.id}')">
+                                        <i class="fas fa-pause"></i>
+                                    </button>`
+                                }
                                 <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -2652,6 +2668,84 @@
                 currentServerPage++;
             }
             displayServers();
+        }
+
+        // ===== NOUVELLES FONCTIONS: Suspendre/Réactiver un serveur =====
+        async function suspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ? Le propriétaire ne pourra plus y accéder.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    showToast('info', 'Suspension en cours...');
+                    
+                    const res = await fetch(`/api/admin/servers/${serverId}/suspend`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: 'suspend' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Serveur suspendu avec succès');
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la suspension');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                    console.error('Erreur:', error);
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        async function unsuspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ? Le propriétaire pourra de nouveau y accéder.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    showToast('info', 'Réactivation en cours...');
+                    
+                    const res = await fetch(`/api/admin/servers/${serverId}/unsuspend`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Serveur réactivé avec succès');
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la réactivation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                    console.error('Erreur:', error);
+                }
+            };
+            
+            openModal('confirmModal');
         }
 
         // ===== DISPLAY TRANSACTIONS =====
@@ -3420,6 +3514,8 @@
         window.editServer = editServer;
         window.saveServerChanges = saveServerChanges;
         window.deleteServer = deleteServer;
+        window.suspendServer = suspendServer;
+        window.unsuspendServer = unsuspendServer;
         window.showDeleteAllServersModal = showDeleteAllServersModal;
         window.deleteAllServers = deleteAllServers;
         window.showDeleteAllLogsModal = showDeleteAllLogsModal;
