@@ -4146,6 +4146,59 @@ app.post('/api/admin/servers/delete-all', authenticateToken, requireSuperAdmin, 
         res.status(500).json({ success: false, error: 'Erreur suppression serveurs' });
     }
 });
+// =============================================
+app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        console.log('🗑️ Suppression de tous les logs par', req.user.username);
+
+        // Compter le nombre de logs avant suppression
+        const { count: beforeCount, error: countError } = await supabase
+            .from('admin_actions')
+            .select('*', { count: 'exact', head: true });
+
+        if (countError) {
+            console.error('❌ Erreur comptage logs:', countError);
+            return res.status(500).json({ success: false, error: 'Erreur lors du comptage des logs' });
+        }
+
+        // Supprimer tous les logs
+        const { error: deleteError } = await supabase
+            .from('admin_actions')
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000'); // Supprime tous les logs
+
+        if (deleteError) {
+            console.error('❌ Erreur suppression logs:', deleteError);
+            return res.status(500).json({ success: false, error: 'Erreur lors de la suppression des logs' });
+        }
+
+        // Journaliser l'action (optionnel - mais ne pourra pas être loggé car les logs sont supprimés)
+        console.log(`✅ ${beforeCount} logs supprimés avec succès par ${req.user.username}`);
+
+        // Optionnel : créer une entrée dans les activités utilisateur
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'admin_logs_cleared',
+                description: `Suppression de ${beforeCount} logs d'administration`
+            }]);
+
+        res.json({ 
+            success: true, 
+            message: `${beforeCount} logs supprimés avec succès`,
+            count: beforeCount 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur suppression logs:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur lors de la suppression des logs',
+            details: error.message 
+        });
+    }
+});
 
 // =============================================
 // CRON JOBS POUR LA GESTION DES EXPIRATIONS
