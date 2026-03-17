@@ -1,0 +1,339 @@
+{
+  "common": {
+    "app_name": "KermHosting",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "all": "Todos",
+    "none": "Ninguno",
+    "yes": "Sí",
+    "no": "No",
+    "or": "o",
+    "and": "y"
+  },
+  "nav": {
+    "home": "Inicio",
+    "pricing": "Precios",
+    "buy_coins": "Comprar monedas",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "support": "Soporte",
+    "admin": "Admin",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión"
+  },
+  "hero": {
+    "badge": "🇨🇲 Pago en FCFA",
+    "title": "Alojamiento <span class=\"gradient-text\">Node.js</span> en Franco CFA",
+    "subtitle": "Crea tu servidor en 1 minuto. Paga en FCFA por Mobile Money o Tarjeta. Interfaz móvil intuitiva, gestión completa.",
+    "cta_start": "Comenzar ahora",
+    "cta_pricing": "Ver precios",
+    "stats_users": "Usuarios",
+    "stats_servers": "Servidores activos",
+    "stats_uptime": "Tiempo activo"
+  },
+  "features": {
+    "title": "¿Por qué elegir <span class=\"gradient-text\">KermHosting</span>?",
+    "subtitle": "Alojamiento adaptado a las necesidades africanas",
+    "payment": {
+      "title": "Pago en FCFA",
+      "desc": "Paga en Franco CFA por Orange Money, MTN Mobile Money o tarjeta bancaria. Sin comisiones ocultas."
+    },
+    "instant": {
+      "title": "Inicio instantáneo",
+      "desc": "Crea tu servidor en menos de un minuto después del pago. Todo está automatizado."
+    },
+    "mobile": {
+      "title": "Mobile first",
+      "desc": "Interfaz optimizada para smartphone. Gestiona tus servidores dondequiera que estés en África."
+    },
+    "coins": {
+      "title": "Sistema de monedas",
+      "desc": "Gana monedas cada día y recomienda amigos para pagar menos."
+    },
+    "files": {
+      "title": "Gestión de archivos",
+      "desc": "Editor de código integrado, subida de archivos, gestión de variables de entorno."
+    },
+    "support": {
+      "title": "Soporte por WhatsApp",
+      "desc": "Soporte receptivo por WhatsApp y email. Un equipo atento a tus necesidades."
+    }
+  },
+  "pricing": {
+    "title": "Planes desde <span class=\"gradient-text\">500 FCFA</span>",
+    "subtitle": "Desde simples bots de Discord hasta aplicaciones empresariales",
+    "badge_free": "GRATIS",
+    "badge_popular": "POPULAR",
+    "badge_pro": "PRO",
+    "free": {
+      "name": "Free",
+      "price": "0",
+      "period": "FCFA",
+      "features": {
+        "ram": "256 MB RAM",
+        "storage": "5 GB Almacenamiento",
+        "cpu": "50% CPU",
+        "trial": "Prueba 24h"
+      }
+    },
+    "starter": {
+      "name": "Starter",
+      "price": "500",
+      "period": "FCFA/mes",
+      "features": {
+        "ram": "1 GB RAM",
+        "storage": "10 GB Almacenamiento",
+        "cpu": "100% CPU",
+        "days": "30 días",
+        "support": "Soporte estándar"
+      }
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "1.300",
+      "period": "FCFA/mes",
+      "features": {
+        "ram": "4 GB RAM",
+        "storage": "40 GB Almacenamiento",
+        "cpu": "400% CPU",
+        "days": "30 días",
+        "support": "Soporte prioritario"
+      }
+    },
+    "note": "💰 ¡Ahorra hasta un 20% comprando paquetes de monedas!",
+    "cta": "Ver todos los planes"
+  },
+  "auth": {
+    "login": {
+      "title": "¡Bienvenido de nuevo!",
+      "subtitle": "Inicia sesión para gestionar tus servidores",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "button": "Iniciar sesión",
+      "no_account": "¿No tienes cuenta?",
+      "signup": "Crear cuenta gratis"
+    },
+    "register": {
+      "title": "Únete a la aventura",
+      "subtitle": "Crea tu cuenta y obtén 10 monedas gratis",
+      "username": "Nombre de usuario",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "referral": "Código de referido (opcional)",
+      "terms": "Acepto los términos de uso",
+      "privacy": "política de privacidad",
+      "newsletter": "Recibir ofertas promocionales por correo",
+      "button": "Crear cuenta",
+      "have_account": "¿Ya tienes cuenta?",
+      "login": "Iniciar sesión"
+    },
+    "forgot": {
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Recibe un código de restablecimiento por correo",
+      "email": "Correo electrónico",
+      "button": "Enviar código",
+      "back": "Volver al inicio de sesión"
+    },
+    "reset": {
+      "title": "Nueva contraseña",
+      "subtitle": "Ingresa el código recibido por correo y tu nueva contraseña",
+      "email": "Correo electrónico",
+      "code": "Código de restablecimiento",
+      "new_password": "Nueva contraseña",
+      "confirm": "Confirmar contraseña",
+      "button": "Restablecer"
+    },
+    "verify": {
+      "title": "Verificación de correo",
+      "subtitle": "Ingresa el código de 6 dígitos enviado a tu correo",
+      "code": "Código de verificación",
+      "button": "Verificar",
+      "resend": "Reenviar código",
+      "not_received": "¿No recibiste el código?"
+    }
+  },
+  "dashboard": {
+    "welcome": "Hola",
+    "subtitle": "Bienvenido a tu panel",
+    "coins": "Monedas disponibles",
+    "servers": "Servidores activos",
+    "streak": "Días seguidos",
+    "stats": {
+      "total_coins": "Monedas totales",
+      "today": "hoy",
+      "expiring": "próximos a vencer",
+      "next_reward": "monedas mañana"
+    },
+    "quick_actions": {
+      "new_server": "Nuevo servidor",
+      "new_server_desc": "Crea un servidor inmediatamente",
+      "buy_coins": "Comprar monedas",
+      "buy_coins_desc": "Recarga tu saldo en FCFA",
+      "daily_reward": "Recompensa diaria",
+      "daily_reward_desc": "Haz clic para reclamar",
+      "profile": "Mi perfil",
+      "profile_desc": "Gestiona tu cuenta"
+    },
+    "my_servers": "Mis servidores",
+    "no_servers": "Sin servidores",
+    "no_servers_desc": "Aún no has creado ningún servidor. ¡Comienza ahora!",
+    "create_server": "Crear servidor",
+    "recent_activity": "Actividad reciente",
+    "status": {
+      "online": "En línea",
+      "offline": "Fuera de línea",
+      "stopped": "Detenido",
+      "suspended": "Suspendido",
+      "expired": "Expirado"
+    },
+    "time": {
+      "days_left": "días restantes",
+      "expires_today": "Expira hoy",
+      "expired": "Expirado"
+    }
+  },
+  "server": {
+    "details": "Detalles del servidor",
+    "credentials": "Credenciales de acceso",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "panel_url": "URL del panel",
+    "server_id": "ID del servidor",
+    "expires": "Expira el",
+    "time_left": "Tiempo restante",
+    "actions": {
+      "start": "Iniciar",
+      "stop": "Detener",
+      "restart": "Reiniciar",
+      "kill": "Forzar detención",
+      "renew": "Renovar",
+      "files": "Archivos",
+      "console": "Consola"
+    },
+    "resources": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Disco",
+      "uptime": "Tiempo activo"
+    },
+    "console": {
+      "title": "Consola",
+      "clear": "Limpiar",
+      "placeholder": "Ingresa un comando...",
+      "connected": "Conectado a la consola del servidor"
+    },
+    "warning": "¡Guarda estas credenciales de forma segura. No se volverán a mostrar!"
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "subtitle": "Gestiona tu información personal y preferencias",
+    "info": "Información personal",
+    "username": "Nombre de usuario",
+    "email": "Correo",
+    "role": "Rol",
+    "member_since": "Miembro desde",
+    "badges": "Insignias",
+    "security": "Seguridad",
+    "api_key": "Clave API",
+    "api_key_desc": "Tu clave API se utiliza para acceder a la API de KermHosting. Mantenla en secreto.",
+    "regenerate": "Regenerar clave API",
+    "change_password": "Cambiar contraseña",
+    "transactions": "Transacciones",
+    "referrals": "Referidos",
+    "referral_link": "Tu enlace de referido",
+    "referral_desc": "¡Invita a tus amigos y gana 20 monedas por referido!",
+    "referral_count": "Personas referidas",
+    "coins_earned": "Monedas ganadas",
+    "no_transactions": "Sin transacciones",
+    "no_referrals": "Sin referidos"
+  },
+  "support": {
+    "title": "¿Cómo podemos ayudarte?",
+    "subtitle": "Encuentra respuestas a tus preguntas o contacta a nuestro equipo de soporte",
+    "search": "Buscar en nuestra base de conocimiento",
+    "placeholder": "Ej: cómo crear un servidor, pago, renovación...",
+    "contact": {
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "discord": "Discord",
+      "ticket": "Ticket"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "payment": "¿Cómo pagar en FCFA?",
+      "payment_answer": "Aceptamos Orange Money, MTN Mobile Money y tarjetas bancarias (Visa/Mastercard). El pago es instantáneo y seguro.",
+      "coins": "¿Qué son las monedas?",
+      "coins_answer": "Las monedas son nuestra moneda virtual. Puedes comprarlas en FCFA y obtener descuentos. 100 monedas = 500 FCFA, con bonos según los paquetes.",
+      "domain": "¿Puedo usar mi propio nombre de dominio?",
+      "domain_answer": "¡Sí! Puedes configurar tus propios nombres de dominio para tus servidores. También proporcionamos subdominios gratuitos.",
+      "expiration": "¿Qué pasa cuando mi servidor expira?",
+      "expiration_answer": "Recibes un correo 3 días antes de la expiración. Si no renuevas, el servidor se elimina automáticamente después de 7 días."
+    }
+  },
+  "admin": {
+    "title": "Administración",
+    "dashboard": "Panel",
+    "users": "Usuarios",
+    "servers": "Servidores",
+    "transactions": "Transacciones",
+    "logs": "Registros",
+    "stats": "Estadísticas",
+    "total_users": "Usuarios",
+    "verified_users": "Verificados",
+    "banned_users": "Bloqueados",
+    "total_servers": "Servidores",
+    "active_servers": "Servidores activos",
+    "total_coins": "Monedas en circulación",
+    "total_revenue": "Ingresos FCFA",
+    "actions": {
+      "edit": "Editar",
+      "ban": "Bloquear",
+      "unban": "Desbloquear",
+      "delete": "Eliminar",
+      "add_coins": "Agregar monedas",
+      "remove_coins": "Quitar monedas"
+    }
+  },
+  "errors": {
+    "required": "Este campo es obligatorio",
+    "invalid_email": "Correo inválido",
+    "password_short": "La contraseña debe tener al menos 6 caracteres",
+    "password_mismatch": "Las contraseñas no coinciden",
+    "user_exists": "Nombre de usuario o correo ya existe",
+    "invalid_credentials": "Correo o contraseña incorrectos",
+    "unauthorized": "No autorizado",
+    "not_found": "Página no encontrada",
+    "server_error": "Error del servidor",
+    "network_error": "Error de conexión"
+  },
+  "footer": {
+    "product": "Producto",
+    "pricing": "Precios",
+    "buy_coins": "Comprar monedas",
+    "features": "Características",
+    "status": "Estado",
+    "resources": "Recursos",
+    "support": "FAQ y Soporte",
+    "docs": "Documentación",
+    "blog": "Blog",
+    "community": "Comunidad",
+    "legal": "Legal",
+    "terms": "Términos de uso",
+    "privacy": "Política de privacidad",
+    "mentions": "Avisos legales",
+    "copyright": "Todos los derechos reservados"
+  }
+}
