@@ -4316,6 +4316,180 @@ cron.schedule('0 * * * *', async () => {
 });
 
 // =============================================
+// ROUTES ADMIN - SUSPENSION/RÉACTIVATION MANUELLE
+// =============================================
+
+// Suspendre un serveur manuellement
+app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { action } = req.body; // 'suspend' ou autre
+
+        // Récupérer le serveur
+        const { data: server, error: fetchError } = await supabase
+            .from('servers')
+            .select('*, profiles(*)')
+            .eq('id', serverId)
+            .single();
+
+        if (fetchError || !server) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Serveur non trouvé' 
+            });
+        }
+
+        // Suspendre sur Pterodactyl
+        const pteroSuccess = await suspendPterodactylServer(server.pterodactyl_id);
+        if (!pteroSuccess) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur de suspension sur Pterodactyl' 
+            });
+        }
+
+        // Mettre à jour le statut dans la BDD
+        const { error: updateError } = await supabase
+            .from('servers')
+            .update({ 
+                status: 'suspended'
+            })
+            .eq('id', serverId);
+
+        if (updateError) {
+            console.error('❌ Erreur mise à jour statut:', updateError);
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur mise à jour du statut' 
+            });
+        }
+
+        // Journaliser l'action
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'manual_suspend',
+                target_type: 'server',
+                target_id: serverId,
+                description: `Suspension manuelle du serveur ${server.server_name}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        // Envoyer un email au propriétaire (optionnel)
+        if (server.profiles && server.profiles.email) {
+            await sendEmail(
+                server.profiles.email,
+                '🔴 Votre serveur a été suspendu par un administrateur',
+                getServerSuspendedHtml(server.profiles.username, server)
+            );
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Serveur suspendu avec succès'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur suspension manuelle:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// Réactiver un serveur manuellement
+app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+
+        // Récupérer le serveur
+        const { data: server, error: fetchError } = await supabase
+            .from('servers')
+            .select('*, profiles(*)')
+            .eq('id', serverId)
+            .single();
+
+        if (fetchError || !server) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Serveur non trouvé' 
+            });
+        }
+
+        // Réactiver sur Pterodactyl
+        const pteroSuccess = await unsuspendPterodactylServer(server.pterodactyl_id);
+        if (!pteroSuccess) {
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur de réactivation sur Pterodactyl' 
+            });
+        }
+
+        // Mettre à jour le statut dans la BDD
+        const { error: updateError } = await supabase
+            .from('servers')
+            .update({ 
+                status: 'active'
+            })
+            .eq('id', serverId);
+
+        if (updateError) {
+            console.error('❌ Erreur mise à jour statut:', updateError);
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur mise à jour du statut' 
+            });
+        }
+
+        // Journaliser l'action
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'manual_unsuspend',
+                target_type: 'server',
+                target_id: serverId,
+                description: `Réactivation manuelle du serveur ${server.server_name}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        // Envoyer un email au propriétaire (optionnel)
+        if (server.profiles && server.profiles.email) {
+            const html = `
+                <h2>✅ Votre serveur a été réactivé</h2>
+                <p>Bonjour ${server.profiles.username},</p>
+                <p>Votre serveur <strong>"${server.server_name}"</strong> a été réactivé par un administrateur.</p>
+                <p>Vous pouvez maintenant y accéder normalement.</p>
+                <p style="text-align: center;">
+                    <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Accéder à mon serveur</a>
+                </p>
+            `;
+            await sendEmail(
+                server.profiles.email,
+                '✅ Votre serveur a été réactivé',
+                getBaseEmailTemplate('Serveur réactivé', html)
+            );
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Serveur réactivé avec succès'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur réactivation manuelle:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// =============================================
 // WEBSOCKET
 // =============================================
 
