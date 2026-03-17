@@ -2556,7 +2556,7 @@
             displayUsers();
         }
 
-        // ===== DISPLAY SERVERS =====
+        // ===== DISPLAY SERVERS - VERSION CORRIGÉE =====
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
             
@@ -2584,15 +2584,34 @@
                 const expiry = new Date(server.expires_at);
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
                 
+                // CORRECTION: Utiliser le status de la BDD en priorité
                 let statusClass = 'badge-success';
                 let statusText = 'Actif';
                 
-                if (daysLeft < 0) {
-                    statusClass = 'badge-danger';
-                    statusText = 'Expiré';
-                } else if (daysLeft <= 3) {
-                    statusClass = 'badge-warning';
-                    statusText = 'Expire bientôt';
+                // Priorité au statut de la BDD
+                switch(server.status) {
+                    case 'suspended':
+                        statusClass = 'badge-danger';
+                        statusText = 'Suspendu';
+                        break;
+                    case 'stopped':
+                        statusClass = 'badge-warning';
+                        statusText = 'Arrêté';
+                        break;
+                    case 'active':
+                    default:
+                        // Si actif mais expiré
+                        if (daysLeft < 0) {
+                            statusClass = 'badge-danger';
+                            statusText = 'Expiré';
+                        } else if (daysLeft <= 3) {
+                            statusClass = 'badge-warning';
+                            statusText = 'Expire bientôt';
+                        } else {
+                            statusClass = 'badge-success';
+                            statusText = 'Actif';
+                        }
+                        break;
                 }
                 
                 html += `
@@ -2809,9 +2828,9 @@
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
                 
                 switch(filter) {
-                    case 'active': return daysLeft > 0;
+                    case 'active': return daysLeft > 0 && server.status === 'active';
                     case 'expired': return daysLeft < 0;
-                    case 'expiring': return daysLeft > 0 && daysLeft <= 3;
+                    case 'expiring': return daysLeft > 0 && daysLeft <= 3 && server.status === 'active';
                     case 'free': return server.server_type === 'free';
                     case '1gb': return server.server_type === '1gb';
                     case '2gb': return server.server_type === '2gb';
@@ -3157,7 +3176,7 @@
             document.getElementById('editServerName').textContent = server.server_name;
             document.getElementById('editServerOwner').textContent = server.owner_username || 'Inconnu';
             document.getElementById('editServerPlan').value = server.server_type;
-            document.getElementById('editServerStatus').value = server.status;
+            document.getElementById('editServerStatus').value = server.status || 'active';
             
             const expiryDate = new Date(server.expires_at);
             const formattedDate = expiryDate.toISOString().slice(0, 16);
