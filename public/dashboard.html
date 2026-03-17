@@ -22,20 +22,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- GOOGLE TRANSLATE - AJOUT ICI -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'fr',
-                includedLanguages: 'fr,en,es,de,it,pt,ar,ru,zh-CN,ja',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                autoDisplay: false
-            }, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <!-- FIN GOOGLE TRANSLATE -->
-    
     <title>Tableau de bord - KermHosting</title>
     
     <style>
@@ -388,123 +374,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
         }
-
-        /* ===== GOOGLE TRANSLATE CUSTOM STYLES - AJOUT ICI ===== */
-        .google-translate-container {
-            margin-right: 4px;
-        }
-
-        .goog-te-gadget {
-            font-family: 'Inter', sans-serif !important;
-            color: var(--text-primary) !important;
-            font-size: 0 !important;
-            line-height: 0 !important;
-        }
-
-        .goog-te-gadget-simple {
-            background: var(--bg-hover) !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: var(--radius-full) !important;
-            padding: 6px 12px !important;
-            font-size: 0.85rem !important;
-            line-height: normal !important;
-            height: 40px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-
-        .goog-te-gadget-simple:hover {
-            background: var(--bg-card) !important;
-            border-color: var(--primary) !important;
-        }
-
-        .goog-te-gadget-simple img {
-            display: none !important;
-        }
-
-        .goog-te-gadget-simple span {
-            color: var(--text-primary) !important;
-        }
-
-        .goog-te-menu-value {
-            color: var(--text-primary) !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 5px !important;
-        }
-
-        .goog-te-menu-value span {
-            color: var(--text-primary) !important;
-        }
-
-        .goog-te-menu-value:before {
-            content: '🌐' !important;
-            margin-right: 5px;
-            font-size: 1rem;
-        }
-
-        .goog-te-menu-value span:first-child {
-            display: none;
-        }
-
-        .goog-te-menu-value span:last-child {
-            display: inline;
-        }
-
-        .goog-te-menu-frame {
-            box-shadow: var(--shadow-lg) !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: var(--radius-md) !important;
-            background: var(--bg-card) !important;
-            overflow: hidden !important;
-        }
-
-        .goog-te-menu2 {
-            background: var(--bg-card) !important;
-            border: none !important;
-            border-radius: var(--radius-md) !important;
-            max-height: 300px !important;
-            overflow-y: auto !important;
-        }
-
-        .goog-te-menu2 table tr td {
-            font-family: 'Inter', sans-serif !important;
-            color: var(--text-primary) !important;
-            background: transparent !important;
-            border: none !important;
-            padding: 8px 16px !important;
-            font-size: 0.9rem !important;
-        }
-
-        .goog-te-menu2 table tr td:hover {
-            background: var(--bg-hover) !important;
-        }
-
-        .goog-te-menu2 table tr td .text {
-            color: var(--text-primary) !important;
-        }
-
-        .goog-te-menu2 table tr td .text:visited {
-            color: var(--text-primary) !important;
-        }
-
-        /* Désactiver la traduction de certains éléments */
-        .notranslate, .logo, .user-avatar, .user-avatar-small {
-            font-family: 'Inter', sans-serif !important;
-        }
-
-        /* Ajustements responsifs */
-        @media (max-width: 768px) {
-            .goog-te-gadget-simple {
-                padding: 4px 8px !important;
-            }
-            .goog-te-menu-value:before {
-                font-size: 1.2rem;
-            }
-        }
-        /* ===== FIN GOOGLE TRANSLATE STYLES ===== */
 
         .notification-btn {
             background: none;
@@ -1731,9 +1601,6 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
-                    <!-- GOOGLE TRANSLATE WIDGET - AJOUT ICI -->
-                    <div class="google-translate-container" id="google_translate_element"></div>
-                    
                     <button class="notification-btn" id="notificationBtn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">0</span>
