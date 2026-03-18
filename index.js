@@ -1353,6 +1353,233 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // =============================================
+// MIDDLEWARE DE MAINTENANCE
+// =============================================
+
+const maintenanceCheck = async (req, res, next) => {
+    try {
+        // Chemins toujours accessibles même en maintenance
+        const publicPaths = [
+            '/', 
+            '/login', 
+            '/register', 
+            '/email-verification', 
+            '/forgot-password', 
+            '/admin', 
+            '/api/admin/maintenance',
+            '/api/admin/check',
+            '/api/admin/login',
+            '/api/health',
+            '/api/maintenance-status'
+        ];
+        
+        // Vérifier si le chemin est public
+        if (publicPaths.includes(req.path) || req.path.startsWith('/api/admin/')) {
+            return next();
+        }
+
+        // Récupérer la configuration de maintenance
+        const { data: maintenance, error } = await supabase
+            .from('maintenance')
+            .select('*')
+            .single();
+
+        if (error || !maintenance) {
+            // Pas de config maintenance, continuer
+            return next();
+        }
+
+        // Si la maintenance n'est pas active, continuer
+        if (!maintenance.is_active) {
+            return next();
+        }
+
+        // Vérifier si l'IP est autorisée
+        const clientIp = req.ip || req.connection.remoteAddress;
+        if (maintenance.allow_ips && maintenance.allow_ips.includes(clientIp)) {
+            return next();
+        }
+
+        // Vérifier si l'utilisateur est admin (contournement)
+        if (req.user && (req.user.role === 'admin' || req.user.role === 'superadmin')) {
+            return next();
+        }
+
+        // Sinon, afficher la page de maintenance
+        return res.status(503).sendFile(path.join(__dirname, 'public', 'maintenance.html'));
+
+    } catch (error) {
+        console.error('❌ Erreur middleware maintenance:', error);
+        next();
+    }
+};
+
+// Appliquer le middleware de maintenance à toutes les routes
+app.use(maintenanceCheck);
+
+// =============================================
+// ROUTES MAINTENANCE
+// =============================================
+
+// Récupérer le statut de la maintenance (public)
+app.get('/api/maintenance-status', async (req, res) => {
+    try {
+        const { data: maintenance, error } = await supabase
+            .from('maintenance')
+            .select('*')
+            .single();
+
+        if (error) {
+            return res.json({ 
+                success: true, 
+                is_active: false,
+                message: '🚧 Site en maintenance. Nous revenons très bientôt !'
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            is_active: maintenance.is_active,
+            message: maintenance.message,
+            estimated_end_time: maintenance.estimated_end_time,
+            support_email: maintenance.support_email,
+            support_whatsapp: maintenance.support_whatsapp,
+            discord_link: maintenance.discord_link
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération statut maintenance:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Récupérer la configuration complète de maintenance (admin)
+app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: maintenance, error } = await supabase
+            .from('maintenance')
+            .select('*')
+            .single();
+
+        if (error && error.code === 'PGRST116') {
+            // Pas de config, retourner config par défaut
+            return res.json({ 
+                success: true, 
+                maintenance: {
+                    is_active: false,
+                    message: '🚧 Site en maintenance. Nous revenons très bientôt !',
+                    estimated_end_time: null,
+                    support_email: SITE_CONFIG.supportEmail,
+                    support_whatsapp: SITE_CONFIG.whatsapp,
+                    discord_link: SITE_CONFIG.discord,
+                    allow_ips: [],
+                    allow_paths: ['/api/admin/*', '/api/health']
+                }
+            });
+        }
+
+        if (error) throw error;
+
+        res.json({ success: true, maintenance });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération maintenance:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Mettre à jour la configuration de maintenance (admin)
+app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { 
+            is_active, 
+            message, 
+            estimated_end_time, 
+            support_email, 
+            support_whatsapp, 
+            discord_link,
+            allow_ips 
+        } = req.body;
+
+        // Vérifier si une config existe déjà
+        const { data: existing, error: checkError } = await supabase
+            .from('maintenance')
+            .select('id')
+            .maybeSingle();
+
+        let result;
+
+        if (existing) {
+            // Mise à jour
+            const { data, error } = await supabase
+                .from('maintenance')
+                .update({
+                    is_active: is_active !== undefined ? is_active : false,
+                    message: message || '🚧 Site en maintenance. Nous revenons très bientôt !',
+                    estimated_end_time: estimated_end_time || null,
+                    support_email: support_email || SITE_CONFIG.supportEmail,
+                    support_whatsapp: support_whatsapp || SITE_CONFIG.whatsapp,
+                    discord_link: discord_link || SITE_CONFIG.discord,
+                    allow_ips: allow_ips || [],
+                    updated_by: req.user.id,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', existing.id)
+                .select()
+                .single();
+
+            if (error) throw error;
+            result = data;
+
+        } else {
+            // Insertion
+            const { data, error } = await supabase
+                .from('maintenance')
+                .insert([{
+                    id: '00000000-0000-0000-0000-000000000001',
+                    is_active: is_active !== undefined ? is_active : false,
+                    message: message || '🚧 Site en maintenance. Nous revenons très bientôt !',
+                    estimated_end_time: estimated_end_time || null,
+                    support_email: support_email || SITE_CONFIG.supportEmail,
+                    support_whatsapp: support_whatsapp || SITE_CONFIG.whatsapp,
+                    discord_link: discord_link || SITE_CONFIG.discord,
+                    allow_ips: allow_ips || [],
+                    allow_paths: ['/api/admin/*', '/api/health', '/api/maintenance-status'],
+                    updated_by: req.user.id
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+            result = data;
+        }
+
+        // Journaliser l'action admin
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'maintenance_update',
+                target_type: 'system',
+                description: `Modification maintenance: ${is_active ? 'activée' : 'désactivée'}`,
+                metadata: { is_active, message },
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        res.json({ 
+            success: true, 
+            message: `Maintenance ${is_active ? 'activée' : 'désactivée'} avec succès`,
+            maintenance: result 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur mise à jour maintenance:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// =============================================
 // ROUTES AUTH
 // =============================================
 
@@ -4896,6 +5123,7 @@ app.get('/email-verification', (req, res) => res.sendFile(path.join(__dirname, '
 app.get('/support', (req, res) => res.sendFile(path.join(__dirname, 'public', 'support.html')));
 app.get('/transactions', (req, res) => res.sendFile(path.join(__dirname, 'public', 'transactions.html')));
 app.get('/bot', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bot.html')));
+app.get('/maintenance', (req, res) => res.sendFile(path.join(__dirname, 'public', 'maintenance.html')));
 app.get('/server/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'view.html')));
 app.get('/server/:id/files', (req, res) => res.sendFile(path.join(__dirname, 'public', 'server', 'files.html')));
 
