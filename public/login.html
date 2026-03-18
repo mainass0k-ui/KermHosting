@@ -7,7 +7,7 @@
     <meta name="description" content="Connectez-vous à KermHosting - Hébergement Node.js en FCFA">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes -->
+    <!-- Favicon / Icônes (ajoutées) -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -25,7 +25,7 @@
     <title>Connexion - KermHosting</title>
     
     <style>
-        /* ===== VARIABLES ===== */
+        /* ===== VARIABLES (identiques à l'index) ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -275,12 +275,6 @@
             transform: translateX(5px);
         }
 
-        .auth-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         /* ===== LIENS ===== */
         .auth-links {
             text-align: center;
@@ -366,12 +360,6 @@
             color: var(--primary);
         }
 
-        .message.warning {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning);
-            color: var(--warning);
-        }
-
         /* ===== LOADER ===== */
         .loader {
             display: inline-block;
@@ -385,31 +373,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        /* ===== BOUTON FORCE LOGOUT ===== */
-        .force-logout {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 10px 16px;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        .force-logout:hover {
-            background: rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -460,12 +423,6 @@
     <!-- Formes décoratives -->
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
-
-    <!-- Bouton de déconnexion forcée -->
-    <div class="force-logout" id="forceLogoutBtn" style="display: none;" onclick="forceLogout()">
-        <i class="fas fa-power-off"></i>
-        <span>Déconnexion forcée</span>
-    </div>
 
     <div class="auth-container">
         <div class="auth-card">
@@ -538,119 +495,44 @@
     </div>
 
     <script>
-        // ============================================
-        // INTERCEPTEUR MAINTENANCE - VERSION CORRIGÉE
-        // ============================================
-        (function() {
-            // Sauvegarde du fetch original
-            const originalFetch = window.fetch;
+        // ===== INTERCEPTEUR MAINTENANCE CORRIGÉ =====
+        // À mettre TOUT EN HAUT du script
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const response = await originalFetch(...args);
             
-            // Nouveau fetch avec interception
-            window.fetch = async function(...args) {
-                try {
-                    // Timeout pour éviter les requêtes bloquées
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 secondes max
-                    
-                    // Ajouter le signal aux options
-                    let options = args[1] || {};
-                    options.signal = controller.signal;
-                    args[1] = options;
-                    
-                    const response = await originalFetch(...args);
-                    clearTimeout(timeoutId);
-                    
-                    // CAS 1: Status 503 (Service Unavailable)
-                    if (response.status === 503) {
-                        console.log('🚧 [MAINTENANCE] Status 503 détecté');
-                        handleMaintenance('Maintenance en cours (503)');
-                        throw new Error('MAINTENANCE_MODE');
-                    }
-                    
-                    // CAS 2: Vérifier si le body JSON contient un flag maintenance
-                    const clonedResponse = response.clone();
-                    const contentType = response.headers.get('content-type');
-                    
-                    if (contentType && contentType.includes('application/json')) {
-                        try {
-                            const data = await clonedResponse.json();
-                            
-                            if (data && (data.maintenance === true || data.error === 'MAINTENANCE_MODE')) {
-                                console.log('🚧 [MAINTENANCE] Flag détecté dans JSON');
-                                handleMaintenance(data.message || 'Mode maintenance actif');
-                                throw new Error('MAINTENANCE_MODE');
-                            }
-                        } catch (e) {
-                            // Ignorer les erreurs de parsing
-                        }
-                    }
-                    
+            // Si la réponse n'est pas OK (status 503 par exemple)
+            if (!response.ok) {
+                // Vérifier si c'est une erreur 503 (Service Unavailable)
+                if (response.status === 503) {
+                    console.log('🚧 Site en maintenance (503), redirection...');
+                    window.location.href = '/maintenance';
                     return response;
-                    
-                } catch (error) {
-                    // Gérer le timeout
-                    if (error.name === 'AbortError') {
-                        console.log('⏱️ Timeout - Le serveur ne répond pas');
-                        // Vérifier si c'est peut-être la maintenance
-                        checkMaintenanceStatus();
-                        throw new Error('REQUEST_TIMEOUT');
-                    }
-                    
-                    // Si c'est notre erreur de maintenance, on la relance
-                    if (error.message === 'MAINTENANCE_MODE') {
-                        throw error;
-                    }
-                    
-                    // Erreur réseau
-                    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                        console.log('🌐 Problème de connexion - Vérification maintenance...');
-                        checkMaintenanceStatus();
-                    }
-                    
-                    throw error;
                 }
-            };
-            
-            // Fonction de gestion de la maintenance
-            function handleMaintenance(reason = '') {
-                if (sessionStorage.getItem('maintenance_redirecting')) {
-                    return;
-                }
-                
-                sessionStorage.setItem('maintenance_redirecting', 'true');
-                
-                // Sauvegarder l'URL actuelle si c'est le dashboard
-                if (window.location.pathname.includes('/dashboard')) {
-                    sessionStorage.setItem('maintenance_return_url', window.location.href);
-                }
-                
-                // Redirection avec message
-                console.log(`🚧 Redirection: ${reason}`);
-                window.location.href = '/maintenance?reason=' + encodeURIComponent(reason);
             }
             
-            // Vérifier si le serveur est en maintenance
-            async function checkMaintenanceStatus() {
+            // Pour les réponses OK, vérifier si c'est du JSON avec erreur maintenance
+            const clonedResponse = response.clone();
+            const contentType = response.headers.get('content-type');
+            
+            if (contentType && contentType.includes('application/json')) {
                 try {
-                    const response = await fetch('/api/status', {
-                        method: 'HEAD', // HEAD request plus légère
-                        cache: 'no-cache'
-                    });
-                    
-                    if (response.status === 503) {
-                        handleMaintenance('Maintenance détectée');
+                    const data = await clonedResponse.json();
+                    if (data && data.maintenance === true && data.error === 'MAINTENANCE_MODE') {
+                        console.log('🚧 Site en maintenance (JSON), redirection...');
+                        window.location.href = '/maintenance';
+                        return response;
                     }
-                } catch (error) {
-                    console.log('Status check failed');
+                } catch (e) {
+                    // Pas du JSON valide, ignorer
                 }
             }
-        })();
+            
+            return response;
+        };
         // ===== FIN INTERCEPTEUR =====
 
-        // ============================================
-        // FONCTIONS UTILITAIRES
-        // ============================================
-        
+        // Toggle password visibility
         function togglePassword() {
             const password = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
@@ -666,13 +548,13 @@
             }
         }
 
+        // Afficher un message
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
             const icons = {
                 error: 'fa-exclamation-circle',
                 success: 'fa-check-circle',
-                info: 'fa-info-circle',
-                warning: 'fa-exclamation-triangle'
+                info: 'fa-info-circle'
             };
             
             container.innerHTML = `
@@ -683,32 +565,17 @@
             `;
         }
 
-        function forceLogout() {
-            if (confirm('Forcer la déconnexion ?')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = '/';
-            }
-        }
-
-        // ============================================
-        // GESTIONNAIRE DE CONNEXION CORRIGÉ
-        // ============================================
+        // Gestionnaire de connexion
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
             
-            if (!email || !password) {
-                showMessage('error', 'Veuillez remplir tous les champs');
-                return;
-            }
-            
             // Désactiver le bouton
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span>Connexion...</span><span class="loader"></span>';
+            submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
             
             try {
                 const response = await fetch('/api/login', {
@@ -717,62 +584,45 @@
                     body: JSON.stringify({ email, password })
                 });
                 
-                // Si on arrive ici, c'est que la requête a répondu
                 const data = await response.json();
                 
                 if (data.success) {
                     localStorage.setItem('token', data.token);
-                    showMessage('success', 'Connexion réussie !');
                     
+                    // Message de succès
+                    showMessage('success', 'Connexion réussie ! Redirection...');
+                    
+                    // Redirection après un délai
                     setTimeout(() => {
                         window.location.href = '/dashboard';
-                    }, 1000);
+                    }, 1500);
                 } else {
+                    // Réactiver le bouton
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
-                    showMessage('error', data.error || 'Email ou mot de passe incorrect');
+                    
+                    if (data.requiresVerification) {
+                        showMessage('info', 'Email non vérifié. Redirection vers la vérification...');
+                        setTimeout(() => {
+                            window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
+                        }, 2000);
+                    } else {
+                        showMessage('error', data.error || 'Email ou mot de passe incorrect');
+                    }
                 }
-                
             } catch (error) {
-                // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
-                
-                if (error.message === 'MAINTENANCE_MODE') {
-                    // Déjà redirigé par l'intercepteur
-                    console.log('Redirection maintenance en cours...');
-                } else if (error.message === 'REQUEST_TIMEOUT') {
-                    showMessage('warning', 'Le serveur ne répond pas - Vérification maintenance...');
-                    // Vérifier si c'est la maintenance
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    showMessage('error', 'Erreur de connexion au serveur');
-                    document.getElementById('forceLogoutBtn').style.display = 'flex';
-                }
+                showMessage('error', 'Erreur de connexion au serveur');
             }
         });
 
-        // Vérifier au chargement
+        // Animation d'entrée
+        document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', () => {
-            // Animation
-            document.querySelector('.auth-card').style.opacity = '0';
-            setTimeout(() => {
-                document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
-                document.querySelector('.auth-card').style.opacity = '1';
-            }, 100);
-            
-            // Vérifier si on revient de maintenance
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('maintenance') === 'ended') {
-                showMessage('success', 'La maintenance est terminée ! Vous pouvez vous connecter.');
-            }
+            document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
+            document.querySelector('.auth-card').style.opacity = '1';
         });
-
-        // Exposer les fonctions
-        window.togglePassword = togglePassword;
-        window.forceLogout = forceLogout;
     </script>
 </body>
 </html>
