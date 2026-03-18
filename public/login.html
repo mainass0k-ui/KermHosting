@@ -7,7 +7,7 @@
     <meta name="description" content="Connectez-vous à KermHosting - Hébergement Node.js en FCFA">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -25,7 +25,7 @@
     <title>Connexion - KermHosting</title>
     
     <style>
-        /* ===== VARIABLES (identiques à l'index) ===== */
+        /* ===== VARIABLES ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -275,6 +275,12 @@
             transform: translateX(5px);
         }
 
+        .auth-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* ===== LIENS ===== */
         .auth-links {
             text-align: center;
@@ -360,6 +366,12 @@
             color: var(--primary);
         }
 
+        .message.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
         /* ===== LOADER ===== */
         .loader {
             display: inline-block;
@@ -373,6 +385,31 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* ===== BOUTON FORCE LOGOUT ===== */
+        .force-logout {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 10px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .force-logout:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -423,6 +460,12 @@
     <!-- Formes décoratives -->
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
+
+    <!-- Bouton de déconnexion forcée (caché par défaut) -->
+    <div class="force-logout" id="forceLogoutBtn" style="display: none;" onclick="forceLogout()">
+        <i class="fas fa-power-off"></i>
+        <span>Déconnexion forcée</span>
+    </div>
 
     <div class="auth-container">
         <div class="auth-card">
@@ -495,43 +538,127 @@
     </div>
 
     <script>
-        // ===== INTERCEPTEUR MAINTENANCE CORRIGÉ =====
-        // À mettre TOUT EN HAUT du script
-        const originalFetch = window.fetch;
-        window.fetch = async function(...args) {
-            const response = await originalFetch(...args);
+        // ============================================
+        // INTERCEPTEUR MAINTENANCE - PREMIÈRE LIGNE !
+        // ============================================
+        (function() {
+            // Sauvegarde du fetch original
+            const originalFetch = window.fetch;
             
-            // Si la réponse n'est pas OK (status 503 par exemple)
-            if (!response.ok) {
-                // Vérifier si c'est une erreur 503 (Service Unavailable)
-                if (response.status === 503) {
-                    console.log('🚧 Site en maintenance (503), redirection...');
-                    window.location.href = '/maintenance';
-                    return response;
-                }
-            }
-            
-            // Pour les réponses OK, vérifier si c'est du JSON avec erreur maintenance
-            const clonedResponse = response.clone();
-            const contentType = response.headers.get('content-type');
-            
-            if (contentType && contentType.includes('application/json')) {
+            // Nouveau fetch avec interception
+            window.fetch = async function(...args) {
                 try {
-                    const data = await clonedResponse.json();
-                    if (data && data.maintenance === true && data.error === 'MAINTENANCE_MODE') {
-                        console.log('🚧 Site en maintenance (JSON), redirection...');
-                        window.location.href = '/maintenance';
-                        return response;
+                    const response = await originalFetch(...args);
+                    
+                    // CAS 1: Status 503 (Service Unavailable)
+                    if (response.status === 503) {
+                        console.log('🚧 [MAINTENANCE] Status 503 détecté');
+                        handleMaintenance('Status 503');
+                        throw new Error('MAINTENANCE_MODE');
                     }
-                } catch (e) {
-                    // Pas du JSON valide, ignorer
+                    
+                    // CAS 2: Vérifier si le body JSON contient un flag maintenance
+                    const clonedResponse = response.clone();
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        try {
+                            const data = await clonedResponse.json();
+                            
+                            // Vérifier les différents formats possibles
+                            if (data && (
+                                data.maintenance === true || 
+                                data.error === 'MAINTENANCE_MODE' ||
+                                data.code === 'MAINTENANCE'
+                            )) {
+                                console.log('🚧 [MAINTENANCE] Flag détecté dans JSON');
+                                handleMaintenance(data.message || 'Mode maintenance actif');
+                                throw new Error('MAINTENANCE_MODE');
+                            }
+                        } catch (e) {
+                            // Ignorer les erreurs de parsing JSON
+                        }
+                    }
+                    
+                    return response;
+                    
+                } catch (error) {
+                    // Si c'est notre erreur de maintenance, on la relance
+                    if (error.message === 'MAINTENANCE_MODE') {
+                        throw error;
+                    }
+                    
+                    // Vérifier si c'est une erreur de connexion réseau
+                    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                        console.warn('⚠️ Problème de connexion réseau');
+                        // Optionnel: afficher un message à l'utilisateur
+                    }
+                    
+                    throw error;
                 }
-            }
+            };
             
-            return response;
-        };
+            // Fonction de gestion de la maintenance
+            function handleMaintenance(reason = '') {
+                // Éviter les redirections multiples
+                if (sessionStorage.getItem('maintenance_redirecting')) {
+                    return;
+                }
+                
+                sessionStorage.setItem('maintenance_redirecting', 'true');
+                console.log(`🚧 Redirection vers maintenance (${reason})`);
+                
+                // Sauvegarder l'URL actuelle pour y revenir plus tard
+                sessionStorage.setItem('maintenance_return_url', window.location.href);
+                
+                // Redirection
+                window.location.href = '/maintenance';
+            }
+        })();
         // ===== FIN INTERCEPTEUR =====
 
+        // ============================================
+        // VÉRIFICATION AU CHARGEMENT
+        // ============================================
+        async function checkMaintenanceOnLoad() {
+            try {
+                // Timeout pour éviter d'attendre trop longtemps
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch('/api/status', {
+                    signal: controller.signal,
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                // Vérifier le status
+                if (response.status === 503) {
+                    window.location.href = '/maintenance';
+                    return;
+                }
+                
+                // Vérifier le JSON
+                const data = await response.json();
+                if (data && data.maintenance === true) {
+                    window.location.href = '/maintenance';
+                }
+            } catch (error) {
+                // Ignorer les erreurs de vérification
+                if (error.name !== 'AbortError') {
+                    console.log('Status check non disponible');
+                }
+            }
+        }
+
+        // ============================================
+        // FONCTIONS UTILITAIRES
+        // ============================================
+        
         // Toggle password visibility
         function togglePassword() {
             const password = document.getElementById('password');
@@ -554,7 +681,8 @@
             const icons = {
                 error: 'fa-exclamation-circle',
                 success: 'fa-check-circle',
-                info: 'fa-info-circle'
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
             };
             
             container.innerHTML = `
@@ -563,39 +691,99 @@
                     <span>${text}</span>
                 </div>
             `;
+            
+            // Auto-cacher après 5 secondes
+            setTimeout(() => {
+                if (container.innerHTML.includes(text)) {
+                    container.innerHTML = '';
+                }
+            }, 5000);
         }
 
-        // Gestionnaire de connexion
+        // Déconnexion forcée
+        function forceLogout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                showMessage('info', 'Déconnexion...');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            }
+        }
+
+        // Vérifier si on revient de maintenance
+        function checkMaintenanceReturn() {
+            const returnUrl = sessionStorage.getItem('maintenance_return_url');
+            if (returnUrl && returnUrl !== window.location.href) {
+                sessionStorage.removeItem('maintenance_return_url');
+                showMessage('info', 'La maintenance est terminée. Bienvenue !');
+            }
+        }
+
+        // ============================================
+        // GESTIONNAIRE DE CONNEXION
+        // ============================================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
+            
+            // Validation basique
+            if (!email || !password) {
+                showMessage('error', 'Veuillez remplir tous les champs');
+                return;
+            }
             
             // Désactiver le bouton
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
             
+            // Timeout pour la requête
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes max
+            
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password }),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
+                
+                // Vérifier si la réponse est OK
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    localStorage.setItem('token', data.token);
+                    // Sauvegarder le token
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                    }
+                    
+                    // Sauvegarder les infos utilisateur
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                    }
                     
                     // Message de succès
                     showMessage('success', 'Connexion réussie ! Redirection...');
                     
                     // Redirection après un délai
                     setTimeout(() => {
-                        window.location.href = '/dashboard';
+                        window.location.href = data.redirect || '/dashboard';
                     }, 1500);
+                    
                 } else {
                     // Réactiver le bouton
                     submitBtn.disabled = false;
@@ -607,22 +795,71 @@
                             window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
                         }, 2000);
                     } else {
-                        showMessage('error', data.error || 'Email ou mot de passe incorrect');
+                        showMessage('error', data.error || data.message || 'Email ou mot de passe incorrect');
                     }
                 }
+                
             } catch (error) {
+                clearTimeout(timeoutId);
+                
+                // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
-                showMessage('error', 'Erreur de connexion au serveur');
+                
+                // Gérer les différents types d'erreurs
+                if (error.name === 'AbortError') {
+                    showMessage('error', 'Timeout - Le serveur ne répond pas');
+                } else if (error.message === 'MAINTENANCE_MODE') {
+                    // Déjà géré par l'intercepteur
+                    console.log('Maintenance détectée');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showMessage('error', 'Impossible de joindre le serveur');
+                    // Afficher le bouton de déconnexion forcée
+                    document.getElementById('forceLogoutBtn').style.display = 'flex';
+                } else {
+                    console.error('Erreur:', error);
+                    showMessage('error', 'Erreur de connexion au serveur');
+                }
             }
         });
 
-        // Animation d'entrée
-        document.querySelector('.auth-card').style.opacity = '0';
+        // ============================================
+        // INITIALISATION
+        // ============================================
         window.addEventListener('load', () => {
-            document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
-            document.querySelector('.auth-card').style.opacity = '1';
+            // Animation d'entrée
+            const authCard = document.querySelector('.auth-card');
+            authCard.style.opacity = '0';
+            setTimeout(() => {
+                authCard.style.transition = 'opacity 0.5s';
+                authCard.style.opacity = '1';
+            }, 100);
+            
+            // Vérifier la maintenance au chargement
+            checkMaintenanceOnLoad();
+            
+            // Vérifier si on revient de maintenance
+            checkMaintenanceReturn();
+            
+            // Vérifier si un token existe déjà
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Optionnel: Vérifier si le token est toujours valide
+                console.log('Session existante détectée');
+            }
         });
+
+        // Gérer la visibilité de la page (quand l'utilisateur revient)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // L'utilisateur revient sur la page, revérifier la maintenance
+                checkMaintenanceOnLoad();
+            }
+        });
+
+        // Exposer les fonctions nécessaires globalement
+        window.togglePassword = togglePassword;
+        window.forceLogout = forceLogout;
     </script>
 </body>
 </html>
