@@ -1934,28 +1934,6 @@
             window.location.href = '/login';
         }
 
-		  const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = '/login';
-    }
-
-    // ===== INTERCEPTEUR MAINTENANCE =====
-    const originalFetch = window.fetch;
-    window.fetch = async function(...args) {
-        const response = await originalFetch(...args);
-        const clonedResponse = response.clone();
-        
-        try {
-            const data = await clonedResponse.json();
-            if (data && data.maintenance === true && data.error === 'MAINTENANCE_MODE') {
-                window.location.href = '/maintenance';
-                return response;
-            }
-        } catch (e) {}
-        
-        return response;
-    };
-
         // ===== CONSTANTES =====
         const PLANS = {
             'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0, duration: 1 },
