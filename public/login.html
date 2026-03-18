@@ -461,7 +461,7 @@
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
 
-    <!-- Bouton de déconnexion forcée (caché par défaut) -->
+    <!-- Bouton de déconnexion forcée -->
     <div class="force-logout" id="forceLogoutBtn" style="display: none;" onclick="forceLogout()">
         <i class="fas fa-power-off"></i>
         <span>Déconnexion forcée</span>
@@ -539,7 +539,7 @@
 
     <script>
         // ============================================
-        // INTERCEPTEUR MAINTENANCE - PREMIÈRE LIGNE !
+        // INTERCEPTEUR MAINTENANCE - VERSION CORRIGÉE
         // ============================================
         (function() {
             // Sauvegarde du fetch original
@@ -548,12 +548,22 @@
             // Nouveau fetch avec interception
             window.fetch = async function(...args) {
                 try {
+                    // Timeout pour éviter les requêtes bloquées
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 secondes max
+                    
+                    // Ajouter le signal aux options
+                    let options = args[1] || {};
+                    options.signal = controller.signal;
+                    args[1] = options;
+                    
                     const response = await originalFetch(...args);
+                    clearTimeout(timeoutId);
                     
                     // CAS 1: Status 503 (Service Unavailable)
                     if (response.status === 503) {
                         console.log('🚧 [MAINTENANCE] Status 503 détecté');
-                        handleMaintenance('Status 503');
+                        handleMaintenance('Maintenance en cours (503)');
                         throw new Error('MAINTENANCE_MODE');
                     }
                     
@@ -565,33 +575,36 @@
                         try {
                             const data = await clonedResponse.json();
                             
-                            // Vérifier les différents formats possibles
-                            if (data && (
-                                data.maintenance === true || 
-                                data.error === 'MAINTENANCE_MODE' ||
-                                data.code === 'MAINTENANCE'
-                            )) {
+                            if (data && (data.maintenance === true || data.error === 'MAINTENANCE_MODE')) {
                                 console.log('🚧 [MAINTENANCE] Flag détecté dans JSON');
                                 handleMaintenance(data.message || 'Mode maintenance actif');
                                 throw new Error('MAINTENANCE_MODE');
                             }
                         } catch (e) {
-                            // Ignorer les erreurs de parsing JSON
+                            // Ignorer les erreurs de parsing
                         }
                     }
                     
                     return response;
                     
                 } catch (error) {
+                    // Gérer le timeout
+                    if (error.name === 'AbortError') {
+                        console.log('⏱️ Timeout - Le serveur ne répond pas');
+                        // Vérifier si c'est peut-être la maintenance
+                        checkMaintenanceStatus();
+                        throw new Error('REQUEST_TIMEOUT');
+                    }
+                    
                     // Si c'est notre erreur de maintenance, on la relance
                     if (error.message === 'MAINTENANCE_MODE') {
                         throw error;
                     }
                     
-                    // Vérifier si c'est une erreur de connexion réseau
+                    // Erreur réseau
                     if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                        console.warn('⚠️ Problème de connexion réseau');
-                        // Optionnel: afficher un message à l'utilisateur
+                        console.log('🌐 Problème de connexion - Vérification maintenance...');
+                        checkMaintenanceStatus();
                     }
                     
                     throw error;
@@ -600,66 +613,44 @@
             
             // Fonction de gestion de la maintenance
             function handleMaintenance(reason = '') {
-                // Éviter les redirections multiples
                 if (sessionStorage.getItem('maintenance_redirecting')) {
                     return;
                 }
                 
                 sessionStorage.setItem('maintenance_redirecting', 'true');
-                console.log(`🚧 Redirection vers maintenance (${reason})`);
                 
-                // Sauvegarder l'URL actuelle pour y revenir plus tard
-                sessionStorage.setItem('maintenance_return_url', window.location.href);
+                // Sauvegarder l'URL actuelle si c'est le dashboard
+                if (window.location.pathname.includes('/dashboard')) {
+                    sessionStorage.setItem('maintenance_return_url', window.location.href);
+                }
                 
-                // Redirection
-                window.location.href = '/maintenance';
+                // Redirection avec message
+                console.log(`🚧 Redirection: ${reason}`);
+                window.location.href = '/maintenance?reason=' + encodeURIComponent(reason);
+            }
+            
+            // Vérifier si le serveur est en maintenance
+            async function checkMaintenanceStatus() {
+                try {
+                    const response = await fetch('/api/status', {
+                        method: 'HEAD', // HEAD request plus légère
+                        cache: 'no-cache'
+                    });
+                    
+                    if (response.status === 503) {
+                        handleMaintenance('Maintenance détectée');
+                    }
+                } catch (error) {
+                    console.log('Status check failed');
+                }
             }
         })();
         // ===== FIN INTERCEPTEUR =====
 
         // ============================================
-        // VÉRIFICATION AU CHARGEMENT
-        // ============================================
-        async function checkMaintenanceOnLoad() {
-            try {
-                // Timeout pour éviter d'attendre trop longtemps
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                const response = await fetch('/api/status', {
-                    signal: controller.signal,
-                    headers: {
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
-                    }
-                });
-                
-                clearTimeout(timeoutId);
-                
-                // Vérifier le status
-                if (response.status === 503) {
-                    window.location.href = '/maintenance';
-                    return;
-                }
-                
-                // Vérifier le JSON
-                const data = await response.json();
-                if (data && data.maintenance === true) {
-                    window.location.href = '/maintenance';
-                }
-            } catch (error) {
-                // Ignorer les erreurs de vérification
-                if (error.name !== 'AbortError') {
-                    console.log('Status check non disponible');
-                }
-            }
-        }
-
-        // ============================================
         // FONCTIONS UTILITAIRES
         // ============================================
         
-        // Toggle password visibility
         function togglePassword() {
             const password = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
@@ -675,7 +666,6 @@
             }
         }
 
-        // Afficher un message
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
             const icons = {
@@ -691,38 +681,18 @@
                     <span>${text}</span>
                 </div>
             `;
-            
-            // Auto-cacher après 5 secondes
-            setTimeout(() => {
-                if (container.innerHTML.includes(text)) {
-                    container.innerHTML = '';
-                }
-            }, 5000);
         }
 
-        // Déconnexion forcée
         function forceLogout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+            if (confirm('Forcer la déconnexion ?')) {
                 localStorage.clear();
                 sessionStorage.clear();
-                showMessage('info', 'Déconnexion...');
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1000);
-            }
-        }
-
-        // Vérifier si on revient de maintenance
-        function checkMaintenanceReturn() {
-            const returnUrl = sessionStorage.getItem('maintenance_return_url');
-            if (returnUrl && returnUrl !== window.location.href) {
-                sessionStorage.removeItem('maintenance_return_url');
-                showMessage('info', 'La maintenance est terminée. Bienvenue !');
+                window.location.href = '/';
             }
         }
 
         // ============================================
-        // GESTIONNAIRE DE CONNEXION
+        // GESTIONNAIRE DE CONNEXION CORRIGÉ
         // ============================================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -731,7 +701,6 @@
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
             
-            // Validation basique
             if (!email || !password) {
                 showMessage('error', 'Veuillez remplir tous les champs');
                 return;
@@ -739,125 +708,69 @@
             
             // Désactiver le bouton
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
-            
-            // Timeout pour la requête
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes max
+            submitBtn.innerHTML = '<span>Connexion...</span><span class="loader"></span>';
             
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({ email, password }),
-                    signal: controller.signal
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
                 });
                 
-                clearTimeout(timeoutId);
-                
-                // Vérifier si la réponse est OK
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
+                // Si on arrive ici, c'est que la requête a répondu
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Sauvegarder le token
-                    if (data.token) {
-                        localStorage.setItem('token', data.token);
-                    }
+                    localStorage.setItem('token', data.token);
+                    showMessage('success', 'Connexion réussie !');
                     
-                    // Sauvegarder les infos utilisateur
-                    if (data.user) {
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                    }
-                    
-                    // Message de succès
-                    showMessage('success', 'Connexion réussie ! Redirection...');
-                    
-                    // Redirection après un délai
                     setTimeout(() => {
-                        window.location.href = data.redirect || '/dashboard';
-                    }, 1500);
-                    
+                        window.location.href = '/dashboard';
+                    }, 1000);
                 } else {
-                    // Réactiver le bouton
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
-                    
-                    if (data.requiresVerification) {
-                        showMessage('info', 'Email non vérifié. Redirection vers la vérification...');
-                        setTimeout(() => {
-                            window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
-                        }, 2000);
-                    } else {
-                        showMessage('error', data.error || data.message || 'Email ou mot de passe incorrect');
-                    }
+                    showMessage('error', data.error || 'Email ou mot de passe incorrect');
                 }
                 
             } catch (error) {
-                clearTimeout(timeoutId);
-                
                 // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
                 
-                // Gérer les différents types d'erreurs
-                if (error.name === 'AbortError') {
-                    showMessage('error', 'Timeout - Le serveur ne répond pas');
-                } else if (error.message === 'MAINTENANCE_MODE') {
-                    // Déjà géré par l'intercepteur
-                    console.log('Maintenance détectée');
-                } else if (error.message.includes('Failed to fetch')) {
-                    showMessage('error', 'Impossible de joindre le serveur');
-                    // Afficher le bouton de déconnexion forcée
-                    document.getElementById('forceLogoutBtn').style.display = 'flex';
+                if (error.message === 'MAINTENANCE_MODE') {
+                    // Déjà redirigé par l'intercepteur
+                    console.log('Redirection maintenance en cours...');
+                } else if (error.message === 'REQUEST_TIMEOUT') {
+                    showMessage('warning', 'Le serveur ne répond pas - Vérification maintenance...');
+                    // Vérifier si c'est la maintenance
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
-                    console.error('Erreur:', error);
                     showMessage('error', 'Erreur de connexion au serveur');
+                    document.getElementById('forceLogoutBtn').style.display = 'flex';
                 }
             }
         });
 
-        // ============================================
-        // INITIALISATION
-        // ============================================
+        // Vérifier au chargement
         window.addEventListener('load', () => {
-            // Animation d'entrée
-            const authCard = document.querySelector('.auth-card');
-            authCard.style.opacity = '0';
+            // Animation
+            document.querySelector('.auth-card').style.opacity = '0';
             setTimeout(() => {
-                authCard.style.transition = 'opacity 0.5s';
-                authCard.style.opacity = '1';
+                document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
+                document.querySelector('.auth-card').style.opacity = '1';
             }, 100);
             
-            // Vérifier la maintenance au chargement
-            checkMaintenanceOnLoad();
-            
             // Vérifier si on revient de maintenance
-            checkMaintenanceReturn();
-            
-            // Vérifier si un token existe déjà
-            const token = localStorage.getItem('token');
-            if (token) {
-                // Optionnel: Vérifier si le token est toujours valide
-                console.log('Session existante détectée');
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('maintenance') === 'ended') {
+                showMessage('success', 'La maintenance est terminée ! Vous pouvez vous connecter.');
             }
         });
 
-        // Gérer la visibilité de la page (quand l'utilisateur revient)
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                // L'utilisateur revient sur la page, revérifier la maintenance
-                checkMaintenanceOnLoad();
-            }
-        });
-
-        // Exposer les fonctions nécessaires globalement
+        // Exposer les fonctions
         window.togglePassword = togglePassword;
         window.forceLogout = forceLogout;
     </script>
