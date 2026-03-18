@@ -1929,43 +1929,6 @@
     </div>
 
     <script>
-        // ===== INTERCEPTEUR MAINTENANCE CORRIGÉ =====
-        // À mettre TOUT EN HAUT du script
-        const originalFetch = window.fetch;
-        window.fetch = async function(...args) {
-            const response = await originalFetch(...args);
-            
-            // Si la réponse n'est pas OK (status 503 par exemple)
-            if (!response.ok) {
-                // Vérifier si c'est une erreur 503 (Service Unavailable)
-                if (response.status === 503) {
-                    console.log('🚧 Site en maintenance (503), redirection...');
-                    window.location.href = '/maintenance';
-                    return response;
-                }
-            }
-            
-            // Pour les réponses OK, vérifier si c'est du JSON avec erreur maintenance
-            const clonedResponse = response.clone();
-            const contentType = response.headers.get('content-type');
-            
-            if (contentType && contentType.includes('application/json')) {
-                try {
-                    const data = await clonedResponse.json();
-                    if (data && data.maintenance === true && data.error === 'MAINTENANCE_MODE') {
-                        console.log('🚧 Site en maintenance (JSON), redirection...');
-                        window.location.href = '/maintenance';
-                        return response;
-                    }
-                } catch (e) {
-                    // Pas du JSON valide, ignorer
-                }
-            }
-            
-            return response;
-        };
-        // ===== FIN INTERCEPTEUR =====
-
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.href = '/login';
