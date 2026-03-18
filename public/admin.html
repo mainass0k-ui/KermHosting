@@ -1532,6 +1532,11 @@
                         <span class="gradient-text">Administration</span> KermHosting
                     </h1>
                     <div class="header-actions">
+                        <!-- NOUVEAU BOUTON : Nettoyage Pterodactyl -->
+                        <button class="btn btn-warning" onclick="showPterodactylCleanupModal()" id="pteroCleanupBtn" title="Supprimer les utilisateurs Pterodactyl orphelins">
+                            <i class="fas fa-broom"></i>
+                            <span class="btn-text">Nettoyer Pterodactyl</span>
+                        </button>
                         <button class="btn btn-danger" onclick="showDeleteAllServersModal()">
                             <i class="fas fa-trash-alt"></i>
                             <span class="btn-text">Supprimer tous les serveurs</span>
@@ -2142,6 +2147,44 @@
         </div>
     </div>
 
+    <!-- NOUVEAU MODAL: Nettoyage Pterodactyl -->
+    <div class="modal" id="pteroCleanupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nettoyage des utilisateurs Pterodactyl</h2>
+                <button class="modal-close" onclick="closeModal('pteroCleanupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info" id="cleanupStats" style="display: none;">
+                    <!-- Rempli dynamiquement -->
+                </div>
+                <div id="cleanupInitial">
+                    <p>Cette action va analyser tous les utilisateurs Pterodactyl et supprimer ceux qui :</p>
+                    <ul style="margin: 16px 0; padding-left: 20px; color: var(--text-secondary);">
+                        <li>✅ Ne sont liés à aucun compte KermHosting</li>
+                        <li>✅ N'ont aucun serveur actif</li>
+                    </ul>
+                    <p style="color: var(--warning); font-weight: 500;">⚠️ Cette action est irréversible.</p>
+                </div>
+                <div id="cleanupProgress" style="display: none; text-align: center; padding: 20px;">
+                    <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 16px;"></i>
+                    <p>Nettoyage en cours, veuillez patienter...</p>
+                </div>
+                <div id="cleanupResult" style="display: none;">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+            <div class="modal-actions" id="cleanupActions">
+                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
+                <button class="btn btn-warning" onclick="startPterodactylCleanup()" id="startCleanupBtn">
+                    <i class="fas fa-broom"></i> Lancer le nettoyage
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -2746,6 +2789,114 @@
             };
             
             openModal('confirmModal');
+        }
+
+        // ===== NOUVELLE FONCTION: Nettoyage Pterodactyl =====
+        function showPterodactylCleanupModal() {
+            document.getElementById('cleanupStats').style.display = 'none';
+            document.getElementById('cleanupInitial').style.display = 'block';
+            document.getElementById('cleanupProgress').style.display = 'none';
+            document.getElementById('cleanupResult').style.display = 'none';
+            
+            document.getElementById('cleanupActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
+                <button class="btn btn-warning" onclick="startPterodactylCleanup()" id="startCleanupBtn">
+                    <i class="fas fa-broom"></i> Lancer le nettoyage
+                </button>
+            `;
+            
+            openModal('pteroCleanupModal');
+        }
+
+        async function startPterodactylCleanup() {
+            document.getElementById('cleanupInitial').style.display = 'none';
+            document.getElementById('cleanupProgress').style.display = 'block';
+            document.getElementById('cleanupStats').style.display = 'none';
+            document.getElementById('cleanupResult').style.display = 'none';
+            
+            document.getElementById('cleanupActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
+            `;
+            
+            try {
+                const res = await fetch('/api/admin/pterodactyl/cleanup-users', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                document.getElementById('cleanupProgress').style.display = 'none';
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    
+                    document.getElementById('cleanupStats').innerHTML = `
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i>
+                        </div>
+                        <h3 style="text-align: center; margin-bottom: 16px;">Nettoyage terminé</h3>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Utilisateurs Pterodactyl</span>
+                            <span class="modal-info-value">${stats.total_ptero_users}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Liés à KermHosting</span>
+                            <span class="modal-info-value">${stats.linked_users}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Orphelins avec serveurs</span>
+                            <span class="modal-info-value">${stats.orphan_with_servers}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Orphelins sans serveurs</span>
+                            <span class="modal-info-value">${stats.orphan_without_servers}</span>
+                        </div>
+                        <div class="modal-info-item" style="border-bottom: none;">
+                            <span class="modal-info-label">Supprimés</span>
+                            <span class="modal-info-value" style="color: var(--success);">${stats.deleted_users}</span>
+                        </div>
+                        <div style="margin-top: 16px; text-align: center;">
+                            <span class="badge ${stats.success_rate === 100 ? 'badge-success' : stats.success_rate > 50 ? 'badge-warning' : 'badge-danger'}" style="font-size: 1rem; padding: 8px 16px;">
+                                Taux de réussite: ${stats.success_rate}%
+                            </span>
+                        </div>
+                    `;
+                    
+                    document.getElementById('cleanupStats').style.display = 'block';
+                    document.getElementById('cleanupResult').style.display = 'none';
+                    
+                    document.getElementById('cleanupActions').innerHTML = `
+                        <button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>
+                    `;
+                    
+                    showToast('success', data.message);
+                    
+                } else {
+                    document.getElementById('cleanupResult').innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
+                            <h3 style="margin: 16px 0;">Erreur</h3>
+                            <p>${data.error || 'Une erreur est survenue'}</p>
+                        </div>
+                    `;
+                    document.getElementById('cleanupResult').style.display = 'block';
+                    
+                    showToast('error', data.error || 'Erreur lors du nettoyage');
+                }
+            } catch (error) {
+                document.getElementById('cleanupProgress').style.display = 'none';
+                document.getElementById('cleanupResult').innerHTML = `
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
+                        <h3 style="margin: 16px 0;">Erreur réseau</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                document.getElementById('cleanupResult').style.display = 'block';
+                
+                showToast('error', 'Erreur réseau');
+            }
         }
 
         // ===== DISPLAY TRANSACTIONS =====
@@ -3520,6 +3671,8 @@
         window.deleteAllServers = deleteAllServers;
         window.showDeleteAllLogsModal = showDeleteAllLogsModal;
         window.deleteAllLogs = deleteAllLogs;
+        window.showPterodactylCleanupModal = showPterodactylCleanupModal;
+        window.startPterodactylCleanup = startPterodactylCleanup;
         window.refreshAllData = refreshAllData;
         window.closeModal = closeModal;
         window.openModal = openModal;
