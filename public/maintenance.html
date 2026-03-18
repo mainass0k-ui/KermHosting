@@ -272,6 +272,28 @@
             color: var(--text-secondary);
         }
 
+        .status-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: var(--radius-md);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .status-message i {
+            color: var(--primary);
+            margin-right: 8px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .refresh-btn {
             display: flex;
             align-items: center;
@@ -402,6 +424,12 @@
                 Chargement du message de maintenance...
             </div>
 
+            <!-- Statut de vérification -->
+            <div class="status-message" id="statusMessage">
+                <i class="fas fa-sync-alt fa-spin"></i>
+                <span>Vérification de l'état du serveur...</span>
+            </div>
+
             <!-- Compte à rebours -->
             <div class="countdown-container" id="countdownContainer" style="display: none;">
                 <div class="countdown-title">Retour estimé</div>
@@ -452,8 +480,8 @@
                 </a>
             </div>
 
-            <!-- Bouton d'actualisation -->
-            <button class="refresh-btn" id="refreshBtn" onclick="refreshStatus()">
+            <!-- Bouton d'actualisation manuelle -->
+            <button class="refresh-btn" id="refreshBtn" onclick="checkMaintenanceStatus()">
                 <i class="fas fa-sync-alt"></i>
                 <span>Vérifier le statut</span>
             </button>
@@ -461,30 +489,29 @@
             <!-- Footer -->
             <div class="footer">
                 <p>© 2024 KermHosting. Tous droits réservés.</p>
-                <p><a href="/">Retour à l'accueil</a></p>
+                <p><a href="/" onclick="checkMaintenanceBeforeRedirect(event)">Retour à l'accueil</a></p>
             </div>
         </div>
     </div>
 
     <script>
+        let checkInterval = null;
         let countdownInterval = null;
 
-        // Charger le statut de la maintenance
-        async function loadMaintenanceStatus() {
+        // ===== VÉRIFIER SI LA MAINTENANCE EST TERMINÉE =====
+        async function checkMaintenanceStatus() {
             try {
                 const response = await fetch('/api/maintenance-status');
                 const data = await response.json();
 
                 if (data.success) {
-                    // Mettre à jour le message
+                    // Mettre à jour l'affichage
                     document.getElementById('maintenanceMessage').textContent = data.message || 'Site en maintenance. Nous revenons très bientôt !';
                     
-                    // Mettre à jour les contacts
                     document.getElementById('whatsappValue').textContent = data.support_whatsapp || '+237600000000';
                     document.getElementById('emailValue').textContent = data.support_email || 'support@kermhosting.com';
                     document.getElementById('discordValue').textContent = data.discord_link ? 'Rejoindre' : 'kermhosting';
 
-                    // Mettre à jour les liens
                     if (data.support_whatsapp) {
                         document.getElementById('whatsappLink').href = `https://wa.me/${data.support_whatsapp.replace(/[^0-9]/g, '')}`;
                     }
@@ -495,30 +522,89 @@
                         document.getElementById('discordLink').href = data.discord_link;
                     }
 
-                    // Gérer le compte à rebours
+                    // Gestion du compte à rebours
                     if (data.estimated_end_time) {
                         document.getElementById('countdownContainer').style.display = 'block';
-                        
-                        // Nettoyer l'ancien intervalle
-                        if (countdownInterval) {
-                            clearInterval(countdownInterval);
-                        }
-
-                        // Démarrer le compte à rebours
                         startCountdown(data.estimated_end_time);
                     } else {
                         document.getElementById('countdownContainer').style.display = 'none';
                     }
+
+                    // 👉 SI LA MAINTENANCE N'EST PLUS ACTIVE 👈
+                    if (!data.is_active) {
+                        console.log('✅ Maintenance terminée, redirection...');
+                        document.getElementById('statusMessage').innerHTML = `
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            <span>Maintenance terminée ! Redirection...</span>
+                        `;
+                        
+                        // Arrêter les intervalles
+                        if (checkInterval) {
+                            clearInterval(checkInterval);
+                            checkInterval = null;
+                        }
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
+                        
+                        // Rediriger vers la page appropriée
+                        redirectAfterMaintenance();
+                    } else {
+                        document.getElementById('statusMessage').innerHTML = `
+                            <i class="fas fa-sync-alt fa-spin"></i>
+                            <span>Maintenance en cours - Vérification automatique toutes les 30s</span>
+                        `;
+                    }
                 }
             } catch (error) {
-                console.error('Erreur chargement statut maintenance:', error);
-                document.getElementById('maintenanceMessage').textContent = 'Site en maintenance. Nous revenons très bientôt !';
+                console.error('Erreur vérification maintenance:', error);
+                document.getElementById('statusMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                    <span>Erreur de connexion, nouvelle tentative...</span>
+                `;
             }
         }
 
-        // Démarrer le compte à rebours
+        // ===== REDIRECTION APRÈS MAINTENANCE =====
+        function redirectAfterMaintenance() {
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // Utilisateur connecté → rediriger vers dashboard
+                window.location.href = '/dashboard';
+            } else {
+                // Utilisateur non connecté → rediriger vers accueil
+                window.location.href = '/';
+            }
+        }
+
+        // ===== VÉRIFIER AVANT DE REDIRIGER VERS L'ACCUEIL =====
+        async function checkBeforeRedirect(event) {
+            event.preventDefault();
+            
+            try {
+                const response = await fetch('/api/maintenance-status');
+                const data = await response.json();
+                
+                if (data.success && !data.is_active) {
+                    window.location.href = '/';
+                } else {
+                    // Rester sur la page de maintenance
+                    alert('La maintenance est toujours en cours. Veuillez patienter.');
+                }
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        // ===== DÉMARRER LE COMPTE À REBOURS =====
         function startCountdown(endTime) {
             const endDate = new Date(endTime).getTime();
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
 
             countdownInterval = setInterval(() => {
                 const now = new Date().getTime();
@@ -530,13 +616,11 @@
                     return;
                 }
 
-                // Calculs
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // Mise à jour
                 document.getElementById('days').textContent = days.toString().padStart(2, '0');
                 document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
                 document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
@@ -544,35 +628,28 @@
             }, 1000);
         }
 
-        // Rafraîchir le statut
-        async function refreshStatus() {
-            const btn = document.getElementById('refreshBtn');
-            const icon = btn.querySelector('i');
-            const span = btn.querySelector('span');
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérification initiale
+            checkMaintenanceStatus();
+            
+            // Vérification toutes les 30 secondes
+            checkInterval = setInterval(checkMaintenanceStatus, 30000);
+        });
 
-            // Désactiver le bouton
-            btn.disabled = true;
-            icon.style.display = 'none';
-            span.innerHTML = '<span class="loader"></span> Vérification...';
-
-            // Recharger le statut
-            await loadMaintenanceStatus();
-
-            // Réactiver le bouton
-            btn.disabled = false;
-            icon.style.display = 'inline-block';
-            span.innerHTML = 'Vérifier le statut';
-        }
-
-        // Nettoyer l'intervalle à la fermeture
+        // Nettoyer les intervalles à la fermeture
         window.addEventListener('beforeunload', () => {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
             if (countdownInterval) {
                 clearInterval(countdownInterval);
             }
         });
 
-        // Charger au démarrage
-        document.addEventListener('DOMContentLoaded', loadMaintenanceStatus);
+        // Exposer les fonctions globalement
+        window.checkMaintenanceStatus = checkMaintenanceStatus;
+        window.checkBeforeRedirect = checkBeforeRedirect;
     </script>
 </body>
 </html>
