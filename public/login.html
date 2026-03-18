@@ -495,6 +495,33 @@
     </div>
 
     <script>
+        // ===== INTERCEPTEUR MAINTENANCE =====
+        // À mettre TOUT EN HAUT du script
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            const response = await originalFetch(...args);
+            
+            // Cloner la réponse pour pouvoir la lire
+            const clonedResponse = response.clone();
+            
+            try {
+                const data = await clonedResponse.json();
+                
+                // Si c'est une erreur de maintenance
+                if (data && data.maintenance === true && data.error === 'MAINTENANCE_MODE') {
+                    console.log('🚧 Site en maintenance, redirection...');
+                    // Rediriger vers la page de maintenance sans déconnecter l'utilisateur
+                    window.location.href = '/maintenance';
+                    return response;
+                }
+            } catch (e) {
+                // Pas du JSON, ignorer
+            }
+            
+            return response;
+        };
+        // ===== FIN INTERCEPTEUR =====
+
         // Toggle password visibility
         function togglePassword() {
             const password = document.getElementById('password');
