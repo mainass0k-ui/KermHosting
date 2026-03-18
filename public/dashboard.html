@@ -1933,7 +1933,14 @@
         if (!token) {
             window.location.href = '/login';
         }
-const originalFetch = window.fetch;
+
+		  const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login';
+    }
+
+    // ===== INTERCEPTEUR MAINTENANCE =====
+    const originalFetch = window.fetch;
     window.fetch = async function(...args) {
         const response = await originalFetch(...args);
         const clonedResponse = response.clone();
