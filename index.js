@@ -273,7 +273,7 @@ app.use(cors({
 }));
 
 // =============================================
-// MIDDLEWARE DE MAINTENANCE (PLACÉ ICI, AVANT LES ROUTES)
+// MIDDLEWARE DE MAINTENANCE (PLACÉ ICI, AVANT TOUTES LES ROUTES)
 // =============================================
 
 const maintenanceCheck = async (req, res, next) => {
@@ -339,7 +339,17 @@ const maintenanceCheck = async (req, res, next) => {
             }
         }
 
-        // Sinon, rediriger vers la page de maintenance
+        // Pour les routes API, renvoyer une erreur JSON
+        if (req.path.startsWith('/api/')) {
+            return res.status(503).json({
+                success: false,
+                error: 'Site en maintenance',
+                maintenance: true,
+                message: maintenance.message
+            });
+        }
+
+        // Pour les pages HTML, renvoyer la page de maintenance
         console.log(`🚧 Maintenance active - Accès refusé à ${req.path} depuis ${clientIp}`);
         return res.status(503).sendFile(path.join(__dirname, 'public', 'maintenance.html'));
 
@@ -978,7 +988,7 @@ async function createPterodactylServer(serverData) {
 
         const MAIN_FILE = "index.js";
         const startupCommand =
-            'if [[-d .git ]] && [[ {{AUTO_UPDATE}} == "1" ]]; then git pull; fi; ' +
+            'if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == "1" ]]; then git pull; fi; ' +
             'if [[ ! -z ${NODE_PACKAGES} ]]; then npm install ${NODE_PACKAGES}; fi; ' +
             'if [ -f /home/container/package.json ]; then npm install; fi; ' +
             '/usr/local/bin/node /home/container/' + MAIN_FILE;
