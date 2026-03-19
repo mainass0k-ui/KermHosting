@@ -1,5 +1,5 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND ULTIME - VERSION CORRIGÉE
+// index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS OPTIMISÉS
 // =============================================
 
 import express from 'express';
@@ -273,12 +273,11 @@ app.use(cors({
 }));
 
 // =============================================
-// MIDDLEWARE DE MAINTENANCE (PLACÉ ICI, AVANT TOUTES LES ROUTES)
+// MIDDLEWARE DE MAINTENANCE
 // =============================================
 
 const maintenanceCheck = async (req, res, next) => {
     try {
-        // Chemins toujours accessibles même en maintenance
         const publicPaths = [
             '/', 
             '/login', 
@@ -293,34 +292,28 @@ const maintenanceCheck = async (req, res, next) => {
             '/api/admin/check'
         ];
         
-        // Vérifier si le chemin est public
         if (publicPaths.includes(req.path) || req.path.startsWith('/api/admin/')) {
             return next();
         }
 
-        // Récupérer la configuration de maintenance
         const { data: maintenance, error } = await supabase
             .from('maintenance')
             .select('*')
             .single();
 
         if (error || !maintenance) {
-            // Pas de config maintenance, continuer
             return next();
         }
 
-        // Si la maintenance n'est pas active, continuer
         if (!maintenance.is_active) {
             return next();
         }
 
-        // Vérifier si l'IP est autorisée
         const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         if (maintenance.allow_ips && maintenance.allow_ips.includes(clientIp)) {
             return next();
         }
 
-        // Vérifier si l'utilisateur est admin (contournement)
         const token = req.headers['authorization']?.split(' ')[1];
         if (token) {
             try {
@@ -339,7 +332,6 @@ const maintenanceCheck = async (req, res, next) => {
             }
         }
 
-        // Pour les routes API, renvoyer une erreur JSON
         if (req.path.startsWith('/api/')) {
             return res.status(503).json({
                 success: false,
@@ -349,8 +341,6 @@ const maintenanceCheck = async (req, res, next) => {
             });
         }
 
-        // Pour les pages HTML, renvoyer la page de maintenance
-        console.log(`🚧 Maintenance active - Accès refusé à ${req.path} depuis ${clientIp}`);
         return res.status(503).sendFile(path.join(__dirname, 'public', 'maintenance.html'));
 
     } catch (error) {
@@ -359,7 +349,6 @@ const maintenanceCheck = async (req, res, next) => {
     }
 };
 
-// Appliquer le middleware de maintenance à TOUTES les routes
 app.use(maintenanceCheck);
 
 // =============================================
@@ -379,26 +368,18 @@ const generateTransactionId = () => crypto.randomUUID();
 const generateUsername = () => `user_${crypto.randomBytes(4).toString('hex')}`;
 const generatePassword = () => crypto.randomBytes(12).toString('hex');
 
-// =============================================
-// FONCTION CORRIGÉE - GÉNÉRATION MOT DE PASSE SERVEUR
-// Format: Kh-XXXXXX (où XXXXXX = 6 caractères alphanumériques)
-// =============================================
 function generateServerPassword() {
-    // Caractères autorisés : lettres majuscules, minuscules et chiffres
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let password = '';
     
-    // Générer 6 caractères aléatoires
     for (let i = 0; i < 6; i++) {
         const randomIndex = Math.floor(Math.random() * chars.length);
         password += chars[randomIndex];
     }
     
-    // Retourner avec le préfixe Kh-
     return `Kh-${password}`;
 }
 
-// Fonction de validation du nom d'utilisateur
 function validateUsername(username) {
     if (!username) return { valid: false, reason: 'Nom d\'utilisateur requis' };
     if (username.length < 3 || username.length > 20) {
@@ -411,7 +392,7 @@ function validateUsername(username) {
 }
 
 // =============================================
-// FONCTIONS EMAIL AVEC RESEND
+// FONCTIONS EMAIL AVEC RESEND - VERSION OPTIMISÉE
 // =============================================
 async function sendEmail(to, subject, htmlContent) {
     try {
@@ -438,7 +419,6 @@ async function sendEmail(to, subject, htmlContent) {
     }
 }
 
-// Version pour le support
 async function sendSupportEmail(to, subject, htmlContent) {
     try {
         const { data, error } = await resend.emails.send({
@@ -461,7 +441,7 @@ async function sendSupportEmail(to, subject, htmlContent) {
     }
 }
 
-// Template de base simplifié
+// Template de base avec design élégant mais sobre
 function getBaseEmailTemplate(title, content) {
     const year = new Date().getFullYear();
     return `<!DOCTYPE html>
@@ -470,12 +450,14 @@ function getBaseEmailTemplate(title, content) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} - KermHosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f6f6f6;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e0e0e0;">
+<body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f4f4f8;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <tr>
-            <td style="padding: 30px; text-align: center; background-color: #7C3AED; color: white;">
-                <h1 style="margin: 0; font-size: 28px; font-weight: 500;">KermHosting</h1>
+            <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
+                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
+                <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
             </td>
         </tr>
         <tr>
@@ -484,12 +466,9 @@ function getBaseEmailTemplate(title, content) {
             </td>
         </tr>
         <tr>
-            <td style="padding: 20px; text-align: center; background-color: #f9f9f9; color: #666; font-size: 12px; border-top: 1px solid #e0e0e0;">
-                <p style="margin: 5px 0;">KermHosting - Hébergement Node.js</p>
-                <p style="margin: 5px 0;">© ${year} Tous droits réservés.</p>
-                <p style="margin: 5px 0;">
-                    <a href="${SITE_CONFIG.url}" style="color: #7C3AED; text-decoration: none;">${SITE_CONFIG.url}</a>
-                </p>
+            <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
+                <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
+                <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
             </td>
         </tr>
     </table>
@@ -497,85 +476,99 @@ function getBaseEmailTemplate(title, content) {
 </html>`;
 }
 
-// Template de vérification d'email
+// 🔐 Template de vérification d'email
 function getVerificationEmailHtml(username, code) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Bienvenue ${username} !</h2>
-        <p style="color: #555; line-height: 1.6;">Merci de vous être inscrit sur KermHosting. Pour activer votre compte, veuillez utiliser le code de vérification ci-dessous :</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🔐 Vérification de votre compte</h2>
         
-        <div style="background-color: #f5f5f5; border: 2px solid #7C3AED; border-radius: 5px; padding: 20px; text-align: center; margin: 25px 0;">
-            <span style="font-size: 36px; font-weight: bold; color: #7C3AED; letter-spacing: 5px;">${code}</span>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Merci de vous être inscrit sur KermHosting. Pour activer votre compte, veuillez utiliser le code de vérification ci-dessous :</p>
+        
+        <div style="background: linear-gradient(145deg, #f9f9ff, #f0f0fa); border: 2px solid #7C3AED; border-radius: 12px; padding: 25px; text-align: center; margin: 25px 0;">
+            <span style="font-size: 42px; font-weight: 700; color: #7C3AED; letter-spacing: 8px; font-family: 'Courier New', monospace;">${code}</span>
         </div>
         
-        <p style="color: #666; font-size: 14px;">Ce code expirera dans 15 minutes pour des raisons de sécurité.</p>
+        <p style="color: #666; font-size: 14px; margin: 0 0 20px 0;">⏰ Ce code expirera dans <strong>15 minutes</strong> pour des raisons de sécurité.</p>
         
-        <p style="color: #666; font-size: 14px;">Si vous n'avez pas créé de compte sur KermHosting, ignorez cet email.</p>
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e; font-size: 14px;">Si vous n'avez pas créé de compte sur KermHosting, ignorez simplement cet email.</p>
+        </div>
         
-        <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 25px 0;">
-        
-        <p style="color: #7C3AED; font-size: 14px; text-align: center;">
-            <a href="${SITE_CONFIG.url}" style="color: #7C3AED;">Accéder à KermHosting</a>
+        <p style="color: #7C3AED; font-size: 14px; text-align: center; margin: 20px 0 0 0;">
+            <a href="${SITE_CONFIG.url}" style="color: #7C3AED; text-decoration: none;">← Retour à l'accueil</a>
         </p>
     `;
-    return getBaseEmailTemplate('Vérification de votre compte', content);
+    return getBaseEmailTemplate('🔐 Vérification de votre compte', content);
 }
 
-// Template de bienvenue
+// 🎉 Template de bienvenue
 function getWelcomeEmailHtml(username) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Félicitations ${username} !</h2>
-        <p style="color: #555; line-height: 1.6;">Votre compte a été vérifié avec succès. Vous pouvez maintenant créer votre premier serveur et profiter de nos services.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎉 Bienvenue ${username} !</h2>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
-            <h3 style="color: #333; margin-top: 0; margin-bottom: 15px;">Pour commencer :</h3>
-            <ol style="color: #555; margin-left: 20px; padding-left: 0;">
-                <li style="margin-bottom: 10px;">Connectez-vous à votre tableau de bord</li>
-                <li style="margin-bottom: 10px;">Créez votre premier serveur (offre gratuite 24h incluse)</li>
-                <li style="margin-bottom: 10px;">Déployez vos projets Node.js</li>
-            </ol>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Félicitations, votre compte a été vérifié avec succès. Vous faites maintenant partie de la communauté KermHosting !</p>
+        
+        <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
+            <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🚀 Pour commencer :</h3>
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
+                </tr>
+            </table>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Accéder au tableau de bord</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Accéder au tableau de bord</a>
         </p>
     `;
-    return getBaseEmailTemplate('Bienvenue sur KermHosting !', content);
+    return getBaseEmailTemplate('🎉 Bienvenue sur KermHosting', content);
 }
 
-// Template de réinitialisation de mot de passe
+// 🔑 Template de réinitialisation de mot de passe
 function getResetEmailHtml(username, code) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Réinitialisation de mot de passe</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Vous avez demandé à réinitialiser votre mot de passe. Utilisez le code ci-dessous :</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🔑 Réinitialisation de mot de passe</h2>
         
-        <div style="background-color: #f5f5f5; border: 2px solid #7C3AED; border-radius: 5px; padding: 20px; text-align: center; margin: 25px 0;">
-            <span style="font-size: 36px; font-weight: bold; color: #7C3AED; letter-spacing: 5px;">${code}</span>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Vous avez demandé à réinitialiser votre mot de passe. Utilisez le code ci-dessous :</p>
+        
+        <div style="background: linear-gradient(145deg, #f9f9ff, #f0f0fa); border: 2px solid #7C3AED; border-radius: 12px; padding: 25px; text-align: center; margin: 25px 0;">
+            <span style="font-size: 42px; font-weight: 700; color: #7C3AED; letter-spacing: 8px; font-family: 'Courier New', monospace;">${code}</span>
         </div>
         
-        <p style="color: #666; font-size: 14px;">Ce code expirera dans 15 minutes.</p>
+        <p style="color: #666; font-size: 14px; margin: 0 0 20px 0;">⏰ Ce code expirera dans <strong>15 minutes</strong>.</p>
         
-        <p style="color: #666; font-size: 14px;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e; font-size: 14px;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
+        </div>
         
-        <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 25px 0;">
-        
-        <p style="text-align: center;">
+        <p style="text-align: center; margin: 20px 0 0 0;">
             <a href="${SITE_CONFIG.url}/reset-password" style="color: #7C3AED;">Changer mon mot de passe</a>
         </p>
     `;
-    return getBaseEmailTemplate('Réinitialisation de mot de passe', content);
+    return getBaseEmailTemplate('🔑 Réinitialisation de mot de passe', content);
 }
 
-// Template de confirmation d'achat de serveur
+// ✅ Template de confirmation d'achat de serveur
 function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Serveur créé avec succès</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>${serverCredentials.server_name}</strong> (plan ${plan.name}) a été créé avec succès.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">✅ Serveur créé avec succès</h2>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
-            <h3 style="color: #333; margin-top: 0; margin-bottom: 15px;">Informations de connexion :</h3>
-            <table width="100%" cellpadding="5" cellspacing="0">
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>${serverCredentials.server_name}</strong> (plan ${plan.name}) a été créé avec succès.</p>
+        
+        <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
+            <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🔑 Informations de connexion :</h3>
+            <table width="100%" cellpadding="8" cellspacing="0">
                 <tr>
                     <td style="color: #666;">Nom du serveur :</td>
                     <td style="font-weight: bold;">${serverCredentials.server_name}</td>
@@ -599,31 +592,33 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
             </table>
         </div>
         
-        <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #856404;"><strong>Important :</strong> conservez ces informations précieusement. Elles ne seront plus affichées.</p>
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Important :</strong> conservez ces informations précieusement. Elles ne seront plus affichées.</p>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Gérer mon serveur</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Gérer mon serveur</a>
         </p>
     `;
-    return getBaseEmailTemplate('Confirmation de création de serveur', content);
+    return getBaseEmailTemplate('✅ Confirmation de création de serveur', content);
 }
 
-// Template de confirmation d'achat de coins - VERSION AMÉLIORÉE
+// 💰 Template de confirmation d'achat de coins
 function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Achat de coins confirmé !</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre achat de coins a été traité avec succès et crédité sur votre compte.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">💰 Achat de coins confirmé</h2>
         
-        <div style="background: linear-gradient(135deg, #f6f9fc, #e6f0f9); border: 1px solid #7C3AED; border-radius: 10px; padding: 25px; margin: 25px 0; text-align: center;">
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre achat de coins a été traité avec succès et crédité sur votre compte.</p>
+        
+        <div style="background: linear-gradient(145deg, #f9f9ff, #f0f0fa); border: 2px solid #7C3AED; border-radius: 12px; padding: 25px; text-align: center; margin: 25px 0;">
             <div style="font-size: 20px; color: #7C3AED; margin-bottom: 10px;">💰 Total de coins crédités</div>
-            <div style="font-size: 48px; font-weight: bold; color: #7C3AED; margin-bottom: 10px;">${totalCoins}</div>
+            <div style="font-size: 48px; font-weight: 700; color: #7C3AED; margin-bottom: 10px;">${totalCoins}</div>
             <div style="color: #666;">coins</div>
         </div>
         
-        <table width="100%" cellpadding="10" cellspacing="0" style="margin: 20px 0;">
+        <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
             <tr>
                 <td style="color: #666;">Pack acheté :</td>
                 <td style="font-weight: bold;">${pack.name}</td>
@@ -648,86 +643,90 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
             </tr>
         </table>
         
-        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #2e7d32;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
+        <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #2e7d32; font-size: 14px;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
         </div>
         
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 0 5px;">Créer un serveur</a>
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #f0f0f0; color: #333; padding: 14px 30px; text-decoration: none; border-radius: 5px; margin: 0 5px;">Voir mon solde</a>
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 50px; font-weight: 600; margin: 0 5px;">Créer un serveur</a>
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #f0f0f0; color: #333; padding: 14px 30px; text-decoration: none; border-radius: 50px; font-weight: 600; margin: 0 5px;">Voir mon solde</a>
         </div>
-        
-        <p style="color: #999; font-size: 12px; text-align: center; margin-top: 30px;">Si vous avez des questions, n'hésitez pas à contacter notre support.</p>
     `;
-    return getBaseEmailTemplate('Achat de coins confirmé', content);
+    return getBaseEmailTemplate('💰 Achat de coins confirmé', content);
 }
 
-// Template de notification de parrainage
+// 🎁 Template de notification de parrainage
 function getReferralNotificationHtml(username, referrerName, referralLink) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Nouveau filleul !</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">${referrerName} vient de s'inscrire sur KermHosting en utilisant votre lien de parrainage.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Nouveau filleul !</h2>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0; text-align: center;">
-            <div style="font-size: 36px; font-weight: bold; color: #7C3AED; margin-bottom: 5px;">20 coins</div>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">${referrerName} vient de s'inscrire sur KermHosting en utilisant votre lien de parrainage.</p>
+        
+        <div style="background: linear-gradient(145deg, #f9f9ff, #f0f0fa); border: 2px solid #7C3AED; border-radius: 12px; padding: 25px; text-align: center; margin: 25px 0;">
+            <div style="font-size: 36px; font-weight: 700; color: #7C3AED; margin-bottom: 5px;">20 coins</div>
             <div style="color: #666;">Crédités sur votre compte</div>
         </div>
         
-        <p style="color: #555;">Continuez à partager votre lien de parrainage :</p>
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 15px 0; word-break: break-all; font-family: monospace; color: #7C3AED;">
+        <p style="color: #555; margin: 20px 0 10px 0;">Continuez à partager votre lien de parrainage :</p>
+        <div style="background-color: #f5f5f5; border-radius: 8px; padding: 15px; margin: 15px 0; word-break: break-all; font-family: monospace; color: #7C3AED;">
             ${referralLink}
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/profile" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Voir mes statistiques</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/profile" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Voir mes statistiques</a>
         </p>
     `;
-    return getBaseEmailTemplate('Nouveau filleul !', content);
+    return getBaseEmailTemplate('🎁 Nouveau filleul !', content);
 }
 
-// Template de bienvenue pour filleul
+// 🎁 Template de bienvenue pour filleul
 function getReferralWelcomeHtml(username, referrerName, referralLink) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Bienvenue sur KermHosting !</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Vous avez été parrainé par ${referrerName}. Bienvenue dans notre communauté !</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Bienvenue sur KermHosting !</h2>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
-            <p style="margin: 5px 0;"><strong>Bonus de bienvenue :</strong> 10 coins</p>
-            <p style="margin: 5px 0;"><strong>Total de départ :</strong> 15 coins (10 parrainage + 5 inscription)</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Vous avez été parrainé par ${referrerName}. Bienvenue dans notre communauté !</p>
+        
+        <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
+            <p style="margin: 5px 0; color: #555;"><strong>🎁 Bonus de bienvenue :</strong> 10 coins</p>
+            <p style="margin: 5px 0; color: #555;"><strong>💰 Total de départ :</strong> 15 coins (10 parrainage + 5 inscription)</p>
         </div>
         
         <div style="margin: 25px 0;">
-            <p style="color: #555;">Pour commencer :</p>
-            <ol style="color: #555;">
+            <p style="color: #555; margin: 0 0 10px 0;">🚀 Pour commencer :</p>
+            <ol style="color: #555; margin-left: 20px; padding-left: 0;">
                 <li style="margin-bottom: 10px;">Vérifiez votre email pour activer votre compte</li>
                 <li style="margin-bottom: 10px;">Créez votre premier serveur (offre gratuite 24h)</li>
                 <li style="margin-bottom: 10px;">Partagez votre lien de parrainage pour gagner plus de coins</li>
             </ol>
         </div>
         
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 15px 0;">
+        <div style="background-color: #f5f5f5; border-radius: 8px; padding: 15px; margin: 15px 0;">
             <p style="margin: 0; color: #666;">Votre lien de parrainage :</p>
             <p style="margin: 10px 0 0; word-break: break-all; font-family: monospace; color: #7C3AED;">${referralLink}</p>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Accéder au tableau de bord</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Accéder au tableau de bord</a>
         </p>
     `;
-    return getBaseEmailTemplate('Bienvenue sur KermHosting !', content);
+    return getBaseEmailTemplate('🎁 Bienvenue sur KermHosting !', content);
 }
 
-// Template d'expiration de serveur (J-3)
+// ⚠️ Template d'expiration de serveur (J-3)
 function getServerExpiringHtml(username, server, daysLeft) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">⚠️ Votre serveur expire bientôt</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> expirera dans <strong style="color: #e67e22;">${daysLeft} jours</strong>.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">⚠️ Votre serveur expire bientôt</h2>
         
-        <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #856404;"><strong>Action requise :</strong> Pour éviter la suspension de votre serveur, veuillez le renouveler avant la date d'expiration.</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> expirera dans <strong style="color: #e67e22;">${daysLeft} jours</strong>.</p>
+        
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e;"><strong>Action requise :</strong> Pour éviter la suspension de votre serveur, veuillez le renouveler avant la date d'expiration.</p>
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
@@ -741,24 +740,26 @@ function getServerExpiringHtml(username, server, daysLeft) {
             </tr>
         </table>
         
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Renouveler maintenant</a>
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
         </div>
         
-        <p style="color: #999; font-size: 13px; text-align: center;">Si vous ne renouvelez pas, votre serveur sera suspendu à la date d'expiration puis supprimé définitivement après 7 jours.</p>
+        <p style="color: #999; font-size: 13px; text-align: center; margin: 20px 0 0 0;">Si vous ne renouvelez pas, votre serveur sera suspendu à la date d'expiration puis supprimé définitivement après 7 jours.</p>
     `;
-    return getBaseEmailTemplate('Alerte expiration de serveur', content);
+    return getBaseEmailTemplate('⚠️ Alerte expiration', content);
 }
 
-// Template de suspension de serveur (J0)
+// 🔴 Template de suspension de serveur (J0)
 function getServerSuspendedHtml(username, server) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">🔴 Votre serveur a été suspendu</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été suspendu car il a atteint sa date d'expiration.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🔴 Votre serveur a été suspendu</h2>
         
-        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #721c24;"><strong>Important :</strong> Vous avez jusqu'au <strong>${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</strong> pour renouveler votre serveur. Passé ce délai, il sera définitivement supprimé avec toutes ses données.</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été suspendu car il a atteint sa date d'expiration.</p>
+        
+        <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #b71c1c;"><strong>Important :</strong> Vous avez jusqu'au <strong>${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</strong> pour renouveler votre serveur. Passé ce délai, il sera définitivement supprimé.</p>
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
@@ -776,121 +777,127 @@ function getServerSuspendedHtml(username, server) {
             </tr>
         </table>
         
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Renouveler maintenant</a>
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
         </div>
-        
-        <p style="color: #999; font-size: 13px; text-align: center;">Une fois renouvelé, votre serveur sera automatiquement réactivé.</p>
     `;
-    return getBaseEmailTemplate('Serveur suspendu', content);
+    return getBaseEmailTemplate('🔴 Serveur suspendu', content);
 }
 
-// Template de suppression de serveur (J+7)
+// 🗑️ Template de suppression de serveur (J+7)
 function getServerDeletedHtml(username, server) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">🗑️ Votre serveur a été supprimé</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les délais.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Votre serveur a été supprimé</h2>
         
-        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #721c24;">Toutes les données associées à ce serveur ont été effacées de nos systèmes.</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les délais.</p>
+        
+        <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #b71c1c;">Toutes les données associées à ce serveur ont été effacées de nos systèmes.</p>
         </div>
         
-        <p style="color: #555; line-height: 1.6;">Vous pouvez toujours créer un nouveau serveur quand vous le souhaitez. Vos coins et votre compte sont toujours actifs.</p>
+        <p style="color: #555; line-height: 1.6; margin: 20px 0;">Vous pouvez toujours créer un nouveau serveur quand vous le souhaitez. Vos coins et votre compte sont toujours actifs.</p>
         
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 30px; text-decoration: none; border-radius: 5px;">Créer un nouveau serveur</a>
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Créer un nouveau serveur</a>
         </div>
-        
-        <p style="color: #999; font-size: 13px; text-align: center;">Si vous pensez qu'il s'agit d'une erreur, contactez notre support.</p>
     `;
-    return getBaseEmailTemplate('Serveur supprimé', content);
+    return getBaseEmailTemplate('🗑️ Serveur supprimé', content);
 }
 
-// Template de suspension de compte
+// 🔒 Template de suspension de compte
 function getAccountSuspendedHtml(username, reason) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">🔒 Compte suspendu</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🔒 Compte suspendu</h2>
         
-        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #721c24;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Nous vous informons que votre compte KermHosting a été temporairement suspendu.</p>
+        
+        <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #b71c1c;">Raison : ${reason || 'Non-respect des conditions d\'utilisation.'}</p>
         </div>
         
-        <p style="color: #555;">Pour plus d'informations, veuillez contacter notre support.</p>
+        <p style="color: #555; margin: 20px 0;">Pour plus d'informations, veuillez contacter notre support.</p>
         
-        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin: 25px 0;">
+        <div style="background-color: #f5f5f5; border-radius: 8px; padding: 20px; margin: 25px 0;">
             <p style="margin: 5px 0;"><strong>Support :</strong></p>
             <p style="margin: 5px 0;">Email: <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: #7C3AED;">${SITE_CONFIG.supportEmail}</a></p>
             <p style="margin: 5px 0;">WhatsApp: <a href="${SITE_CONFIG.whatsapp}" style="color: #7C3AED;">Cliquez ici</a></p>
             <p style="margin: 5px 0;">Discord: <a href="${SITE_CONFIG.discord}" style="color: #7C3AED;">Rejoindre</a></p>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Contacter le support</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/support" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Contacter le support</a>
         </p>
     `;
-    return getBaseEmailTemplate('Compte suspendu', content);
+    return getBaseEmailTemplate('🔒 Compte suspendu', content);
 }
 
-// Template de suppression de compte
+// 🗑️ Template de suppression de compte
 function getAccountDeletedHtml(username) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Compte supprimé</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Nous confirmons la suppression de votre compte KermHosting conformément à votre demande.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Compte supprimé</h2>
         
-        <div style="background-color: #fee; border: 1px solid #fcc; border-radius: 5px; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #c0392b;">Toutes vos données personnelles, serveurs et transactions ont été supprimés.</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Nous confirmons la suppression de votre compte KermHosting conformément à votre demande.</p>
+        
+        <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #b71c1c;">Toutes vos données personnelles, serveurs et transactions ont été supprimés.</p>
         </div>
         
-        <p style="color: #555;">Nous espérons vous revoir bientôt sur KermHosting.</p>
+        <p style="color: #555; margin: 20px 0;">Nous espérons vous revoir bientôt sur KermHosting.</p>
         
-        <p style="text-align: center; margin: 25px 0;">
+        <p style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}" style="color: #7C3AED;">Retour à l'accueil</a>
         </p>
     `;
-    return getBaseEmailTemplate('Compte supprimé', content);
+    return getBaseEmailTemplate('🗑️ Compte supprimé', content);
 }
 
-// Template de confirmation de changement d'email
+// 📧 Template de confirmation de changement d'email
 function getEmailChangedConfirmationHtml(username, newEmail) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Email modifié avec succès</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre adresse email a été modifiée avec succès.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">📧 Email modifié avec succès</h2>
         
-        <div style="background-color: #f0f9ff; border: 1px solid #7C3AED; border-radius: 5px; padding: 20px; margin: 25px 0;">
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre adresse email a été modifiée avec succès.</p>
+        
+        <div style="background-color: #f0f7ff; border-radius: 8px; padding: 20px; margin: 25px 0;">
             <p style="margin: 0; color: #555;">Nouvelle adresse : <strong>${newEmail}</strong></p>
         </div>
         
-        <p style="color: #666; font-size: 14px;">Pour vous connecter, utilisez désormais cette nouvelle adresse email.</p>
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">Pour vous connecter, utilisez désormais cette nouvelle adresse email.</p>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/login" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Se connecter</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/login" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Se connecter</a>
         </p>
     `;
-    return getBaseEmailTemplate('Email modifié', content);
+    return getBaseEmailTemplate('📧 Email modifié', content);
 }
 
-// Template de renouvellement de serveur
+// ✅ Template de renouvellement de serveur
 function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
     const content = `
-        <h2 style="color: #333; margin-top: 0;">Renouvellement confirmé !</h2>
-        <p style="color: #555; line-height: 1.6;">Bonjour ${username},</p>
-        <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été renouvelé avec succès.</p>
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">✅ Renouvellement confirmé</h2>
         
-        <div style="background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 5px; padding: 20px; margin: 25px 0;">
-            <p style="margin: 5px 0;"><strong>Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
-            <p style="margin: 5px 0;"><strong>Coins déduits :</strong> ${coins}</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été renouvelé avec succès.</p>
+        
+        <div style="background-color: #e8f5e9; border-radius: 8px; padding: 20px; margin: 25px 0;">
+            <p style="margin: 5px 0; color: #555;"><strong>📅 Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+            <p style="margin: 5px 0; color: #555;"><strong>💰 Coins déduits :</strong> ${coins}</p>
         </div>
         
-        <p style="text-align: center; margin: 25px 0;">
-            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Voir mon serveur</a>
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Voir mon serveur</a>
         </p>
     `;
-    return getBaseEmailTemplate('Renouvellement confirmé', content);
+    return getBaseEmailTemplate('✅ Renouvellement confirmé', content);
 }
 
 // =============================================
@@ -939,19 +946,13 @@ async function callPterodactylClientAPI(endpoint, method = 'GET', data = null) {
     }
 }
 
-// =============================================
-// FONCTION CORRIGÉE - CRÉATION UTILISATEUR PTERODACTYL AVEC EMAIL RÉEL
-// =============================================
 async function createPterodactylUser(username, email) {
     try {
-        // Utiliser la fonction corrigée pour générer le mot de passe
         const password = generateServerPassword();
         
-        // ICI LA MODIFICATION : On utilise l'email réel de l'utilisateur KermHosting
-        // au lieu de l'email @kermhosting.local
         const payload = {
             username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
-            email: email, // ← L'EMAIL RÉEL DE L'UTILISATEUR
+            email: email,
             first_name: username.substring(0, 10),
             last_name: 'KermHosting',
             password: password
@@ -1065,7 +1066,6 @@ async function getServerAllocations(serverId) {
 async function suspendPterodactylServer(serverId) {
     try {
         if (!serverId) return true;
-        // Suspendre le serveur (désactiver)
         await callPterodactylAPI(`/api/application/servers/${serverId}/suspend`, 'POST');
         return true;
     } catch (error) {
@@ -1077,7 +1077,6 @@ async function suspendPterodactylServer(serverId) {
 async function unsuspendPterodactylServer(serverId) {
     try {
         if (!serverId) return true;
-        // Réactiver le serveur
         await callPterodactylAPI(`/api/application/servers/${serverId}/unsuspend`, 'POST');
         return true;
     } catch (error) {
@@ -1111,7 +1110,6 @@ async function getServerResources(serverIdentifier) {
     }
 }
 
-// Récupérer les serveurs d'un node spécifique
 async function getServersByNode(nodeId) {
     try {
         const allServers = await callPterodactylAPI('/api/application/servers');
@@ -1515,7 +1513,7 @@ app.post('/api/register', async (req, res) => {
 
         await sendEmail(
             email,
-            'Code de vérification KermHosting',
+            '🔐 Code de vérification KermHosting',
             getVerificationEmailHtml(username, verificationCode)
         );
 
@@ -1564,7 +1562,7 @@ app.post('/api/register', async (req, res) => {
                 const referrerLink = `${SITE_CONFIG.url}/register?ref=${referrerEmail.referral_code}`;
                 await sendEmail(
                     referrerEmail.email,
-                    'Nouveau filleul sur KermHosting',
+                    '🎁 Nouveau filleul sur KermHosting',
                     getReferralNotificationHtml(referrerName, username, referrerLink)
                 );
             }
@@ -1573,7 +1571,7 @@ app.post('/api/register', async (req, res) => {
                 const userLink = `${SITE_CONFIG.url}/register?ref=${newUser.referral_code}`;
                 await sendEmail(
                     email,
-                    'Bienvenue sur KermHosting',
+                    '🎁 Bienvenue sur KermHosting',
                     getReferralWelcomeHtml(username, referrerName, userLink)
                 );
             }
@@ -1633,7 +1631,7 @@ app.post('/api/verify-email', async (req, res) => {
 
         await sendEmail(
             email,
-            'Bienvenue sur KermHosting',
+            '🎉 Bienvenue sur KermHosting',
             getWelcomeEmailHtml(user.username)
         );
 
@@ -1685,7 +1683,7 @@ app.post('/api/resend-verification', async (req, res) => {
 
         await sendEmail(
             email,
-            'Nouveau code de vérification KermHosting',
+            '🔐 Nouveau code de vérification KermHosting',
             getVerificationEmailHtml(user.username, verificationCode)
         );
 
@@ -1803,7 +1801,7 @@ app.post('/api/forgot-password', async (req, res) => {
 
         await sendEmail(
             email,
-            'Réinitialisation de mot de passe KermHosting',
+            '🔑 Réinitialisation de mot de passe KermHosting',
             getResetEmailHtml(user.username, resetCode)
         );
 
@@ -2213,7 +2211,7 @@ app.get('/api/payment/status/:transId', async (req, res) => {
                     
                     await sendEmail(
                         user.email,
-                        'Achat de coins confirmé',
+                        '💰 Achat de coins confirmé',
                         getCoinsPurchaseHtml(
                             user.username, 
                             { name: transaction.metadata?.pack?.name || 'Pack de coins' }, 
@@ -2347,7 +2345,7 @@ app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
 
                             await sendEmail(
                                 user.email,
-                                'Achat de coins confirmé',
+                                '💰 Achat de coins confirmé',
                                 getCoinsPurchaseHtml(
                                     user.username, 
                                     { name: transaction.metadata?.pack?.name || 'Pack de coins' }, 
@@ -2585,7 +2583,7 @@ app.post('/api/user/request-email-change', authenticateToken, async (req, res) =
 
         await sendEmail(
             new_email,
-            'Code de vérification pour votre nouvel email',
+            '🔐 Code de vérification pour votre nouvel email',
             getVerificationEmailHtml(req.user.username, verificationCode)
         );
 
@@ -2666,13 +2664,13 @@ app.post('/api/user/confirm-email-change', authenticateToken, async (req, res) =
 
         await sendEmail(
             oldEmail,
-            'Votre email a été modifié',
+            '📧 Votre email a été modifié',
             getEmailChangedConfirmationHtml(req.user.username, pendingEmail)
         );
 
         await sendEmail(
             pendingEmail,
-            'Bienvenue sur votre nouvelle adresse',
+            '🎉 Bienvenue sur votre nouvelle adresse',
             getWelcomeEmailHtml(req.user.username)
         );
 
@@ -2732,7 +2730,7 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
 
         await sendEmail(
             email,
-            'Compte supprimé',
+            '🗑️ Compte supprimé',
             getAccountDeletedHtml(username)
         );
 
@@ -2910,8 +2908,7 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
             }
         }
 
-        // MODIFICATION ICI : Utiliser l'email réel de l'utilisateur au lieu de @kermhosting.local
-        const pteroEmail = req.user.email; // ← L'EMAIL RÉEL DE L'UTILISATEUR
+        const pteroEmail = req.user.email;
         const pteroUser = await createPterodactylUser(server_username, pteroEmail);
 
         const serverIdentifier = `${server_name}-${plan_id}-${Date.now().toString().slice(-4)}`;
@@ -2997,7 +2994,7 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
 
         await sendEmail(
             req.user.email,
-            'Votre serveur a été créé',
+            '✅ Votre serveur a été créé',
             getPurchaseConfirmationHtml(
                 req.user.username, 
                 plan, 
@@ -3166,11 +3163,10 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
             .update({ 
                 expires_at: newExpiry.toISOString(),
                 warning_sent: false,
-                status: 'active' // Réactiver si suspendu
+                status: 'active'
             })
             .eq('id', serverId);
 
-        // Réactiver sur Pterodactyl si nécessaire
         if (server.status === 'suspended') {
             await unsuspendPterodactylServer(server.pterodactyl_id);
         }
@@ -3206,7 +3202,7 @@ app.post('/api/servers/:serverId/renew', authenticateToken, requireEmailVerifica
 
         await sendEmail(
             req.user.email,
-            'Serveur renouvelé avec succès',
+            '✅ Serveur renouvelé avec succès',
             getRenewalConfirmationHtml(req.user.username, server, newExpiry, coins)
         );
 
@@ -3775,14 +3771,12 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
     try {
         console.log('🧹 Début du nettoyage des utilisateurs Pterodactyl orphelins...');
         
-        // Récupérer tous les utilisateurs de notre base de données
         const { data: kermUsers, error: usersError } = await supabase
             .from('profiles')
             .select('pterodactyl_user_id, username, email');
         
         if (usersError) throw usersError;
         
-        // Créer un Set des IDs Pterodactyl liés à des comptes KermHosting
         const linkedPteroIds = new Set(
             kermUsers
                 .filter(u => u.pterodactyl_user_id)
@@ -3791,7 +3785,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
         
         console.log(`📊 Utilisateurs KermHosting avec lien Pterodactyl: ${linkedPteroIds.size}`);
         
-        // Récupérer tous les utilisateurs Pterodactyl (avec pagination)
         let allPteroUsers = [];
         let page = 1;
         let hasMore = true;
@@ -3804,7 +3797,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
                     allPteroUsers = [...allPteroUsers, ...response.data];
                     page++;
                     
-                    // Vérifier si on a atteint la dernière page
                     if (response.meta?.pagination?.total_pages && page > response.meta.pagination.total_pages) {
                         hasMore = false;
                     }
@@ -3819,7 +3811,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
         
         console.log(`📊 Total utilisateurs Pterodactyl trouvés: ${allPteroUsers.length}`);
         
-        // Statistiques
         let stats = {
             total_ptero_users: allPteroUsers.length,
             linked_users: 0,
@@ -3830,13 +3821,11 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
             details: []
         };
         
-        // Analyser chaque utilisateur Pterodactyl
         for (const pteroUser of allPteroUsers) {
             const pteroId = pteroUser.attributes.id.toString();
             const pteroUsername = pteroUser.attributes.username;
             const pteroEmail = pteroUser.attributes.email;
             
-            // Vérifier si l'utilisateur est lié à KermHosting
             if (linkedPteroIds.has(pteroId)) {
                 stats.linked_users++;
                 stats.details.push({
@@ -3849,7 +3838,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
                 continue;
             }
             
-            // Vérifier si l'utilisateur a des serveurs
             try {
                 const serversResponse = await callPterodactylAPI(`/api/application/users/${pteroId}`);
                 const servers = serversResponse.attributes.relationships?.servers?.data || [];
@@ -3865,7 +3853,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
                         action: 'conservé (a des serveurs)'
                     });
                 } else {
-                    // Utilisateur orphelin sans serveur -> à supprimer
                     stats.orphan_without_servers++;
                     
                     try {
@@ -3905,7 +3892,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
             }
         }
         
-        // Journaliser l'action admin
         await supabase
             .from('admin_actions')
             .insert([{
@@ -3934,7 +3920,7 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
                     ? Math.round((stats.deleted_users / stats.orphan_without_servers) * 100) 
                     : 100
             },
-            details: stats.details.slice(0, 50) // Limiter à 50 détails pour la réponse
+            details: stats.details.slice(0, 50)
         });
         
     } catch (error) {
@@ -3969,7 +3955,7 @@ app.post('/api/admin/users/:userId/ban', authenticateToken, requireAdmin, async 
         if (banned && user) {
             await sendEmail(
                 user.email,
-                'Votre compte KermHosting a été suspendu',
+                '🔒 Votre compte KermHosting a été suspendu',
                 getAccountSuspendedHtml(user.username, 'Non-respect des conditions d\'utilisation')
             );
         }
@@ -4136,7 +4122,7 @@ app.delete('/api/admin/users/:userId', authenticateToken, requireAdmin, async (r
         if (user) {
             await sendEmail(
                 user.email,
-                'Votre compte KermHosting a été supprimé',
+                '🗑️ Votre compte KermHosting a été supprimé',
                 getAccountDeletedHtml(user.username)
             );
         }
@@ -4478,7 +4464,6 @@ app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (r
 // ROUTES MAINTENANCE
 // =============================================
 
-// Récupérer le statut de la maintenance (public)
 app.get('/api/maintenance-status', async (req, res) => {
     try {
         const { data: maintenance, error } = await supabase
@@ -4510,7 +4495,6 @@ app.get('/api/maintenance-status', async (req, res) => {
     }
 });
 
-// Récupérer la configuration complète de maintenance (admin)
 app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { data: maintenance, error } = await supabase
@@ -4519,7 +4503,6 @@ app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, r
             .single();
 
         if (error && error.code === 'PGRST116') {
-            // Pas de config, retourner config par défaut
             return res.json({ 
                 success: true, 
                 maintenance: {
@@ -4545,7 +4528,6 @@ app.get('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, r
     }
 });
 
-// Mettre à jour la configuration de maintenance (admin)
 app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { 
@@ -4558,7 +4540,6 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
             allow_ips 
         } = req.body;
 
-        // Vérifier si une config existe déjà
         const { data: existing, error: checkError } = await supabase
             .from('maintenance')
             .select('id')
@@ -4567,7 +4548,6 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
         let result;
 
         if (existing) {
-            // Mise à jour
             const { data, error } = await supabase
                 .from('maintenance')
                 .update({
@@ -4589,7 +4569,6 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
             result = data;
 
         } else {
-            // Insertion
             const { data, error } = await supabase
                 .from('maintenance')
                 .insert([{
@@ -4611,7 +4590,6 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
             result = data;
         }
 
-        // Journaliser l'action admin
         await supabase
             .from('admin_actions')
             .insert([{
@@ -4640,7 +4618,6 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
 // CRON JOBS CORRIGÉS POUR LA GESTION DES EXPIRATIONS
 // =============================================
 
-// 1. Vérification des serveurs expirant bientôt (toutes les 6 heures) - J-3
 cron.schedule('0 */6 * * *', async () => {
     console.log('🔍 Vérification des serveurs expirant bientôt...');
     
@@ -4662,7 +4639,7 @@ cron.schedule('0 */6 * * *', async () => {
         
         await sendEmail(
             server.profiles.email,
-            `⚠️ Votre serveur expire dans ${daysLeft} jours`,
+            '⚠️ Votre serveur expire bientôt',
             getServerExpiringHtml(server.profiles.username, server, daysLeft)
         );
 
@@ -4673,7 +4650,6 @@ cron.schedule('0 */6 * * *', async () => {
     }
 });
 
-// 2. Vérification des serveurs expirés (toutes les heures) - CORRIGÉ
 cron.schedule('0 * * * *', async () => {
     console.log('🔍 Vérification des serveurs expirés...');
     
@@ -4707,7 +4683,6 @@ cron.schedule('0 * * * *', async () => {
     }
 });
 
-// 3. Suppression des serveurs suspendus depuis plus de 7 jours (tous les jours à 2h) - CORRIGÉ
 cron.schedule('0 2 * * *', async () => {
     console.log('🗑️ Suppression des serveurs suspendus depuis plus de 7 jours...');
     
@@ -4740,7 +4715,6 @@ cron.schedule('0 2 * * *', async () => {
     }
 });
 
-// 4. Nettoyage des transactions en attente (toutes les heures) - INCHANGÉ
 cron.schedule('0 * * * *', async () => {
     const oneHourAgo = new Date();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
@@ -4756,13 +4730,10 @@ cron.schedule('0 * * * *', async () => {
 // ROUTES ADMIN - SUSPENSION/RÉACTIVATION MANUELLE
 // =============================================
 
-// Suspendre un serveur manuellement
 app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { serverId } = req.params;
-        const { action } = req.body; // 'suspend' ou autre
 
-        // Récupérer le serveur
         const { data: server, error: fetchError } = await supabase
             .from('servers')
             .select('*, profiles(*)')
@@ -4776,7 +4747,6 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
             });
         }
 
-        // Suspendre sur Pterodactyl
         const pteroSuccess = await suspendPterodactylServer(server.pterodactyl_id);
         if (!pteroSuccess) {
             return res.status(500).json({ 
@@ -4785,7 +4755,6 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
             });
         }
 
-        // Mettre à jour le statut dans la BDD
         const { error: updateError } = await supabase
             .from('servers')
             .update({ 
@@ -4801,7 +4770,6 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
             });
         }
 
-        // Journaliser l'action
         await supabase
             .from('admin_actions')
             .insert([{
@@ -4814,7 +4782,6 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
                 user_agent: req.headers['user-agent']
             }]);
 
-        // Envoyer un email au propriétaire (optionnel)
         if (server.profiles && server.profiles.email) {
             await sendEmail(
                 server.profiles.email,
@@ -4837,12 +4804,10 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
     }
 });
 
-// Réactiver un serveur manuellement
 app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { serverId } = req.params;
 
-        // Récupérer le serveur
         const { data: server, error: fetchError } = await supabase
             .from('servers')
             .select('*, profiles(*)')
@@ -4856,7 +4821,6 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
             });
         }
 
-        // Réactiver sur Pterodactyl
         const pteroSuccess = await unsuspendPterodactylServer(server.pterodactyl_id);
         if (!pteroSuccess) {
             return res.status(500).json({ 
@@ -4865,7 +4829,6 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
             });
         }
 
-        // Mettre à jour le statut dans la BDD
         const { error: updateError } = await supabase
             .from('servers')
             .update({ 
@@ -4881,7 +4844,6 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
             });
         }
 
-        // Journaliser l'action
         await supabase
             .from('admin_actions')
             .insert([{
@@ -4894,15 +4856,14 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
                 user_agent: req.headers['user-agent']
             }]);
 
-        // Envoyer un email au propriétaire (optionnel)
         if (server.profiles && server.profiles.email) {
             const html = `
-                <h2>✅ Votre serveur a été réactivé</h2>
-                <p>Bonjour ${server.profiles.username},</p>
-                <p>Votre serveur <strong>"${server.server_name}"</strong> a été réactivé par un administrateur.</p>
-                <p>Vous pouvez maintenant y accéder normalement.</p>
-                <p style="text-align: center;">
-                    <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">Accéder à mon serveur</a>
+                <h2 style="color: #333; margin: 0 0 15px 0;">✅ Votre serveur a été réactivé</h2>
+                <p style="color: #555; line-height: 1.6;">Bonjour ${server.profiles.username},</p>
+                <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été réactivé par un administrateur.</p>
+                <p style="color: #555; line-height: 1.6;">Vous pouvez maintenant y accéder normalement.</p>
+                <p style="text-align: center; margin: 30px 0 15px 0;">
+                    <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Accéder à mon serveur</a>
                 </p>
             `;
             await sendEmail(
