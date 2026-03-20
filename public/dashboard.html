@@ -25,7 +25,7 @@
     <title>Tableau de bord - KermHosting</title>
     
     <style>
-        /* ===== VARIABLES ===== */
+        /* ===== VARIABLES (inchangé) ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -69,6 +69,7 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
+        /* ===== STYLES EXISTANTS (inchangés) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -106,7 +107,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR OPTIMISÉE ===== */
+        /* ===== SIDEBAR OPTIMISÉE (inchangé) ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -1230,6 +1231,110 @@
             color: white;
         }
 
+        /* ===== NOUVEAU STYLE POUR AUTO-RENOUVELLEMENT ===== */
+        .auto-renew-section {
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin: 16px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .auto-renew-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .auto-renew-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auto-renew-title i {
+            color: var(--primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .auto-renew-info {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .auto-renew-error {
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: var(--radius-md);
+            display: none;
+        }
+
+        .auto-renew-error.show {
+            display: block;
+        }
+
+        .auto-renew-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
         .warning-message {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid var(--warning);
@@ -1811,7 +1916,7 @@
         </div>
     </div>
 
-    <!-- Modal de détails du serveur -->
+    <!-- Modal de détails du serveur (AVEC AUTO-RENOUVELLEMENT AJOUTÉ) -->
     <div class="modal" id="serverDetailsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1843,6 +1948,32 @@
                 <h3 style="margin-bottom: 12px; font-size: 1.1rem;">🔑 Identifiants</h3>
                 <div class="credentials-box" id="detailsCredentials">
                     <!-- Les identifiants seront injectés ici -->
+                </div>
+
+                <!-- NOUVEAU : SECTION AUTO-RENOUVELLEMENT -->
+                <div class="auto-renew-section" id="autoRenewSection">
+                    <div class="auto-renew-header">
+                        <span class="auto-renew-title">
+                            <i class="fas fa-sync-alt"></i>
+                            Auto-renouvellement
+                        </span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="auto-renew-info" id="autoRenewInfo">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Renouvellement automatique tous les 7 jours si solde suffisant</span>
+                    </div>
+                    <div class="auto-renew-stats" id="autoRenewStats" style="display: none;">
+                        <span><i class="fas fa-history"></i> Tentatives: <span id="autoRenewAttempts">0</span></span>
+                        <span><i class="fas fa-clock"></i> Dernière: <span id="autoRenewLastAttempt">Jamais</span></span>
+                    </div>
+                    <div class="auto-renew-error" id="autoRenewError">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="autoRenewErrorMessage"></span>
+                    </div>
                 </div>
 
                 <div class="warning-message">
@@ -1950,7 +2081,7 @@
         let currentServerId = null;
         let currentServer = null;
 
-        // ===== SIDEBAR FUNCTIONS =====
+        // ===== SIDEBAR FUNCTIONS (inchangé) =====
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const menuToggle = document.getElementById('menuToggle');
@@ -1972,7 +2103,7 @@
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ===== NOTIFICATIONS PANEL =====
+        // ===== NOTIFICATIONS PANEL (inchangé) =====
         const notificationBtn = document.getElementById('notificationBtn');
         const notificationsPanel = document.getElementById('notificationsPanel');
         const closeNotifications = document.getElementById('closeNotifications');
@@ -1992,7 +2123,7 @@
             }
         });
 
-        // ===== MODAL FUNCTIONS =====
+        // ===== MODAL FUNCTIONS (inchangé) =====
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
         }
@@ -2001,7 +2132,7 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // ===== TOAST NOTIFICATION =====
+        // ===== TOAST NOTIFICATION (inchangé) =====
         function showToast(type, message) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -2018,13 +2149,13 @@
             }, 3000);
         }
 
-        // ===== COPY TO CLIPBOARD =====
+        // ===== COPY TO CLIPBOARD (inchangé) =====
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text);
             showToast('success', 'Copié !');
         }
 
-        // ===== LOAD USER DATA =====
+        // ===== LOAD USER DATA (inchangé) =====
         async function loadUserData() {
             try {
                 const res = await fetch('/api/user/me', {
@@ -2077,7 +2208,7 @@
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
 
-            // Calcul des serveurs bientôt expirés (3 jours ou moins)
+            // Calcul des serveurs bientôt expirés
             const expiringCount = userServers.filter(s => {
                 if (!s.expires_at) return false;
                 const daysLeft = calculateDaysLeft(s.expires_at);
@@ -2129,7 +2260,7 @@
             }
         }
 
-        // ===== DISPLAY SERVERS - MODIFIÉ POUR AFFICHER LE STATUT CORRECT =====
+        // ===== DISPLAY SERVERS (inchangé) =====
         function displayServers() {
             const container = document.getElementById('serversContainer');
 
@@ -2154,7 +2285,6 @@
                 const daysLeft = calculateDaysLeft(server.expires_at);
                 const timeLeft = formatTimeLeft(server.expires_at);
                 
-                // Déterminer le statut basé sur server.status de la BDD
                 let statusClass = '';
                 let statusDotClass = '';
                 let statusText = '';
@@ -2284,7 +2414,7 @@
             container.innerHTML = html;
         }
 
-        // ===== SERVER DETAILS =====
+        // ===== SERVER DETAILS (MODIFIÉ AVEC AUTO-RENOUVELLEMENT) =====
         async function showServerDetails(serverId) {
             const server = userServers.find(s => s.id === serverId);
             if (!server) return;
@@ -2293,7 +2423,6 @@
             const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu' };
             const daysLeft = calculateDaysLeft(server.expires_at);
             
-            // Déterminer le statut
             let statusDisplay = '';
             if (server.status === 'suspended') {
                 statusDisplay = 'Suspendu';
@@ -2311,7 +2440,6 @@
             document.getElementById('detailsExpiry').textContent = server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'Non définie';
             document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
 
-            // Cacher les erreurs précédentes
             document.getElementById('actionErrorContainer').style.display = 'none';
 
             try {
@@ -2369,6 +2497,9 @@
                 document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--warning);">Erreur de chargement des identifiants</p>';
             }
 
+            // Charger les infos d'auto-renouvellement
+            await loadAutoRenewStatus(server.id);
+
             const renewBtn = document.getElementById('renewBtn');
             if (server.status === 'suspended') {
                 renewBtn.textContent = 'Réactiver';
@@ -2384,7 +2515,80 @@
             openModal('serverDetailsModal');
         }
 
-        // ===== RENEW SERVER =====
+        // ===== NOUVELLE FONCTION : CHARGER LE STATUT D'AUTO-RENOUVELLEMENT =====
+        async function loadAutoRenewStatus(serverId) {
+            try {
+                const res = await fetch(`/api/servers/${serverId}/auto-renew`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const toggle = document.getElementById('autoRenewToggle');
+                    toggle.checked = data.auto_renew || false;
+                    
+                    const statsDiv = document.getElementById('autoRenewStats');
+                    const errorDiv = document.getElementById('autoRenewError');
+                    
+                    if (data.attempts_count > 0) {
+                        statsDiv.style.display = 'flex';
+                        document.getElementById('autoRenewAttempts').textContent = data.attempts_count;
+                        document.getElementById('autoRenewLastAttempt').textContent = data.last_attempt ? new Date(data.last_attempt).toLocaleString() : 'Jamais';
+                    } else {
+                        statsDiv.style.display = 'none';
+                    }
+                    
+                    if (data.auto_renew_error) {
+                        errorDiv.classList.add('show');
+                        document.getElementById('autoRenewErrorMessage').textContent = data.auto_renew_error;
+                    } else {
+                        errorDiv.classList.remove('show');
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur chargement auto-renew:', error);
+            }
+        }
+
+        // ===== NOUVELLE FONCTION : ACTIVER/DÉSACTIVER L'AUTO-RENOUVELLEMENT =====
+        async function toggleAutoRenew() {
+            if (!currentServer) return;
+            
+            const toggle = document.getElementById('autoRenewToggle');
+            const enabled = toggle.checked;
+            
+            // Désactiver temporairement pour éviter les clics multiples
+            toggle.disabled = true;
+            
+            try {
+                const res = await fetch(`/api/servers/${currentServer.id}/auto-renew`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ enabled: enabled })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('success', `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`);
+                    await loadAutoRenewStatus(currentServer.id);
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la modification');
+                    toggle.checked = !enabled;
+                }
+            } catch (error) {
+                console.error('Erreur toggle auto-renew:', error);
+                showToast('error', 'Erreur réseau');
+                toggle.checked = !enabled;
+            } finally {
+                toggle.disabled = false;
+            }
+        }
+
+        // ===== RENEW SERVER (inchangé) =====
         function renewServer() {
             closeModal('serverDetailsModal');
             
@@ -2440,16 +2644,13 @@
             }
         }
 
-        // ===== POWER ACTIONS - MODIFIÉ POUR GÉRER L'ERREUR DE SUSPENSION =====
+        // ===== POWER ACTIONS (inchangé) =====
         function powerAction(serverId, action) {
             const server = userServers.find(s => s.id === serverId);
             
-            // Vérifier si le serveur est suspendu avant d'ouvrir le modal
             if (server && server.status === 'suspended') {
                 const errorMessage = `❌ Erreur Pterodactyl: Le serveur est suspendu et cette action n'est pas disponible.`;
                 showToast('error', errorMessage);
-                
-                // Afficher l'erreur détaillée dans la console
                 console.error('Action impossible - Serveur suspendu:', {
                     code: 'ServerStateConflictException',
                     status: '409',
@@ -2470,7 +2671,6 @@
             document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action';
             document.getElementById('actionMessage').textContent = `Confirmer ${(actionTitles[action] || 'action').toLowerCase()} le serveur ?`;
             
-            // Cacher les erreurs précédentes
             document.getElementById('actionErrorInModal').style.display = 'none';
             
             const confirmBtn = document.getElementById('actionConfirmBtn');
@@ -2501,25 +2701,19 @@
                     showToast('success', 'Action effectuée');
                     setTimeout(() => loadUserData(), 2000);
                 } else {
-                    // Afficher l'erreur détaillée si disponible
                     let errorMsg = data.error || 'Erreur inconnue';
                     
-                    // Si c'est une erreur de suspension, afficher le message complet
                     if (errorMsg.includes('suspended') || errorMsg.includes('ServerStateConflictException')) {
                         const fullError = `❌ Erreur Pterodactyl: Le serveur est suspendu. Cette action n'est pas disponible.`;
                         showToast('error', fullError);
-                        
-                        // Afficher dans la console pour le débogage
                         console.error('Détails de l\'erreur:', data);
                     } else {
                         showToast('error', errorMsg);
                     }
                 }
             } catch (error) {
-                // Gérer l'erreur réseau ou l'erreur de l'API
                 let errorMessage = 'Erreur réseau';
                 
-                // Si l'erreur contient une réponse de l'API
                 if (error.response && error.response.data) {
                     const apiError = error.response.data;
                     if (apiError.errors && apiError.errors[0]) {
@@ -2537,7 +2731,7 @@
             currentAction = null;
         }
 
-        // ===== CONSOLE =====
+        // ===== CONSOLE (inchangé) =====
         function toggleConsole(serverId) {
             const console = document.getElementById(`console-${serverId}`);
             if (console) {
@@ -2545,7 +2739,7 @@
             }
         }
 
-        // ===== DAILY REWARD =====
+        // ===== DAILY REWARD (inchangé) =====
         document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             
@@ -2567,7 +2761,7 @@
             }
         });
 
-        // ===== NOTIFICATIONS =====
+        // ===== NOTIFICATIONS (inchangé) =====
         async function loadNotifications() {
             try {
                 const notificationsList = document.getElementById('notificationsList');
@@ -2614,7 +2808,7 @@
             }
         }
 
-        // ===== ACTIVITIES CORRIGÉE =====
+        // ===== ACTIVITIES (inchangé) =====
         async function loadActivities() {
             try {
                 const container = document.getElementById('activityContainer');
@@ -2725,7 +2919,7 @@
             }
         }
 
-        // ===== SUPPRIMER TOUTES LES ACTIVITÉS =====
+        // ===== SUPPRIMER TOUTES LES ACTIVITÉS (inchangé) =====
         document.getElementById('clearActivitiesBtn').addEventListener('click', async () => {
             if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer tout l\'historique des activités ? Cette action est irréversible.')) {
                 return;
@@ -2759,13 +2953,13 @@
             }
         });
 
-        // ===== ACTUALISER LES ACTIVITÉS =====
+        // ===== ACTUALISER LES ACTIVITÉS (inchangé) =====
         document.getElementById('refreshActivitiesBtn').addEventListener('click', () => {
             loadActivities();
             showToast('info', 'Actualisation...');
         });
 
-        // ===== CREATE SERVER =====
+        // ===== CREATE SERVER (inchangé) =====
         function prepareFreeServer() {
             if (userData?.free_panel_created) {
                 showToast('error', 'Serveur gratuit déjà utilisé');
@@ -2841,19 +3035,18 @@
             }
         }
 
-        // ===== LOGOUT =====
+        // ===== LOGOUT (inchangé) =====
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
             window.location.href = '/';
         });
 
-        // ===== INIT =====
+        // ===== INIT (inchangé) =====
         loadUserData();
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) {
-            // Vider les options existantes
             planSelect.innerHTML = '<option value="">Choisissez un plan</option>';
             
             Object.entries(PLANS).forEach(([key, plan]) => {
@@ -2866,6 +3059,7 @@
             });
         }
 
+        // Exposer les fonctions globalement
         window.closeModal = closeModal;
         window.showServerDetails = showServerDetails;
         window.powerAction = powerAction;
@@ -2875,6 +3069,7 @@
         window.confirmRenew = confirmRenew;
         window.copyToClipboard = copyToClipboard;
         window.createServer = createServer;
+        window.toggleAutoRenew = toggleAutoRenew;
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) {
