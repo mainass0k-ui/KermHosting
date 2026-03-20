@@ -96,7 +96,7 @@ const PLANS = {
         id: 'free',
         name: 'Free',
         memory: 256,
-        disk: 1024,        // 1 GB
+        disk: 1024,
         cpu: 50,
         swap: 0,
         io: 500,
@@ -120,7 +120,7 @@ const PLANS = {
         id: '1gb',
         name: 'Starter',
         memory: 1024,
-        disk: 3072,        // 3 GB
+        disk: 3072,
         cpu: 100,
         swap: 0,
         io: 500,
@@ -146,7 +146,7 @@ const PLANS = {
         id: '2gb',
         name: 'Basic',
         memory: 2048,
-        disk: 5120,        // 5 GB
+        disk: 5120,
         cpu: 200,
         swap: 0,
         io: 500,
@@ -171,7 +171,7 @@ const PLANS = {
         id: '4gb',
         name: 'Pro',
         memory: 4096,
-        disk: 10240,       // 10 GB
+        disk: 10240,
         cpu: 400,
         swap: 0,
         io: 500,
@@ -197,7 +197,7 @@ const PLANS = {
         id: '8gb',
         name: 'Business',
         memory: 8192,
-        disk: 20480,       // 20 GB
+        disk: 20480,
         cpu: 800,
         swap: 0,
         io: 500,
@@ -454,24 +454,24 @@ function getBaseEmailTemplate(title, content) {
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f4f4f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <tr>
+         <tr>
             <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
                 <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
                 <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
-            </td>
-        </tr>
-        <tr>
+             </td>
+         </tr>
+         <tr>
             <td style="padding: 30px;">
                 ${content}
-            </td>
-        </tr>
-        <tr>
+             </td>
+         </tr>
+         <tr>
             <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
                 <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
                 <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
-            </td>
-        </tr>
-    </table>
+             </td>
+         </tr>
+     </table>
 </body>
 </html>`;
 }
@@ -512,16 +512,16 @@ function getWelcomeEmailHtml(username) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🚀 Pour commencer :</h3>
             <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
+                 <tr>
                     <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
-                </tr>
-            </table>
+                 </tr>
+             </table>
         </div>
         
         <p style="text-align: center; margin: 30px 0 15px 0;">
@@ -569,27 +569,27 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🔑 Informations de connexion :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                <tr>
+                 <tr>
                     <td style="color: #666;">Nom du serveur :</td>
                     <td style="font-weight: bold;">${serverCredentials.server_name}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="color: #666;">Nom d'utilisateur :</td>
                     <td style="font-weight: bold;">${serverCredentials.username}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="color: #666;">Mot de passe :</td>
                     <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="color: #666;">URL du panel :</td>
                     <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
-                </tr>
-                <tr>
+                 </tr>
+                 <tr>
                     <td style="color: #666;">Identifiant :</td>
                     <td style="font-family: monospace;">${serverCredentials.identifier}</td>
-                </tr>
-            </table>
+                 </tr>
+             </table>
         </div>
         
         <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
@@ -619,29 +619,29 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-            <tr>
+             <tr>
                 <td style="color: #666;">Pack acheté :</td>
                 <td style="font-weight: bold;">${pack.name}</td>
-            </tr>
-            <tr>
+             </tr>
+             <tr>
                 <td style="color: #666;">Coins de base :</td>
                 <td style="font-weight: bold;">${pack.coins}</td>
-            </tr>
+             </tr>
             ${pack.bonus > 0 ? `
-            <tr>
+             <tr>
                 <td style="color: #666;">Bonus offert :</td>
                 <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
-            </tr>
+             </tr>
             ` : ''}
-            <tr>
+             <tr>
                 <td style="color: #666;">Montant payé :</td>
                 <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
-            </tr>
-            <tr>
+             </tr>
+             <tr>
                 <td style="color: #666;">ID de transaction :</td>
                 <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
-            </tr>
-        </table>
+             </tr>
+         </table>
         
         <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
             <p style="margin: 0; color: #2e7d32; font-size: 14px;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
@@ -730,15 +730,15 @@ function getServerExpiringHtml(username, server, daysLeft) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-            <tr>
+             </td>
                 <td style="color: #666;">Date d'expiration :</td>
                 <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <td style="color: #666;">Prix de renouvellement :</td>
                 <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-            </tr>
-        </table>
+              </tr>
+            </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -763,19 +763,19 @@ function getServerSuspendedHtml(username, server) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-            <tr>
+              <tr>
                 <td style="color: #666;">Date d'expiration :</td>
                 <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <td style="color: #666;">Date limite de renouvellement :</td>
                 <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <td style="color: #666;">Prix de renouvellement :</td>
                 <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-            </tr>
-        </table>
+              </tr>
+            </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -1440,6 +1440,393 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // =============================================
+// FONCTIONS AUTO-RENOUVELLEMENT
+// =============================================
+
+async function processAutoRenew(server) {
+    try {
+        const plan = PLANS[server.server_type];
+        if (!plan) {
+            console.error(`❌ Plan inconnu pour le serveur ${server.id}: ${server.server_type}`);
+            return false;
+        }
+
+        const coinsNeeded = plan.coins_needed;
+        
+        const { data: user, error: userError } = await supabase
+            .from('profiles')
+            .select('coins, username, email')
+            .eq('id', server.user_id)
+            .single();
+
+        if (userError || !user) {
+            console.error(`❌ Utilisateur non trouvé pour le serveur ${server.id}`);
+            return false;
+        }
+
+        await supabase
+            .from('auto_renew_logs')
+            .insert([{
+                server_id: server.id,
+                user_id: server.user_id,
+                status: 'attempting',
+                coins_required: coinsNeeded,
+                coins_available: user.coins,
+                created_at: new Date().toISOString()
+            }]);
+
+        await supabase
+            .from('servers')
+            .update({
+                last_auto_renew_attempt: new Date().toISOString(),
+                auto_renew_attempts: (server.auto_renew_attempts || 0) + 1
+            })
+            .eq('id', server.id);
+
+        if (user.coins >= coinsNeeded) {
+            await supabase
+                .from('profiles')
+                .update({ coins: user.coins - coinsNeeded })
+                .eq('id', server.user_id);
+
+            const currentExpiry = new Date(server.expires_at);
+            const now = new Date();
+            let newExpiry;
+            
+            if (currentExpiry < now) {
+                newExpiry = new Date();
+            } else {
+                newExpiry = new Date(currentExpiry);
+            }
+            newExpiry.setDate(newExpiry.getDate() + plan.duration_days);
+
+            await supabase
+                .from('servers')
+                .update({
+                    expires_at: newExpiry.toISOString(),
+                    warning_sent: false,
+                    auto_renew_attempts: 0,
+                    auto_renew_error: null
+                })
+                .eq('id', server.id);
+
+            if (server.status === 'suspended') {
+                await unsuspendPterodactylServer(server.pterodactyl_id);
+            }
+
+            const transactionId = generateTransactionId();
+            await supabase
+                .from('transactions')
+                .insert([{
+                    id: transactionId,
+                    user_id: server.user_id,
+                    type: 'server_renewal',
+                    plan_key: server.server_type,
+                    amount: coinsNeeded,
+                    currency: 'COINS',
+                    status: 'completed',
+                    completed_at: new Date().toISOString(),
+                    is_renewal: true,
+                    renewed_server_id: server.id,
+                    metadata: { auto_renew: true }
+                }]);
+
+            await supabase
+                .from('user_activities')
+                .insert([{
+                    user_id: server.user_id,
+                    activity_type: 'auto_renewal_success',
+                    coins_earned: -coinsNeeded,
+                    description: `Auto-renouvellement du serveur "${server.server_name}" pour ${coinsNeeded} coins`
+                }]);
+
+            await supabase
+                .from('auto_renew_logs')
+                .insert([{
+                    server_id: server.id,
+                    user_id: server.user_id,
+                    status: 'success',
+                    coins_required: coinsNeeded,
+                    coins_available: user.coins - coinsNeeded,
+                    created_at: new Date().toISOString()
+                }]);
+
+            const html = `
+                <h2 style="color: #333; margin: 0 0 15px 0;">🔄 Auto-renouvellement réussi</h2>
+                <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
+                <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été automatiquement renouvelé.</p>
+                <div style="background-color: #f0f7ff; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 5px 0;"><strong>📅 Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+                    <p style="margin: 5px 0;"><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
+                    <p style="margin: 5px 0;"><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
+                </div>
+                <p style="color: #10B981;">L'auto-renouvellement est actif pour ce serveur.</p>
+            `;
+            await sendEmail(user.email, '🔄 Auto-renouvellement réussi', getBaseEmailTemplate('Auto-renouvellement réussi', html));
+
+            console.log(`✅ Auto-renouvellement réussi pour le serveur ${server.id} (${server.server_name})`);
+            return true;
+
+        } else {
+            const missingCoins = coinsNeeded - user.coins;
+            
+            await supabase
+                .from('auto_renew_logs')
+                .insert([{
+                    server_id: server.id,
+                    user_id: server.user_id,
+                    status: 'failed_insufficient_coins',
+                    coins_required: coinsNeeded,
+                    coins_available: user.coins,
+                    error_message: `Coins insuffisants: besoin de ${coinsNeeded} coins, disponible: ${user.coins} coins`,
+                    created_at: new Date().toISOString()
+                }]);
+
+            await supabase
+                .from('servers')
+                .update({
+                    auto_renew_error: `Échec auto-renouvellement: coins insuffisants (${missingCoins} coins manquants)`
+                })
+                .eq('id', server.id);
+
+            await supabase
+                .from('user_activities')
+                .insert([{
+                    user_id: server.user_id,
+                    activity_type: 'auto_renewal_failed',
+                    coins_earned: 0,
+                    description: `Échec auto-renouvellement du serveur "${server.server_name}" : coins insuffisants (besoin: ${coinsNeeded}, disponible: ${user.coins})`
+                }]);
+
+            const html = `
+                <h2 style="color: #333; margin: 0 0 15px 0;">⚠️ Auto-renouvellement échoué</h2>
+                <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
+                <p style="color: #555; line-height: 1.6;">Le serveur <strong>"${server.server_name}"</strong> devait être renouvelé automatiquement, mais vous n'avez pas assez de coins.</p>
+                <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 5px 0;"><strong>💰 Coins nécessaires :</strong> ${coinsNeeded} coins</p>
+                    <p style="margin: 5px 0;"><strong>💳 Votre solde :</strong> ${user.coins} coins</p>
+                    <p style="margin: 5px 0;"><strong>⚠️ Coins manquants :</strong> ${missingCoins} coins</p>
+                </div>
+                <p>Pour éviter la suppression de votre serveur, veuillez recharger vos coins.</p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href="${SITE_CONFIG.url}/buy-coins" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Acheter des coins</a>
+                </div>
+            `;
+            await sendEmail(user.email, '⚠️ Auto-renouvellement échoué - Coins insuffisants', getBaseEmailTemplate('Auto-renouvellement échoué', html));
+
+            console.log(`❌ Auto-renouvellement échoué pour le serveur ${server.id}: coins insuffisants`);
+            return false;
+        }
+
+    } catch (error) {
+        console.error(`❌ Erreur auto-renouvellement serveur ${server.id}:`, error);
+        
+        await supabase
+            .from('auto_renew_logs')
+            .insert([{
+                server_id: server.id,
+                user_id: server.user_id,
+                status: 'failed_other',
+                error_message: error.message,
+                created_at: new Date().toISOString()
+            }]);
+
+        await supabase
+            .from('servers')
+            .update({
+                auto_renew_error: `Erreur: ${error.message}`
+            })
+            .eq('id', server.id);
+
+        return false;
+    }
+}
+
+// =============================================
+// AJOUT DES COLONNES D'AUTO-RENOUVELLEMENT DANS LA BASE (si pas déjà fait)
+// =============================================
+async function setupAutoRenewTables() {
+    try {
+        const { error: addAutoRenewColumn } = await supabase.rpc('add_column_if_not_exists', {
+            table_name: 'servers',
+            column_name: 'auto_renew',
+            column_type: 'boolean'
+        }).catch(() => null);
+        
+        const { error: addAttemptsColumn } = await supabase.rpc('add_column_if_not_exists', {
+            table_name: 'servers',
+            column_name: 'auto_renew_attempts',
+            column_type: 'integer'
+        }).catch(() => null);
+        
+        const { error: addLastAttemptColumn } = await supabase.rpc('add_column_if_not_exists', {
+            table_name: 'servers',
+            column_name: 'last_auto_renew_attempt',
+            column_type: 'timestamptz'
+        }).catch(() => null);
+        
+        const { error: addErrorColumn } = await supabase.rpc('add_column_if_not_exists', {
+            table_name: 'servers',
+            column_name: 'auto_renew_error',
+            column_type: 'text'
+        }).catch(() => null);
+        
+        const { error: addExpiredNotifColumn } = await supabase.rpc('add_column_if_not_exists', {
+            table_name: 'servers',
+            column_name: 'expired_notification_sent',
+            column_type: 'boolean'
+        }).catch(() => null);
+        
+        const { error: createLogsTable } = await supabase.rpc('create_auto_renew_logs_table').catch(() => {
+            return supabase.query(`
+                CREATE TABLE IF NOT EXISTS auto_renew_logs (
+                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                    server_id UUID REFERENCES servers(id) ON DELETE CASCADE,
+                    user_id UUID REFERENCES profiles(id),
+                    status TEXT CHECK (status IN ('success', 'failed_insufficient_coins', 'failed_other', 'attempting')),
+                    coins_required INTEGER,
+                    coins_available INTEGER,
+                    error_message TEXT,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+                CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_server_id ON auto_renew_logs(server_id);
+                CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_user_id ON auto_renew_logs(user_id);
+            `);
+        });
+        
+        console.log('✅ Tables d\'auto-renouvellement vérifiées/créées');
+    } catch (error) {
+        console.error('❌ Erreur configuration auto-renouvellement:', error);
+    }
+}
+
+// =============================================
+// ROUTES AUTO-RENOUVELLEMENT
+// =============================================
+
+app.post('/api/servers/:serverId/auto-renew', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { enabled } = req.body;
+
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('*')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (error || !server) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Serveur non trouvé' 
+            });
+        }
+
+        if (server.server_type === 'free') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Les serveurs gratuits ne peuvent pas être auto-renouvelés' 
+            });
+        }
+
+        await supabase
+            .from('servers')
+            .update({ 
+                auto_renew: enabled,
+                auto_renew_error: enabled ? null : undefined
+            })
+            .eq('id', serverId);
+
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'auto_renew_toggle',
+                description: `${enabled ? 'Activation' : 'Désactivation'} de l'auto-renouvellement pour le serveur "${server.server_name}"`
+            }]);
+
+        res.json({ 
+            success: true, 
+            message: `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'} avec succès` 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur auto-renew:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+app.get('/api/servers/:serverId/auto-renew', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('auto_renew, auto_renew_error, last_auto_renew_attempt, auto_renew_attempts, server_name, expires_at')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (error || !server) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Serveur non trouvé' 
+            });
+        }
+
+        const plan = PLANS[server.server_type];
+        const coinsNeeded = plan?.coins_needed || 0;
+
+        res.json({ 
+            success: true, 
+            auto_renew: server.auto_renew || false,
+            auto_renew_error: server.auto_renew_error || null,
+            last_attempt: server.last_auto_renew_attempt,
+            attempts_count: server.auto_renew_attempts || 0,
+            coins_needed: coinsNeeded
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération auto-renew:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// =============================================
+// CRON JOB: AUTO-RENOUVELLEMENT
+// =============================================
+
+cron.schedule('0 * * * *', async () => {
+    console.log('🔄 Vérification des serveurs à auto-renouveler...');
+    
+    const now = new Date();
+    const expirationThreshold = new Date();
+    expirationThreshold.setHours(expirationThreshold.getHours() + 24);
+
+    const { data: serversToRenew } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .eq('auto_renew', true)
+        .lte('expires_at', expirationThreshold.toISOString())
+        .gte('expires_at', now.toISOString())
+        .in('status', ['active', 'suspended']);
+
+    console.log(`📊 ${serversToRenew?.length || 0} serveurs à vérifier pour auto-renouvellement`);
+
+    for (const server of serversToRenew || []) {
+        console.log(`🔍 Vérification auto-renouvellement pour ${server.server_name} (expire le ${server.expires_at})`);
+        await processAutoRenew(server);
+    }
+});
+
+// =============================================
 // ROUTES AUTH
 // =============================================
 
@@ -1474,7 +1861,6 @@ app.post('/api/register', async (req, res) => {
 
         let referrerId = null;
         let referrerName = null;
-        let referrerData = null;
 
         if (referral_code) {
             const { data: referrer } = await supabase
@@ -1486,7 +1872,6 @@ app.post('/api/register', async (req, res) => {
             if (referrer) {
                 referrerId = referrer.id;
                 referrerName = referrer.username;
-                referrerData = referrer;
             }
         }
 
@@ -1531,18 +1916,10 @@ app.post('/api/register', async (req, res) => {
                     .eq('id', referrerId);
             }
 
-            const { data: newUserData } = await supabase
+            await supabase
                 .from('profiles')
-                .select('coins')
-                .eq('id', newUser.id)
-                .single();
-            
-            if (newUserData) {
-                await supabase
-                    .from('profiles')
-                    .update({ coins: newUserData.coins + 10 })
-                    .eq('id', newUser.id);
-            }
+                .update({ coins: 20 })
+                .eq('id', newUser.id);
 
             await supabase
                 .from('referrals')
@@ -1567,14 +1944,12 @@ app.post('/api/register', async (req, res) => {
                 );
             }
 
-            if (newUser) {
-                const userLink = `${SITE_CONFIG.url}/register?ref=${newUser.referral_code}`;
-                await sendEmail(
-                    email,
-                    '🎁 Bienvenue sur KermHosting',
-                    getReferralWelcomeHtml(username, referrerName, userLink)
-                );
-            }
+            const userLink = `${SITE_CONFIG.url}/register?ref=${newUser.referral_code}`;
+            await sendEmail(
+                email,
+                '🎁 Bienvenue sur KermHosting',
+                getReferralWelcomeHtml(username, referrerName, userLink)
+            );
         }
 
         res.json({ 
@@ -1625,7 +2000,7 @@ app.post('/api/verify-email', async (req, res) => {
                 email_verified: true,
                 email_verification_code: null,
                 email_verification_code_expires: null,
-                coins: user.coins + 5
+                coins: (user.coins || 0) + 5
             })
             .eq('id', user.id);
 
@@ -2941,6 +3316,8 @@ app.post('/api/create-server', authenticateToken, requireEmailVerification, asyn
             allocations: allocations,
             expires_at: expiresAt.toISOString(),
             status: 'active',
+            auto_renew: false,
+            auto_renew_attempts: 0,
             created_at: new Date().toISOString()
         };
 
@@ -3260,28 +3637,13 @@ app.get('/api/referral/info', authenticateToken, async (req, res) => {
 app.post('/api/daily-reward', authenticateToken, async (req, res) => {
     try {
         const today = new Date().toDateString();
-        const now = new Date();
 
         if (req.user.last_daily_login === today) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Vous avez déjà réclamé votre récompense aujourd\'hui. Revenez demain !', 
+                error: 'Récompense déjà réclamée aujourd\'hui', 
                 code: 'DAILY_REWARD_ALREADY_CLAIMED' 
             });
-        }
-
-        if (req.user.last_daily_login) {
-            const lastClaim = new Date(req.user.last_daily_login);
-            const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);
-            
-            if (hoursSinceLastClaim < 24) {
-                const hoursLeft = Math.ceil(24 - hoursSinceLastClaim);
-                return res.status(400).json({
-                    success: false,
-                    error: `Vous pourrez réclamer votre prochaine récompense dans ${hoursLeft} heures.`,
-                    code: 'TOO_EARLY'
-                });
-            }
         }
 
         let coinsReward = 5;
@@ -3350,7 +3712,8 @@ app.get('/api/health', (req, res) => {
             mobile_money: true,
             pterodactyl: true,
             referrals: true,
-            daily_rewards: true
+            daily_rewards: true,
+            auto_renew: true
         }
     });
 });
