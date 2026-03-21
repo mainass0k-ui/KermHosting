@@ -1,5 +1,6 @@
 // =============================================
 // index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS OPTIMISÉS
+// AVEC PAYPAL (CORRIGÉ)
 // =============================================
 
 import express from 'express';
@@ -84,6 +85,44 @@ const SITE_CONFIG = {
     jwtSecret: 'kermhosting_super_secret_key_2026_changez_ceci',
     port: process.env.PORT || 3000
 };
+
+// =============================================
+// CONFIGURATION PAYPAL
+// =============================================
+const PAYPAL_CONFIG = {
+    paypalLink: 'https://www.paypal.me/kermhosting?locale.x=en_DE',
+    supportCurrencies: ['EUR', 'USD', 'GBP', 'CAD', 'XAF']
+};
+
+// Taux de conversion (FCFA vers autres devises)
+const EXCHANGE_RATES = {
+    'EUR': 655.96,
+    'USD': 615.00,
+    'GBP': 780.00,
+    'CAD': 450.00,
+    'XAF': 1.00
+};
+
+function convertFcfaToCurrency(amountFcfa, currency) {
+    const rate = EXCHANGE_RATES[currency];
+    if (!rate) return amountFcfa;
+    return Math.round((amountFcfa / rate) * 100) / 100;
+}
+
+function getCurrencyName(code) {
+    const names = {
+        'EUR': 'Euro', 'USD': 'Dollar US', 'GBP': 'Livre Sterling', 
+        'CAD': 'Dollar Canadien', 'XAF': 'Franc CFA'
+    };
+    return names[code] || code;
+}
+
+function getCurrencySymbol(code) {
+    const symbols = {
+        'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 'XAF': 'FCFA'
+    };
+    return symbols[code] || code;
+}
 
 // Initialisation Supabase
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.serviceKey);
@@ -454,26 +493,26 @@ function getBaseEmailTemplate(title, content) {
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f4f4f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-         <tr>
-            <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
-                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
-                <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
-             </td>
-         </tr>
-         <tr>
-            <td style="padding: 30px;">
-                ${content}
-             </td>
-         </tr>
-         <tr>
-            <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
-                <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
-                <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
-             </td>
-         </tr>
-     </table>
-</body>
-</html>`;
+                <tr>
+                    <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
+                        <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
+                        <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 30px;">
+                        ${content}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
+                        <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
+                        <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>`;
 }
 
 // 🔐 Template de vérification d'email
@@ -512,16 +551,16 @@ function getWelcomeEmailHtml(username) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🚀 Pour commencer :</h3>
             <table width="100%" cellpadding="0" cellspacing="0">
-                 <tr>
-                    <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
-                 </tr>
-                 <tr>
-                    <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
-                 </tr>
-                 <tr>
-                    <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
-                 </tr>
-             </table>
+                        <tr>
+                            <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
+                        </tr>
+                    </table>
         </div>
         
         <p style="text-align: center; margin: 30px 0 15px 0;">
@@ -569,27 +608,27 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🔑 Informations de connexion :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                 <tr>
-                    <td style="color: #666;">Nom du serveur :</td>
-                    <td style="font-weight: bold;">${serverCredentials.server_name}</td>
-                 </tr>
-                 <tr>
-                    <td style="color: #666;">Nom d'utilisateur :</td>
-                    <td style="font-weight: bold;">${serverCredentials.username}</td>
-                 </tr>
-                 <tr>
-                    <td style="color: #666;">Mot de passe :</td>
-                    <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
-                 </tr>
-                 <tr>
-                    <td style="color: #666;">URL du panel :</td>
-                    <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
-                 </tr>
-                 <tr>
-                    <td style="color: #666;">Identifiant :</td>
-                    <td style="font-family: monospace;">${serverCredentials.identifier}</td>
-                 </tr>
-             </table>
+                        <tr>
+                            <td style="color: #666;">Nom du serveur :</td>
+                            <td style="font-weight: bold;">${serverCredentials.server_name}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #666;">Nom d'utilisateur :</td>
+                            <td style="font-weight: bold;">${serverCredentials.username}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #666;">Mot de passe :</td>
+                            <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #666;">URL du panel :</td>
+                            <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #666;">Identifiant :</td>
+                            <td style="font-family: monospace;">${serverCredentials.identifier}</td>
+                        </tr>
+                    </table>
         </div>
         
         <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
@@ -619,29 +658,29 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-             <tr>
-                <td style="color: #666;">Pack acheté :</td>
-                <td style="font-weight: bold;">${pack.name}</td>
-             </tr>
-             <tr>
-                <td style="color: #666;">Coins de base :</td>
-                <td style="font-weight: bold;">${pack.coins}</td>
-             </tr>
-            ${pack.bonus > 0 ? `
-             <tr>
-                <td style="color: #666;">Bonus offert :</td>
-                <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
-             </tr>
-            ` : ''}
-             <tr>
-                <td style="color: #666;">Montant payé :</td>
-                <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
-             </tr>
-             <tr>
-                <td style="color: #666;">ID de transaction :</td>
-                <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
-             </tr>
-         </table>
+                    <tr>
+                        <td style="color: #666;">Pack acheté :</td>
+                        <td style="font-weight: bold;">${pack.name}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666;">Coins de base :</td>
+                        <td style="font-weight: bold;">${pack.coins}</td>
+                    </tr>
+                    ${pack.bonus > 0 ? `
+                    <tr>
+                        <td style="color: #666;">Bonus offert :</td>
+                        <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
+                    </tr>
+                    ` : ''}
+                    <tr>
+                        <td style="color: #666;">Montant payé :</td>
+                        <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666;">ID de transaction :</td>
+                        <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
+                    </tr>
+                </table>
         
         <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
             <p style="margin: 0; color: #2e7d32; font-size: 14px;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
@@ -730,15 +769,15 @@ function getServerExpiringHtml(username, server, daysLeft) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-             </td>
-                <td style="color: #666;">Date d'expiration :</td>
-                <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-              </tr>
-              <tr>
-                <td style="color: #666;">Prix de renouvellement :</td>
-                <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-              </tr>
-            </table>
+                    <tr>
+                        <td style="color: #666;">Date d'expiration :</td>
+                        <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666;">Prix de renouvellement :</td>
+                        <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
+                    </tr>
+                </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -763,19 +802,19 @@ function getServerSuspendedHtml(username, server) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-              <tr>
-                <td style="color: #666;">Date d'expiration :</td>
-                <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-              </tr>
-              <tr>
-                <td style="color: #666;">Date limite de renouvellement :</td>
-                <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
-              </tr>
-              <tr>
-                <td style="color: #666;">Prix de renouvellement :</td>
-                <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-              </tr>
-            </table>
+                    <tr>
+                        <td style="color: #666;">Date d'expiration :</td>
+                        <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666;">Date limite de renouvellement :</td>
+                        <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #666;">Prix de renouvellement :</td>
+                        <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
+                    </tr>
+                </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -901,7 +940,7 @@ function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
 }
 
 // =============================================
-// FONCTIONS PTERODACTYL
+// FONCTIONS PTERODACTYL (CORRIGÉES)
 // =============================================
 
 async function callPterodactylAPI(endpoint, method = 'GET', data = null) {
@@ -950,15 +989,50 @@ async function createPterodactylUser(username, email) {
     try {
         const password = generateServerPassword();
         
+        // 🔧 NETTOYER LE NOM D'UTILISATEUR (celui choisi par le client)
+        let cleanUsername = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        if (!cleanUsername || cleanUsername.length < 3) {
+            cleanUsername = `user_${Date.now().toString().slice(-8)}`;
+            console.log(`⚠️ Username invalide, génération automatique: ${cleanUsername}`);
+        }
+        
+        // 🔧 CONSTRUIRE L'EMAIL PTERODACTYL À PARTIR DU NOM D'UTILISATEUR
+        let cleanEmail = `${cleanUsername}@kermhosting.local`;
+        
+        console.log(`📝 Création utilisateur Pterodactyl avec username: ${cleanUsername}, email: ${cleanEmail}`);
+        
+        // Vérifier si l'utilisateur existe déjà dans Pterodactyl
+        try {
+            const searchResult = await callPterodactylAPI(`/api/application/users?filter[email]=${encodeURIComponent(cleanEmail)}`);
+            if (searchResult.data && searchResult.data.length > 0) {
+                const existingUser = searchResult.data[0];
+                console.log(`📝 Utilisateur Pterodactyl existant trouvé: ${existingUser.attributes.username}`);
+                
+                // Mettre à jour le mot de passe
+                await callPterodactylAPI(`/api/application/users/${existingUser.attributes.id}`, 'PATCH', {
+                    password: password
+                });
+                
+                return {
+                    id: existingUser.attributes.id,
+                    username: existingUser.attributes.username,
+                    email: existingUser.attributes.email,
+                    password: password,
+                    isExisting: true
+                };
+            }
+        } catch (searchError) {
+            console.log('⚠️ Recherche utilisateur existant échouée, création d\'un nouveau...');
+        }
+        
+        // Créer un nouvel utilisateur
         const payload = {
-            username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
-            email: email,
-            first_name: username.substring(0, 10),
+            username: cleanUsername,
+            email: cleanEmail,
+            first_name: cleanUsername.substring(0, 10),
             last_name: 'KermHosting',
             password: password
         };
-
-        console.log(`📝 Création utilisateur Pterodactyl avec email réel: ${email}`);
 
         const result = await callPterodactylAPI('/api/application/users', 'POST', payload);
         
@@ -966,10 +1040,41 @@ async function createPterodactylUser(username, email) {
             id: result.attributes.id,
             username: result.attributes.username,
             email: result.attributes.email,
-            password: password
+            password: password,
+            isExisting: false
         };
+        
     } catch (error) {
-        console.error('❌ Erreur création utilisateur Pterodactyl:', error);
+        console.error('❌ Erreur création/récupération utilisateur Pterodactyl:', error);
+        
+        // Si l'erreur est "email déjà pris", essayer de récupérer l'utilisateur existant
+        if (error.response?.data?.errors?.[0]?.detail?.includes('email has already been taken')) {
+            try {
+                const fallbackEmail = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@kermhosting.local`;
+                const searchResult = await callPterodactylAPI(`/api/application/users?filter[email]=${encodeURIComponent(fallbackEmail)}`);
+                if (searchResult.data && searchResult.data.length > 0) {
+                    const existingUser = searchResult.data[0];
+                    const password = generateServerPassword();
+                    
+                    await callPterodactylAPI(`/api/application/users/${existingUser.attributes.id}`, 'PATCH', {
+                        password: password
+                    });
+                    
+                    console.log(`✅ Utilisateur existant récupéré après erreur: ${existingUser.attributes.username}`);
+                    
+                    return {
+                        id: existingUser.attributes.id,
+                        username: existingUser.attributes.username,
+                        email: existingUser.attributes.email,
+                        password: password,
+                        isExisting: true
+                    };
+                }
+            } catch (recoverError) {
+                console.error('❌ Échec de récupération après erreur:', recoverError);
+            }
+        }
+        
         throw error;
     }
 }
@@ -1149,7 +1254,6 @@ function fapshiError(message, statusCode) {
     return { message, statusCode };
 }
 
-// Paiement direct (push sur téléphone)
 async function fapshiDirectPay(data) {
     try {
         console.log('📤 Envoi paiement Direct Pay à Fapshi:', { 
@@ -1210,7 +1314,6 @@ async function fapshiDirectPay(data) {
     }
 }
 
-// Initier un paiement (redirection)
 async function fapshiInitiatePay(data) {
     try {
         console.log('📤 Envoi paiement Initiate Pay à Fapshi:', { 
@@ -1257,7 +1360,6 @@ async function fapshiInitiatePay(data) {
     }
 }
 
-// Vérifier le statut d'une transaction
 async function fapshiPaymentStatus(transId) {
     try {
         if (!transId || typeof transId !== 'string') return { success: false, message: 'ID de transaction invalide', statusCode: 400 };
@@ -1298,7 +1400,6 @@ async function fapshiPaymentStatus(transId) {
     }
 }
 
-// Vérifier le solde du compte
 async function fapshiBalance() {
     try {
         const config = {
@@ -1320,61 +1421,6 @@ async function fapshiBalance() {
             message: e.response?.data?.message || 'Erreur lors de la vérification du solde',
             statusCode: e.response?.status || 500
         };
-    }
-}
-
-// =============================================
-// CRÉATION DU SUPERADMIN PAR DÉFAUT
-// =============================================
-
-async function createDefaultSuperAdmin() {
-    try {
-        const { data: existingAdmin } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('role', 'superadmin')
-            .maybeSingle();
-
-        if (existingAdmin) {
-            console.log('✅ Superadmin existe déjà');
-            return;
-        }
-
-        const hashedPassword = await bcrypt.hash('AdminKerm2024!', 12);
-        const apiKey = generateApiKey();
-        const referralCode = generateReferralCode();
-        const userId = generateUUID();
-
-        const { error } = await supabase
-            .from('profiles')
-            .insert([{
-                id: userId,
-                username: 'superadmin',
-                email: 'admin@kermhosting.com',
-                password_hash: hashedPassword,
-                api_key: apiKey,
-                coins: 10000,
-                role: 'superadmin',
-                current_plan: 'admin',
-                referral_code: referralCode,
-                badges: ['admin-assistant', 'beta-tester', 'premium'],
-                email_verified: true,
-                admin_expires_at: '2099-12-31 23:59:59',
-                admin_access_active: true,
-                created_at: new Date().toISOString()
-            }]);
-
-        if (error) {
-            console.error('❌ Erreur création superadmin:', error);
-        } else {
-            console.log('\n✅ SUPERADMIN CRÉÉ AVEC SUCCÈS');
-            console.log('📧 Email: admin@kermhosting.com');
-            console.log('🔑 Mot de passe: AdminKerm2024!');
-            console.log('💰 Coins: 10000');
-            console.log('⚠️  CHANGEZ CE MOT DE PASSE IMMÉDIATEMENT !\n');
-        }
-    } catch (error) {
-        console.error('❌ Erreur création superadmin:', error);
     }
 }
 
@@ -1438,6 +1484,548 @@ const requireSuperAdmin = (req, res, next) => {
     }
     next();
 };
+
+// =============================================
+// ROUTES PAYPAL
+// =============================================
+
+app.get('/api/currencies', async (req, res) => {
+    try {
+        const { data: currencies, error } = await supabase
+            .from('currencies')
+            .select('*')
+            .eq('is_active', true)
+            .order('sort_order', { ascending: true });
+
+        if (error || !currencies || currencies.length === 0) {
+            const fallbackCurrencies = Object.entries(EXCHANGE_RATES).map(([code, rate]) => ({
+                code,
+                name: getCurrencyName(code),
+                symbol: getCurrencySymbol(code),
+                rate_to_fcfa: rate,
+                is_active: true
+            }));
+            return res.json({ success: true, currencies: fallbackCurrencies });
+        }
+
+        res.json({ success: true, currencies });
+    } catch (error) {
+        console.error('❌ Erreur récupération devises:', error);
+        res.status(500).json({ success: false, error: 'Erreur récupération devises' });
+    }
+});
+
+app.post('/api/payment/paypal', authenticateToken, requireEmailVerification, async (req, res) => {
+    try {
+        const { type, plan_id, pack_id, server_name, server_username, paypal_email, paypal_name, currency } = req.body;
+
+        if (!paypal_email || !paypal_email.includes('@')) {
+            return res.status(400).json({ success: false, error: 'Email PayPal requis', code: 'PAYPAL_EMAIL_REQUIRED' });
+        }
+
+        if (!paypal_name || paypal_name.length < 2) {
+            return res.status(400).json({ success: false, error: 'Nom complet requis', code: 'PAYPAL_NAME_REQUIRED' });
+        }
+
+        if (!currency || !EXCHANGE_RATES[currency]) {
+            return res.status(400).json({ success: false, error: 'Devise invalide', code: 'INVALID_CURRENCY' });
+        }
+
+        let amountFcfa = 0;
+        let itemName = '';
+        let itemDetails = {};
+        let transactionType = '';
+
+        if (type === 'server' && plan_id && PLANS[plan_id] && plan_id !== 'free') {
+            // 🔧 VALIDER LE NOM D'UTILISATEUR
+            if (!server_username || server_username.length < 3 || server_username.length > 20) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Nom d\'utilisateur invalide (3-20 caractères)', 
+                    code: 'INVALID_USERNAME' 
+                });
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(server_username)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Nom d\'utilisateur invalide. Caractères autorisés: lettres, chiffres et _', 
+                    code: 'INVALID_USERNAME' 
+                });
+            }
+            
+            if (!server_name || server_name.length < 3 || server_name.length > 30) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Nom du serveur invalide (3-30 caractères)', 
+                    code: 'INVALID_SERVER_NAME' 
+                });
+            }
+            
+            const plan = PLANS[plan_id];
+            amountFcfa = plan.price_fcfa;
+            itemName = `Serveur ${plan.name}`;
+            transactionType = 'server_purchase';
+            itemDetails = { plan_id, server_name, server_username, plan };
+        } 
+        else if (type === 'coins' && pack_id && COIN_PACKS[pack_id]) {
+            const pack = COIN_PACKS[pack_id];
+            amountFcfa = pack.price_fcfa;
+            itemName = `Pack ${pack.name} (${pack.coins + (pack.bonus || 0)} coins)`;
+            transactionType = 'coins_purchase';
+            itemDetails = { pack_id, pack };
+        }
+        else {
+            return res.status(400).json({ success: false, error: 'Type de transaction invalide', code: 'INVALID_TRANSACTION_TYPE' });
+        }
+
+        const convertedAmount = convertFcfaToCurrency(amountFcfa, currency);
+        const transactionId = generateTransactionId();
+
+        const { data: transaction, error } = await supabase
+            .from('transactions')
+            .insert([{
+                id: transactionId,
+                user_id: req.user.id,
+                type: transactionType,
+                plan_key: plan_id || null,
+                pack_id: pack_id || null,
+                amount: amountFcfa,
+                currency: 'FCFA',
+                status: 'pending',
+                medium: 'PAYPAL',
+                paypal_email: paypal_email,
+                paypal_name: paypal_name,
+                paypal_currency: currency,
+                paypal_amount_converted: convertedAmount,
+                metadata: {
+                    ...itemDetails,
+                    paypal_email,
+                    paypal_name,
+                    currency,
+                    converted_amount: convertedAmount,
+                    payment_link: PAYPAL_CONFIG.paypalLink,
+                    created_at_cameroon: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Douala' })
+                }
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Erreur insertion transaction PayPal:', error);
+            return res.status(500).json({ success: false, error: 'Erreur création transaction', code: 'TRANSACTION_CREATION_ERROR' });
+        }
+
+        const adminEmail = 'bookmakerp@gmail.com';
+        const adminHtml = `
+            <h2>💰 Nouvelle transaction PayPal en attente</h2>
+            <p><strong>Client:</strong> ${paypal_name} (${paypal_email})</p>
+            <p><strong>Utilisateur:</strong> ${req.user.username}</p>
+            <p><strong>Article:</strong> ${itemName}</p>
+            <p><strong>Montant:</strong> ${convertedAmount} ${currency} (${amountFcfa} FCFA)</p>
+            <p><strong>Date:</strong> ${new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Douala' })}</p>
+            <p><strong>ID Transaction:</strong> ${transactionId}</p>
+            <p>Vérifiez votre compte PayPal et confirmez la transaction dans l'admin.</p>
+            <a href="${SITE_CONFIG.url}/admin">Aller dans l'admin</a>
+        `;
+        await sendEmail(adminEmail, '💰 Nouvelle transaction PayPal en attente', getBaseEmailTemplate('Transaction PayPal', adminHtml));
+
+        res.json({
+            success: true,
+            message: 'Demande de paiement PayPal créée. Vous allez être redirigé vers PayPal.',
+            transaction_id: transactionId,
+            paypal_link: PAYPAL_CONFIG.paypalLink,
+            amount: convertedAmount,
+            currency: currency
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur création transaction PayPal:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur', code: 'PAYPAL_ERROR' });
+    }
+});
+
+app.get('/api/admin/paypal/pending', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: transactions, error } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (
+                    username,
+                    email
+                )
+            `)
+            .eq('status', 'pending')
+            .not('paypal_email', 'is', null)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            transactions: transactions || []
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération transactions PayPal:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/paypal/confirm/:transactionId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const { admin_notes } = req.body;
+
+        console.log('🔍 Recherche transaction PayPal:', transactionId);
+
+        const { data: transaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (*)
+            `)
+            .eq('id', transactionId)
+            .eq('status', 'pending')
+            .single();
+
+        if (fetchError || !transaction) {
+            console.error('Transaction non trouvée:', fetchError);
+            return res.status(404).json({ success: false, error: 'Transaction non trouvée ou déjà traitée' });
+        }
+
+        if (!transaction.paypal_email) {
+            console.error('Pas une transaction PayPal:', transaction);
+            return res.status(400).json({ success: false, error: 'Cette transaction n\'est pas un paiement PayPal' });
+        }
+
+        console.log('✅ Transaction PayPal trouvée:', transaction.id);
+
+        await supabase
+            .from('transactions')
+            .update({
+                status: 'successful',
+                completed_at: new Date().toISOString(),
+                admin_confirmed_by: req.user.id,
+                admin_confirmed_at: new Date().toISOString(),
+                admin_notes: admin_notes || null
+            })
+            .eq('id', transactionId);
+
+        await supabase
+            .from('paypal_confirmations')
+            .insert([{
+                transaction_id: transactionId,
+                admin_id: req.user.id,
+                status: 'confirmed',
+                admin_notes: admin_notes || null,
+                created_at: new Date().toISOString()
+            }]);
+
+        const user = transaction.profiles;
+
+        if (transaction.type === 'coins_purchase') {
+            let coinsToAdd = 0;
+            if (transaction.pack_id && COIN_PACKS[transaction.pack_id]) {
+                const pack = COIN_PACKS[transaction.pack_id];
+                coinsToAdd = pack.coins + (pack.bonus || 0);
+            } else if (transaction.metadata?.pack) {
+                const pack = transaction.metadata.pack;
+                coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+            } else {
+                coinsToAdd = Math.floor(transaction.amount / 5);
+            }
+
+            if (coinsToAdd > 0) {
+                await supabase
+                    .from('profiles')
+                    .update({ coins: (user.coins || 0) + coinsToAdd })
+                    .eq('id', user.id);
+            }
+
+            await sendEmail(
+                user.email,
+                '💰 Achat de coins confirmé (PayPal)',
+                getCoinsPurchaseHtml(
+                    user.username,
+                    { name: transaction.metadata?.pack?.name || 'Pack de coins', price_fcfa: transaction.amount },
+                    coinsToAdd,
+                    transaction.id
+                )
+            );
+
+        } else if (transaction.type === 'server_purchase') {
+            const plan = transaction.metadata?.plan;
+            const server_name = transaction.metadata?.server_name;
+            const server_username = transaction.metadata?.server_username;
+
+            if (!plan || !server_name) {
+                console.error('❌ Données serveur manquantes:', { plan, server_name });
+                return res.status(400).json({ success: false, error: 'Données serveur manquantes' });
+            }
+
+            // 🔧 VALIDER LE NOM D'UTILISATEUR CHOISI PAR LE CLIENT
+            if (!server_username || server_username.length < 3 || server_username.length > 20) {
+                console.error('❌ Nom d\'utilisateur invalide:', server_username);
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Nom d\'utilisateur invalide. Il doit contenir entre 3 et 20 caractères (lettres, chiffres, _)' 
+                });
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(server_username)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Nom d\'utilisateur invalide. Caractères autorisés: lettres, chiffres et underscore (_)' 
+                });
+            }
+
+            // 🔧 VÉRIFIER LA DISPONIBILITÉ DU NOM D'UTILISATEUR
+            const { data: existingServer } = await supabase
+                .from('servers')
+                .select('username')
+                .eq('username', server_username)
+                .maybeSingle();
+            
+            if (existingServer) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Ce nom d\'utilisateur est déjà utilisé' 
+                });
+            }
+
+            try {
+                const checkResult = await callPterodactylAPI(`/api/application/users?filter[username]=${encodeURIComponent(server_username.toLowerCase())}`);
+                if (checkResult.data && checkResult.data.length > 0) {
+                    return res.status(400).json({ 
+                        success: false, 
+                        error: 'Ce nom d\'utilisateur est déjà utilisé' 
+                    });
+                }
+            } catch (checkError) {
+                console.log('⚠️ Vérification username Pterodactyl ignorée:', checkError.message);
+            }
+
+            // 🔧 CONSTRUIRE L'EMAIL PTERODACTYL AVEC LE NOM D'UTILISATEUR CHOISI
+            const pteroEmail = `${server_username.toLowerCase()}@kermhosting.local`;
+            
+            console.log(`📝 Création serveur PayPal avec username: ${server_username}, email Pterodactyl: ${pteroEmail}`);
+
+            // Créer l'utilisateur Pterodactyl avec le nom choisi
+            let pteroUser;
+            try {
+                pteroUser = await createPterodactylUser(server_username, pteroEmail);
+            } catch (error) {
+                console.error('❌ Erreur création utilisateur Pterodactyl:', error);
+                return res.status(500).json({ success: false, error: 'Erreur de création du serveur' });
+            }
+
+            const serverIdentifier = `${server_name}-${plan.id}-${Date.now().toString().slice(-4)}`;
+            
+            const pterodactylServer = await createPterodactylServer({
+                name: serverIdentifier,
+                userId: pteroUser.id,
+                eggId: plan.egg_id,
+                dockerImage: plan.docker_image,
+                memory: plan.memory,
+                disk: plan.disk,
+                cpu: plan.cpu
+            });
+
+            const allocations = await getServerAllocations(pterodactylServer.id);
+
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + plan.duration_days);
+
+            const newServer = {
+                id: generateUUID(),
+                user_id: user.id,
+                server_type: plan.id,
+                server_name: server_name,
+                pterodactyl_id: pterodactylServer.id,
+                server_identifier: pterodactylServer.identifier,
+                username: pteroUser.username,
+                password: pteroUser.password,
+                email: pteroUser.email,
+                allocations: allocations,
+                expires_at: expiresAt.toISOString(),
+                status: 'active',
+                auto_renew: false,
+                auto_renew_attempts: 0,
+                created_at: new Date().toISOString()
+            };
+
+            await supabase
+                .from('servers')
+                .insert([newServer]);
+
+            await supabase
+                .from('profiles')
+                .update({ 
+                    current_plan: plan.id,
+                    experience: (user.experience || 0) + 10
+                })
+                .eq('id', user.id);
+
+            await sendEmail(
+                user.email,
+                '✅ Votre serveur a été créé (PayPal)',
+                getPurchaseConfirmationHtml(
+                    user.username,
+                    plan,
+                    {
+                        server_name: server_name,
+                        username: pteroUser.username,
+                        password: pteroUser.password,
+                        identifier: pterodactylServer.identifier
+                    }
+                )
+            );
+        }
+
+        res.json({
+            success: true,
+            message: 'Transaction PayPal confirmée avec succès'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur confirmation transaction PayPal:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/paypal/fail/:transactionId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const { admin_notes } = req.body;
+
+        console.log('🔍 Recherche transaction PayPal à échouer:', transactionId);
+
+        const { data: transaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (*)
+            `)
+            .eq('id', transactionId)
+            .single();
+
+        if (fetchError || !transaction) {
+            console.error('Transaction non trouvée:', fetchError);
+            return res.status(404).json({ success: false, error: 'Transaction non trouvée' });
+        }
+
+        if (!transaction.paypal_email) {
+            return res.status(400).json({ success: false, error: 'Cette transaction n\'est pas un paiement PayPal' });
+        }
+
+        if (transaction.status !== 'pending') {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Transaction déjà ${transaction.status === 'successful' ? 'confirmée' : 'traitée'}` 
+            });
+        }
+
+        await supabase
+            .from('transactions')
+            .update({
+                status: 'failed',
+                admin_confirmed_by: req.user.id,
+                admin_confirmed_at: new Date().toISOString(),
+                admin_notes: admin_notes || 'Paiement non reçu'
+            })
+            .eq('id', transactionId);
+
+        await supabase
+            .from('paypal_confirmations')
+            .insert([{
+                transaction_id: transactionId,
+                admin_id: req.user.id,
+                status: 'failed',
+                admin_notes: admin_notes || 'Paiement non reçu',
+                created_at: new Date().toISOString()
+            }]);
+
+        const failHtml = `
+            <h2>❌ Paiement PayPal échoué</h2>
+            <p>Bonjour ${transaction.profiles.username},</p>
+            <p>Nous n'avons pas reçu confirmation de votre paiement PayPal pour la transaction suivante :</p>
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+                <p><strong>ID Transaction:</strong> ${transaction.id}</p>
+                <p><strong>Montant:</strong> ${transaction.paypal_amount_converted} ${transaction.paypal_currency}</p>
+                <p><strong>Date:</strong> ${new Date(transaction.created_at).toLocaleString('fr-FR')}</p>
+            </div>
+            <p>Si vous avez effectué le paiement, veuillez contacter le support.</p>
+            <a href="${SITE_CONFIG.url}/support">Contacter le support</a>
+        `;
+        await sendEmail(transaction.profiles.email, '❌ Paiement PayPal échoué', getBaseEmailTemplate('Paiement échoué', failHtml));
+
+        res.json({
+            success: true,
+            message: 'Transaction PayPal marquée comme échouée'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur annulation transaction PayPal:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// =============================================
+// CRÉATION DU SUPERADMIN PAR DÉFAUT
+// =============================================
+
+async function createDefaultSuperAdmin() {
+    try {
+        const { data: existingAdmin } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'superadmin')
+            .maybeSingle();
+
+        if (existingAdmin) {
+            console.log('✅ Superadmin existe déjà');
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash('AdminKerm2024!', 12);
+        const apiKey = generateApiKey();
+        const referralCode = generateReferralCode();
+        const userId = generateUUID();
+
+        const { error } = await supabase
+            .from('profiles')
+            .insert([{
+                id: userId,
+                username: 'superadmin',
+                email: 'admin@kermhosting.com',
+                password_hash: hashedPassword,
+                api_key: apiKey,
+                coins: 10000,
+                role: 'superadmin',
+                current_plan: 'admin',
+                referral_code: referralCode,
+                badges: ['admin-assistant', 'beta-tester', 'premium'],
+                email_verified: true,
+                admin_expires_at: '2099-12-31 23:59:59',
+                admin_access_active: true,
+                created_at: new Date().toISOString()
+            }]);
+
+        if (error) {
+            console.error('❌ Erreur création superadmin:', error);
+        } else {
+            console.log('\n✅ SUPERADMIN CRÉÉ AVEC SUCCÈS');
+            console.log('📧 Email: admin@kermhosting.com');
+            console.log('🔑 Mot de passe: AdminKerm2024!');
+            console.log('💰 Coins: 10000');
+            console.log('⚠️  CHANGEZ CE MOT DE PASSE IMMÉDIATEMENT !\n');
+        }
+    } catch (error) {
+        console.error('❌ Erreur création superadmin:', error);
+    }
+}
 
 // =============================================
 // FONCTIONS AUTO-RENOUVELLEMENT
@@ -1643,7 +2231,7 @@ async function processAutoRenew(server) {
 }
 
 // =============================================
-// AJOUT DES COLONNES D'AUTO-RENOUVELLEMENT DANS LA BASE (si pas déjà fait)
+// AJOUT DES COLONNES D'AUTO-RENOUVELLEMENT DANS LA BASE
 // =============================================
 async function setupAutoRenewTables() {
     try {
@@ -1827,7 +2415,7 @@ cron.schedule('0 * * * *', async () => {
 });
 
 // =============================================
-// ROUTES AUTH
+// ROUTES AUTH (INCHANGÉES)
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -2301,7 +2889,7 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES DE PAIEMENT
+// ROUTES DE PAIEMENT FAPSHI
 // =============================================
 
 // Paiement direct pour acheter des serveurs
@@ -3706,14 +4294,15 @@ app.get('/api/health', (req, res) => {
         message: 'KermHosting opérationnel',
         timestamp: new Date().toISOString(),
         version: '3.0.0',
-        payment: 'Fapshi Live',
+        payment: 'Fapshi Live + PayPal',
         features: {
             payments: 'FCFA',
             mobile_money: true,
             pterodactyl: true,
             referrals: true,
             daily_rewards: true,
-            auto_renew: true
+            auto_renew: true,
+            paypal: true
         }
     });
 });
@@ -5483,7 +6072,7 @@ app.get('*', (req, res) => res.status(404).sendFile(path.join(__dirname, 'public
 
 server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
-    console.log(`💰 Mode paiement: Fapshi LIVE`);
+    console.log(`💰 Mode paiement: Fapshi LIVE + PayPal`);
     console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
