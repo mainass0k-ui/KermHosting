@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="Achetez des coins KermHosting par Mobile Money - Paiement instantané en FCFA">
+    <meta name="description" content="Achetez des coins KermHosting par Mobile Money ou PayPal - Paiement instantané en FCFA ou devises internationales">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
     <!-- Favicon / Icônes -->
@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <title>Acheter des coins - KermHosting | Mobile Money</title>
+    <title>Acheter des coins - KermHosting | Mobile Money & PayPal</title>
     
     <style>
         :root {
@@ -33,6 +33,7 @@
             --success: #10B981;
             --orange: #FF6B00;
             --mtn: #FFCC00;
+            --paypal: #0070BA;
             
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
@@ -100,7 +101,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR (inchangée) ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -583,7 +584,7 @@
             color: black;
         }
 
-        /* ===== MODAL DE PAIEMENT (mobile-optimisé) ===== */
+        /* ===== MODAL DE PAIEMENT ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -733,6 +734,39 @@
             cursor: default;
         }
 
+        .currency-select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .currency-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .converted-price {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+
+        .converted-price span {
+            font-weight: 700;
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
         .operator-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -823,6 +857,43 @@
             outline: none;
         }
 
+        .payment-options-modal {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .payment-option-modal {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option-modal:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option-modal.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+        }
+
+        .payment-option-modal img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 6px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .modal-actions {
             display: flex;
             gap: 12px;
@@ -849,7 +920,12 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
         }
@@ -1004,6 +1080,28 @@
             background: rgba(59, 130, 246, 0.95);
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 640px) {
             .coins-grid {
@@ -1152,13 +1250,13 @@
                 <div class="page-header">
                     <div class="header-badge">
                         <i class="fas fa-mobile-alt"></i>
-                        <span>Paiement Mobile Money</span>
+                        <span>Paiement Mobile Money & PayPal</span>
                     </div>
                     <h1 class="page-title">
                         Achetez des <span class="gradient-text">coins</span>
                     </h1>
                     <p class="page-subtitle">
-                        Rechargez votre compte en FCFA par Mobile Money
+                        Rechargez votre compte en FCFA par Mobile Money ou par PayPal
                     </p>
                 </div>
 
@@ -1219,37 +1317,98 @@
                 <input type="text" class="form-input" id="paymentName" placeholder="Jean Dupont">
             </div>
 
-            <!-- Choix de l'opérateur -->
+            <!-- Choix du mode de paiement -->
             <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-sim-card"></i>
-                    Opérateur
+                    <i class="fas fa-credit-card"></i>
+                    Mode de paiement
                 </label>
-                <div class="operator-grid">
-                    <div class="operator-option mtn active" id="modalMethodMTN" onclick="selectModalMethod('MTN')">
-                        <div class="operator-icon mtn">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <div class="operator-name">MTN Money</div>
+                <div class="payment-options-modal">
+                    <div class="payment-option-modal active" id="payWithMobile" onclick="selectPaymentMethodModal('mobile')">
+                        <img src="https://files.catbox.moe/zjgc9h.jpeg" alt="MTN" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                        <div>Mobile Money</div>
                     </div>
-                    <div class="operator-option orange" id="modalMethodOrange" onclick="selectModalMethod('ORANGE')">
-                        <div class="operator-icon orange">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <div class="operator-name">Orange Money</div>
+                    <div class="payment-option-modal" id="payWithPaypal" onclick="selectPaymentMethodModal('paypal')">
+                        <img src="https://files.catbox.moe/xe0dbx.jpeg" alt="PayPal" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                        <div>PayPal</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Numéro de téléphone -->
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-phone-alt"></i>
-                    Numéro de téléphone
-                </label>
-                <div class="phone-input-group">
-                    <span class="phone-prefix" id="modalPhonePrefix">+237 MTN</span>
-                    <input type="tel" id="modalPhone" placeholder="6XXXXXXXX" maxlength="9" pattern="[0-9]{9}" inputmode="numeric">
+            <!-- Section Mobile Money -->
+            <div id="mobileMoneySection">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-sim-card"></i>
+                        Opérateur
+                    </label>
+                    <div class="operator-grid">
+                        <div class="operator-option mtn active" id="modalMethodMTN" onclick="selectModalMethod('MTN')">
+                            <div class="operator-icon mtn">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="operator-name">MTN Money</div>
+                        </div>
+                        <div class="operator-option orange" id="modalMethodOrange" onclick="selectModalMethod('ORANGE')">
+                            <div class="operator-icon orange">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="operator-name">Orange Money</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-phone-alt"></i>
+                        Numéro de téléphone
+                    </label>
+                    <div class="phone-input-group">
+                        <span class="phone-prefix" id="modalPhonePrefix">+237 MTN</span>
+                        <input type="tel" id="modalPhone" placeholder="6XXXXXXXX" maxlength="9" pattern="[0-9]{9}" inputmode="numeric">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section PayPal -->
+            <div id="paypalSection" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fab fa-paypal"></i>
+                        Email PayPal *
+                    </label>
+                    <input type="email" class="form-input" id="paypalEmail" placeholder="exemple@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        Nom complet *
+                    </label>
+                    <input type="text" class="form-input" id="paypalName" placeholder="Jean Dupont">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-dollar-sign"></i>
+                        Devise de paiement *
+                    </label>
+                    <select class="currency-select" id="paypalCurrency" onchange="updateConvertedPrice()">
+                        <option value="EUR">Euro (€) - 1€ = 656 FCFA</option>
+                        <option value="USD">Dollar US ($) - 1$ = 615 FCFA</option>
+                        <option value="GBP">Livre Sterling (£) - 1£ = 780 FCFA</option>
+                        <option value="CAD">Dollar Canadien (CA$) - 1CA$ = 450 FCFA</option>
+                        <option value="XAF">Franc CFA (FCFA)</option>
+                    </select>
+                </div>
+
+                <div class="converted-price" id="convertedPriceDisplay">
+                    Montant à payer : <span id="convertedAmount">-</span> <span id="convertedCurrency">-</span>
+                </div>
+
+                <div class="info-box">
+                    <i class="fab fa-paypal"></i>
+                    <span>Vous serez redirigé vers PayPal pour finaliser le paiement. La transaction sera validée manuellement par notre équipe après réception du virement.</span>
                 </div>
             </div>
 
@@ -1260,12 +1419,6 @@
                     <i class="fas fa-lock"></i>
                     Payer
                 </button>
-            </div>
-
-            <!-- Info sécurisée -->
-            <div class="info-box">
-                <i class="fas fa-shield-alt"></i>
-                <span>Paiement sécurisé via Fapshi. Vous recevrez une demande de confirmation sur votre téléphone.</span>
             </div>
         </div>
     </div>
@@ -1301,6 +1454,22 @@
         let userCoins = 0;
         let userEmail = '';
         let activeTransactions = [];
+        let currentPaymentMethod = 'mobile';
+        let currentPackPrice = 0;
+
+        // ===== TAUX DE CONVERSION =====
+        const EXCHANGE_RATES = {
+            'EUR': 655.96,
+            'USD': 615.00,
+            'GBP': 780.00,
+            'CAD': 450.00,
+            'XAF': 1.00
+        };
+
+        function getCurrencySymbol(code) {
+            const symbols = { 'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 'XAF': 'FCFA' };
+            return symbols[code] || code;
+        }
 
         // ===== CHARGER LES DONNÉES UTILISATEUR =====
         async function loadUserData() {
@@ -1321,7 +1490,6 @@
                     document.getElementById('sidebarCoins').textContent = userCoins;
                     document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
                     
-                    // Pré-remplir l'email dans le modal
                     document.getElementById('paymentEmail').value = userEmail;
                     
                     return data.user;
@@ -1396,17 +1564,73 @@
         function selectPack(packKey) {
             selectedPack = COIN_PACKS[packKey];
             selectedPack.key = packKey;
+            currentPackPrice = selectedPack.price;
             
             const totalCoins = selectedPack.coins + (selectedPack.bonus || 0);
             
-            // Remplir le modal
             document.getElementById('packName').textContent = selectedPack.name;
             document.getElementById('packDetails').textContent = `${totalCoins} coins` + (selectedPack.bonus > 0 ? ` (${selectedPack.bonus} offerts)` : '');
             document.getElementById('packPrice').textContent = selectedPack.price.toLocaleString() + ' FCFA';
             document.getElementById('packIcon').className = `fas ${selectedPack.icon}`;
             
-            // Ouvrir le modal
+            // Réinitialiser les champs PayPal
+            document.getElementById('paypalEmail').value = userEmail || '';
+            document.getElementById('paypalName').value = '';
+            document.getElementById('paypalCurrency').value = 'EUR';
+            updateConvertedPrice();
+            
+            // Réinitialiser la méthode de paiement
+            currentPaymentMethod = 'mobile';
+            selectPaymentMethodModal('mobile');
+            
             openPaymentModal();
+        }
+
+        function updateConvertedPrice() {
+            const currency = document.getElementById('paypalCurrency').value;
+            const rate = EXCHANGE_RATES[currency];
+            const converted = (currentPackPrice / rate).toFixed(2);
+            document.getElementById('convertedAmount').textContent = converted;
+            document.getElementById('convertedCurrency').textContent = getCurrencySymbol(currency);
+        }
+
+        function checkPaypalFormValidity() {
+            const email = document.getElementById('paypalEmail').value;
+            const name = document.getElementById('paypalName').value;
+            const payBtn = document.getElementById('modalPayBtn');
+            
+            if (email && email.includes('@') && name && name.length >= 2) {
+                payBtn.disabled = false;
+            } else {
+                payBtn.disabled = true;
+            }
+        }
+
+        function selectPaymentMethodModal(method) {
+            currentPaymentMethod = method;
+            
+            document.getElementById('payWithMobile').classList.toggle('active', method === 'mobile');
+            document.getElementById('payWithPaypal').classList.toggle('active', method === 'paypal');
+            
+            const mobileSection = document.getElementById('mobileMoneySection');
+            const paypalSection = document.getElementById('paypalSection');
+            const payBtn = document.getElementById('modalPayBtn');
+            
+            if (method === 'mobile') {
+                mobileSection.style.display = 'block';
+                paypalSection.style.display = 'none';
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer';
+            } else {
+                mobileSection.style.display = 'none';
+                paypalSection.style.display = 'block';
+                payBtn.disabled = true;
+                payBtn.innerHTML = '<i class="fab fa-paypal"></i> Payer avec PayPal';
+                
+                document.getElementById('paypalEmail').addEventListener('input', checkPaypalFormValidity);
+                document.getElementById('paypalName').addEventListener('input', checkPaypalFormValidity);
+                checkPaypalFormValidity();
+            }
         }
 
         // ===== MODAL FUNCTIONS =====
@@ -1446,54 +1670,101 @@
 
         // ===== PROCESS PAYMENT =====
         async function processPayment() {
-            const phone = document.getElementById('modalPhone').value;
-            const name = document.getElementById('paymentName').value || 'Client KermHosting';
-            
-            if (!phone || phone.length !== 9) {
-                showToast('error', 'Numéro de téléphone invalide');
-                return;
-            }
+            if (currentPaymentMethod === 'mobile') {
+                const phone = document.getElementById('modalPhone').value;
+                const name = document.getElementById('paymentName').value || 'Client KermHosting';
+                
+                if (!phone || phone.length !== 9) {
+                    showToast('error', 'Numéro de téléphone invalide');
+                    return;
+                }
 
-            const payBtn = document.getElementById('modalPayBtn');
-            payBtn.disabled = true;
-            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+                const payBtn = document.getElementById('modalPayBtn');
+                payBtn.disabled = true;
+                payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
 
-            try {
-                const response = await fetch('/api/payment/buy-coins', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        pack_id: selectedPack.key,
-                        phone: phone,
-                        medium: selectedMethod,
-                        name: name
-                    })
-                });
+                try {
+                    const response = await fetch('/api/payment/buy-coins', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            pack_id: selectedPack.key,
+                            phone: phone,
+                            medium: selectedMethod,
+                            name: name
+                        })
+                    });
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (data.success) {
-                    closePaymentModal();
-                    openConfirmModal(phone);
-                    
-                    // Réinitialiser
-                    document.getElementById('modalPhone').value = '';
-                    
-                    // Vérifier le statut après 3 secondes
-                    setTimeout(() => checkPaymentStatus(data.transId), 3000);
-                    
-                } else {
-                    showToast('error', data.error || 'Erreur lors du paiement');
+                    if (data.success) {
+                        closePaymentModal();
+                        openConfirmModal(phone);
+                        document.getElementById('modalPhone').value = '';
+                        setTimeout(() => checkPaymentStatus(data.transId), 3000);
+                    } else {
+                        showToast('error', data.error || 'Erreur lors du paiement');
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer';
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
                     payBtn.disabled = false;
                     payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer';
                 }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-                payBtn.disabled = false;
-                payBtn.innerHTML = '<i class="fas fa-lock"></i> Payer';
+            } 
+            else if (currentPaymentMethod === 'paypal') {
+                const email = document.getElementById('paypalEmail').value;
+                const name = document.getElementById('paypalName').value;
+                const currency = document.getElementById('paypalCurrency').value;
+                
+                const payBtn = document.getElementById('modalPayBtn');
+                payBtn.disabled = true;
+                payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+                
+                try {
+                    const response = await fetch('/api/payment/paypal', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'coins',
+                            pack_id: selectedPack.key,
+                            paypal_email: email,
+                            paypal_name: name,
+                            currency: currency
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // 🔧 OUVRE LE LIEN PAYPAL DANS UN NOUVEL ONGLET
+                        const paypalWindow = window.open(data.paypal_link, '_blank');
+                        if (paypalWindow) {
+                            showToast('success', 'Redirection vers PayPal en cours...');
+                        } else {
+                            // Si le popup est bloqué, afficher un lien manuel
+                            showToast('info', `Cliquez ici si la redirection ne fonctionne pas: ${data.paypal_link}`);
+                            window.location.href = data.paypal_link;
+                        }
+                        closePaymentModal();
+                        showToast('success', 'Demande PayPal créée ! Attendez la confirmation admin.');
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la création');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showToast('error', 'Erreur réseau');
+                } finally {
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="fab fa-paypal"></i> Payer avec PayPal';
+                }
             }
         }
 
@@ -1504,19 +1775,12 @@
                 const data = await response.json();
 
                 if (data.success && data.status === 'SUCCESSFUL') {
-                    // Notification de succès
                     showToast('success', '✅ Paiement réussi ! Vos coins ont été crédités.');
-                    
-                    // Recharger le solde
                     loadUserData();
-                    
-                    // Fermer le modal de confirmation
                     closeConfirmModal();
-                    
                 } else if (data.status === 'FAILED' || data.status === 'EXPIRED') {
                     showToast('error', '❌ Paiement échoué ou expiré');
                 } else {
-                    // Réessayer après 5 secondes
                     setTimeout(() => checkPaymentStatus(transId), 5000);
                 }
             } catch (error) {
@@ -1585,6 +1849,15 @@
                 closeSidebarFunc();
             }
         });
+
+        // Exposer les fonctions globalement
+        window.selectPack = selectPack;
+        window.selectModalMethod = selectModalMethod;
+        window.selectPaymentMethodModal = selectPaymentMethodModal;
+        window.updateConvertedPrice = updateConvertedPrice;
+        window.processPayment = processPayment;
+        window.closePaymentModal = closePaymentModal;
+        window.closeConfirmModal = closeConfirmModal;
     </script>
 </body>
 </html>
