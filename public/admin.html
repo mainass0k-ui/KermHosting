@@ -38,6 +38,7 @@
             --warning: #F59E0B;
             --success: #10B981;
             --info: #3B82F6;
+            --paypal: #0070BA;
             
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
@@ -943,6 +944,11 @@
             color: var(--info);
         }
 
+        .badge-paypal {
+            background: rgba(0, 112, 186, 0.1);
+            color: #0070BA;
+        }
+
         .action-group {
             display: flex;
             gap: 4px;
@@ -991,6 +997,14 @@
 
         .action-btn.unsuspend:hover {
             background: var(--success);
+        }
+
+        .action-btn.confirm:hover {
+            background: var(--success);
+        }
+
+        .action-btn.fail:hover {
+            background: var(--danger);
         }
 
         /* ===== PAGINATION ===== */
@@ -1331,76 +1345,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (min-width: 768px) {
-            .page-content {
-                padding: 24px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
-
-            .financial-stats {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .charts-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .search-bar {
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .search-row {
-                flex: 1;
-            }
-
-            .page-header {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .btn {
-                flex: none;
-            }
-
-            .server-mini-card {
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .toast {
-                left: auto;
-                right: 20px;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .menu-toggle {
-                display: none;
-            }
-
-            .sidebar {
-                transform: translateX(0);
-                position: sticky;
-            }
-
-            .sidebar-overlay {
-                display: none;
-            }
-
-            .top-bar-logo {
-                display: none;
-            }
-        }
-
-        /* ===== STYLES SPÉCIFIQUES POUR L'ONGLET MAINTENANCE ===== */
+        /* ===== MAINTENANCE STYLES ===== */
         .maintenance-status {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -1531,12 +1476,73 @@
             word-break: break-all;
         }
 
-        .config-value.warning {
-            color: var(--danger);
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .page-content {
+                padding: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+
+            .financial-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-bar {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .search-row {
+                flex: 1;
+            }
+
+            .page-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .btn {
+                flex: none;
+            }
+
+            .server-mini-card {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .toast {
+                left: auto;
+                right: 20px;
+            }
         }
 
-        .config-value.success {
-            color: var(--success);
+        @media (min-width: 1024px) {
+            .menu-toggle {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                position: sticky;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .top-bar-logo {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -1671,7 +1677,6 @@
                         <span class="gradient-text">Administration</span> KermHosting
                     </h1>
                     <div class="header-actions">
-                        <!-- NOUVEAU BOUTON : Nettoyage Pterodactyl -->
                         <button class="btn btn-warning" onclick="showPterodactylCleanupModal()" id="pteroCleanupBtn" title="Supprimer les utilisateurs Pterodactyl orphelins">
                             <i class="fas fa-broom"></i>
                             <span class="btn-text">Nettoyer Pterodactyl</span>
@@ -1810,7 +1815,11 @@
                     <div class="tab" onclick="switchTab('logs')">
                         <i class="fas fa-history"></i>Logs
                     </div>
-                    <!-- NOUVEL ONGLET: Maintenance -->
+                    <!-- NOUVEL ONGLET: PayPal -->
+                    <div class="tab" onclick="switchTab('paypal')">
+                        <i class="fab fa-paypal"></i>PayPal
+                    </div>
+                    <!-- ONGLET: Maintenance -->
                     <div class="tab" onclick="switchTab('maintenance')">
                         <i class="fas fa-tools"></i>Maintenance
                     </div>
@@ -1852,7 +1861,7 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                <tr>
+                                
                                     <th>ID</th>
                                     <th>Utilisateur</th>
                                     <th>Email</th>
@@ -1862,17 +1871,15 @@
                                     <th>Statut</th>
                                     <th>Inscription</th>
                                     <th>Actions</th>
-                                </tr>
-                            </thead>
+                                 </thead>
                             <tbody id="usersTableBody">
-                                <tr>
+                                
                                     <td colspan="9" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement des utilisateurs...</p>
-                                    </td>
-                                </tr>
+                                     </tr>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1913,7 +1920,7 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                <tr>
+                                
                                     <th>ID</th>
                                     <th>Nom</th>
                                     <th>Propriétaire</th>
@@ -1922,17 +1929,15 @@
                                     <th>Création</th>
                                     <th>Expiration</th>
                                     <th>Actions</th>
-                                </tr>
-                            </thead>
+                                 </thead>
                             <tbody id="serversTableBody">
-                                <tr>
+                                
                                     <td colspan="8" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement des serveurs...</p>
-                                    </td>
-                                </tr>
+                                     </tr>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1971,26 +1976,23 @@
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Type</th>
-                                    <th>Montant</th>
-                                    <th>Statut</th>
-                                    <th>Moyen</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Type</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Moyen</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="transactionsTableBody">
-                                <tr>
+                                
                                     <td colspan="8" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement des transactions...</p>
-                                    </td>
-                                </tr>
+                                     </tr>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2074,24 +2076,21 @@
                     <div class="table-container">
                         <table id="logsTable">
                             <thead>
-                                <tr>
-                                    <th>Date (Cameroun)</th>
-                                    <th>Admin</th>
-                                    <th>Action</th>
-                                    <th>Cible</th>
-                                    <th>Détails</th>
-                                    <th>IP</th>
-                                </tr>
-                            </thead>
+                                <th>Date (Cameroun)</th>
+                                <th>Admin</th>
+                                <th>Action</th>
+                                <th>Cible</th>
+                                <th>Détails</th>
+                                <th>IP</th>
+                             </thead>
                             <tbody id="logsTableBody">
-                                <tr>
+                                
                                     <td colspan="6" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement des logs...</p>
-                                    </td>
-                                </tr>
+                                     </tr>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2106,7 +2105,57 @@
                     </div>
                 </div>
 
-                <!-- NOUVEL ONGLET: Maintenance -->
+                <!-- NOUVEL ONGLET: PayPal (AFFICHE TOUTES LES TRANSACTIONS) -->
+                <div class="tab-pane" id="tab-paypal">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="paypalSearch" placeholder="Rechercher (email, nom, ID...)" onkeyup="filterPaypalTransactions()">
+                            <select class="filter-select" id="paypalFilter" onchange="filterPaypalTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="pending">En attente</option>
+                                <option value="successful">Confirmées</option>
+                                <option value="failed">Échouées</option>
+                                <option value="coins">Achats de coins</option>
+                                <option value="server">Achats de serveurs</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fab fa-paypal"></i>
+                            <span id="paypalCount">0</span> transactions PayPal
+                            <button class="clear-search" onclick="clearPaypalSearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="refreshPaypalTransactions()" style="margin-left: auto;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="paypalTable">
+                            <thead>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Type</th>
+                                <th>Montant (FCFA)</th>
+                                <th>Montant (devise)</th>
+                                <th>Email PayPal</th>
+                                <th>Nom complet</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                             </thead>
+                            <tbody id="paypalTableBody">
+                                
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions PayPal...</p>
+                                     </tr>
+                            </tbody>
+                         </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Maintenance -->
                 <div class="tab-pane" id="tab-maintenance">
                     <div class="maintenance-status">
                         <div class="status-indicator" id="maintenanceStatusIndicator">
@@ -2423,6 +2472,8 @@
         let allServers = [];
         let allTransactions = [];
         let allLogs = [];
+        let allPaypalTransactions = [];
+        let filteredPaypalTransactions = [];
         let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
@@ -2446,6 +2497,9 @@
         // Logs pagination
         let filteredLogs = [];
         let currentLogsPage = 1;
+        
+        // PayPal pagination
+        let currentPaypalPage = 1;
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -2518,10 +2572,316 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
 
+            // Si c'est l'onglet paypal, charger les transactions PayPal
+            if (tabId === 'paypal') {
+                loadPaypalTransactions();
+            }
             // Si c'est l'onglet maintenance, charger la configuration
             if (tabId === 'maintenance') {
                 loadMaintenanceConfig();
             }
+        }
+
+        // ===== LOAD PAYPAL TRANSACTIONS (TOUTES) =====
+        async function loadPaypalTransactions() {
+            try {
+                const res = await fetch('/api/admin/paypal/pending', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    allPaypalTransactions = data.transactions || [];
+                    filteredPaypalTransactions = [...allPaypalTransactions];
+                    document.getElementById('paypalCount').textContent = allPaypalTransactions.length;
+                    currentPaypalPage = 1;
+                    displayPaypalTransactions();
+                }
+            } catch (error) {
+                console.error('Erreur chargement transactions PayPal:', error);
+                showToast('error', 'Erreur de chargement des transactions PayPal');
+            }
+        }
+
+        function refreshPaypalTransactions() {
+            loadPaypalTransactions();
+        }
+
+        function filterPaypalTransactions() {
+            const search = document.getElementById('paypalSearch').value.toLowerCase();
+            const filter = document.getElementById('paypalFilter').value;
+            
+            filteredPaypalTransactions = allPaypalTransactions.filter(trans => {
+                const matchesSearch = (trans.paypal_email?.toLowerCase() || '').includes(search) ||
+                                    (trans.paypal_name?.toLowerCase() || '').includes(search) ||
+                                    (trans.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (trans.id || '').toLowerCase().includes(search);
+                
+                if (!matchesSearch) return false;
+                
+                switch(filter) {
+                    case 'pending': return trans.status === 'pending';
+                    case 'successful': return trans.status === 'successful';
+                    case 'failed': return trans.status === 'failed';
+                    case 'coins': return trans.type === 'coins_purchase';
+                    case 'server': return trans.type === 'server_purchase';
+                    default: return true;
+                }
+            });
+            
+            currentPaypalPage = 1;
+            document.getElementById('paypalCount').textContent = filteredPaypalTransactions.length;
+            displayPaypalTransactions();
+        }
+
+        function clearPaypalSearch() {
+            document.getElementById('paypalSearch').value = '';
+            document.getElementById('paypalFilter').value = 'all';
+            filteredPaypalTransactions = [...allPaypalTransactions];
+            currentPaypalPage = 1;
+            document.getElementById('paypalCount').textContent = allPaypalTransactions.length;
+            displayPaypalTransactions();
+        }
+
+        function displayPaypalTransactions() {
+            const tbody = document.getElementById('paypalTableBody');
+            
+            if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td></tr>';
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredPaypalTransactions.length / itemsPerPage);
+            const startIndex = (currentPaypalPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPaypalTransactions.length);
+            const paginatedTransactions = filteredPaypalTransactions.slice(startIndex, endIndex);
+
+            let html = '';
+            
+            paginatedTransactions.forEach(transaction => {
+                const typeText = {
+                    'coins_purchase': 'Achat de coins',
+                    'server_purchase': 'Achat de serveur',
+                    'server_renewal': 'Renouvellement'
+                }[transaction.type] || transaction.type;
+                
+                const amountDisplay = transaction.paypal_amount_converted 
+                    ? `${transaction.paypal_amount_converted} ${transaction.paypal_currency}`
+                    : `${transaction.amount} FCFA`;
+                
+                // Badge de statut
+                let statusBadge = '';
+                if (transaction.status === 'pending') {
+                    statusBadge = '<span class="badge badge-warning">En attente</span>';
+                } else if (transaction.status === 'successful') {
+                    statusBadge = '<span class="badge badge-success">Confirmée</span>';
+                } else if (transaction.status === 'failed') {
+                    statusBadge = '<span class="badge badge-danger">Échouée</span>';
+                } else {
+                    statusBadge = `<span class="badge badge-info">${transaction.status}</span>`;
+                }
+                
+                // Actions selon le statut
+                let actions = '';
+                if (transaction.status === 'pending') {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn confirm" title="Confirmer paiement" onclick="confirmPaypalPayment('${transaction.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn fail" title="Marquer comme échoué" onclick="failPaypalPayment('${transaction.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn view" title="Voir détails" onclick="viewPaypalTransaction('${transaction.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn view" title="Voir détails" onclick="viewPaypalTransaction('${transaction.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <tr>
+                        <td>${formatDateCameroon(transaction.created_at)}</td>
+                        <td><strong>${transaction.profiles?.username || 'Inconnu'}</strong><br><small>${transaction.profiles?.email || ''}</small></td>
+                        <td><span class="badge badge-info">${typeText}</span></td>
+                        <td>${transaction.amount.toLocaleString()} FCFA</td>
+                        <td><span class="badge badge-primary">${amountDisplay}</span></td>
+                        <td>${transaction.paypal_email || '-'}</td>
+                        <td>${transaction.paypal_name || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        async function confirmPaypalPayment(transactionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Confirmer le paiement PayPal';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr d\'avoir reçu ce paiement ? L\'utilisateur recevra ses coins/serveur immédiatement.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Confirmation en cours...');
+                
+                try {
+                    const res = await fetch(`/api/admin/paypal/confirm/${transactionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ admin_notes: 'Paiement confirmé par admin' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Transaction PayPal confirmée avec succès !');
+                        loadPaypalTransactions();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la confirmation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        async function failPaypalPayment(transactionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Paiement PayPal échoué';
+            document.getElementById('confirmMessage').textContent = 'Marquer ce paiement comme échoué ? L\'utilisateur recevra un email d\'échec.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Traitement en cours...');
+                
+                try {
+                    const res = await fetch(`/api/admin/paypal/fail/${transactionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ admin_notes: 'Paiement non reçu' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Transaction PayPal marquée comme échouée');
+                        loadPaypalTransactions();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de l\'annulation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        function viewPaypalTransaction(transactionId) {
+            const transaction = allPaypalTransactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            const detailsDiv = document.getElementById('transactionDetails');
+            
+            let statusText = '';
+            if (transaction.status === 'pending') statusText = 'En attente';
+            else if (transaction.status === 'successful') statusText = 'Confirmée';
+            else if (transaction.status === 'failed') statusText = 'Échouée';
+            else statusText = transaction.status;
+            
+            let statusColor = '';
+            if (transaction.status === 'pending') statusColor = 'badge-warning';
+            else if (transaction.status === 'successful') statusColor = 'badge-success';
+            else if (transaction.status === 'failed') statusColor = 'badge-danger';
+            
+            detailsDiv.innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">ID Transaction</span>
+                    <span class="modal-info-value"><code>${transaction.id}</code></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Utilisateur</span>
+                    <span class="modal-info-value">${transaction.profiles?.username || 'Inconnu'} (${transaction.profiles?.email || '-'})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Type</span>
+                    <span class="modal-info-value">${transaction.type === 'coins_purchase' ? 'Achat de coins' : 'Achat de serveur'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Montant FCFA</span>
+                    <span class="modal-info-value">${transaction.amount.toLocaleString()} FCFA</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Montant payé</span>
+                    <span class="modal-info-value">${transaction.paypal_amount_converted} ${transaction.paypal_currency}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Email PayPal</span>
+                    <span class="modal-info-value">${transaction.paypal_email || '-'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Nom complet</span>
+                    <span class="modal-info-value">${transaction.paypal_name || '-'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Statut</span>
+                    <span class="modal-info-value"><span class="badge ${statusColor}">${statusText}</span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de création</span>
+                    <span class="modal-info-value">${formatDateCameroon(transaction.created_at)}</span>
+                </div>
+                ${transaction.completed_at ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de confirmation</span>
+                    <span class="modal-info-value">${formatDateCameroon(transaction.completed_at)}</span>
+                </div>
+                ` : ''}
+                ${transaction.metadata?.server_name ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Nom du serveur</span>
+                    <span class="modal-info-value">${transaction.metadata.server_name}</span>
+                </div>
+                ` : ''}
+                ${transaction.metadata?.pack ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Pack de coins</span>
+                    <span class="modal-info-value">${transaction.metadata.pack.name} (${transaction.metadata.pack.coins + (transaction.metadata.pack.bonus || 0)} coins)</span>
+                </div>
+                ` : ''}
+                ${transaction.admin_notes ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Notes admin</span>
+                    <span class="modal-info-value">${transaction.admin_notes}</span>
+                </div>
+                ` : ''}
+            `;
+
+            openModal('transactionModal');
         }
 
         // ===== LOAD USER DATA =====
@@ -2768,7 +3128,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td></tr>';
+                tbody.innerHTML = '运转<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td> </tr>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -2843,7 +3203,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
+                tbody.innerHTML = '运转<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td> </tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3236,7 +3596,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
+                tbody.innerHTML = '运转<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td> </tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3306,7 +3666,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
+                tbody.innerHTML = '运转<td colspan="6" style="text-align: center;">Aucun log trouvé</td> </tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
@@ -3949,6 +4309,9 @@
         function refreshAllData() {
             showToast('info', 'Actualisation des données...');
             loadAdminData();
+            if (document.getElementById('tab-paypal').classList.contains('active')) {
+                loadPaypalTransactions();
+            }
         }
 
         // ===== LOGOUT =====
@@ -3984,6 +4347,12 @@
         window.filterServers = filterServers;
         window.filterTransactions = filterTransactions;
         window.filterLogs = filterLogs;
+        window.filterPaypalTransactions = filterPaypalTransactions;
+        window.clearPaypalSearch = clearPaypalSearch;
+        window.refreshPaypalTransactions = refreshPaypalTransactions;
+        window.confirmPaypalPayment = confirmPaypalPayment;
+        window.failPaypalPayment = failPaypalPayment;
+        window.viewPaypalTransaction = viewPaypalTransaction;
         window.editUser = editUser;
         window.viewUserServers = viewUserServers;
         window.viewUserTransactions = viewUserTransactions;
