@@ -7,13 +7,16 @@
     <meta name="description" content="Tableau de bord KermHosting - Gérez vos serveurs Node.js">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
     
+    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -22,6 +25,7 @@
     <title>Tableau de bord - KermHosting</title>
     
     <style>
+        /* ===== VARIABLES ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -612,6 +616,7 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
         }
 
         .btn-outline {
@@ -644,9 +649,27 @@
             color: black;
         }
 
+        .btn-warning:hover {
+            background: #e08e0b;
+        }
+
         .btn-danger {
             background: var(--danger);
             color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .quick-actions {
@@ -697,8 +720,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+            }
         }
 
         .quick-action.reward-ready i {
@@ -717,11 +744,18 @@
             opacity: 0.7;
         }
 
+        .quick-action.reward-claimed i {
+            color: var(--text-muted);
+        }
+
+        .quick-action.reward-claimed p {
+            color: var(--text-muted);
+        }
+
         .countdown-timer {
             font-size: 0.7rem;
-            color: #F59E0B;
-            margin-top: 6px;
-            font-weight: 500;
+            color: var(--warning);
+            margin-top: 4px;
         }
 
         .servers-grid {
@@ -737,6 +771,7 @@
             border: 1px solid var(--border-color);
             overflow: hidden;
             transition: all 0.3s;
+            position: relative;
         }
 
         .server-card:hover {
@@ -757,6 +792,7 @@
         .server-card.suspended {
             border-left: 4px solid var(--danger);
             opacity: 0.8;
+            background: linear-gradient(135deg, var(--bg-card), rgba(239, 68, 68, 0.1));
         }
 
         .server-header {
@@ -803,6 +839,11 @@
         }
 
         .status-suspended {
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .status-error {
             background: var(--danger);
         }
 
@@ -871,12 +912,27 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            text-decoration: none;
         }
 
         .server-action-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+        }
+
+        .server-action-btn.stop:hover {
+            background: var(--danger);
+        }
+
+        .server-action-btn.start:hover {
+            background: var(--success);
+        }
+
+        .server-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .server-console {
@@ -892,6 +948,16 @@
             border: 1px solid var(--border-color);
         }
 
+        .console-line {
+            padding: 2px 0;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .console-line:last-child {
+            border-bottom: none;
+        }
+
         .activity-list {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -905,10 +971,15 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
         }
 
         .activity-item:last-child {
             border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-hover);
         }
 
         .activity-icon {
@@ -976,6 +1047,24 @@
             border: 2px dashed var(--border-color);
         }
 
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
         .modal {
             position: fixed;
             top: 0;
@@ -1005,6 +1094,7 @@
             overflow-y: auto;
             border: 1px solid var(--border-color);
             animation: modalSlideIn 0.3s ease-out;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes modalSlideIn {
@@ -1038,6 +1128,13 @@
             cursor: pointer;
             width: 40px;
             height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
         }
 
         .modal-info {
@@ -1071,6 +1168,7 @@
         .modal-info-value {
             font-weight: 600;
             color: var(--primary);
+            word-break: break-all;
         }
 
         .modal-select, .modal-input {
@@ -1084,10 +1182,16 @@
             margin-bottom: 12px;
         }
 
+        .modal-select:focus, .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         .modal-actions {
             display: flex;
             gap: 12px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .credentials-box {
@@ -1095,6 +1199,7 @@
             border-radius: var(--radius-lg);
             padding: 16px;
             margin: 16px 0;
+            border: 1px solid var(--border-color);
         }
 
         .credential-item {
@@ -1119,14 +1224,19 @@
             min-width: 120px;
         }
 
+        .credential-label i {
+            color: var(--primary);
+        }
+
         .credential-value {
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
             font-weight: 600;
             color: var(--primary);
             background: var(--bg-input);
             padding: 6px 10px;
             border-radius: var(--radius-md);
+            letter-spacing: 0.5px;
             flex: 1;
             word-break: break-all;
         }
@@ -1138,6 +1248,7 @@
             cursor: pointer;
             padding: 6px;
             border-radius: var(--radius-sm);
+            transition: all 0.2s;
         }
 
         .copy-btn:hover {
@@ -1150,6 +1261,7 @@
             border-radius: var(--radius-lg);
             padding: 16px;
             margin: 16px 0;
+            border: 1px solid var(--border-color);
         }
 
         .auto-renew-header {
@@ -1157,6 +1269,17 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 12px;
+        }
+
+        .auto-renew-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auto-renew-title i {
+            color: var(--primary);
         }
 
         .toggle-switch {
@@ -1204,6 +1327,38 @@
             transform: translateX(24px);
         }
 
+        .auto-renew-info {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .auto-renew-error {
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: var(--radius-md);
+            display: none;
+        }
+
+        .auto-renew-error.show {
+            display: block;
+        }
+
+        .auto-renew-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
         .warning-message {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid var(--warning);
@@ -1215,6 +1370,10 @@
             gap: 12px;
             color: var(--warning);
             font-size: 0.85rem;
+        }
+
+        .warning-message i {
+            font-size: 1.2rem;
         }
 
         .notifications-panel {
@@ -1244,6 +1403,10 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .notifications-header h3 {
+            font-size: 1.1rem;
+        }
+
         .notifications-list {
             flex: 1;
             overflow-y: auto;
@@ -1257,6 +1420,45 @@
             border-radius: var(--radius-md);
             background: var(--bg-hover);
             margin-bottom: 8px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .notification-item.unread {
+            border-left-color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-glow), transparent);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .notification-message {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
         }
 
         .toast {
@@ -1276,10 +1478,21 @@
             margin: 0 auto;
         }
 
-        .toast.success { background: rgba(16, 185, 129, 0.95); }
-        .toast.error { background: rgba(239, 68, 68, 0.95); }
-        .toast.info { background: rgba(59, 130, 246, 0.95); }
-        .toast.warning { background: rgba(245, 158, 11, 0.95); }
+        .toast.success {
+            background: rgba(16, 185, 129, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+
+        .toast.info {
+            background: rgba(59, 130, 246, 0.95);
+        }
+
+        .toast.warning {
+            background: rgba(245, 158, 11, 0.95);
+        }
 
         @keyframes slideIn {
             from {
@@ -1301,6 +1514,25 @@
                 opacity: 0;
                 transform: translateX(30px);
             }
+        }
+
+        .renewal-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .renewal-badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .renewal-badge.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
         }
 
         .whatsapp-modal {
@@ -1331,6 +1563,7 @@
             text-align: center;
             border: 1px solid rgba(37, 211, 102, 0.3);
             box-shadow: 0 0 30px rgba(37, 211, 102, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
         }
 
         .whatsapp-icon {
@@ -1352,11 +1585,13 @@
         .whatsapp-modal-content h2 {
             font-size: 1.5rem;
             margin-bottom: 12px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         .whatsapp-modal-content p {
             color: var(--text-secondary);
             margin-bottom: 24px;
+            line-height: 1.5;
         }
 
         .whatsapp-buttons {
@@ -1392,6 +1627,7 @@
             border-radius: var(--radius-full);
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
         }
 
         .btn-later:hover {
@@ -1400,24 +1636,66 @@
         }
 
         @media (min-width: 640px) {
-            .welcome-stats { flex-direction: row; }
-            .quick-actions { grid-template-columns: repeat(4, 1fr); }
-            .servers-grid { grid-template-columns: repeat(2, 1fr); }
-            .toast { left: auto; right: 20px; }
+            .welcome-stats {
+                flex-direction: row;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .servers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .toast {
+                left: auto;
+                right: 20px;
+            }
         }
 
         @media (min-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
-            .servers-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+            
+            .servers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (min-width: 1024px) {
-            .page-content { padding: 24px; }
-            .servers-grid { grid-template-columns: repeat(3, 1fr); }
-            .menu-toggle { display: none; }
-            .sidebar { transform: translateX(0); position: sticky; }
-            .sidebar-overlay { display: none; }
-            .top-bar-logo { display: none; }
+            .page-content {
+                padding: 24px;
+            }
+            
+            .servers-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                position: sticky;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .top-bar-logo {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .servers-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
@@ -1601,34 +1879,58 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="statCoins">0</div>
                         <div class="stat-label">Coins total</div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="coinChange">+0 aujourd'hui</span>
+                        </div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon"><i class="fas fa-server"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="statServers">0</div>
                         <div class="stat-label">Serveurs actifs</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock"></i>
+                            <span id="serversExpiring">0 bientôt expirés</span>
+                        </div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="statStreak">0</div>
                         <div class="stat-label">Série de connexion</div>
+                        <div class="stat-change">
+                            <i class="fas fa-gift"></i>
+                            <span id="nextReward">5 coins demain</span>
+                        </div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon"><i class="fas fa-gem"></i></div>
+                            <div class="stat-icon">
+                                <i class="fas fa-gem"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="statLevel">1</div>
                         <div class="stat-label">Niveau</div>
+                        <div class="stat-change">
+                            <i class="fas fa-star"></i>
+                            <span id="xpProgress">0/100 XP</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1657,8 +1959,11 @@
                 </div>
 
                 <div class="section-header">
-                    <h2><i class="fas fa-server"></i> Mes serveurs</h2>
-                    <a href="/pricing" class="btn btn-primary btn-small">
+                    <h2>
+                        <i class="fas fa-server"></i>
+                        Mes serveurs
+                    </h2>
+                    <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); border: 1px solid rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-plus-circle"></i>
                         Nouveau serveur
                     </a>
@@ -1672,12 +1977,15 @@
                 </div>
 
                 <div class="section-header">
-                    <h2><i class="fas fa-history"></i> Activité récente</h2>
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        Activité récente
+                    </h2>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-outline btn-small" id="refreshActivitiesBtn">
+                        <button class="btn btn-outline btn-small" id="refreshActivitiesBtn" title="Actualiser">
                             <i class="fas fa-sync-alt"></i>
                         </button>
-                        <button class="btn btn-danger btn-small" id="clearActivitiesBtn">
+                        <button class="btn btn-danger btn-small" id="clearActivitiesBtn" title="Tout supprimer">
                             <i class="fas fa-trash-alt"></i>
                             Effacer
                         </button>
@@ -1698,7 +2006,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Créer un serveur</h2>
-                <button class="modal-close" onclick="closeModal('serverModal')"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="closeModal('serverModal')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <select id="planSelect" class="modal-select">
@@ -1706,7 +2016,7 @@
                 </select>
                 <input type="text" id="serverName" class="modal-input" placeholder="Nom du serveur" maxlength="30">
                 <input type="text" id="serverUsername" class="modal-input" placeholder="Nom d'utilisateur" maxlength="20">
-                <small>3-20 caractères, lettres, chiffres et _</small>
+                <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverModal')">Annuler</button>
@@ -1719,7 +2029,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="detailsServerName">Détails du serveur</h2>
-                <button class="modal-close" onclick="closeModal('serverDetailsModal')"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="closeModal('serverDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="modal-info">
@@ -1741,20 +2053,31 @@
                     </div>
                 </div>
 
-                <h3>🔑 Identifiants</h3>
+                <h3 style="margin-bottom: 12px; font-size: 1.1rem;">🔑 Identifiants</h3>
                 <div class="credentials-box" id="detailsCredentials"></div>
 
                 <div class="auto-renew-section" id="autoRenewSection">
                     <div class="auto-renew-header">
-                        <span><i class="fas fa-sync-alt"></i> Auto-renouvellement</span>
+                        <span class="auto-renew-title">
+                            <i class="fas fa-sync-alt"></i>
+                            Auto-renouvellement
+                        </span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
-                    <div class="auto-renew-info">
+                    <div class="auto-renew-info" id="autoRenewInfo">
                         <i class="fas fa-info-circle"></i>
-                        <span>Renouvellement automatique tous les 7 jours</span>
+                        <span>Renouvellement automatique tous les 7 jours si solde suffisant</span>
+                    </div>
+                    <div class="auto-renew-stats" id="autoRenewStats" style="display: none;">
+                        <span><i class="fas fa-history"></i> Tentatives: <span id="autoRenewAttempts">0</span></span>
+                        <span><i class="fas fa-clock"></i> Dernière: <span id="autoRenewLastAttempt">Jamais</span></span>
+                    </div>
+                    <div class="auto-renew-error" id="autoRenewError">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="autoRenewErrorMessage"></span>
                     </div>
                 </div>
 
@@ -1762,6 +2085,8 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Conservez ces identifiants précieusement.</span>
                 </div>
+
+                <div id="actionErrorContainer" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button>
@@ -1774,10 +2099,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="actionTitle">Action sur le serveur</h2>
-                <button class="modal-close" onclick="closeModal('actionModal')"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="closeModal('actionModal')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <p id="actionMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+                <div id="actionErrorInModal" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button>
@@ -1790,7 +2118,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Renouveler le serveur</h2>
-                <button class="modal-close" onclick="closeModal('renewModal')"><i class="fas fa-times"></i></button>
+                <button class="modal-close" onclick="closeModal('renewModal')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="modal-info">
@@ -1803,6 +2133,10 @@
                         <span class="modal-info-value" id="renewPlan">-</span>
                     </div>
                     <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="renewPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
                         <span class="modal-info-label">En coins</span>
                         <span class="modal-info-value" id="renewCoins">- coins</span>
                     </div>
@@ -1811,35 +2145,219 @@
                         <span class="modal-info-value" id="renewBalance">- coins</span>
                     </div>
                 </div>
+
+                <p style="color: var(--text-secondary); margin: 16px 0; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Le renouvellement prolonge la durée de 30 jours.
+                </p>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('renewModal')">Annuler</button>
-                <button class="btn btn-success" onclick="confirmRenew()" id="renewConfirmBtn">Renouveler</button>
+                <button class="btn btn-success" onclick="confirmRenew()" id="renewConfirmBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    Renouveler
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/login';
+        if (!token) {
+            window.location.href = '/login';
+        }
 
         const PLANS = {
-            'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0 },
-            '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100 },
-            '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160 },
-            '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260 },
-            '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340 }
+            'free': { name: 'Free', memory: 256, disk: 1024, cpu: 50, price: 0, coins: 0, duration: 1 },
+            '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 },
+            '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 },
+            '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 },
+            '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 }
         };
 
         let userData = null;
         let userServers = [];
+        let currentAction = null;
+        let currentServerId = null;
         let currentServer = null;
+        let whatsappShownThisSession = false;
         let countdownInterval = null;
+
+        // ========== FONCTIONS DE TEMPS ==========
+        function formatTimeAgo(date) {
+            if (!date) return 'Date inconnue';
+            const now = new Date();
+            const past = new Date(date);
+            const diffMs = now - past;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+
+            if (diffSec < 60) return 'à l\'instant';
+            if (diffMin < 60) return `il y a ${diffMin} min${diffMin > 1 ? 's' : ''}`;
+            if (diffHour < 24) return `il y a ${diffHour} h${diffHour > 1 ? 's' : ''}`;
+            if (diffDay < 7) return `il y a ${diffDay} j${diffDay > 1 ? 's' : ''}`;
+            return past.toLocaleDateString('fr-FR');
+        }
+
+        function getTimeRemaining(lastLoginDate) {
+            if (!lastLoginDate) return null;
+            
+            const now = new Date();
+            const lastLogin = new Date(lastLoginDate);
+            if (isNaN(lastLogin.getTime())) return null;
+            
+            const nextAvailable = new Date(lastLogin.getTime() + 24 * 60 * 60 * 1000);
+            const diffMs = nextAvailable - now;
+            
+            if (diffMs <= 0) return null;
+            
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+            
+            return { hours, minutes, seconds, diffMs };
+        }
+
+        function startCountdown(lastLoginDate) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            const countdownDiv = document.getElementById('rewardCountdown');
+            const rewardBtn = document.getElementById('dailyRewardBtn');
+            const rewardStatus = document.getElementById('rewardStatus');
+            
+            function updateCountdown() {
+                const remaining = getTimeRemaining(lastLoginDate);
+                
+                if (!remaining) {
+                    countdownDiv.style.display = 'none';
+                    rewardBtn.classList.add('reward-ready');
+                    rewardBtn.classList.remove('reward-claimed');
+                    rewardStatus.textContent = 'Prête !';
+                    rewardStatus.style.color = '#fff';
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    return;
+                }
+                
+                countdownDiv.style.display = 'block';
+                countdownDiv.textContent = `Disponible dans ${remaining.hours}h ${remaining.minutes}m ${remaining.seconds}s`;
+                rewardBtn.classList.remove('reward-ready');
+                rewardBtn.classList.add('reward-claimed');
+                rewardStatus.textContent = 'Réclamée';
+                rewardStatus.style.color = 'var(--text-secondary)';
+            }
+            
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function updateRewardButton() {
+            if (userData && userData.last_daily_login) {
+                const remaining = getTimeRemaining(userData.last_daily_login);
+                const rewardBtn = document.getElementById('dailyRewardBtn');
+                const rewardStatus = document.getElementById('rewardStatus');
+                const countdownDiv = document.getElementById('rewardCountdown');
+                
+                if (remaining === null) {
+                    rewardBtn.classList.add('reward-ready');
+                    rewardBtn.classList.remove('reward-claimed');
+                    rewardStatus.textContent = 'Prête !';
+                    rewardStatus.style.color = '#fff';
+                    countdownDiv.style.display = 'none';
+                    if (countdownInterval) clearInterval(countdownInterval);
+                } else {
+                    countdownDiv.style.display = 'block';
+                    countdownDiv.textContent = `Disponible dans ${remaining.hours}h ${remaining.minutes}m ${remaining.seconds}s`;
+                    rewardBtn.classList.remove('reward-ready');
+                    rewardBtn.classList.add('reward-claimed');
+                    rewardStatus.textContent = 'Réclamée';
+                    rewardStatus.style.color = 'var(--text-secondary)';
+                    startCountdown(userData.last_daily_login);
+                }
+            } else {
+                const rewardBtn = document.getElementById('dailyRewardBtn');
+                const rewardStatus = document.getElementById('rewardStatus');
+                const countdownDiv = document.getElementById('rewardCountdown');
+                
+                rewardBtn.classList.add('reward-ready');
+                rewardBtn.classList.remove('reward-claimed');
+                rewardStatus.textContent = 'Prête !';
+                rewardStatus.style.color = '#fff';
+                countdownDiv.style.display = 'none';
+                if (countdownInterval) clearInterval(countdownInterval);
+            }
+        }
+
+        function showWhatsAppModal() {
+            if (!whatsappShownThisSession) {
+                const modal = document.getElementById('whatsappModal');
+                modal.classList.remove('hidden');
+                whatsappShownThisSession = true;
+                sessionStorage.setItem('whatsapp_shown', 'true');
+            }
+        }
+
+        function closeWhatsAppModal() {
+            const modal = document.getElementById('whatsappModal');
+            modal.classList.add('hidden');
+        }
+
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+
+        notificationBtn.addEventListener('click', () => {
+            notificationsPanel.classList.toggle('active');
+            if (userServers.length > 0) loadNotifications();
+        });
+
+        closeNotifications.addEventListener('click', () => {
+            notificationsPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
 
         function showToast(type, message) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
@@ -1852,96 +2370,6 @@
             showToast('success', 'Copié !');
         }
 
-        // ===== FONCTIONS RÉCOMPENSE QUOTIDIENNE CORRIGÉES =====
-        // Utilise last_daily_login (le champ de la base de données)
-        function canClaimReward(lastRewardDate) {
-            if (!lastRewardDate) return true;
-            
-            const last = new Date(lastRewardDate);
-            const now = new Date();
-            const diffMs = now.getTime() - last.getTime();
-            const diffHours = diffMs / (1000 * 60 * 60);
-            
-            return diffHours >= 24;
-        }
-
-        function getTimeRemaining(lastRewardDate) {
-            if (!lastRewardDate) return null;
-            
-            const last = new Date(lastRewardDate);
-            const now = new Date();
-            const nextAvailable = new Date(last.getTime() + 24 * 60 * 60 * 1000);
-            const diffMs = nextAvailable - now;
-            
-            if (diffMs <= 0) return null;
-            
-            const hours = Math.floor(diffMs / (1000 * 60 * 60));
-            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-            
-            return { hours, minutes, seconds, diffMs };
-        }
-
-        function startCountdown(lastRewardDate) {
-            if (countdownInterval) clearInterval(countdownInterval);
-            
-            const countdownDiv = document.getElementById('rewardCountdown');
-            const rewardBtn = document.getElementById('dailyRewardBtn');
-            const rewardStatus = document.getElementById('rewardStatus');
-            
-            function updateCountdown() {
-                const remaining = getTimeRemaining(lastRewardDate);
-                
-                if (!remaining) {
-                    countdownDiv.style.display = 'none';
-                    rewardBtn.classList.add('reward-ready');
-                    rewardBtn.classList.remove('reward-claimed');
-                    rewardStatus.textContent = 'Prête !';
-                    if (countdownInterval) clearInterval(countdownInterval);
-                    countdownInterval = null;
-                    return;
-                }
-                
-                countdownDiv.style.display = 'block';
-                countdownDiv.textContent = `Disponible dans ${remaining.hours}h ${remaining.minutes}m ${remaining.seconds}s`;
-                rewardBtn.classList.remove('reward-ready');
-                rewardBtn.classList.add('reward-claimed');
-                rewardStatus.textContent = 'Réclamée';
-            }
-            
-            updateCountdown();
-            countdownInterval = setInterval(updateCountdown, 1000);
-        }
-
-        function updateRewardButton() {
-            const rewardBtn = document.getElementById('dailyRewardBtn');
-            const rewardStatus = document.getElementById('rewardStatus');
-            const countdownDiv = document.getElementById('rewardCountdown');
-            
-            // Utiliser last_daily_login (le champ de la base de données)
-            if (userData && userData.last_daily_login) {
-                const canClaim = canClaimReward(userData.last_daily_login);
-                
-                if (canClaim) {
-                    rewardBtn.classList.add('reward-ready');
-                    rewardBtn.classList.remove('reward-claimed');
-                    rewardStatus.textContent = 'Prête !';
-                    countdownDiv.style.display = 'none';
-                    if (countdownInterval) {
-                        clearInterval(countdownInterval);
-                        countdownInterval = null;
-                    }
-                } else {
-                    startCountdown(userData.last_daily_login);
-                }
-            } else {
-                rewardBtn.classList.add('reward-ready');
-                rewardBtn.classList.remove('reward-claimed');
-                rewardStatus.textContent = 'Prête !';
-                countdownDiv.style.display = 'none';
-            }
-        }
-
         async function loadUserData() {
             try {
                 const res = await fetch('/api/user/me', {
@@ -1952,13 +2380,20 @@
                 if (data.success) {
                     userData = data.user;
                     userServers = data.servers || [];
+
                     updateUI();
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const createPlan = urlParams.get('create');
+                    
+                    if (createPlan === 'free') {
+                        prepareFreeServer();
+                    }
                     
                     const whatsappShown = sessionStorage.getItem('whatsapp_shown');
                     if (!whatsappShown) {
                         setTimeout(() => {
-                            document.getElementById('whatsappModal').classList.remove('hidden');
-                            sessionStorage.setItem('whatsapp_shown', 'true');
+                            showWhatsAppModal();
                         }, 100);
                     }
                 } else {
@@ -1966,6 +2401,7 @@
                     window.location.href = '/login';
                 }
             } catch (error) {
+                console.error('Erreur chargement:', error);
                 showToast('error', 'Erreur de chargement');
             }
         }
@@ -1974,64 +2410,158 @@
             if (!userData) return;
 
             document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
-            document.getElementById('sidebarUserEmail').textContent = userData.email || '';
+            document.getElementById('sidebarUserEmail').textContent = userData.email || 'email@example.com';
             document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
+            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username || 'User'}&background=7C3AED&color=fff&size=40`;
             document.getElementById('sidebarCoins').textContent = userData.coins || 0;
             document.getElementById('sidebarServers').textContent = userServers.length;
+
             document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
             document.getElementById('welcomeCoins').textContent = userData.coins || 0;
             document.getElementById('welcomeServers').textContent = userServers.length;
             document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
+
             document.getElementById('statCoins').textContent = userData.coins || 0;
             document.getElementById('statServers').textContent = userServers.length;
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
+
+            const expiringCount = userServers.filter(s => {
+                if (!s.expires_at) return false;
+                const daysLeft = calculateDaysLeft(s.expires_at);
+                return daysLeft > 0 && daysLeft <= 3;
+            }).length;
+            
+            document.getElementById('serversExpiring').textContent = expiringCount + ' bientôt expirés';
+            document.getElementById('notificationBadge').textContent = expiringCount;
 
             updateRewardButton();
             displayServers();
             loadActivities();
         }
 
+        function calculateDaysLeft(expiresAt) {
+            if (!expiresAt) return 0;
+            try {
+                const now = new Date();
+                const expiry = new Date(expiresAt);
+                if (isNaN(expiry.getTime())) return 0;
+                const diffTime = expiry - now;
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function formatTimeLeft(expiresAt) {
+            if (!expiresAt) return 'Inconnu';
+            try {
+                const now = new Date();
+                const expiry = new Date(expiresAt);
+                if (isNaN(expiry.getTime())) return 'Invalide';
+                const diffTime = expiry - now;
+                if (diffTime < 0) return 'Expiré';
+                const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                if (days > 0) return `${days}j ${hours}h`;
+                return `${hours}h`;
+            } catch (e) {
+                return 'Erreur';
+            }
+        }
+
         function displayServers() {
             const container = document.getElementById('serversContainer');
-            if (!userServers.length) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-server"></i><h3>Aucun serveur</h3><a href="/pricing" class="btn btn-primary">Créer un serveur</a></div>`;
+            if (!userServers || userServers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-server"></i>
+                        <h3>Aucun serveur</h3>
+                        <p>Vous n'avez pas encore créé de serveur.</p>
+                        <a href="/pricing" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Créer un serveur
+                        </a>
+                    </div>
+                `;
                 return;
             }
 
             let html = '<div class="servers-grid">';
             userServers.forEach(server => {
-                const daysLeft = Math.ceil((new Date(server.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
-                const plan = PLANS[server.server_type] || { name: 'Inconnu', memory: 0, disk: 0, cpu: 0 };
-                let statusText = server.status === 'active' ? 'En ligne' : server.status === 'stopped' ? 'Arrêté' : 'Suspendu';
-                let statusClass = server.status === 'active' ? 'status-running' : server.status === 'stopped' ? 'status-stopped' : 'status-suspended';
-                let cardClass = daysLeft <= 3 && daysLeft > 0 ? 'expiring' : daysLeft < 0 ? 'expired' : '';
+                const daysLeft = calculateDaysLeft(server.expires_at);
+                const timeLeft = formatTimeLeft(server.expires_at);
+                let statusText = '';
+                let cardClass = '';
+                let isSuspended = false;
+                let isExpired = daysLeft < 0;
+                
+                switch(server.status) {
+                    case 'suspended':
+                        statusText = 'Suspendu';
+                        cardClass = 'suspended';
+                        isSuspended = true;
+                        break;
+                    case 'stopped':
+                        statusText = 'Arrêté';
+                        break;
+                    case 'active':
+                        if (isExpired) {
+                            statusText = 'Expiré';
+                            cardClass = 'expired';
+                        } else {
+                            statusText = 'En ligne';
+                        }
+                        break;
+                    default:
+                        statusText = 'Inconnu';
+                }
+
+                if (daysLeft <= 3 && daysLeft > 0 && server.status === 'active' && !isExpired) {
+                    cardClass = 'expiring';
+                }
+
+                const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu', memory: 0, disk: 0, cpu: 0 };
 
                 html += `
-                    <div class="server-card ${cardClass}">
+                    <div class="server-card ${cardClass}" id="server-${server.id}">
                         <div class="server-header">
-                            <div class="server-name"><i class="fas fa-cloud"></i> ${server.server_name}</div>
-                            <div class="server-status"><span class="status-dot ${statusClass}"></span> ${statusText}</div>
+                            <div class="server-name">
+                                <i class="fas fa-cloud"></i>
+                                ${server.server_name || 'Sans nom'}
+                            </div>
+                            <div class="server-status">
+                                <span class="status-dot ${server.status === 'active' && !isExpired ? 'status-running' : server.status === 'suspended' ? 'status-suspended' : 'status-stopped'}"></span>
+                                <span>${statusText}</span>
+                            </div>
                         </div>
                         <div class="server-body">
                             <div class="server-info">
-                                <div class="server-info-item"><i class="fas fa-microchip"></i> ${plan.memory} MB</div>
-                                <div class="server-info-item"><i class="fas fa-hdd"></i> ${plan.disk / 1024} GB</div>
-                                <div class="server-info-item"><i class="fas fa-tag"></i> ${plan.name}</div>
+                                <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
+                                <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk / 1024} GB</span></div>
+                                <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
+                                <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
                             </div>
-                            <div class="server-info-item"><i class="fas fa-calendar-alt"></i> Exp: ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</div>
+                            <div class="server-info-item"><i class="fas fa-calendar-alt"></i><span>Exp: ${server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'N/A'} (${timeLeft})</span></div>
                         </div>
                         <div class="server-footer">
-                            <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : daysLeft < 0 ? 'danger' : ''}">
-                                <i class="fas fa-clock"></i> ${daysLeft > 0 ? daysLeft + 'j' : daysLeft === 0 ? 'Aujourd\'hui' : 'Expiré'}
+                            <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}">
+                                <i class="fas fa-clock"></i> ${isExpired ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}
                             </div>
                             <div class="server-actions">
                                 <button class="server-action-btn" onclick="showServerDetails('${server.id}')"><i class="fas fa-info-circle"></i></button>
                                 <button class="server-action-btn" onclick="toggleConsole('${server.id}')"><i class="fas fa-terminal"></i></button>
+                                ${!isSuspended && !isExpired ? `
+                                    <button class="server-action-btn" onclick="powerAction('${server.id}', 'restart')"><i class="fas fa-sync-alt"></i></button>
+                                    <button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')">
+                                        <i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i>
+                                    </button>
+                                ` : `<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>`}
                             </div>
                         </div>
                         <div class="server-console" id="console-${server.id}" style="display: none;">
                             <div class="console-line">> Console du serveur ${server.server_name}</div>
+                            <div class="console-line">> Connecté le ${new Date().toLocaleString()}</div>
                         </div>
                     </div>
                 `;
@@ -2040,21 +2570,20 @@
             container.innerHTML = html;
         }
 
-        function toggleConsole(serverId) {
-            const el = document.getElementById(`console-${serverId}`);
-            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-        }
-
         async function showServerDetails(serverId) {
             const server = userServers.find(s => s.id === serverId);
             if (!server) return;
             currentServer = server;
+            const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu' };
+            const daysLeft = calculateDaysLeft(server.expires_at);
+            let statusDisplay = server.status === 'suspended' ? 'Suspendu' : server.status === 'stopped' ? 'Arrêté' : daysLeft < 0 ? 'Expiré' : 'Actif';
             
-            document.getElementById('detailsServerName').textContent = server.server_name;
-            document.getElementById('detailsPlan').textContent = PLANS[server.server_type]?.name || 'Inconnu';
-            document.getElementById('detailsStatus').textContent = server.status === 'active' ? 'Actif' : server.status === 'stopped' ? 'Arrêté' : 'Suspendu';
-            document.getElementById('detailsExpiry').textContent = new Date(server.expires_at).toLocaleDateString('fr-FR');
-            
+            document.getElementById('detailsServerName').textContent = server.server_name || 'Sans nom';
+            document.getElementById('detailsPlan').textContent = plan.name;
+            document.getElementById('detailsStatus').textContent = statusDisplay;
+            document.getElementById('detailsExpiry').textContent = server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'Non définie';
+            document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
+
             try {
                 const res = await fetch(`/api/servers/${serverId}/credentials`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -2063,51 +2592,91 @@
                 if (data.success) {
                     const creds = data.credentials;
                     document.getElementById('detailsCredentials').innerHTML = `
-                        <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${creds.username}</span><button class="copy-btn" onclick="copyToClipboard('${creds.username}')"><i class="fas fa-copy"></i></button></div>
-                        <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${creds.password}</span><button class="copy-btn" onclick="copyToClipboard('${creds.password}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${creds.username || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.username || ''}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${creds.password || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.password || ''}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i>Panel</span><span class="credential-value">${creds.panel_url || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.panel_url || ''}')"><i class="fas fa-copy"></i></button></div>
                     `;
+                } else {
+                    document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--text-secondary);">Identifiants non disponibles</p>';
                 }
             } catch (error) {
-                document.getElementById('detailsCredentials').innerHTML = '<p>Identifiants non disponibles</p>';
+                document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--warning);">Erreur de chargement</p>';
             }
-            
+
+            await loadAutoRenewStatus(server.id);
+            const renewBtn = document.getElementById('renewBtn');
+            if (server.status === 'suspended' || daysLeft < 0) {
+                renewBtn.textContent = 'Réactiver';
+                renewBtn.className = 'btn btn-warning';
+            } else {
+                renewBtn.textContent = 'Renouveler';
+                renewBtn.className = 'btn btn-success';
+            }
             openModal('serverDetailsModal');
+        }
+
+        async function loadAutoRenewStatus(serverId) {
+            try {
+                const res = await fetch(`/api/servers/${serverId}/auto-renew`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('autoRenewToggle').checked = data.auto_renew || false;
+                }
+            } catch (error) {
+                console.error('Erreur auto-renew:', error);
+            }
         }
 
         async function toggleAutoRenew() {
             if (!currentServer) return;
             const toggle = document.getElementById('autoRenewToggle');
+            const enabled = toggle.checked;
             toggle.disabled = true;
             try {
-                await fetch(`/api/servers/${currentServer.id}/auto-renew`, {
+                const res = await fetch(`/api/servers/${currentServer.id}/auto-renew`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ enabled: toggle.checked })
+                    body: JSON.stringify({ enabled: enabled })
                 });
-                showToast('success', `Auto-renouvellement ${toggle.checked ? 'activé' : 'désactivé'}`);
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`);
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                    toggle.checked = !enabled;
+                }
             } catch (error) {
-                toggle.checked = !toggle.checked;
-                showToast('error', 'Erreur');
+                showToast('error', 'Erreur réseau');
+                toggle.checked = !enabled;
             } finally {
                 toggle.disabled = false;
             }
         }
 
         function renewServer() {
-            const plan = PLANS[currentServer.server_type];
-            document.getElementById('renewServerName').textContent = currentServer.server_name;
+            closeModal('serverDetailsModal');
+            const plan = PLANS[currentServer.server_type] || { name: 'Inconnu', price: 0, coins: 0 };
+            document.getElementById('renewServerName').textContent = currentServer.server_name || 'Sans nom';
             document.getElementById('renewPlan').textContent = plan.name;
-            document.getElementById('renewCoins').textContent = plan.coins + ' coins';
+            document.getElementById('renewPrice').textContent = (plan.price || 0) + ' FCFA';
+            document.getElementById('renewCoins').textContent = (plan.coins || 0) + ' coins';
             document.getElementById('renewBalance').textContent = (userData?.coins || 0) + ' coins';
             openModal('renewModal');
         }
 
         async function confirmRenew() {
-            const plan = PLANS[currentServer.server_type];
-            if ((userData?.coins || 0) < plan.coins) {
+            if (!currentServer) return;
+            const plan = PLANS[currentServer.server_type] || { coins: 0 };
+            if ((userData?.coins || 0) < (plan.coins || 0)) {
                 showToast('error', 'Coins insuffisants');
+                closeModal('renewModal');
                 return;
             }
+            const renewBtn = document.getElementById('renewConfirmBtn');
+            renewBtn.disabled = true;
+            renewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
             try {
                 const res = await fetch(`/api/servers/${currentServer.id}/renew`, {
                     method: 'POST',
@@ -2124,24 +2693,63 @@
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
+            } finally {
+                renewBtn.disabled = false;
+                renewBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler';
             }
         }
 
-        // ===== ÉVÉNEMENT RÉCOMPENSE CORRIGÉ =====
-        // Vérifie les 24h avant d'envoyer la requête
+        function powerAction(serverId, action) {
+            const server = userServers.find(s => s.id === serverId);
+            if (server && server.status === 'suspended') {
+                showToast('error', 'Serveur suspendu, action impossible');
+                return;
+            }
+            currentServerId = serverId;
+            currentAction = action;
+            const actionTitles = { 'start': 'Démarrer', 'stop': 'Arrêter', 'restart': 'Redémarrer' };
+            document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action';
+            document.getElementById('actionMessage').textContent = `Confirmer ${(actionTitles[action] || 'action').toLowerCase()} le serveur ?`;
+            openModal('actionModal');
+        }
+
+        async function confirmAction() {
+            if (!currentServerId || !currentAction) return;
+            closeModal('actionModal');
+            showToast('info', 'En cours...');
+            try {
+                const res = await fetch(`/api/servers/${currentServerId}/power`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: currentAction })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Action effectuée');
+                    setTimeout(() => loadUserData(), 2000);
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+            currentServerId = null;
+            currentAction = null;
+        }
+
+        function toggleConsole(serverId) {
+            const console = document.getElementById(`console-${serverId}`);
+            if (console) console.style.display = console.style.display === 'none' ? 'block' : 'none';
+        }
+
         document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             
-            // Vérifier si la récompense peut être réclamée (24h écoulées)
+            // Vérifier si la récompense est disponible
             if (userData && userData.last_daily_login) {
-                const canClaim = canClaimReward(userData.last_daily_login);
-                if (!canClaim) {
-                    const remaining = getTimeRemaining(userData.last_daily_login);
-                    if (remaining) {
-                        showToast('warning', `Récompense dans ${remaining.hours}h ${remaining.minutes}m`);
-                    } else {
-                        showToast('warning', 'Déjà réclamée aujourd\'hui');
-                    }
+                const remaining = getTimeRemaining(userData.last_daily_login);
+                if (remaining !== null) {
+                    showToast('warning', `Récompense disponible dans ${remaining.hours}h ${remaining.minutes}m`);
                     return;
                 }
             }
@@ -2152,37 +2760,87 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-                
                 if (data.success) {
-                    showToast('success', `+${data.coins} coins ! Série: ${data.streak} jours`);
+                    showToast('success', `+${data.coins} coins (série ${data.streak})`);
                     loadUserData();
                 } else {
-                    showToast('error', data.error || 'Impossible de réclamer');
+                    showToast('error', data.error || 'Erreur');
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
             }
         });
 
+        async function loadNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            const expiringServers = userServers.filter(s => {
+                if (!s.expires_at) return false;
+                const daysLeft = calculateDaysLeft(s.expires_at);
+                return daysLeft > 0 && daysLeft <= 3;
+            });
+            let html = '';
+            if (expiringServers.length > 0) {
+                html += `<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${expiringServers.length} serveur(s) expirent bientôt</div><div class="notification-time">Maintenant</div></div></div>`;
+            }
+            html += `<div class="notification-item"><div class="notification-icon"><i class="fas fa-bell"></i></div><div class="notification-content"><div class="notification-title">Bienvenue</div><div class="notification-message">N'oubliez pas la récompense quotidienne</div><div class="notification-time">Il y a 2h</div></div></div>`;
+            notificationsList.innerHTML = html;
+        }
+
         async function loadActivities() {
             const container = document.getElementById('activityContainer');
+            container.innerHTML = `<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement des activités...</p></div>`;
             try {
                 const res = await fetch('/api/user/activities', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-                if (!data.activities?.length) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-history"></i><p>Aucune activité</p></div>`;
+                if (!data.success || !data.activities || data.activities.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>`;
                     return;
                 }
                 let html = '';
-                data.activities.forEach(a => {
-                    html += `<div class="activity-item"><div class="activity-icon"><i class="fas fa-gift"></i></div><div class="activity-content"><div class="activity-title">${a.description}</div><div class="activity-time">${new Date(a.created_at).toLocaleString()}</div></div></div>`;
+                data.activities.forEach(activity => {
+                    let icon = 'fa-history';
+                    if (activity.activity_type) {
+                        if (activity.activity_type.includes('creation')) icon = 'fa-plus-circle';
+                        else if (activity.activity_type.includes('start')) icon = 'fa-play';
+                        else if (activity.activity_type.includes('stop')) icon = 'fa-stop';
+                        else if (activity.activity_type.includes('daily')) icon = 'fa-calendar-check';
+                        else if (activity.activity_type.includes('coins')) icon = 'fa-coins';
+                    }
+                    
+                    const timeAgo = formatTimeAgo(activity.created_at);
+                    
+                    html += `<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${activity.description || 'Action'}</div><div class="activity-time">${timeAgo}</div></div>${activity.coins_earned !== 0 ? `<div class="activity-coins ${activity.coins_earned > 0 ? 'positive' : 'negative'}">${activity.coins_earned > 0 ? '+' : ''}${activity.coins_earned}</div>` : ''}</div>`;
                 });
                 container.innerHTML = html;
             } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur</p></div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
             }
+        }
+
+        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => {
+            if (!confirm('Supprimer tout l\'historique ?')) return;
+            try {
+                await fetch('/api/user/activities', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                showToast('success', 'Historique effacé');
+                loadActivities();
+            } catch (error) {
+                showToast('error', 'Erreur');
+            }
+        });
+
+        document.getElementById('refreshActivitiesBtn').addEventListener('click', () => loadActivities());
+
+        function prepareFreeServer() {
+            if (userData?.free_panel_created) {
+                showToast('error', 'Serveur gratuit déjà utilisé');
+                return;
+            }
+            document.getElementById('planSelect').innerHTML = `<option value="free">Free - Gratuit (256 MB RAM, 24h)</option>`;
+            document.getElementById('serverName').value = '';
+            document.getElementById('serverUsername').value = '';
+            openModal('serverModal');
         }
 
         async function createServer() {
@@ -2191,26 +2849,24 @@
             const username = document.getElementById('serverUsername').value?.trim();
             if (!plan || !name || !username) { showToast('error', 'Tous les champs requis'); return; }
             closeModal('serverModal');
+            showToast('info', 'Création...');
             try {
                 const res = await fetch('/api/create-server', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ plan_id: plan, server_name: name, server_username: username })
+                    body: JSON.stringify({ plan_id: plan, server_name: name, server_username: username, payment_method: plan === 'free' ? 'free' : 'coins' })
                 });
                 const data = await res.json();
                 if (data.success) {
                     showToast('success', 'Serveur créé !');
                     loadUserData();
                 } else {
-                    showToast('error', data.error);
+                    showToast('error', data.error || 'Erreur');
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
             }
         }
-
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
@@ -2219,27 +2875,15 @@
             window.location.href = '/';
         });
 
-        document.getElementById('whatsappJoinBtn').addEventListener('click', () => {
+        document.getElementById('whatsappJoinBtn').addEventListener('click', (e) => {
+            e.preventDefault();
             window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09', '_blank');
-            document.getElementById('whatsappModal').classList.add('hidden');
-        });
-        document.getElementById('whatsappLaterBtn').addEventListener('click', () => {
-            document.getElementById('whatsappModal').classList.add('hidden');
-        });
-        document.getElementById('refreshActivitiesBtn').addEventListener('click', () => loadActivities());
-        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => {
-            if (confirm('Supprimer tout l\'historique ?')) {
-                await fetch('/api/user/activities', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-                loadActivities();
-                showToast('success', 'Historique effacé');
-            }
+            closeWhatsAppModal();
         });
 
-        const sidebar = document.getElementById('sidebar');
-        const overlay2 = document.getElementById('sidebarOverlay');
-        document.getElementById('menuToggle').onclick = () => { sidebar.classList.add('active'); overlay2.classList.add('active'); };
-        document.getElementById('closeSidebar').onclick = () => { sidebar.classList.remove('active'); overlay2.classList.remove('active'); };
-        overlay2.onclick = () => { sidebar.classList.remove('active'); overlay2.classList.remove('active'); };
+        document.getElementById('whatsappLaterBtn').addEventListener('click', () => closeWhatsAppModal());
+
+        loadUserData();
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) {
@@ -2256,16 +2900,18 @@
 
         window.closeModal = closeModal;
         window.showServerDetails = showServerDetails;
+        window.powerAction = powerAction;
+        window.confirmAction = confirmAction;
         window.toggleConsole = toggleConsole;
         window.renewServer = renewServer;
         window.confirmRenew = confirmRenew;
         window.copyToClipboard = copyToClipboard;
         window.createServer = createServer;
         window.toggleAutoRenew = toggleAutoRenew;
-        window.powerAction = (id, action) => { showToast('info', `Action ${action} en cours...`); };
-        window.confirmAction = () => {};
 
-        loadUserData();
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) closeSidebarFunc();
+        });
     </script>
 </body>
 </html>
