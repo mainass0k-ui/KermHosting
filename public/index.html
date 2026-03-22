@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="KermHosting - Hébergement de serveurs Node.js haute performance au Cameroun et en Afrique. Paiement en FCFA.">
-    <meta name="keywords" content="hébergement, serveur, nodejs, pterodactyl, hosting, cameroun, afrique, fcfa">
+    <meta name="description" content="KermHosting - Hébergement de serveurs Node.js haute performance au Cameroun et en Afrique. Paiement en FCFA et PayPal.">
+    <meta name="keywords" content="hébergement, serveur, nodejs, pterodactyl, hosting, cameroun, afrique, fcfa, paypal">
     <meta name="author" content="KermHosting">
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kermhosting.site">
-    <meta property="og:title" content="KermHosting - Hébergement Node.js en FCFA">
-    <meta property="og:description" content="Créez votre serveur Node.js en 1 minute. Paiement en FCFA. Interface mobile intuitive.">
+    <meta property="og:title" content="KermHosting - Hébergement Node.js en FCFA et PayPal">
+    <meta property="og:description" content="Créez votre serveur Node.js en 1 minute. Paiement en FCFA ou PayPal. Interface mobile intuitive.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -24,13 +24,13 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
    
-    <!-- Fonts - À PLACE ICI, AVANT LE CSS -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <title>KermHosting - Hébergement Node.js en FCFA</title>
+    <title>KermHosting - Hébergement Node.js en FCFA & PayPal</title>
     
     <style>
         /* ===== VARIABLES ===== */
@@ -45,6 +45,7 @@
             --danger: #EF4444;
             --warning: #F59E0B;
             --success: #10B981;
+            --paypal: #0070BA;
             
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
@@ -106,7 +107,7 @@
             background: 
                 radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 30%),
                 radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 30%),
-                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 30%);
+                radial-gradient(circle at 40% 80%, rgba(0, 112, 186, 0.1) 0%, transparent 30%);
             pointer-events: none;
             z-index: -1;
         }
@@ -1296,11 +1297,19 @@
                 </div>
                 <div class="notifications-list">
                     <div class="notification-item unread">
+                        <i class="fab fa-paypal notification-icon" style="color: #0070BA;"></i>
+                        <div class="notification-content">
+                            <div class="notification-title">Nouveau ! Paiement PayPal</div>
+                            <div class="notification-message">Payez désormais en Euro, Dollar, Livre ou FCFA via PayPal</div>
+                            <div class="notification-time">À l'instant</div>
+                        </div>
+                    </div>
+                    <div class="notification-item unread">
                         <i class="fas fa-gift notification-icon"></i>
                         <div class="notification-content">
                             <div class="notification-title">Bienvenue sur KermHosting !</div>
                             <div class="notification-message">Créez votre premier serveur et obtenez 10 coins gratuits</div>
-                            <div class="notification-time">À l'instant</div>
+                            <div class="notification-time">Il y a 5 minutes</div>
                         </div>
                     </div>
                     <div class="notification-item">
@@ -1314,8 +1323,8 @@
                     <div class="notification-item">
                         <i class="fas fa-shield-alt notification-icon"></i>
                         <div class="notification-content">
-                            <div class="notification-title">Paiement FCFA</div>
-                            <div class="notification-message">Paiement en Franc CFA maintenant disponible !</div>
+                            <div class="notification-title">Paiement FCFA & PayPal</div>
+                            <div class="notification-message">Paiement en Franc CFA ou en devises internationales via PayPal !</div>
                             <div class="notification-time">Hier</div>
                         </div>
                     </div>
@@ -1328,13 +1337,13 @@
                 <section class="hero-section">
                     <div class="hero-badge">
                         <span class="badge-pulse"></span>
-                        🇨🇲 Paiement en FCFA
+                        🇨🇲 Paiement FCFA & 🌍 PayPal
                     </div>
                     <h1 class="hero-title">
-                        Hébergement <span class="gradient-text">Node.js</span> en Franc CFA
+                        Hébergement <span class="gradient-text">Node.js</span> en FCFA & PayPal
                     </h1>
                     <p class="hero-subtitle">
-                        Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money ou Orange Money.
+                        Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money ou en devises internationales via PayPal.
                         Interface mobile intuitive, gestion complète.
                     </p>
                     <div class="hero-actions">
@@ -1365,7 +1374,7 @@
                 <!-- Features Section -->
                 <section class="features-section">
                     <h2 class="section-title">Pourquoi choisir <span class="gradient-text">KermHosting</span> ?</h2>
-                    <p class="section-subtitle">L'hébergement adapté aux besoins africains</p>
+                    <p class="section-subtitle">L'hébergement adapté aux besoins africains et internationaux</p>
                     
                     <div class="features-grid">
                         <div class="feature-card">
@@ -1374,7 +1383,17 @@
                             </div>
                             <h3 class="feature-title">Paiement en FCFA</h3>
                             <p class="feature-description">
-                                Payez en Franc CFA par Orange Money, MTN Mobile Money, ou carte bancaire. Pas de frais cachés.
+                                Payez en Franc CFA par Orange Money, MTN Mobile Money. Pas de frais cachés.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #0070BA20, #3B9CFF20)">
+                                <i class="fab fa-paypal" style="color: #0070BA"></i>
+                            </div>
+                            <h3 class="feature-title">Paiement PayPal</h3>
+                            <p class="feature-description">
+                                Payez en Euro, Dollar US, Livre Sterling ou Dollar Canadien via PayPal. Transactions sécurisées.
                             </p>
                         </div>
                         
@@ -1432,7 +1451,7 @@
 
                 <!-- Pricing Preview -->
                 <section class="pricing-preview">
-                    <h2 class="section-title">Des plans à partir de <span class="gradient-text">500 FCFA</span></h2>
+                    <h2 class="section-title">Des plans à partir de <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;">ou via PayPal</span></h2>
                     <p class="section-subtitle">Du simple bot Discord à l'application d'entreprise</p>
                     
                     <div class="pricing-cards">
@@ -1458,7 +1477,7 @@
                             <h3 class="pricing-name">Starter</h3>
                             <div class="pricing-price">
                                 <span class="price">500</span>
-                                <span class="currency">FCFA/mois</span>
+                                <span class="currency">FCFA / 0.76€</span>
                             </div>
                             <ul class="pricing-features">
                                 <li><i class="fas fa-check"></i> 1 GB RAM</li>
@@ -1475,7 +1494,7 @@
                             <h3 class="pricing-name">Pro</h3>
                             <div class="pricing-price">
                                 <span class="price">1 300</span>
-                                <span class="currency">FCFA/mois</span>
+                                <span class="currency">FCFA / 1.98€</span>
                             </div>
                             <ul class="pricing-features">
                                 <li><i class="fas fa-check"></i> 4 GB RAM</li>
@@ -1489,8 +1508,8 @@
                     </div>
                     
                     <div class="pricing-note">
-                        <i class="fas fa-info-circle"></i>
-                        <span>💰 Économisez jusqu'à 20% en achetant des packs de coins !</span>
+                        <i class="fab fa-paypal"></i>
+                        <span>💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD)</span>
                     </div>
                     
                     <div class="pricing-cta">
@@ -1515,7 +1534,7 @@
                             <div class="step-number">2</div>
                             <div class="step-content">
                                 <h3>Achetez des coins ou payez directement</h3>
-                                <p>Payez en FCFA par Mobile Money (Orange, MTN) ou carte bancaire.</p>
+                                <p>Payez en FCFA par Mobile Money (Orange, MTN) ou par PayPal en devises internationales.</p>
                             </div>
                         </div>
                         
@@ -1551,12 +1570,12 @@
                                 <i class="fas fa-star"></i>
                             </div>
                             <p class="testimonial-text">
-                                "Enfin un hébergeur qui accepte le FCFA ! Je paye avec Orange Money, c'est super pratique."
+                                "Enfin un hébergeur qui accepte le FCFA ! Je paye avec Orange Money, c'est super pratique. Et le support est génial !"
                             </p>
                             <div class="testimonial-author">
                                 <img src="https://ui-avatars.com/api/?name=Jean+P&background=7C3AED&color=fff&size=40" alt="Author">
                                 <div>
-                                    <strong>Sebastien.</strong>
+                                    <strong>Jean P.</strong>
                                     <span>Client à Yaoundé</span>
                                 </div>
                             </div>
@@ -1571,13 +1590,13 @@
                                 <i class="fas fa-star"></i>
                             </div>
                             <p class="testimonial-text">
-                                "Interface super intuitive sur mobile. Je gère mes bots Discord depuis mon téléphone sans aucun problème !"
+                                "Je vis en Europe et pouvoir payer mes serveurs en Euro via PayPal c'est top ! Interface super intuitive."
                             </p>
                             <div class="testimonial-author">
                                 <img src="https://ui-avatars.com/api/?name=Sarah+K&background=10B981&color=fff&size=40" alt="Author">
                                 <div>
-                                    <strong>Kerm.</strong>
-                                    <span>Développeur à Douala</span>
+                                    <strong>Sarah K.</strong>
+                                    <span>Développeuse à Paris</span>
                                 </div>
                             </div>
                         </div>
@@ -1615,7 +1634,17 @@
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="faq-answer">
-                                Nous acceptons Orange Money, MTN Mobile Money, et les cartes bancaires (Visa/Mastercard). Le paiement est instantané et sécurisé.
+                                Nous acceptons Orange Money, MTN Mobile Money. Le paiement est instantané et sécurisé via Fapshi.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Comment payer avec PayPal ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                Nous acceptons PayPal en Euro (€), Dollar US ($), Livre Sterling (£) et Dollar Canadien (CA$). Le paiement est sécurisé et les devises sont automatiquement converties. La transaction est validée manuellement par notre équipe après réception du virement.
                             </div>
                         </div>
                         
@@ -1625,7 +1654,7 @@
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="faq-answer">
-                                Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.
+                                Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA ou via PayPal et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.
                             </div>
                         </div>
                         
@@ -1659,7 +1688,7 @@
                 <section class="cta-section">
                     <div class="cta-content">
                         <h2>Prêt à lancer <span class="gradient-text">votre projet</span> ?</h2>
-                        <p>Rejoignez des centaines de développeurs africains qui nous font confiance</p>
+                        <p>Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance</p>
                         <div class="cta-actions">
                             <button class="btn btn-primary btn-large" id="finalCtaBtn">
                                 Créer mon compte gratuit
@@ -1678,7 +1707,7 @@
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>KermHosting</span>
                         </div>
-                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA.</p>
+                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA et PayPal.</p>
                     </div>
                     
                     <div class="footer-links">
