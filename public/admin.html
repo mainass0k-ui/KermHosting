@@ -3128,7 +3128,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '运转<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td> </tr>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3203,7 +3203,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '运转<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td> </tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3596,7 +3596,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '运转<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td> </tr>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td> </tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3666,7 +3666,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '运转<td colspan="6" style="text-align: center;">Aucun log trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td> </tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
