@@ -1,5 +1,5 @@
 -- =============================================
--- SCHÉMA COMPLET KERMHOSTING (CORRIGÉ)
+-- SCHÉMA COMPLET KERMHOSTING
 -- Version: 1.0.1
 -- Date: 2026
 -- =============================================
@@ -346,7 +346,7 @@ CREATE INDEX IF NOT EXISTS idx_system_logs_created_at ON system_logs(created_at)
 
 -- 1. Insérer les plans par défaut
 INSERT INTO plans (plan_key, name, memory, disk, cpu, price_fcfa, coins_needed, duration_days, features, sort_order) VALUES
-('free', 'Free', 256, 5120, 50, 0, 0, 1, '["256 MB RAM", "5 GB SSD", "50% CPU", "1 DB", "1 backup"]', 1),
+('free', 'Free', 2048, 4096, 300, 0, 0, 1, '["2 GB RAM", "4 GB SSD", "300% CPU", "1 DB", "1 backup"]', 1),
 ('1gb', 'Starter', 1024, 10240, 100, 500, 100, 30, '["1 GB RAM", "10 GB SSD", "100% CPU", "3 DB", "3 backups", "Support standard"]', 2),
 ('2gb', 'Basic', 2048, 20480, 200, 800, 160, 30, '["2 GB RAM", "20 GB SSD", "200% CPU", "5 DB", "5 backups", "Support prioritaire"]', 3),
 ('4gb', 'Pro', 4096, 40960, 400, 1300, 260, 30, '["4 GB RAM", "40 GB SSD", "400% CPU", "10 DB", "10 backups", "Support VIP"]', 4),
