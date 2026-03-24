@@ -134,9 +134,9 @@ const PLANS = {
     'free': {
         id: 'free',
         name: 'Free',
-        memory: 256,
-        disk: 1024,
-        cpu: 50,
+        memory: 2048,
+        disk: 4096,
+        cpu: 300,
         swap: 0,
         io: 500,
         price_fcfa: 0,
@@ -145,9 +145,9 @@ const PLANS = {
         egg_id: 15,
         docker_image: 'ghcr.io/parkervcp/yolks:nodejs_24',
         features: [
-            '256 MB RAM',
-            '1 GB Stockage SSD',
-            '50% CPU',
+            '2 GB DDR4',
+            '4 GB Stockage NVMe',
+            '300% CPU',
             '24h d\'essai',
             '1 base de données',
             '1 backup'
