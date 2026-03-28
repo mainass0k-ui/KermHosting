@@ -1092,12 +1092,12 @@ async function createPterodactylServer(serverData) {
             locationId = 1
         } = serverData;
 
-        const MAIN_FILE = "index.js";
+        // 🔧 COMMANDE DE DÉMARRAGE DYNAMIQUE AVEC {{MAIN_FILE}}
         const startupCommand =
             'if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == "1" ]]; then git pull; fi; ' +
             'if [[ ! -z ${NODE_PACKAGES} ]]; then npm install ${NODE_PACKAGES}; fi; ' +
             'if [ -f /home/container/package.json ]; then npm install; fi; ' +
-            '/usr/local/bin/node /home/container/' + MAIN_FILE;
+            '/usr/local/bin/node /home/container/{{MAIN_FILE}}';
 
         const payload = {
             name: name,
@@ -1110,8 +1110,8 @@ async function createPterodactylServer(serverData) {
                 INST: "KERMHOSTING",
                 USER_UPLOAD: "0",
                 AUTO_UPDATE: "0",
-                CMD_RUN: `node ${MAIN_FILE}`,
-                MAIN_FILE: MAIN_FILE,
+                CMD_RUN: "node {{MAIN_FILE}}",
+                MAIN_FILE: "index.js",           // ← FICHIER PAR DÉFAUT
                 NODE_PACKAGES: "",
                 STARTUP: startupCommand
             },
