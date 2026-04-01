@@ -1204,16 +1204,30 @@
             word-break: break-all;
         }
 
-        .modal-screenshot {
-            text-align: center;
-            margin: 16px 0;
+        .modal-form-group {
+            margin-bottom: 16px;
         }
 
-        .modal-screenshot img {
-            max-width: 100%;
-            max-height: 300px;
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .modal-input, .modal-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
-            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .modal-input:focus, .modal-select:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .modal-actions {
@@ -1888,9 +1902,9 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des utilisateurs...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1944,9 +1958,9 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des serveurs...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1998,9 +2012,9 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2095,9 +2109,9 @@
                                 <td colspan="6" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des logs...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2155,9 +2169,9 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions PayPal...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
                 </div>
 
@@ -2204,9 +2218,9 @@
                                 <td colspan="10" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions Minipay...</p>
-                                  </tr>
+                                   </td>
                             </tbody>
-                          </table>
+                           </table>
                     </div>
                 </div>
 
@@ -2435,7 +2449,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button>
-                <button class="btn btn-danger" onclick="deleteServer()">Supprimer</button>
+                <button class="btn btn-danger" onclick="deleteServer(currentServerId)">Supprimer</button>
                 <button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button>
             </div>
         </div>
@@ -3107,7 +3121,7 @@
             const tbody = document.getElementById('paypalTableBody');
             
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td>';
                 return;
             }
 
@@ -3586,7 +3600,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3661,7 +3675,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3764,7 +3778,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3834,7 +3848,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td>';
+                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé<\/td>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
