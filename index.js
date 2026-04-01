@@ -1,6 +1,6 @@
 // =============================================
 // index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS OPTIMISÉS
-// AVEC PAYPAL (CORRIGÉ)
+// AVEC PAYPAL ET MINIPAY
 // =============================================
 
 import express from 'express';
@@ -94,13 +94,111 @@ const PAYPAL_CONFIG = {
     supportCurrencies: ['EUR', 'USD', 'GBP', 'CAD', 'XAF']
 };
 
-// Taux de conversion (FCFA vers autres devises)
+// =============================================
+// CONFIGURATION MINIPAY (PAIEMENT MANUEL)
+// =============================================
+const MINIPAY_CONFIG = {
+    phone_number: '659535227',
+    instructions: 'Envoyez le montant exact via Minipay à ce numéro, puis téléchargez la capture d\'écran de la transaction',
+    appStoreUrl: 'https://apps.apple.com/app/id6504087257',
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.opera.minipay&pcampaignid=web_share',
+    logo: 'https://files.catbox.moe/u2zr7i.jpg'
+};
+
+// =============================================
+// CONFIGURATION DES PAYS AFRICAINS AVEC DEVISES
+// =============================================
+const AFRICAN_COUNTRIES = [
+    { code: 'CM', name: 'Cameroun', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'CI', name: "Côte d'Ivoire", currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'SN', name: 'Sénégal', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'ML', name: 'Mali', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'BF', name: 'Burkina Faso', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'BJ', name: 'Bénin', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'NE', name: 'Niger', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'TG', name: 'Togo', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'GA', name: 'Gabon', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'CG', name: 'Congo', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'CF', name: 'RCA', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'TD', name: 'Tchad', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'GQ', name: 'Guinée Équatoriale', currency: 'XAF', rate_to_fcfa: 1, symbol: 'FCFA' },
+    { code: 'NG', name: 'Nigeria', currency: 'NGN', rate_to_fcfa: 0.004, symbol: '₦' },
+    { code: 'GH', name: 'Ghana', currency: 'GHS', rate_to_fcfa: 0.11, symbol: '₵' },
+    { code: 'KE', name: 'Kenya', currency: 'KES', rate_to_fcfa: 0.012, symbol: 'KSh' },
+    { code: 'TZ', name: 'Tanzanie', currency: 'TZS', rate_to_fcfa: 0.00064, symbol: 'TSh' },
+    { code: 'UG', name: 'Ouganda', currency: 'UGX', rate_to_fcfa: 0.00043, symbol: 'USh' },
+    { code: 'RW', name: 'Rwanda', currency: 'RWF', rate_to_fcfa: 0.0011, symbol: 'RF' },
+    { code: 'BI', name: 'Burundi', currency: 'BIF', rate_to_fcfa: 0.00054, symbol: 'FBu' },
+    { code: 'ZA', name: 'Afrique du Sud', currency: 'ZAR', rate_to_fcfa: 0.087, symbol: 'R' },
+    { code: 'ZM', name: 'Zambie', currency: 'ZMW', rate_to_fcfa: 0.058, symbol: 'ZK' },
+    { code: 'MW', name: 'Malawi', currency: 'MWK', rate_to_fcfa: 0.00095, symbol: 'MK' },
+    { code: 'MZ', name: 'Mozambique', currency: 'MZN', rate_to_fcfa: 0.024, symbol: 'MT' },
+    { code: 'AO', name: 'Angola', currency: 'AOA', rate_to_fcfa: 0.0019, symbol: 'Kz' },
+    { code: 'NA', name: 'Namibie', currency: 'NAD', rate_to_fcfa: 0.087, symbol: 'N$' },
+    { code: 'BW', name: 'Botswana', currency: 'BWP', rate_to_fcfa: 0.12, symbol: 'P' },
+    { code: 'ZW', name: 'Zimbabwe', currency: 'USD', rate_to_fcfa: 0.0016, symbol: '$' },
+    { code: 'MG', name: 'Madagascar', currency: 'MGA', rate_to_fcfa: 0.00057, symbol: 'Ar' },
+    { code: 'MU', name: 'Maurice', currency: 'MUR', rate_to_fcfa: 0.034, symbol: 'Rs' },
+    { code: 'SC', name: 'Seychelles', currency: 'SCR', rate_to_fcfa: 0.12, symbol: 'SR' },
+    { code: 'KM', name: 'Comores', currency: 'KMF', rate_to_fcfa: 0.0022, symbol: 'CF' },
+    { code: 'DJ', name: 'Djibouti', currency: 'DJF', rate_to_fcfa: 0.0091, symbol: 'Fdj' },
+    { code: 'ET', name: 'Éthiopie', currency: 'ETB', rate_to_fcfa: 0.028, symbol: 'Br' },
+    { code: 'SO', name: 'Somalie', currency: 'SOS', rate_to_fcfa: 0.0028, symbol: 'Sh' },
+    { code: 'SD', name: 'Soudan', currency: 'SDG', rate_to_fcfa: 0.0027, symbol: '£S' },
+    { code: 'SS', name: 'Soudan du Sud', currency: 'SSP', rate_to_fcfa: 0.012, symbol: '£' },
+    { code: 'ER', name: 'Érythrée', currency: 'ERN', rate_to_fcfa: 0.11, symbol: 'Nfk' },
+    { code: 'LY', name: 'Libye', currency: 'LYD', rate_to_fcfa: 0.33, symbol: 'LD' },
+    { code: 'TN', name: 'Tunisie', currency: 'TND', rate_to_fcfa: 0.52, symbol: 'DT' },
+    { code: 'DZ', name: 'Algérie', currency: 'DZD', rate_to_fcfa: 0.012, symbol: 'DA' },
+    { code: 'MA', name: 'Maroc', currency: 'MAD', rate_to_fcfa: 0.10, symbol: 'DH' },
+    { code: 'MR', name: 'Mauritanie', currency: 'MRU', rate_to_fcfa: 0.042, symbol: 'UM' },
+    { code: 'LR', name: 'Libéria', currency: 'LRD', rate_to_fcfa: 0.0096, symbol: 'L$' },
+    { code: 'SL', name: 'Sierra Leone', currency: 'SLL', rate_to_fcfa: 0.00011, symbol: 'Le' },
+    { code: 'GN', name: 'Guinée', currency: 'GNF', rate_to_fcfa: 0.00018, symbol: 'FG' },
+    { code: 'GW', name: 'Guinée-Bissau', currency: 'XOF', rate_to_fcfa: 1, symbol: 'FCFA' }
+];
+
+// Taux de conversion FCFA vers autres devises
 const EXCHANGE_RATES = {
     'EUR': 655.96,
     'USD': 615.00,
     'GBP': 780.00,
     'CAD': 450.00,
-    'XAF': 1.00
+    'XAF': 1.00,
+    'XOF': 1.00,
+    'NGN': 0.004,
+    'GHS': 0.11,
+    'KES': 0.012,
+    'TZS': 0.00064,
+    'UGX': 0.00043,
+    'RWF': 0.0011,
+    'BIF': 0.00054,
+    'ZAR': 0.087,
+    'ZMW': 0.058,
+    'MWK': 0.00095,
+    'MZN': 0.024,
+    'AOA': 0.0019,
+    'NAD': 0.087,
+    'BWP': 0.12,
+    'USD': 0.0016,
+    'MGA': 0.00057,
+    'MUR': 0.034,
+    'SCR': 0.12,
+    'KMF': 0.0022,
+    'DJF': 0.0091,
+    'ETB': 0.028,
+    'SOS': 0.0028,
+    'SDG': 0.0027,
+    'SSP': 0.012,
+    'ERN': 0.11,
+    'LYD': 0.33,
+    'TND': 0.52,
+    'DZD': 0.012,
+    'MAD': 0.10,
+    'MRU': 0.042,
+    'LRD': 0.0096,
+    'SLL': 0.00011,
+    'GNF': 0.00018
 };
 
 function convertFcfaToCurrency(amountFcfa, currency) {
@@ -112,20 +210,142 @@ function convertFcfaToCurrency(amountFcfa, currency) {
 function getCurrencyName(code) {
     const names = {
         'EUR': 'Euro', 'USD': 'Dollar US', 'GBP': 'Livre Sterling', 
-        'CAD': 'Dollar Canadien', 'XAF': 'Franc CFA'
+        'CAD': 'Dollar Canadien', 'XAF': 'Franc CFA', 'XOF': 'Franc CFA',
+        'NGN': 'Naira', 'GHS': 'Cedi', 'KES': 'Shilling Kenyan',
+        'TZS': 'Shilling Tanzanien', 'UGX': 'Shilling Ougandais',
+        'RWF': 'Franc Rwandais', 'BIF': 'Franc Burundais',
+        'ZAR': 'Rand', 'ZMW': 'Kwacha Zambien', 'MWK': 'Kwacha Malawien',
+        'MZN': 'Metical', 'AOA': 'Kwanza', 'NAD': 'Dollar Namibien',
+        'BWP': 'Pula', 'MGA': 'Ariary', 'MUR': 'Roupie Mauricienne',
+        'SCR': 'Roupie Seychelloise', 'KMF': 'Franc Comorien',
+        'DJF': 'Franc Djiboutien', 'ETB': 'Birr', 'SOS': 'Shilling Somali',
+        'SDG': 'Livre Soudanaise', 'SSP': 'Livre Sud-Soudanaise',
+        'ERN': 'Nakfa', 'LYD': 'Dinar Libyen', 'TND': 'Dinar Tunisien',
+        'DZD': 'Dinar Algérien', 'MAD': 'Dirham Marocain',
+        'MRU': 'Ouguiya', 'LRD': 'Dollar Libérien', 'SLL': 'Leone',
+        'GNF': 'Franc Guinéen'
     };
     return names[code] || code;
 }
 
 function getCurrencySymbol(code) {
     const symbols = {
-        'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 'XAF': 'FCFA'
+        'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 
+        'XAF': 'FCFA', 'XOF': 'FCFA', 'NGN': '₦', 'GHS': '₵',
+        'KES': 'KSh', 'TZS': 'TSh', 'UGX': 'USh', 'RWF': 'RF',
+        'BIF': 'FBu', 'ZAR': 'R', 'ZMW': 'ZK', 'MWK': 'MK',
+        'MZN': 'MT', 'AOA': 'Kz', 'NAD': 'N$', 'BWP': 'P',
+        'MGA': 'Ar', 'MUR': 'Rs', 'SCR': 'SR', 'KMF': 'CF',
+        'DJF': 'Fdj', 'ETB': 'Br', 'SOS': 'Sh', 'SDG': '£S',
+        'SSP': '£', 'ERN': 'Nfk', 'LYD': 'LD', 'TND': 'DT',
+        'DZD': 'DA', 'MAD': 'DH', 'MRU': 'UM', 'LRD': 'L$',
+        'SLL': 'Le', 'GNF': 'FG'
     };
     return symbols[code] || code;
 }
 
 // Initialisation Supabase
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.serviceKey);
+
+// =============================================
+// CRÉATION AUTOMATIQUE DU BUCKET SUPABASE STORAGE
+// =============================================
+// 👉 INSÉRE LA FONCTION ICI
+async function ensureMinipayBucket() {
+    try {
+        console.log('🔧 Vérification du bucket payment-proofs...');
+        
+        // Vérifier si le bucket existe
+        const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+        
+        if (listError) {
+            console.error('❌ Erreur liste buckets:', listError);
+            return;
+        }
+        
+        const bucketExists = buckets?.some(b => b.name === 'payment-proofs');
+        
+        if (!bucketExists) {
+            console.log('📦 Création du bucket payment-proofs...');
+            
+            // Créer le bucket
+            const { data, error: createError } = await supabase.storage.createBucket('payment-proofs', {
+                public: false,
+                fileSizeLimit: 5 * 1024 * 1024,
+                allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
+            });
+            
+            if (createError) {
+                console.error('❌ Erreur création bucket:', createError);
+                
+                console.log('🔄 Tentative via API REST...');
+                try {
+                    const response = await fetch(`${SUPABASE_CONFIG.url}/storage/v1/bucket`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_CONFIG.serviceKey}`,
+                            'apikey': SUPABASE_CONFIG.serviceKey,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: 'payment-proofs',
+                            name: 'payment-proofs',
+                            public: false,
+                            file_size_limit: 5242880,
+                            allowed_mime_types: ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Bucket créé via API REST');
+                    } else {
+                        const errData = await response.json();
+                        console.error('❌ Échec création bucket via API:', errData);
+                    }
+                } catch (restError) {
+                    console.error('❌ Erreur API REST:', restError);
+                }
+            } else {
+                console.log('✅ Bucket payment-proofs créé avec succès');
+            }
+        } else {
+            console.log('✅ Bucket payment-proofs existe déjà');
+        }
+        
+        // Configurer les politiques de sécurité
+        try {
+            const { error: policyError } = await supabase.storage
+                .from('payment-proofs')
+                .createPolicy({
+                    name: 'allow_authenticated_uploads',
+                    definition: '(auth.role() = \'authenticated\')',
+                    operation: 'INSERT'
+                });
+            
+            if (policyError && !policyError.message?.includes('already exists')) {
+                console.warn('⚠️ Politique upload:', policyError.message);
+            }
+            
+            const { error: readPolicyError } = await supabase.storage
+                .from('payment-proofs')
+                .createPolicy({
+                    name: 'allow_admin_read',
+                    definition: '(auth.role() = \'authenticated\' AND (auth.jwt() ->> \'role\' IN (\'admin\', \'superadmin\')))',
+                    operation: 'SELECT'
+                });
+            
+            if (readPolicyError && !readPolicyError.message?.includes('already exists')) {
+                console.warn('⚠️ Politique lecture:', readPolicyError.message);
+            }
+            
+        } catch (policyErr) {
+            console.warn('⚠️ Erreur création politiques:', policyErr.message);
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur configuration bucket:', error);
+    }
+}
 
 // =============================================
 // CONFIGURATION DES PLANS
@@ -311,6 +531,20 @@ app.use(cors({
     credentials: true
 }));
 
+// Configuration Multer pour l'upload de captures d'écran Minipay
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+    fileFilter: (req, file, cb) => {
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+        if (allowedMimes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Format de fichier non supporté. Utilisez JPG, PNG ou WEBP.'), false);
+        }
+    }
+});
+
 // =============================================
 // MIDDLEWARE DE MAINTENANCE
 // =============================================
@@ -328,10 +562,11 @@ const maintenanceCheck = async (req, res, next) => {
             '/api/health',
             '/api/maintenance-status',
             '/api/admin/maintenance',
-            '/api/admin/check'
+            '/api/admin/check',
+            '/api/countries'
         ];
         
-        if (publicPaths.includes(req.path) || req.path.startsWith('/api/admin/')) {
+        if (publicPaths.includes(req.path) || req.path.startsWith('/api/admin/') || req.path.startsWith('/api/payment/minipay/upload-proof')) {
             return next();
         }
 
@@ -493,7 +728,7 @@ function getBaseEmailTemplate(title, content) {
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f4f4f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                <tr>
+                 <tr>
                     <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
                         <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
                         <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
@@ -551,16 +786,16 @@ function getWelcomeEmailHtml(username) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🚀 Pour commencer :</h3>
             <table width="100%" cellpadding="0" cellspacing="0">
-                        <tr>
+                         <tr>
                             <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
-                        </tr>
-                    </table>
+                         </tr>
+                     </table>
         </div>
         
         <p style="text-align: center; margin: 30px 0 15px 0;">
@@ -608,27 +843,27 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🔑 Informations de connexion :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                        <tr>
+                         <tr>
                             <td style="color: #666;">Nom du serveur :</td>
                             <td style="font-weight: bold;">${serverCredentials.server_name}</td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="color: #666;">Nom d'utilisateur :</td>
                             <td style="font-weight: bold;">${serverCredentials.username}</td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="color: #666;">Mot de passe :</td>
                             <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="color: #666;">URL du panel :</td>
                             <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
-                        </tr>
-                        <tr>
+                         </tr>
+                         <tr>
                             <td style="color: #666;">Identifiant :</td>
                             <td style="font-family: monospace;">${serverCredentials.identifier}</td>
-                        </tr>
-                    </table>
+                         </tr>
+                     </table>
         </div>
         
         <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
@@ -658,29 +893,29 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                    <tr>
+                     <tr>
                         <td style="color: #666;">Pack acheté :</td>
                         <td style="font-weight: bold;">${pack.name}</td>
-                    </tr>
-                    <tr>
+                     </tr>
+                     <tr>
                         <td style="color: #666;">Coins de base :</td>
                         <td style="font-weight: bold;">${pack.coins}</td>
-                    </tr>
+                     </tr>
                     ${pack.bonus > 0 ? `
-                    <tr>
+                     <tr>
                         <td style="color: #666;">Bonus offert :</td>
                         <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
-                    </tr>
+                     </tr>
                     ` : ''}
-                    <tr>
+                     <tr>
                         <td style="color: #666;">Montant payé :</td>
                         <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
-                    </tr>
-                    <tr>
+                     </tr>
+                     <tr>
                         <td style="color: #666;">ID de transaction :</td>
                         <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
-                    </tr>
-                </table>
+                     </tr>
+                 </table>
         
         <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
             <p style="margin: 0; color: #2e7d32; font-size: 14px;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
@@ -769,15 +1004,15 @@ function getServerExpiringHtml(username, server, daysLeft) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                    <tr>
+                     <tr>
                         <td style="color: #666;">Date d'expiration :</td>
                         <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-                    </tr>
-                    <tr>
+                     </tr>
+                     <tr>
                         <td style="color: #666;">Prix de renouvellement :</td>
                         <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-                    </tr>
-                </table>
+                     </tr>
+                 </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -802,19 +1037,19 @@ function getServerSuspendedHtml(username, server) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                    <tr>
+                     <tr>
                         <td style="color: #666;">Date d'expiration :</td>
                         <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-                    </tr>
-                    <tr>
+                     </tr>
+                     <tr>
                         <td style="color: #666;">Date limite de renouvellement :</td>
                         <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
-                    </tr>
-                    <tr>
+                     </tr>
+                     <tr>
                         <td style="color: #666;">Prix de renouvellement :</td>
                         <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-                    </tr>
-                </table>
+                     </tr>
+                 </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -939,6 +1174,69 @@ function getRenewalConfirmationHtml(username, server, newExpiry, coins) {
     return getBaseEmailTemplate('✅ Renouvellement confirmé', content);
 }
 
+// 📱 Template de paiement Minipay en attente
+function getMinipayPendingHtml(username, pack, convertedAmount, currencySymbol) {
+    const content = `
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">⏳ Paiement Minipay en attente</h2>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Nous avons bien reçu votre demande d'achat de coins via Minipay. Votre paiement est en cours de vérification par notre équipe.</p>
+        
+        <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
+            <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">📋 Récapitulatif :</h3>
+            <table width="100%" cellpadding="8" cellspacing="0">
+                         <tr>
+                            <td style="color: #666;">Pack :</td>
+                            <td style="font-weight: bold;">${pack.name}</td>
+                         </tr>
+                         <tr>
+                            <td style="color: #666;">Coins :</td>
+                            <td style="font-weight: bold;">${pack.coins + (pack.bonus || 0)} coins</td>
+                         </tr>
+                         <tr>
+                            <td style="color: #666;">Montant :</td>
+                            <td style="font-weight: bold;">${convertedAmount} ${currencySymbol}</td>
+                         </tr>
+                      </table>
+        </div>
+        
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e;">⏰ Votre transaction sera traitée dans les prochaines minutes après vérification de la capture d'écran.</p>
+        </div>
+        
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/transactions" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Suivre ma transaction</a>
+        </p>
+    `;
+    return getBaseEmailTemplate('⏳ Paiement Minipay en attente', content);
+}
+
+// ✅ Template de confirmation Minipay (admin)
+function getMinipayAdminNotificationHtml(user, pack, transaction, proofUrl) {
+    const content = `
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">💰 Nouvelle transaction Minipay en attente</h2>
+        
+        <p><strong>Client :</strong> ${user.username} (${user.email})</p>
+        <p><strong>Pack :</strong> ${pack.name}</p>
+        <p><strong>Coins :</strong> ${pack.coins + (pack.bonus || 0)} coins</p>
+        <p><strong>Montant :</strong> ${transaction.converted_amount} ${transaction.selected_currency}</p>
+        <p><strong>Pays :</strong> ${transaction.country || 'Non spécifié'}</p>
+        <p><strong>Téléphone :</strong> ${transaction.minipay_phone || 'Non spécifié'}</p>
+        <p><strong>ID Transaction :</strong> ${transaction.id}</p>
+        
+        <div style="margin: 20px 0;">
+            <strong>📸 Capture d'écran :</strong><br>
+            <a href="${proofUrl}" target="_blank" style="color: #7C3AED;">Voir la capture d'écran</a>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/admin" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Traiter la transaction</a>
+        </div>
+    `;
+    return getBaseEmailTemplate('💰 Nouvelle transaction Minipay', content);
+}
+
 // =============================================
 // FONCTIONS PTERODACTYL (CORRIGÉES)
 // =============================================
@@ -989,26 +1287,22 @@ async function createPterodactylUser(username, email) {
     try {
         const password = generateServerPassword();
         
-        // 🔧 NETTOYER LE NOM D'UTILISATEUR (celui choisi par le client)
         let cleanUsername = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
         if (!cleanUsername || cleanUsername.length < 3) {
             cleanUsername = `user_${Date.now().toString().slice(-8)}`;
             console.log(`⚠️ Username invalide, génération automatique: ${cleanUsername}`);
         }
         
-        // 🔧 CONSTRUIRE L'EMAIL PTERODACTYL À PARTIR DU NOM D'UTILISATEUR
         let cleanEmail = `${cleanUsername}@kermhosting.local`;
         
         console.log(`📝 Création utilisateur Pterodactyl avec username: ${cleanUsername}, email: ${cleanEmail}`);
         
-        // Vérifier si l'utilisateur existe déjà dans Pterodactyl
         try {
             const searchResult = await callPterodactylAPI(`/api/application/users?filter[email]=${encodeURIComponent(cleanEmail)}`);
             if (searchResult.data && searchResult.data.length > 0) {
                 const existingUser = searchResult.data[0];
                 console.log(`📝 Utilisateur Pterodactyl existant trouvé: ${existingUser.attributes.username}`);
                 
-                // Mettre à jour le mot de passe
                 await callPterodactylAPI(`/api/application/users/${existingUser.attributes.id}`, 'PATCH', {
                     password: password
                 });
@@ -1025,7 +1319,6 @@ async function createPterodactylUser(username, email) {
             console.log('⚠️ Recherche utilisateur existant échouée, création d\'un nouveau...');
         }
         
-        // Créer un nouvel utilisateur
         const payload = {
             username: cleanUsername,
             email: cleanEmail,
@@ -1047,7 +1340,6 @@ async function createPterodactylUser(username, email) {
     } catch (error) {
         console.error('❌ Erreur création/récupération utilisateur Pterodactyl:', error);
         
-        // Si l'erreur est "email déjà pris", essayer de récupérer l'utilisateur existant
         if (error.response?.data?.errors?.[0]?.detail?.includes('email has already been taken')) {
             try {
                 const fallbackEmail = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@kermhosting.local`;
@@ -1092,7 +1384,6 @@ async function createPterodactylServer(serverData) {
             locationId = 1
         } = serverData;
 
-        // 🔧 COMMANDE DE DÉMARRAGE DYNAMIQUE AVEC {{MAIN_FILE}}
         const startupCommand =
             'if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == "1" ]]; then git pull; fi; ' +
             'if [[ ! -z ${NODE_PACKAGES} ]]; then npm install ${NODE_PACKAGES}; fi; ' +
@@ -1111,7 +1402,7 @@ async function createPterodactylServer(serverData) {
                 USER_UPLOAD: "0",
                 AUTO_UPDATE: "0",
                 CMD_RUN: "node {{MAIN_FILE}}",
-                MAIN_FILE: "index.js",           // ← FICHIER PAR DÉFAUT
+                MAIN_FILE: "index.js",
                 NODE_PACKAGES: "",
                 STARTUP: startupCommand
             },
@@ -1537,7 +1828,6 @@ app.post('/api/payment/paypal', authenticateToken, requireEmailVerification, asy
         let transactionType = '';
 
         if (type === 'server' && plan_id && PLANS[plan_id] && plan_id !== 'free') {
-            // 🔧 VALIDER LE NOM D'UTILISATEUR
             if (!server_username || server_username.length < 3 || server_username.length > 20) {
                 return res.status(400).json({ 
                     success: false, 
@@ -1765,7 +2055,6 @@ app.post('/api/admin/paypal/confirm/:transactionId', authenticateToken, requireA
                 return res.status(400).json({ success: false, error: 'Données serveur manquantes' });
             }
 
-            // 🔧 VALIDER LE NOM D'UTILISATEUR CHOISI PAR LE CLIENT
             if (!server_username || server_username.length < 3 || server_username.length > 20) {
                 console.error('❌ Nom d\'utilisateur invalide:', server_username);
                 return res.status(400).json({ 
@@ -1781,7 +2070,6 @@ app.post('/api/admin/paypal/confirm/:transactionId', authenticateToken, requireA
                 });
             }
 
-            // 🔧 VÉRIFIER LA DISPONIBILITÉ DU NOM D'UTILISATEUR
             const { data: existingServer } = await supabase
                 .from('servers')
                 .select('username')
@@ -1807,12 +2095,10 @@ app.post('/api/admin/paypal/confirm/:transactionId', authenticateToken, requireA
                 console.log('⚠️ Vérification username Pterodactyl ignorée:', checkError.message);
             }
 
-            // 🔧 CONSTRUIRE L'EMAIL PTERODACTYL AVEC LE NOM D'UTILISATEUR CHOISI
             const pteroEmail = `${server_username.toLowerCase()}@kermhosting.local`;
             
             console.log(`📝 Création serveur PayPal avec username: ${server_username}, email Pterodactyl: ${pteroEmail}`);
 
-            // Créer l'utilisateur Pterodactyl avec le nom choisi
             let pteroUser;
             try {
                 pteroUser = await createPterodactylUser(server_username, pteroEmail);
@@ -1968,6 +2254,391 @@ app.post('/api/admin/paypal/fail/:transactionId', authenticateToken, requireAdmi
 
     } catch (error) {
         console.error('❌ Erreur annulation transaction PayPal:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// =============================================
+// ROUTES MINIPAY (PAIEMENT MANUEL)
+// =============================================
+
+// Récupérer la liste des pays africains pour conversion
+app.get('/api/countries', async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            countries: AFRICAN_COUNTRIES
+        });
+    } catch (error) {
+        console.error('❌ Erreur récupération pays:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Initier un paiement Minipay
+app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerification, async (req, res) => {
+    try {
+        const { pack_id, phone, country_code } = req.body;
+
+        if (!pack_id || !COIN_PACKS[pack_id]) {
+            return res.status(400).json({ success: false, error: 'Pack invalide', code: 'INVALID_PACK' });
+        }
+
+        if (!phone) {
+            return res.status(400).json({ success: false, error: 'Numéro de téléphone requis', code: 'PHONE_REQUIRED' });
+        }
+
+        // Nettoyer le numéro de téléphone
+        let cleanPhone = phone.replace(/\s/g, '');
+        if (!/^[0-9]{9,12}$/.test(cleanPhone)) {
+            return res.status(400).json({ success: false, error: 'Numéro de téléphone invalide', code: 'INVALID_PHONE' });
+        }
+
+        const pack = COIN_PACKS[pack_id];
+        const totalCoins = pack.coins + (pack.bonus || 0);
+        
+        // Trouver le pays sélectionné
+        let selectedCountry = AFRICAN_COUNTRIES.find(c => c.code === country_code);
+        if (!selectedCountry) {
+            selectedCountry = AFRICAN_COUNTRIES.find(c => c.currency === 'XAF');
+        }
+        
+        const convertedAmount = convertFcfaToCurrency(pack.price_fcfa, selectedCountry.currency);
+        const transactionId = generateTransactionId();
+
+        const { data: transaction, error } = await supabase
+            .from('transactions')
+            .insert([{
+                id: transactionId,
+                user_id: req.user.id,
+                type: 'coins_purchase',
+                pack_id: pack_id,
+                amount: pack.price_fcfa,
+                currency: selectedCountry.currency,
+                coins_amount: totalCoins,
+                status: 'pending_manual', // Statut spécial pour Minipay
+                medium: 'MINIPAY',
+                minipay_phone: cleanPhone,
+                selected_currency: selectedCountry.currency,
+                converted_amount: convertedAmount,
+                country: selectedCountry.name,
+                metadata: { 
+                    pack: {
+                        name: pack.name,
+                        coins: pack.coins,
+                        bonus: pack.bonus || 0,
+                        price_fcfa: pack.price_fcfa
+                    },
+                    phone: cleanPhone,
+                    pack_id,
+                    country_code,
+                    country_name: selectedCountry.name,
+                    converted_amount: convertedAmount,
+                    local_currency: selectedCountry.currency,
+                    minipay_number: MINIPAY_CONFIG.phone_number
+                }
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Erreur insertion transaction Minipay:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Erreur création transaction',
+                code: 'TRANSACTION_CREATION_ERROR' 
+            });
+        }
+
+        // Envoyer email de confirmation à l'utilisateur
+        await sendEmail(
+            req.user.email,
+            '⏳ Paiement Minipay - En attente de confirmation',
+            getMinipayPendingHtml(req.user.username, pack, convertedAmount, getCurrencySymbol(selectedCountry.currency))
+        );
+
+        // Notifier l'admin
+        const adminHtml = getMinipayAdminNotificationHtml(req.user, pack, transaction, 'capture à uploader');
+        await sendEmail(
+            'bookmakerp@gmail.com',
+            '💰 Nouvelle transaction Minipay en attente',
+            adminHtml
+        );
+
+        res.json({
+            success: true,
+            message: 'Demande de paiement Minipay créée. Veuillez uploader la capture d\'écran après avoir effectué le paiement.',
+            transaction_id: transactionId,
+            minipay_number: MINIPAY_CONFIG.phone_number,
+            amount: convertedAmount,
+            currency: selectedCountry.currency,
+            currency_symbol: getCurrencySymbol(selectedCountry.currency),
+            appStoreUrl: MINIPAY_CONFIG.appStoreUrl,
+            playStoreUrl: MINIPAY_CONFIG.playStoreUrl,
+            instructions: MINIPAY_CONFIG.instructions
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur initiation Minipay:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur', 
+            code: 'MINIPAY_ERROR' 
+        });
+    }
+});
+
+// Upload de la capture d'écran pour une transaction Minipay
+app.post('/api/payment/minipay/upload-proof', upload.single('screenshot'), async (req, res) => {
+    try {
+        const { transaction_id } = req.body;
+        
+        if (!transaction_id) {
+            return res.status(400).json({ success: false, error: 'ID de transaction requis' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'Capture d\'écran requise' });
+        }
+
+        const { data: transaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select('*, profiles!transactions_user_id_fkey(*)')
+            .eq('id', transaction_id)
+            .eq('medium', 'MINIPAY')
+            .single();
+
+        if (fetchError || !transaction) {
+            return res.status(404).json({ success: false, error: 'Transaction non trouvée' });
+        }
+
+        if (transaction.status !== 'pending_manual') {
+            return res.status(400).json({ success: false, error: 'Transaction déjà traitée' });
+        }
+
+        // Convertir l'image en base64
+        const base64Image = req.file.buffer.toString('base64');
+        const mimeType = req.file.mimetype;
+        const screenshotData = `data:${mimeType};base64,${base64Image}`;
+
+        // Stocker directement en base de données
+        await supabase
+            .from('transactions')
+            .update({
+                payment_screenshot: screenshotData,
+                status: 'pending_manual_with_proof'
+            })
+            .eq('id', transaction_id);
+
+        res.json({
+            success: true,
+            message: 'Capture d\'écran envoyée avec succès. Votre paiement est en attente de confirmation.'
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur upload preuve Minipay:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Admin - Récupérer les transactions Minipay en attente
+app.get('/api/admin/minipay/pending', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: transactions, error } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (
+                    username,
+                    email
+                )
+            `)
+            .eq('medium', 'MINIPAY')
+            .in('status', ['pending_manual', 'pending_manual_with_proof'])
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            transactions: transactions || []
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur récupération transactions Minipay:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Admin - Confirmer une transaction Minipay
+app.post('/api/admin/minipay/confirm/:transactionId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const { admin_notes } = req.body;
+
+        const { data: transaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (*)
+            `)
+            .eq('id', transactionId)
+            .eq('medium', 'MINIPAY')
+            .single();
+
+        if (fetchError || !transaction) {
+            return res.status(404).json({ success: false, error: 'Transaction non trouvée' });
+        }
+
+        if (transaction.status !== 'pending_manual_with_proof') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Transaction non éligible à la confirmation' 
+            });
+        }
+
+        const user = transaction.profiles;
+        let coinsToAdd = 0;
+        
+        if (transaction.pack_id && COIN_PACKS[transaction.pack_id]) {
+            const pack = COIN_PACKS[transaction.pack_id];
+            coinsToAdd = pack.coins + (pack.bonus || 0);
+        } else if (transaction.metadata?.pack) {
+            const pack = transaction.metadata.pack;
+            coinsToAdd = (pack.coins || 0) + (pack.bonus || 0);
+        } else {
+            coinsToAdd = Math.floor(transaction.amount / 5);
+        }
+
+        // Ajouter les coins
+        await supabase
+            .from('profiles')
+            .update({ coins: (user.coins || 0) + coinsToAdd })
+            .eq('id', user.id);
+
+        // Mettre à jour la transaction
+        await supabase
+            .from('transactions')
+            .update({
+                status: 'successful',
+                completed_at: new Date().toISOString(),
+                admin_confirmed_by: req.user.id,
+                admin_confirmed_at: new Date().toISOString(),
+                admin_notes: admin_notes || null
+            })
+            .eq('id', transactionId);
+
+        // Log admin
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'minipay_confirm',
+                target_type: 'transaction',
+                target_id: transactionId,
+                description: `Confirmation transaction Minipay ${transactionId} pour ${user.username}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        // Email de confirmation à l'utilisateur
+        await sendEmail(
+            user.email,
+            '💰 Achat de coins confirmé (Minipay)',
+            getCoinsPurchaseHtml(
+                user.username,
+                { name: transaction.metadata?.pack?.name || 'Pack de coins' },
+                coinsToAdd,
+                transaction.id
+            )
+        );
+
+        res.json({
+            success: true,
+            message: `Transaction Minipay confirmée. ${coinsToAdd} coins ajoutés à ${user.username}`
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur confirmation Minipay:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Admin - Échouer une transaction Minipay
+app.post('/api/admin/minipay/fail/:transactionId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const { admin_notes } = req.body;
+
+        const { data: transaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select(`
+                *,
+                profiles!transactions_user_id_fkey (*)
+            `)
+            .eq('id', transactionId)
+            .eq('medium', 'MINIPAY')
+            .single();
+
+        if (fetchError || !transaction) {
+            return res.status(404).json({ success: false, error: 'Transaction non trouvée' });
+        }
+
+        if (transaction.status !== 'pending_manual_with_proof') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Transaction non éligible à l\'échec' 
+            });
+        }
+
+        const user = transaction.profiles;
+
+        // Mettre à jour la transaction
+        await supabase
+            .from('transactions')
+            .update({
+                status: 'failed',
+                admin_confirmed_by: req.user.id,
+                admin_confirmed_at: new Date().toISOString(),
+                admin_notes: admin_notes || 'Paiement non vérifié'
+            })
+            .eq('id', transactionId);
+
+        // Log admin
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'minipay_fail',
+                target_type: 'transaction',
+                target_id: transactionId,
+                description: `Échec transaction Minipay ${transactionId} pour ${user.username}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+
+        // Email d'échec à l'utilisateur
+        const failHtml = `
+            <h2>❌ Paiement Minipay échoué</h2>
+            <p>Bonjour ${user.username},</p>
+            <p>Nous n'avons pas pu confirmer votre paiement Minipay pour la transaction suivante :</p>
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+                <p><strong>ID Transaction:</strong> ${transaction.id}</p>
+                <p><strong>Montant:</strong> ${transaction.converted_amount} ${transaction.selected_currency}</p>
+                <p><strong>Date:</strong> ${new Date(transaction.created_at).toLocaleString('fr-FR')}</p>
+            </div>
+            <p>Si vous avez effectué le paiement, veuillez contacter le support.</p>
+            <a href="${SITE_CONFIG.url}/support">Contacter le support</a>
+        `;
+        await sendEmail(user.email, '❌ Paiement Minipay échoué', getBaseEmailTemplate('Paiement échoué', failHtml));
+
+        res.json({
+            success: true,
+            message: `Transaction Minipay marquée comme échouée`
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur échec Minipay:', error);
         res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
@@ -4294,7 +4965,7 @@ app.get('/api/health', (req, res) => {
         message: 'KermHosting opérationnel',
         timestamp: new Date().toISOString(),
         version: '3.0.0',
-        payment: 'Fapshi Live + PayPal',
+        payment: 'Fapshi Live + PayPal + Minipay',
         features: {
             payments: 'FCFA',
             mobile_money: true,
@@ -4302,7 +4973,8 @@ app.get('/api/health', (req, res) => {
             referrals: true,
             daily_rewards: true,
             auto_renew: true,
-            paypal: true
+            paypal: true,
+            minipay: true
         }
     });
 });
@@ -6072,12 +6744,13 @@ app.get('*', (req, res) => res.status(404).sendFile(path.join(__dirname, 'public
 
 server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
-    console.log(`💰 Mode paiement: Fapshi LIVE + PayPal`);
+    console.log(`💰 Mode paiement: Fapshi LIVE + PayPal + Minipay`);
     console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
+    await setupAutoRenewTables();
 
     const balance = await fapshiBalance();
     if (balance.success) {
