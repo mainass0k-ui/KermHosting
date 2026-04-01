@@ -39,6 +39,7 @@
             --success: #10B981;
             --info: #3B82F6;
             --paypal: #0070BA;
+            --minipay: #00C4B3;
             
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
@@ -949,6 +950,11 @@
             color: #0070BA;
         }
 
+        .badge-minipay {
+            background: rgba(0, 196, 179, 0.1);
+            color: var(--minipay);
+        }
+
         .action-group {
             display: flex;
             gap: 4px;
@@ -1005,6 +1011,25 @@
 
         .action-btn.fail:hover {
             background: var(--danger);
+        }
+
+        /* ===== IMAGE PREVIEW ===== */
+        .screenshot-preview {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .screenshot-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .screenshot-modal-img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: var(--radius-lg);
         }
 
         /* ===== PAGINATION ===== */
@@ -1179,30 +1204,16 @@
             word-break: break-all;
         }
 
-        .modal-form-group {
-            margin-bottom: 16px;
+        .modal-screenshot {
+            text-align: center;
+            margin: 16px 0;
         }
 
-        .modal-form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .modal-input, .modal-select {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-color);
+        .modal-screenshot img {
+            max-width: 100%;
+            max-height: 300px;
             border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-
-        .modal-input:focus, .modal-select:focus {
-            outline: none;
-            border-color: var(--primary);
+            cursor: pointer;
         }
 
         .modal-actions {
@@ -1815,11 +1826,13 @@
                     <div class="tab" onclick="switchTab('logs')">
                         <i class="fas fa-history"></i>Logs
                     </div>
-                    <!-- NOUVEL ONGLET: PayPal -->
                     <div class="tab" onclick="switchTab('paypal')">
                         <i class="fab fa-paypal"></i>PayPal
                     </div>
-                    <!-- ONGLET: Maintenance -->
+                    <!-- NOUVEL ONGLET: Minipay -->
+                    <div class="tab" onclick="switchTab('minipay')">
+                        <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>Minipay
+                    </div>
                     <div class="tab" onclick="switchTab('maintenance')">
                         <i class="fas fa-tools"></i>Maintenance
                     </div>
@@ -1861,25 +1874,23 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Email</th>
-                                    <th>Rôle</th>
-                                    <th>Coins</th>
-                                    <th>Serveurs</th>
-                                    <th>Statut</th>
-                                    <th>Inscription</th>
-                                    <th>Actions</th>
-                                 </thead>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Coins</th>
+                                <th>Serveurs</th>
+                                <th>Statut</th>
+                                <th>Inscription</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="usersTableBody">
-                                
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des utilisateurs...</p>
-                                     </tr>
+                                <td colspan="9" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des utilisateurs...</p>
+                                  </tr>
                             </tbody>
-                         </table>
+                          </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1920,24 +1931,22 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                
-                                    <th>ID</th>
-                                    <th>Nom</th>
-                                    <th>Propriétaire</th>
-                                    <th>Plan</th>
-                                    <th>Statut</th>
-                                    <th>Création</th>
-                                    <th>Expiration</th>
-                                    <th>Actions</th>
-                                 </thead>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Propriétaire</th>
+                                <th>Plan</th>
+                                <th>Statut</th>
+                                <th>Création</th>
+                                <th>Expiration</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="serversTableBody">
-                                
-                                    <td colspan="8" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des serveurs...</p>
-                                     </tr>
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des serveurs...</p>
+                                  </tr>
                             </tbody>
-                         </table>
+                          </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1986,13 +1995,12 @@
                                 <th>Actions</th>
                              </thead>
                             <tbody id="transactionsTableBody">
-                                
-                                    <td colspan="8" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des transactions...</p>
-                                     </tr>
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions...</p>
+                                  </tr>
                             </tbody>
-                         </table>
+                          </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2084,13 +2092,12 @@
                                 <th>IP</th>
                              </thead>
                             <tbody id="logsTableBody">
-                                
-                                    <td colspan="6" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des logs...</p>
-                                     </tr>
+                                <td colspan="6" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des logs...</p>
+                                  </tr>
                             </tbody>
-                         </table>
+                          </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2105,7 +2112,7 @@
                     </div>
                 </div>
 
-                <!-- NOUVEL ONGLET: PayPal (AFFICHE TOUTES LES TRANSACTIONS) -->
+                <!-- Tab: PayPal -->
                 <div class="tab-pane" id="tab-paypal">
                     <div class="search-bar">
                         <div class="search-row">
@@ -2145,13 +2152,61 @@
                                 <th>Actions</th>
                              </thead>
                             <tbody id="paypalTableBody">
-                                
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des transactions PayPal...</p>
-                                     </tr>
+                                <td colspan="9" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions PayPal...</p>
+                                  </tr>
                             </tbody>
-                         </table>
+                          </table>
+                    </div>
+                </div>
+
+                <!-- NOUVEL ONGLET: Minipay -->
+                <div class="tab-pane" id="tab-minipay">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="minipaySearch" placeholder="Rechercher (email, nom, ID...)" onkeyup="filterMinipayTransactions()">
+                            <select class="filter-select" id="minipayFilter" onchange="filterMinipayTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="pending_manual">En attente de capture</option>
+                                <option value="pending_manual_with_proof">Capture reçue</option>
+                                <option value="successful">Confirmées</option>
+                                <option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>
+                            <span id="minipayCount">0</span> transactions Minipay
+                            <button class="clear-search" onclick="clearMinipaySearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="refreshMinipayTransactions()" style="margin-left: auto;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="minipayTable">
+                            <thead>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Pack</th>
+                                <th>Coins</th>
+                                <th>Montant (local)</th>
+                                <th>Pays</th>
+                                <th>Téléphone</th>
+                                <th>Statut</th>
+                                <th>Capture</th>
+                                <th>Actions</th>
+                             </thead>
+                            <tbody id="minipayTableBody">
+                                <td colspan="10" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions Minipay...</p>
+                                  </tr>
+                            </tbody>
+                          </table>
                     </div>
                 </div>
 
@@ -2222,8 +2277,7 @@
 
                             <div class="form-row">
                                 <label for="maintenanceIPs">IPs autorisées (admin) - une par ligne</label>
-                                <textarea id="maintenanceIPs" placeholder="192.168.1.1
-10.0.0.1"></textarea>
+                                <textarea id="maintenanceIPs" placeholder="192.168.1.1\n10.0.0.1"></textarea>
                             </div>
 
                             <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
@@ -2387,6 +2441,48 @@
         </div>
     </div>
 
+    <!-- MODAL: Détails transaction Minipay -->
+    <div class="modal" id="minipayTransactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails de la transaction Minipay</h2>
+                <button class="modal-close" onclick="closeModal('minipayTransactionModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info" id="minipayTransactionDetails">
+                    <!-- Rempli dynamiquement -->
+                </div>
+                <div class="modal-screenshot" id="minipayScreenshotContainer" style="display: none;">
+                    <p><strong>Capture d'écran :</strong></p>
+                    <img id="minipayScreenshot" src="" alt="Capture d'écran" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); cursor: pointer;" onclick="openScreenshotModal(this.src)">
+                </div>
+            </div>
+            <div class="modal-actions" id="minipayModalActions">
+                <button class="btn btn-outline" onclick="closeModal('minipayTransactionModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Agrandissement capture d'écran -->
+    <div class="modal" id="screenshotModal">
+        <div class="modal-content" style="max-width: 90vw; text-align: center;">
+            <div class="modal-header">
+                <h2>Capture d'écran</h2>
+                <button class="modal-close" onclick="closeModal('screenshotModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="screenshotFullImg" src="" alt="Capture d'écran" class="screenshot-modal-img">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeModal('screenshotModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: Confirmation -->
     <div class="modal" id="confirmModal">
         <div class="modal-content">
@@ -2402,7 +2498,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Détails transaction -->
+    <!-- MODAL: Détails transaction générale -->
     <div class="modal" id="transactionModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2473,6 +2569,8 @@
         let allTransactions = [];
         let allLogs = [];
         let allPaypalTransactions = [];
+        let allMinipayTransactions = [];
+        let filteredMinipayTransactions = [];
         let filteredPaypalTransactions = [];
         let financialStats = null;
         let currentUserId = null;
@@ -2500,6 +2598,9 @@
         
         // PayPal pagination
         let currentPaypalPage = 1;
+        
+        // Minipay pagination
+        let currentMinipayPage = 1;
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -2572,17 +2673,376 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
 
-            // Si c'est l'onglet paypal, charger les transactions PayPal
             if (tabId === 'paypal') {
                 loadPaypalTransactions();
             }
-            // Si c'est l'onglet maintenance, charger la configuration
+            if (tabId === 'minipay') {
+                loadMinipayTransactions();
+            }
             if (tabId === 'maintenance') {
                 loadMaintenanceConfig();
             }
         }
 
-        // ===== LOAD PAYPAL TRANSACTIONS (TOUTES) =====
+        // ===== LOAD MINIPAY TRANSACTIONS =====
+        async function loadMinipayTransactions() {
+            try {
+                const res = await fetch('/api/admin/minipay/pending', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    allMinipayTransactions = data.transactions || [];
+                    filteredMinipayTransactions = [...allMinipayTransactions];
+                    document.getElementById('minipayCount').textContent = allMinipayTransactions.length;
+                    currentMinipayPage = 1;
+                    displayMinipayTransactions();
+                }
+            } catch (error) {
+                console.error('Erreur chargement transactions Minipay:', error);
+                showToast('error', 'Erreur de chargement des transactions Minipay');
+            }
+        }
+
+        function refreshMinipayTransactions() {
+            loadMinipayTransactions();
+        }
+
+        function filterMinipayTransactions() {
+            const search = document.getElementById('minipaySearch').value.toLowerCase();
+            const filter = document.getElementById('minipayFilter').value;
+            
+            filteredMinipayTransactions = allMinipayTransactions.filter(trans => {
+                const matchesSearch = (trans.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (trans.profiles?.email?.toLowerCase() || '').includes(search) ||
+                                    (trans.id || '').toLowerCase().includes(search) ||
+                                    (trans.minipay_phone || '').includes(search);
+                
+                if (!matchesSearch) return false;
+                
+                switch(filter) {
+                    case 'pending_manual': return trans.status === 'pending_manual';
+                    case 'pending_manual_with_proof': return trans.status === 'pending_manual_with_proof';
+                    case 'successful': return trans.status === 'successful';
+                    case 'failed': return trans.status === 'failed';
+                    default: return true;
+                }
+            });
+            
+            currentMinipayPage = 1;
+            document.getElementById('minipayCount').textContent = filteredMinipayTransactions.length;
+            displayMinipayTransactions();
+        }
+
+        function clearMinipaySearch() {
+            document.getElementById('minipaySearch').value = '';
+            document.getElementById('minipayFilter').value = 'all';
+            filteredMinipayTransactions = [...allMinipayTransactions];
+            currentMinipayPage = 1;
+            document.getElementById('minipayCount').textContent = allMinipayTransactions.length;
+            displayMinipayTransactions();
+        }
+
+        function displayMinipayTransactions() {
+            const tbody = document.getElementById('minipayTableBody');
+            
+            if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
+                tbody.innerHTML = '<td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td>';
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredMinipayTransactions.length / itemsPerPage);
+            const startIndex = (currentMinipayPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredMinipayTransactions.length);
+            const paginatedTransactions = filteredMinipayTransactions.slice(startIndex, endIndex);
+
+            let html = '';
+            
+            paginatedTransactions.forEach(transaction => {
+                const pack = transaction.metadata?.pack;
+                const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
+                const amountDisplay = transaction.converted_amount 
+                    ? `${transaction.converted_amount} ${transaction.selected_currency}`
+                    : `${transaction.amount} FCFA`;
+                
+                let statusBadge = '';
+                let statusText = '';
+                if (transaction.status === 'pending_manual') {
+                    statusBadge = 'badge-warning';
+                    statusText = 'En attente de capture';
+                } else if (transaction.status === 'pending_manual_with_proof') {
+                    statusBadge = 'badge-info';
+                    statusText = 'Capture reçue';
+                } else if (transaction.status === 'successful') {
+                    statusBadge = 'badge-success';
+                    statusText = 'Confirmée';
+                } else if (transaction.status === 'failed') {
+                    statusBadge = 'badge-danger';
+                    statusText = 'Échouée';
+                }
+                
+                // Aperçu de la capture d'écran
+                let screenshotHtml = '-';
+                if (transaction.payment_screenshot || transaction.payment_proof) {
+                    const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
+                    screenshotHtml = `<img src="${screenshotUrl}" class="screenshot-preview" onclick="event.stopPropagation(); openScreenshotModal('${screenshotUrl}')" style="max-width: 60px; max-height: 50px; cursor: pointer;">`;
+                }
+                
+                // Actions selon le statut
+                let actions = '';
+                if (transaction.status === 'pending_manual_with_proof') {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn confirm" title="Confirmer paiement" onclick="confirmMinipayPayment('${transaction.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn fail" title="Marquer comme échoué" onclick="failMinipayPayment('${transaction.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn view" title="Voir détails" onclick="viewMinipayTransaction('${transaction.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn view" title="Voir détails" onclick="viewMinipayTransaction('${transaction.id}')">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <tr>
+                        <td>${formatDateCameroon(transaction.created_at)}</td>
+                        <td><strong>${transaction.profiles?.username || 'Inconnu'}</strong><br><small>${transaction.profiles?.email || ''}</small></td>
+                        <td>${pack?.name || '-'}</td>
+                        <td><strong>${totalCoins}</strong> coins</td>
+                        <td><span class="badge badge-primary">${amountDisplay}</span></td>
+                        <td>${transaction.country || '-'}</td>
+                        <td>${transaction.minipay_phone || '-'}</td>
+                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                        <td>${screenshotHtml}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        function viewMinipayTransaction(transactionId) {
+            const transaction = allMinipayTransactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            const pack = transaction.metadata?.pack;
+            const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
+            const amountDisplay = transaction.converted_amount 
+                ? `${transaction.converted_amount} ${transaction.selected_currency}`
+                : `${transaction.amount} FCFA`;
+            
+            let statusText = '';
+            if (transaction.status === 'pending_manual') statusText = 'En attente de capture';
+            else if (transaction.status === 'pending_manual_with_proof') statusText = 'Capture reçue, en attente de confirmation';
+            else if (transaction.status === 'successful') statusText = 'Confirmée';
+            else if (transaction.status === 'failed') statusText = 'Échouée';
+            
+            let statusColor = '';
+            if (transaction.status === 'pending_manual') statusColor = 'badge-warning';
+            else if (transaction.status === 'pending_manual_with_proof') statusColor = 'badge-info';
+            else if (transaction.status === 'successful') statusColor = 'badge-success';
+            else if (transaction.status === 'failed') statusColor = 'badge-danger';
+            
+            const detailsDiv = document.getElementById('minipayTransactionDetails');
+            detailsDiv.innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">ID Transaction</span>
+                    <span class="modal-info-value"><code>${transaction.id}</code></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Utilisateur</span>
+                    <span class="modal-info-value">${transaction.profiles?.username || 'Inconnu'} (${transaction.profiles?.email || '-'})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Pack</span>
+                    <span class="modal-info-value">${pack?.name || '-'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Coins</span>
+                    <span class="modal-info-value">${totalCoins} coins (${pack?.coins || 0} + ${pack?.bonus || 0} bonus)</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Montant en FCFA</span>
+                    <span class="modal-info-value">${transaction.amount.toLocaleString()} FCFA</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Montant payé</span>
+                    <span class="modal-info-value">${amountDisplay}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Pays</span>
+                    <span class="modal-info-value">${transaction.country || '-'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Téléphone Minipay</span>
+                    <span class="modal-info-value">${transaction.minipay_phone || '-'}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Statut</span>
+                    <span class="modal-info-value"><span class="badge ${statusColor}">${statusText}</span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de création</span>
+                    <span class="modal-info-value">${formatDateCameroon(transaction.created_at)}</span>
+                </div>
+                ${transaction.completed_at ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de confirmation</span>
+                    <span class="modal-info-value">${formatDateCameroon(transaction.completed_at)}</span>
+                </div>
+                ` : ''}
+                ${transaction.admin_notes ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Notes admin</span>
+                    <span class="modal-info-value">${transaction.admin_notes}</span>
+                </div>
+                ` : ''}
+                ${transaction.metadata?.minipay_number ? `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Numéro Minipay</span>
+                    <span class="modal-info-value">${transaction.metadata.minipay_number}</span>
+                </div>
+                ` : ''}
+            `;
+
+            // Afficher la capture d'écran si disponible
+            const screenshotContainer = document.getElementById('minipayScreenshotContainer');
+            const screenshotImg = document.getElementById('minipayScreenshot');
+            const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
+            
+            if (screenshotUrl) {
+                screenshotImg.src = screenshotUrl;
+                screenshotContainer.style.display = 'block';
+            } else {
+                screenshotContainer.style.display = 'none';
+            }
+
+            // Ajouter les boutons d'action dans le modal si nécessaire
+            const actionsDiv = document.getElementById('minipayModalActions');
+            if (transaction.status === 'pending_manual_with_proof') {
+                actionsDiv.innerHTML = `
+                    <button class="btn btn-outline" onclick="closeModal('minipayTransactionModal')">Fermer</button>
+                    <button class="btn btn-success" onclick="confirmMinipayPaymentFromModal('${transaction.id}')">
+                        <i class="fas fa-check"></i> Confirmer
+                    </button>
+                    <button class="btn btn-danger" onclick="failMinipayPaymentFromModal('${transaction.id}')">
+                        <i class="fas fa-times"></i> Rejeter
+                    </button>
+                `;
+            } else {
+                actionsDiv.innerHTML = `<button class="btn btn-primary" onclick="closeModal('minipayTransactionModal')">Fermer</button>`;
+            }
+
+            openModal('minipayTransactionModal');
+        }
+
+        function openScreenshotModal(imageUrl) {
+            document.getElementById('screenshotFullImg').src = imageUrl;
+            openModal('screenshotModal');
+        }
+
+        async function confirmMinipayPayment(transactionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Confirmer le paiement Minipay';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir confirmer ce paiement ? L\'utilisateur recevra ses coins immédiatement.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Confirmation en cours...');
+                
+                try {
+                    const res = await fetch(`/api/admin/minipay/confirm/${transactionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ admin_notes: 'Paiement confirmé par admin' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Transaction Minipay confirmée avec succès !');
+                        loadMinipayTransactions();
+                        loadAdminData();
+                        closeModal('minipayTransactionModal');
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la confirmation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        async function failMinipayPayment(transactionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Paiement Minipay échoué';
+            document.getElementById('confirmMessage').textContent = 'Marquer ce paiement comme échoué ? L\'utilisateur recevra un email d\'échec.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Traitement en cours...');
+                
+                try {
+                    const res = await fetch(`/api/admin/minipay/fail/${transactionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ admin_notes: 'Paiement non vérifié' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Transaction Minipay marquée comme échouée');
+                        loadMinipayTransactions();
+                        loadAdminData();
+                        closeModal('minipayTransactionModal');
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de l\'annulation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        function confirmMinipayPaymentFromModal(transactionId) {
+            closeModal('minipayTransactionModal');
+            confirmMinipayPayment(transactionId);
+        }
+
+        function failMinipayPaymentFromModal(transactionId) {
+            closeModal('minipayTransactionModal');
+            failMinipayPayment(transactionId);
+        }
+
+        // ===== LOAD PAYPAL TRANSACTIONS =====
         async function loadPaypalTransactions() {
             try {
                 const res = await fetch('/api/admin/paypal/pending', {
@@ -2647,7 +3107,7 @@
             const tbody = document.getElementById('paypalTableBody');
             
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td></tr>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td>';
                 return;
             }
 
@@ -2669,7 +3129,6 @@
                     ? `${transaction.paypal_amount_converted} ${transaction.paypal_currency}`
                     : `${transaction.amount} FCFA`;
                 
-                // Badge de statut
                 let statusBadge = '';
                 if (transaction.status === 'pending') {
                     statusBadge = '<span class="badge badge-warning">En attente</span>';
@@ -2681,7 +3140,6 @@
                     statusBadge = `<span class="badge badge-info">${transaction.status}</span>`;
                 }
                 
-                // Actions selon le statut
                 let actions = '';
                 if (transaction.status === 'pending') {
                     actions = `
@@ -3128,7 +3586,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3203,7 +3661,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3301,302 +3759,12 @@
             displayServers();
         }
 
-        // ===== SUSPEND / UNSUSPEND SERVER =====
-        async function suspendServer(serverId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ? Le propriétaire ne pourra plus y accéder.';
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-warning';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                
-                try {
-                    showToast('info', 'Suspension en cours...');
-                    
-                    const res = await fetch(`/api/admin/servers/${serverId}/suspend`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ action: 'suspend' })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (data.success) {
-                        showToast('success', 'Serveur suspendu avec succès');
-                        loadAdminData();
-                    } else {
-                        showToast('error', data.error || 'Erreur lors de la suspension');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                    console.error('Erreur:', error);
-                }
-            };
-            
-            openModal('confirmModal');
-        }
-
-        async function unsuspendServer(serverId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ? Le propriétaire pourra de nouveau y accéder.';
-            
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-success';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                
-                try {
-                    showToast('info', 'Réactivation en cours...');
-                    
-                    const res = await fetch(`/api/admin/servers/${serverId}/unsuspend`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (data.success) {
-                        showToast('success', 'Serveur réactivé avec succès');
-                        loadAdminData();
-                    } else {
-                        showToast('error', data.error || 'Erreur lors de la réactivation');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                    console.error('Erreur:', error);
-                }
-            };
-            
-            openModal('confirmModal');
-        }
-
-        // ===== PTERODACTYL CLEANUP =====
-        function showPterodactylCleanupModal() {
-            document.getElementById('cleanupStats').style.display = 'none';
-            document.getElementById('cleanupInitial').style.display = 'block';
-            document.getElementById('cleanupProgress').style.display = 'none';
-            document.getElementById('cleanupResult').style.display = 'none';
-            
-            document.getElementById('cleanupActions').innerHTML = `
-                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
-                <button class="btn btn-warning" onclick="startPterodactylCleanup()" id="startCleanupBtn">
-                    <i class="fas fa-broom"></i> Lancer le nettoyage
-                </button>
-            `;
-            
-            openModal('pteroCleanupModal');
-        }
-
-        async function startPterodactylCleanup() {
-            document.getElementById('cleanupInitial').style.display = 'none';
-            document.getElementById('cleanupProgress').style.display = 'block';
-            document.getElementById('cleanupStats').style.display = 'none';
-            document.getElementById('cleanupResult').style.display = 'none';
-            
-            document.getElementById('cleanupActions').innerHTML = `
-                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
-            `;
-            
-            try {
-                const res = await fetch('/api/admin/pterodactyl/cleanup-users', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                const data = await res.json();
-                
-                document.getElementById('cleanupProgress').style.display = 'none';
-                
-                if (data.success) {
-                    const stats = data.stats;
-                    
-                    document.getElementById('cleanupStats').innerHTML = `
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i>
-                        </div>
-                        <h3 style="text-align: center; margin-bottom: 16px;">Nettoyage terminé</h3>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Utilisateurs Pterodactyl</span>
-                            <span class="modal-info-value">${stats.total_ptero_users}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Liés à KermHosting</span>
-                            <span class="modal-info-value">${stats.linked_users}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Orphelins avec serveurs</span>
-                            <span class="modal-info-value">${stats.orphan_with_servers}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Orphelins sans serveurs</span>
-                            <span class="modal-info-value">${stats.orphan_without_servers}</span>
-                        </div>
-                        <div class="modal-info-item" style="border-bottom: none;">
-                            <span class="modal-info-label">Supprimés</span>
-                            <span class="modal-info-value" style="color: var(--success);">${stats.deleted_users}</span>
-                        </div>
-                        <div style="margin-top: 16px; text-align: center;">
-                            <span class="badge ${stats.success_rate === 100 ? 'badge-success' : stats.success_rate > 50 ? 'badge-warning' : 'badge-danger'}" style="font-size: 1rem; padding: 8px 16px;">
-                                Taux de réussite: ${stats.success_rate}%
-                            </span>
-                        </div>
-                    `;
-                    
-                    document.getElementById('cleanupStats').style.display = 'block';
-                    document.getElementById('cleanupResult').style.display = 'none';
-                    
-                    document.getElementById('cleanupActions').innerHTML = `
-                        <button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>
-                    `;
-                    
-                    showToast('success', data.message);
-                    
-                } else {
-                    document.getElementById('cleanupResult').innerHTML = `
-                        <div style="text-align: center;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
-                            <h3 style="margin: 16px 0;">Erreur</h3>
-                            <p>${data.error || 'Une erreur est survenue'}</p>
-                        </div>
-                    `;
-                    document.getElementById('cleanupResult').style.display = 'block';
-                    
-                    showToast('error', data.error || 'Erreur lors du nettoyage');
-                }
-            } catch (error) {
-                document.getElementById('cleanupProgress').style.display = 'none';
-                document.getElementById('cleanupResult').innerHTML = `
-                    <div style="text-align: center;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
-                        <h3 style="margin: 16px 0;">Erreur réseau</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-                document.getElementById('cleanupResult').style.display = 'block';
-                
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        // ===== MAINTENANCE FUNCTIONS =====
-        async function loadMaintenanceConfig() {
-            try {
-                const res = await fetch('/api/admin/maintenance', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    const config = data.maintenance;
-                    
-                    document.getElementById('maintenanceActive').checked = config.is_active;
-                    document.getElementById('maintenanceMessage').value = config.message;
-                    document.getElementById('maintenanceEmail').value = config.support_email;
-                    document.getElementById('maintenanceWhatsApp').value = config.support_whatsapp;
-                    document.getElementById('maintenanceDiscord').value = config.discord_link;
-                    
-                    if (config.estimated_end_time) {
-                        const endDate = new Date(config.estimated_end_time);
-                        const formattedDate = endDate.toISOString().slice(0, 16);
-                        document.getElementById('maintenanceEndTime').value = formattedDate;
-                    }
-                    
-                    if (config.allow_ips && config.allow_ips.length > 0) {
-                        document.getElementById('maintenanceIPs').value = config.allow_ips.join('\n');
-                    } else {
-                        document.getElementById('maintenanceIPs').value = '';
-                    }
-                    
-                    const indicator = document.getElementById('maintenanceStatusIndicator');
-                    const dot = document.getElementById('maintenanceStatusDot');
-                    const text = document.getElementById('maintenanceStatusText');
-                    
-                    if (config.is_active) {
-                        indicator.className = 'status-indicator active';
-                        dot.className = 'status-dot active';
-                        text.textContent = 'Maintenance active';
-                    } else {
-                        indicator.className = 'status-indicator inactive';
-                        dot.className = 'status-dot inactive';
-                        text.textContent = 'Maintenance inactive';
-                    }
-                    
-                    document.getElementById('currentMessage').textContent = config.message;
-                    document.getElementById('currentEndTime').textContent = config.estimated_end_time 
-                        ? new Date(config.estimated_end_time).toLocaleString('fr-FR', { timeZone: 'Africa/Douala' })
-                        : 'Non définie';
-                    document.getElementById('currentEmail').textContent = config.support_email;
-                    document.getElementById('currentWhatsApp').textContent = config.support_whatsapp;
-                    document.getElementById('currentDiscord').textContent = config.discord_link;
-                }
-            } catch (error) {
-                console.error('Erreur chargement maintenance:', error);
-                showToast('error', 'Erreur de chargement de la configuration');
-            }
-        }
-
-        async function saveMaintenanceConfig() {
-            const isActive = document.getElementById('maintenanceActive').checked;
-            const message = document.getElementById('maintenanceMessage').value;
-            const endTime = document.getElementById('maintenanceEndTime').value;
-            const email = document.getElementById('maintenanceEmail').value;
-            const whatsapp = document.getElementById('maintenanceWhatsApp').value;
-            const discord = document.getElementById('maintenanceDiscord').value;
-            const ipsText = document.getElementById('maintenanceIPs').value;
-            
-            const allowIPs = ipsText.split('\n')
-                .map(ip => ip.trim())
-                .filter(ip => ip.length > 0);
-            
-            const config = {
-                is_active: isActive,
-                message: message || '🚧 Site en maintenance. Nous revenons très bientôt !',
-                estimated_end_time: endTime || null,
-                support_email: email || 'support@kermhosting.com',
-                support_whatsapp: whatsapp || 'https://wa.me/237600000000',
-                discord_link: discord || 'https://discord.gg/kermhosting',
-                allow_ips: allowIPs
-            };
-            
-            try {
-                const res = await fetch('/api/admin/maintenance', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(config)
-                });
-                
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast('success', data.message);
-                    loadMaintenanceConfig();
-                } else {
-                    showToast('error', data.error || 'Erreur lors de la sauvegarde');
-                }
-            } catch (error) {
-                console.error('Erreur sauvegarde maintenance:', error);
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
         // ===== DISPLAY TRANSACTIONS =====
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td> </tr>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3666,7 +3834,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td> </tr>';
+                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
@@ -4197,6 +4365,83 @@
             openModal('confirmModal');
         }
 
+        async function suspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ? Le propriétaire ne pourra plus y accéder.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    showToast('info', 'Suspension en cours...');
+                    
+                    const res = await fetch(`/api/admin/servers/${serverId}/suspend`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: 'suspend' })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Serveur suspendu avec succès');
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la suspension');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                    console.error('Erreur:', error);
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
+        async function unsuspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ? Le propriétaire pourra de nouveau y accéder.';
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                
+                try {
+                    showToast('info', 'Réactivation en cours...');
+                    
+                    const res = await fetch(`/api/admin/servers/${serverId}/unsuspend`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showToast('success', 'Serveur réactivé avec succès');
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la réactivation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                    console.error('Erreur:', error);
+                }
+            };
+            
+            openModal('confirmModal');
+        }
+
         // ===== BULK ACTIONS =====
         function showDeleteAllServersModal() {
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
@@ -4268,6 +4513,218 @@
             }
         }
 
+        // ===== PTERODACTYL CLEANUP =====
+        function showPterodactylCleanupModal() {
+            document.getElementById('cleanupStats').style.display = 'none';
+            document.getElementById('cleanupInitial').style.display = 'block';
+            document.getElementById('cleanupProgress').style.display = 'none';
+            document.getElementById('cleanupResult').style.display = 'none';
+            
+            document.getElementById('cleanupActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
+                <button class="btn btn-warning" onclick="startPterodactylCleanup()" id="startCleanupBtn">
+                    <i class="fas fa-broom"></i> Lancer le nettoyage
+                </button>
+            `;
+            
+            openModal('pteroCleanupModal');
+        }
+
+        async function startPterodactylCleanup() {
+            document.getElementById('cleanupInitial').style.display = 'none';
+            document.getElementById('cleanupProgress').style.display = 'block';
+            document.getElementById('cleanupStats').style.display = 'none';
+            document.getElementById('cleanupResult').style.display = 'none';
+            
+            document.getElementById('cleanupActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
+            `;
+            
+            try {
+                const res = await fetch('/api/admin/pterodactyl/cleanup-users', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                document.getElementById('cleanupProgress').style.display = 'none';
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    
+                    document.getElementById('cleanupStats').innerHTML = `
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i>
+                        </div>
+                        <h3 style="text-align: center; margin-bottom: 16px;">Nettoyage terminé</h3>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Utilisateurs Pterodactyl</span>
+                            <span class="modal-info-value">${stats.total_ptero_users}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Liés à KermHosting</span>
+                            <span class="modal-info-value">${stats.linked_users}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Orphelins avec serveurs</span>
+                            <span class="modal-info-value">${stats.orphan_with_servers}</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-label">Orphelins sans serveurs</span>
+                            <span class="modal-info-value">${stats.orphan_without_servers}</span>
+                        </div>
+                        <div class="modal-info-item" style="border-bottom: none;">
+                            <span class="modal-info-label">Supprimés</span>
+                            <span class="modal-info-value" style="color: var(--success);">${stats.deleted_users}</span>
+                        </div>
+                        <div style="margin-top: 16px; text-align: center;">
+                            <span class="badge ${stats.success_rate === 100 ? 'badge-success' : stats.success_rate > 50 ? 'badge-warning' : 'badge-danger'}" style="font-size: 1rem; padding: 8px 16px;">
+                                Taux de réussite: ${stats.success_rate}%
+                            </span>
+                        </div>
+                    `;
+                    
+                    document.getElementById('cleanupStats').style.display = 'block';
+                    document.getElementById('cleanupResult').style.display = 'none';
+                    
+                    document.getElementById('cleanupActions').innerHTML = `
+                        <button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>
+                    `;
+                    
+                    showToast('success', data.message);
+                    
+                } else {
+                    document.getElementById('cleanupResult').innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
+                            <h3 style="margin: 16px 0;">Erreur</h3>
+                            <p>${data.error || 'Une erreur est survenue'}</p>
+                        </div>
+                    `;
+                    document.getElementById('cleanupResult').style.display = 'block';
+                    
+                    showToast('error', data.error || 'Erreur lors du nettoyage');
+                }
+            } catch (error) {
+                document.getElementById('cleanupProgress').style.display = 'none';
+                document.getElementById('cleanupResult').innerHTML = `
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
+                        <h3 style="margin: 16px 0;">Erreur réseau</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                document.getElementById('cleanupResult').style.display = 'block';
+                
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        // ===== MAINTENANCE FUNCTIONS =====
+        async function loadMaintenanceConfig() {
+            try {
+                const res = await fetch('/api/admin/maintenance', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const config = data.maintenance;
+                    
+                    document.getElementById('maintenanceActive').checked = config.is_active;
+                    document.getElementById('maintenanceMessage').value = config.message;
+                    document.getElementById('maintenanceEmail').value = config.support_email;
+                    document.getElementById('maintenanceWhatsApp').value = config.support_whatsapp;
+                    document.getElementById('maintenanceDiscord').value = config.discord_link;
+                    
+                    if (config.estimated_end_time) {
+                        const endDate = new Date(config.estimated_end_time);
+                        const formattedDate = endDate.toISOString().slice(0, 16);
+                        document.getElementById('maintenanceEndTime').value = formattedDate;
+                    }
+                    
+                    if (config.allow_ips && config.allow_ips.length > 0) {
+                        document.getElementById('maintenanceIPs').value = config.allow_ips.join('\n');
+                    } else {
+                        document.getElementById('maintenanceIPs').value = '';
+                    }
+                    
+                    const indicator = document.getElementById('maintenanceStatusIndicator');
+                    const dot = document.getElementById('maintenanceStatusDot');
+                    const text = document.getElementById('maintenanceStatusText');
+                    
+                    if (config.is_active) {
+                        indicator.className = 'status-indicator active';
+                        dot.className = 'status-dot active';
+                        text.textContent = 'Maintenance active';
+                    } else {
+                        indicator.className = 'status-indicator inactive';
+                        dot.className = 'status-dot inactive';
+                        text.textContent = 'Maintenance inactive';
+                    }
+                    
+                    document.getElementById('currentMessage').textContent = config.message;
+                    document.getElementById('currentEndTime').textContent = config.estimated_end_time 
+                        ? new Date(config.estimated_end_time).toLocaleString('fr-FR', { timeZone: 'Africa/Douala' })
+                        : 'Non définie';
+                    document.getElementById('currentEmail').textContent = config.support_email;
+                    document.getElementById('currentWhatsApp').textContent = config.support_whatsapp;
+                    document.getElementById('currentDiscord').textContent = config.discord_link;
+                }
+            } catch (error) {
+                console.error('Erreur chargement maintenance:', error);
+                showToast('error', 'Erreur de chargement de la configuration');
+            }
+        }
+
+        async function saveMaintenanceConfig() {
+            const isActive = document.getElementById('maintenanceActive').checked;
+            const message = document.getElementById('maintenanceMessage').value;
+            const endTime = document.getElementById('maintenanceEndTime').value;
+            const email = document.getElementById('maintenanceEmail').value;
+            const whatsapp = document.getElementById('maintenanceWhatsApp').value;
+            const discord = document.getElementById('maintenanceDiscord').value;
+            const ipsText = document.getElementById('maintenanceIPs').value;
+            
+            const allowIPs = ipsText.split('\n')
+                .map(ip => ip.trim())
+                .filter(ip => ip.length > 0);
+            
+            const config = {
+                is_active: isActive,
+                message: message || '🚧 Site en maintenance. Nous revenons très bientôt !',
+                estimated_end_time: endTime || null,
+                support_email: email || 'support@kermhosting.com',
+                support_whatsapp: whatsapp || 'https://wa.me/237600000000',
+                discord_link: discord || 'https://discord.gg/kermhosting',
+                allow_ips: allowIPs
+            };
+            
+            try {
+                const res = await fetch('/api/admin/maintenance', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('success', data.message);
+                    loadMaintenanceConfig();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la sauvegarde');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde maintenance:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
         // ===== EXPORT FUNCTIONS =====
         function exportUsers(format) {
             const data = filteredUsers.map(u => ({
@@ -4312,6 +4769,9 @@
             if (document.getElementById('tab-paypal').classList.contains('active')) {
                 loadPaypalTransactions();
             }
+            if (document.getElementById('tab-minipay').classList.contains('active')) {
+                loadMinipayTransactions();
+            }
         }
 
         // ===== LOGOUT =====
@@ -4353,6 +4813,15 @@
         window.confirmPaypalPayment = confirmPaypalPayment;
         window.failPaypalPayment = failPaypalPayment;
         window.viewPaypalTransaction = viewPaypalTransaction;
+        window.filterMinipayTransactions = filterMinipayTransactions;
+        window.clearMinipaySearch = clearMinipaySearch;
+        window.refreshMinipayTransactions = refreshMinipayTransactions;
+        window.confirmMinipayPayment = confirmMinipayPayment;
+        window.failMinipayPayment = failMinipayPayment;
+        window.viewMinipayTransaction = viewMinipayTransaction;
+        window.confirmMinipayPaymentFromModal = confirmMinipayPaymentFromModal;
+        window.failMinipayPaymentFromModal = failMinipayPaymentFromModal;
+        window.openScreenshotModal = openScreenshotModal;
         window.editUser = editUser;
         window.viewUserServers = viewUserServers;
         window.viewUserTransactions = viewUserTransactions;
