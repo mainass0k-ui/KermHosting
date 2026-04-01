@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="KermHosting - Hébergement de serveurs Node.js haute performance au Cameroun et en Afrique. Paiement en FCFA et PayPal.">
-    <meta name="keywords" content="hébergement, serveur, nodejs, pterodactyl, hosting, cameroun, afrique, fcfa, paypal">
+    <meta name="description" content="KermHosting - Hébergement de serveurs Node.js haute performance au Cameroun et en Afrique. Paiement en FCFA, PayPal et Minipay.">
+    <meta name="keywords" content="hébergement, serveur, nodejs, pterodactyl, hosting, cameroun, afrique, fcfa, paypal, minipay">
     <meta name="author" content="KermHosting">
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://kermhosting.site">
-    <meta property="og:title" content="KermHosting - Hébergement Node.js en FCFA et PayPal">
-    <meta property="og:description" content="Créez votre serveur Node.js en 1 minute. Paiement en FCFA ou PayPal. Interface mobile intuitive.">
+    <meta property="og:title" content="KermHosting - Hébergement Node.js en FCFA, PayPal & Minipay">
+    <meta property="og:description" content="Créez votre serveur Node.js en 1 minute. Paiement en FCFA, PayPal ou Minipay. Interface mobile intuitive.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
     <!-- Favicon / Icônes -->
@@ -30,7 +30,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <title>KermHosting - Hébergement Node.js en FCFA & PayPal</title>
+    <title>KermHosting - Hébergement Node.js en FCFA, PayPal & Minipay</title>
     
     <style>
         /* ===== VARIABLES ===== */
@@ -46,6 +46,7 @@
             --warning: #F59E0B;
             --success: #10B981;
             --paypal: #0070BA;
+            --minipay: #00C4B3;
             
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
@@ -107,7 +108,7 @@
             background: 
                 radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 30%),
                 radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 30%),
-                radial-gradient(circle at 40% 80%, rgba(0, 112, 186, 0.1) 0%, transparent 30%);
+                radial-gradient(circle at 40% 80%, rgba(0, 196, 179, 0.1) 0%, transparent 30%);
             pointer-events: none;
             z-index: -1;
         }
@@ -1305,6 +1306,14 @@
                         </div>
                     </div>
                     <div class="notification-item unread">
+                        <i class="fas fa-credit-card notification-icon" style="color: #00C4B3;"></i>
+                        <div class="notification-content">
+                            <div class="notification-title">Nouveau ! Paiement Minipay</div>
+                            <div class="notification-message">Payez en devises locales africaines via Minipay. Pays supportés : 🇨🇲 Cameroun, 🇨🇮 Côte d'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie et plus encore !</div>
+                            <div class="notification-time">À l'instant</div>
+                        </div>
+                    </div>
+                    <div class="notification-item unread">
                         <i class="fas fa-gift notification-icon"></i>
                         <div class="notification-content">
                             <div class="notification-title">Bienvenue sur KermHosting !</div>
@@ -1323,8 +1332,8 @@
                     <div class="notification-item">
                         <i class="fas fa-shield-alt notification-icon"></i>
                         <div class="notification-content">
-                            <div class="notification-title">Paiement FCFA & PayPal</div>
-                            <div class="notification-message">Paiement en Franc CFA ou en devises internationales via PayPal !</div>
+                            <div class="notification-title">Paiement FCFA, PayPal & Minipay</div>
+                            <div class="notification-message">Paiement en Franc CFA, en devises internationales via PayPal ou en devises locales africaines via Minipay !</div>
                             <div class="notification-time">Hier</div>
                         </div>
                     </div>
@@ -1337,14 +1346,13 @@
                 <section class="hero-section">
                     <div class="hero-badge">
                         <span class="badge-pulse"></span>
-                        🇨🇲 Paiement FCFA & 🌍 PayPal
+                        🇨🇲 Paiement FCFA | 🌍 PayPal | 📱 Minipay
                     </div>
                     <h1 class="hero-title">
-                        Hébergement <span class="gradient-text">Node.js</span> en FCFA & PayPal
+                        Hébergement <span class="gradient-text">Node.js</span> en FCFA, PayPal & Minipay
                     </h1>
                     <p class="hero-subtitle">
-                        Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money ou en devises internationales via PayPal.
-                        Interface mobile intuitive, gestion complète.
+                        Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.
                     </p>
                     <div class="hero-actions">
                         <button class="btn btn-primary" id="getStartedBtn">
@@ -1398,6 +1406,16 @@
                         </div>
                         
                         <div class="feature-card">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #00C4B320, #40E0D020)">
+                                <i class="fas fa-mobile-alt" style="color: #00C4B3"></i>
+                            </div>
+                            <h3 class="feature-title">Paiement Minipay</h3>
+                            <p class="feature-description">
+                                Payez en devises locales africaines via Minipay. Support pour plus de 40 pays africains.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #3B82F620, #60A5FA20)">
                                 <i class="fas fa-bolt" style="color: #3B82F6"></i>
                             </div>
@@ -1409,17 +1427,7 @@
                         
                         <div class="feature-card">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #10B98120, #34D39920)">
-                                <i class="fas fa-mobile-alt" style="color: #10B981"></i>
-                            </div>
-                            <h3 class="feature-title">Mobile first</h3>
-                            <p class="feature-description">
-                                Interface optimisée pour smartphone. Gérez vos serveurs où que vous soyez en Afrique.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #F59E0B20, #FBBF2420)">
-                                <i class="fas fa-coins" style="color: #F59E0B"></i>
+                                <i class="fas fa-coins" style="color: #10B981"></i>
                             </div>
                             <h3 class="feature-title">Système de coins</h3>
                             <p class="feature-description">
@@ -1451,7 +1459,7 @@
 
                 <!-- Pricing Preview -->
                 <section class="pricing-preview">
-                    <h2 class="section-title">Des plans à partir de <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;">ou via PayPal</span></h2>
+                    <h2 class="section-title">Des plans à partir de <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;">(ou via PayPal / Minipay)</span></h2>
                     <p class="section-subtitle">Du simple bot Discord à l'application d'entreprise</p>
                     
                     <div class="pricing-cards">
@@ -1477,7 +1485,7 @@
                             <h3 class="pricing-name">Starter</h3>
                             <div class="pricing-price">
                                 <span class="price">500</span>
-                                <span class="currency">FCFA / 0.76€</span>
+                                <span class="currency">FCFA / 0.76€ / ~1000₦</span>
                             </div>
                             <ul class="pricing-features">
                                 <li><i class="fas fa-check"></i> 1 GB RAM</li>
@@ -1494,7 +1502,7 @@
                             <h3 class="pricing-name">Pro</h3>
                             <div class="pricing-price">
                                 <span class="price">1 300</span>
-                                <span class="currency">FCFA / 1.98€</span>
+                                <span class="currency">FCFA / 1.98€ / ~2600₦</span>
                             </div>
                             <ul class="pricing-features">
                                 <li><i class="fas fa-check"></i> 4 GB RAM</li>
@@ -1508,8 +1516,8 @@
                     </div>
                     
                     <div class="pricing-note">
-                        <i class="fab fa-paypal"></i>
-                        <span>💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD)</span>
+                        <i class="fas fa-credit-card"></i>
+                        <span>💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)</span>
                     </div>
                     
                     <div class="pricing-cta">
@@ -1534,7 +1542,7 @@
                             <div class="step-number">2</div>
                             <div class="step-content">
                                 <h3>Achetez des coins ou payez directement</h3>
-                                <p>Payez en FCFA par Mobile Money (Orange, MTN) ou par PayPal en devises internationales.</p>
+                                <p>Payez en FCFA par Mobile Money (Orange, MTN), en devises internationales via PayPal, ou en devises locales africaines via Minipay.</p>
                             </div>
                         </div>
                         
@@ -1570,7 +1578,7 @@
                                 <i class="fas fa-star"></i>
                             </div>
                             <p class="testimonial-text">
-                                "Enfin un hébergeur qui accepte le FCFA ! Je paye avec Orange Money, c'est super pratique. Et le support est génial !"
+                                "Enfin un hébergeur qui accepte le FCFA et Minipay ! Je paye avec Orange Money ou Minipay, c'est super pratique. Et le support est génial !"
                             </p>
                             <div class="testimonial-author">
                                 <img src="https://ui-avatars.com/api/?name=Jean+P&background=7C3AED&color=fff&size=40" alt="Author">
@@ -1610,13 +1618,13 @@
                                 <i class="fas fa-star"></i>
                             </div>
                             <p class="testimonial-text">
-                                "Support super réactif sur WhatsApp. J'ai eu un problème à 22h, réglé en 10 minutes !"
+                                "Le support est super réactif sur WhatsApp. J'ai payé avec Minipay depuis le Nigeria, ça a marché parfaitement !"
                             </p>
                             <div class="testimonial-author">
                                 <img src="https://ui-avatars.com/api/?name=Alex+R&background=F59E0B&color=fff&size=40" alt="Author">
                                 <div>
                                     <strong>Alex R.</strong>
-                                    <span>Hébergeur à Abidjan</span>
+                                    <span>Hébergeur à Lagos</span>
                                 </div>
                             </div>
                         </div>
@@ -1650,11 +1658,21 @@
                         
                         <div class="faq-item">
                             <button class="faq-question">
+                                <span>Qu'est-ce que Minipay et quels pays sont supportés ?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                Minipay est une solution de paiement mobile accessible dans plus de 40 pays africains. Chez KermHosting, nous supportons actuellement les pays suivants : <strong>🇨🇲 Cameroun, 🇨🇮 Côte d'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie</strong> et d'autres à venir ! Vous payez dans votre devise locale avec un simple téléchargement de capture d'écran.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
                                 <span>Qu'est-ce que les coins ?</span>
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="faq-answer">
-                                Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA ou via PayPal et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.
+                                Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA, via PayPal ou Minipay et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.
                             </div>
                         </div>
                         
@@ -1707,7 +1725,7 @@
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>KermHosting</span>
                         </div>
-                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA et PayPal.</p>
+                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.</p>
                     </div>
                     
                     <div class="footer-links">
