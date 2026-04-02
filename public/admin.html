@@ -1499,7 +1499,8 @@
             }
 
             .financial-stats {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
+                gap: 16px;
             }
 
             .charts-grid {
@@ -1553,6 +1554,13 @@
 
             .top-bar-logo {
                 display: none;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .financial-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
         }
     </style>
@@ -1762,7 +1770,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Stats (toujours visibles) -->
+                <!-- Financial Stats (toujours visibles) - AJOUT DU 5ÈME CADRE FAPSHI -->
                 <div class="financial-stats" id="financialStats">
                     <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-chart-pie" style="margin-right: 5px;"></i>Revenus totaux</div>
@@ -1783,6 +1791,12 @@
                         <div class="financial-label"><i class="fas fa-exchange-alt" style="margin-right: 5px;"></i>Total transactions</div>
                         <div class="financial-amount" id="financialCount">0</div>
                         <div class="financial-sub">paiements réussis</div>
+                    </div>
+                    <!-- NOUVEAU CADRE POUR LE SOLDE FAPSHI -->
+                    <div class="financial-card" style="background: linear-gradient(135deg, #1a472a, #2e7d32);">
+                        <div class="financial-label"><i class="fas fa-wallet" style="margin-right: 5px;"></i>Solde Fapshi</div>
+                        <div class="financial-amount" id="fapshiBalance">-- FCFA</div>
+                        <div class="financial-sub" id="fapshiBalanceStatus">En attente...</div>
                     </div>
                 </div>
 
@@ -2435,7 +2449,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button>
-                <button class="btn btn-danger" onclick="deleteServer()">Supprimer</button>
+                <button class="btn btn-danger" onclick="deleteServer(currentServerId)">Supprimer</button>
                 <button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button>
             </div>
         </div>
@@ -2576,6 +2590,7 @@
         let currentUserId = null;
         let currentServerId = null;
         let charts = {};
+        let fapshiBalanceInterval = null;
 
         // Pagination
         const itemsPerPage = 5;
@@ -2682,6 +2697,40 @@
             return symbols[currency] || currency;
         }
 
+        // ===== FONCTION POUR RÉCUPÉRER LE SOLDE FAPSHI =====
+        async function loadFapshiBalance() {
+            try {
+                const res = await fetch('/api/fapshi/balance', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const balanceElement = document.getElementById('fapshiBalance');
+                    const statusElement = document.getElementById('fapshiBalanceStatus');
+                    
+                    if (data.balance !== undefined && data.balance !== null) {
+                        balanceElement.textContent = data.balance.toLocaleString() + ' FCFA';
+                        statusElement.textContent = '✅ Connecté';
+                        statusElement.style.color = '#4caf50';
+                    } else {
+                        balanceElement.textContent = '0 FCFA';
+                        statusElement.textContent = '⚠️ Non disponible';
+                        statusElement.style.color = '#ff9800';
+                    }
+                } else {
+                    document.getElementById('fapshiBalance').textContent = '0 FCFA';
+                    document.getElementById('fapshiBalanceStatus').textContent = '❌ Erreur';
+                    document.getElementById('fapshiBalanceStatus').style.color = '#f44336';
+                }
+            } catch (error) {
+                console.error('Erreur chargement solde Fapshi:', error);
+                document.getElementById('fapshiBalance').textContent = '0 FCFA';
+                document.getElementById('fapshiBalanceStatus').textContent = '❌ Hors ligne';
+                document.getElementById('fapshiBalanceStatus').style.color = '#f44336';
+            }
+        }
+
         // ===== TABS =====
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -2765,7 +2814,7 @@
             const tbody = document.getElementById('minipayTableBody');
             
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td>';
+                tbody.innerHTML = '<td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée<\/td>';
                 return;
             }
 
@@ -2780,7 +2829,6 @@
                 const pack = transaction.metadata?.pack;
                 const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
                 
-                // Calcul du montant converti avec devise
                 const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
                 const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
                 const symbol = getCurrencySymbol(currency);
@@ -2802,14 +2850,12 @@
                     statusText = 'Échouée';
                 }
                 
-                // Aperçu de la capture d'écran
                 let screenshotHtml = '-';
                 if (transaction.payment_screenshot || transaction.payment_proof) {
                     const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
                     screenshotHtml = `<img src="${screenshotUrl}" class="screenshot-preview" onclick="event.stopPropagation(); openScreenshotModal('${screenshotUrl}')" style="max-width: 60px; max-height: 50px; cursor: pointer;">`;
                 }
                 
-                // Actions selon le statut
                 let actions = '';
                 if (transaction.status === 'pending_manual_with_proof') {
                     actions = `
@@ -2861,7 +2907,6 @@
             const pack = transaction.metadata?.pack;
             const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
             
-            // Calcul du montant converti avec devise
             const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
             const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
             const symbol = getCurrencySymbol(currency);
@@ -2949,7 +2994,6 @@
                 ` : ''}
             `;
 
-            // Afficher la capture d'écran si disponible
             const screenshotContainer = document.getElementById('minipayScreenshotContainer');
             const screenshotImg = document.getElementById('minipayScreenshot');
             const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
@@ -2961,7 +3005,6 @@
                 screenshotContainer.style.display = 'none';
             }
 
-            // Ajouter les boutons d'action dans le modal si nécessaire
             const actionsDiv = document.getElementById('minipayModalActions');
             if (transaction.status === 'pending_manual_with_proof') {
                 actionsDiv.innerHTML = `
@@ -3138,7 +3181,7 @@
             const tbody = document.getElementById('paypalTableBody');
             
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td>';
                 return;
             }
 
@@ -3392,6 +3435,10 @@
                     document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
 
                     loadAdminData();
+                    loadFapshiBalance();
+                    
+                    if (fapshiBalanceInterval) clearInterval(fapshiBalanceInterval);
+                    fapshiBalanceInterval = setInterval(loadFapshiBalance, 30000);
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
@@ -3617,7 +3664,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3692,7 +3739,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3795,7 +3842,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3865,7 +3912,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td>';
+                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé<\/td>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
@@ -4362,6 +4409,11 @@
         }
 
         async function deleteServer(serverId) {
+            if (!serverId) {
+                showToast('error', 'ID du serveur non spécifié');
+                return;
+            }
+            
             document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
             document.getElementById('confirmTitle').textContent = 'Supprimer serveur';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce serveur ?';
@@ -4386,7 +4438,7 @@
                         }
                         loadAdminData();
                     } else {
-                        showToast('error', data.error);
+                        showToast('error', data.error || 'Erreur lors de la suppression');
                     }
                 } catch (error) {
                     showToast('error', 'Erreur réseau');
@@ -4797,6 +4849,7 @@
         function refreshAllData() {
             showToast('info', 'Actualisation des données...');
             loadAdminData();
+            loadFapshiBalance();
             if (document.getElementById('tab-paypal').classList.contains('active')) {
                 loadPaypalTransactions();
             }
@@ -4883,6 +4936,7 @@
         window.changeTransactionPage = changeTransactionPage;
         window.changeLogsPage = changeLogsPage;
         window.formatDateCameroon = formatDateCameroon;
+        window.loadFapshiBalance = loadFapshiBalance;
         
         // Fonctions maintenance
         window.loadMaintenanceConfig = loadMaintenanceConfig;
