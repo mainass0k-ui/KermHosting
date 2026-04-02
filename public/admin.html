@@ -1770,7 +1770,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Stats (toujours visibles) - AJOUT DU 5ÈME CADRE FAPSHI -->
+                <!-- Financial Stats (toujours visibles) - AJOUT DU CADRE FAPSHI -->
                 <div class="financial-stats" id="financialStats">
                     <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-chart-pie" style="margin-right: 5px;"></i>Revenus totaux</div>
@@ -1792,8 +1792,8 @@
                         <div class="financial-amount" id="financialCount">0</div>
                         <div class="financial-sub">paiements réussis</div>
                     </div>
-                    <!-- NOUVEAU CADRE POUR LE SOLDE FAPSHI -->
-                    <div class="financial-card" style="background: linear-gradient(135deg, #1a472a, #2e7d32);">
+                    <!-- NOUVEAU CADRE POUR LE SOLDE FAPSHI (même couleur que les autres) -->
+                    <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-wallet" style="margin-right: 5px;"></i>Solde Fapshi</div>
                         <div class="financial-amount" id="fapshiBalance">-- FCFA</div>
                         <div class="financial-sub" id="fapshiBalanceStatus">En attente...</div>
@@ -1843,7 +1843,6 @@
                     <div class="tab" onclick="switchTab('paypal')">
                         <i class="fab fa-paypal"></i>PayPal
                     </div>
-                    <!-- NOUVEL ONGLET: Minipay -->
                     <div class="tab" onclick="switchTab('minipay')">
                         <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>Minipay
                     </div>
@@ -2175,7 +2174,7 @@
                     </div>
                 </div>
 
-                <!-- NOUVEL ONGLET: Minipay -->
+                <!-- Tab: Minipay -->
                 <div class="tab-pane" id="tab-minipay">
                     <div class="search-bar">
                         <div class="search-row">
@@ -2387,7 +2386,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Édition serveur -->
+    <!-- MODAL: Édition serveur - CORRIGÉ (bouton supprimer avec currentServerId) -->
     <div class="modal" id="serverEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2828,11 +2827,9 @@
             paginatedTransactions.forEach(transaction => {
                 const pack = transaction.metadata?.pack;
                 const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
-                
-                const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
-                const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
-                const symbol = getCurrencySymbol(currency);
-                const amountDisplay = `${convertedAmount.toLocaleString()} ${symbol}`;
+                const amountDisplay = transaction.converted_amount 
+                    ? `${transaction.converted_amount} ${transaction.selected_currency}`
+                    : `${transaction.amount} FCFA`;
                 
                 let statusBadge = '';
                 let statusText = '';
@@ -2906,11 +2903,9 @@
 
             const pack = transaction.metadata?.pack;
             const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
-            
-            const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
-            const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
-            const symbol = getCurrencySymbol(currency);
-            const amountDisplay = `${convertedAmount.toLocaleString()} ${symbol}`;
+            const amountDisplay = transaction.converted_amount 
+                ? `${transaction.converted_amount} ${transaction.selected_currency}`
+                : `${transaction.amount} FCFA`;
             
             let statusText = '';
             if (transaction.status === 'pending_manual') statusText = 'En attente de capture';
@@ -2952,11 +2947,7 @@
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Devise</span>
-                    <span class="modal-info-value">${currency} (${symbol})</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Taux de conversion</span>
-                    <span class="modal-info-value">${transaction.conversion_rate ? `1 ${currency} = ${transaction.conversion_rate} FCFA` : '-'}</span>
+                    <span class="modal-info-value">${transaction.selected_currency || '-'}</span>
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Pays</span>
