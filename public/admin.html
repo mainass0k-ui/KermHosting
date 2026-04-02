@@ -2700,7 +2700,7 @@
         // ===== FONCTION POUR RÉCUPÉRER LE SOLDE FAPSHI =====
         async function loadFapshiBalance() {
             try {
-                const res = await fetch('/api/fapshi/balance', {
+                const res = await fetch('/api/admin/fapshi/balance', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
