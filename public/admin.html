@@ -1770,7 +1770,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Stats (toujours visibles) - AJOUT DU CADRE FAPSHI -->
+                <!-- Financial Stats (toujours visibles) -->
                 <div class="financial-stats" id="financialStats">
                     <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-chart-pie" style="margin-right: 5px;"></i>Revenus totaux</div>
@@ -1792,7 +1792,6 @@
                         <div class="financial-amount" id="financialCount">0</div>
                         <div class="financial-sub">paiements réussis</div>
                     </div>
-                    <!-- NOUVEAU CADRE POUR LE SOLDE FAPSHI (même couleur que les autres) -->
                     <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-wallet" style="margin-right: 5px;"></i>Solde Fapshi</div>
                         <div class="financial-amount" id="fapshiBalance">-- FCFA</div>
@@ -1901,7 +1900,7 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des utilisateurs...</p>
-                                  </td>
+                                </td>
                             </tbody>
                         </table>
                     </div>
@@ -1957,7 +1956,7 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des serveurs...</p>
-                                  </td>
+                                </td>
                             </tbody>
                         </table>
                     </div>
@@ -2011,7 +2010,7 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions...</p>
-                                  </td>
+                                </td>
                             </tbody>
                         </table>
                     </div>
@@ -2108,7 +2107,7 @@
                                 <td colspan="6" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des logs...</p>
-                                  </td>
+                                </td>
                             </tbody>
                          </table>
                     </div>
@@ -2168,7 +2167,7 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions PayPal...</p>
-                                  </td>
+                                </td>
                             </tbody>
                          </table>
                     </div>
@@ -2217,7 +2216,7 @@
                                 <td colspan="10" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions Minipay...</p>
-                                  </td>
+                                </td>
                             </tbody>
                          </table>
                     </div>
@@ -2386,7 +2385,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Édition serveur - CORRIGÉ (bouton supprimer avec currentServerId) -->
+    <!-- MODAL: Édition serveur (corrigée) -->
     <div class="modal" id="serverEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2813,7 +2812,7 @@
             const tbody = document.getElementById('minipayTableBody');
             
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée<\/td>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td></tr>';
                 return;
             }
 
@@ -3172,7 +3171,7 @@
             const tbody = document.getElementById('paypalTableBody');
             
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td></tr>';
                 return;
             }
 
@@ -3655,7 +3654,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td></tr>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3730,7 +3729,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3833,7 +3832,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3903,7 +3902,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé<\/td>';
+                tbody.innerHTML = '<td><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
