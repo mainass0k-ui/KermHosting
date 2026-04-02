@@ -1204,30 +1204,16 @@
             word-break: break-all;
         }
 
-        .modal-form-group {
-            margin-bottom: 16px;
+        .modal-screenshot {
+            text-align: center;
+            margin: 16px 0;
         }
 
-        .modal-form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .modal-input, .modal-select {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-color);
+        .modal-screenshot img {
+            max-width: 100%;
+            max-height: 300px;
             border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-
-        .modal-input:focus, .modal-select:focus {
-            outline: none;
-            border-color: var(--primary);
+            cursor: pointer;
         }
 
         .modal-actions {
@@ -1902,9 +1888,9 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des utilisateurs...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                        </table>
                     </div>
 
                     <!-- Pagination -->
@@ -1958,9 +1944,9 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des serveurs...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                        </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2012,9 +1998,9 @@
                                 <td colspan="8" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                        </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2109,9 +2095,9 @@
                                 <td colspan="6" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des logs...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                         </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2169,9 +2155,9 @@
                                 <td colspan="9" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions PayPal...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                         </table>
                     </div>
                 </div>
 
@@ -2218,9 +2204,9 @@
                                 <td colspan="10" class="loading-state">
                                     <i class="fas fa-circle-notch fa-spin"></i>
                                     <p>Chargement des transactions Minipay...</p>
-                                   </td>
+                                  </td>
                             </tbody>
-                           </table>
+                         </table>
                     </div>
                 </div>
 
@@ -2449,7 +2435,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button>
-                <button class="btn btn-danger" onclick="deleteServer(currentServerId)">Supprimer</button>
+                <button class="btn btn-danger" onclick="deleteServer()">Supprimer</button>
                 <button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button>
             </div>
         </div>
@@ -2679,6 +2665,23 @@
             return date.toLocaleString('fr-FR', options);
         }
 
+        // ===== FONCTION POUR LE SYMBOLE DE DEVISE =====
+        function getCurrencySymbol(currency) {
+            const symbols = {
+                'XAF': 'FCFA',
+                'XOF': 'FCFA',
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'CAD': 'C$',
+                'NGN': '₦',
+                'GHS': '₵',
+                'KES': 'KSh',
+                'ZAR': 'R'
+            };
+            return symbols[currency] || currency;
+        }
+
         // ===== TABS =====
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -2776,9 +2779,12 @@
             paginatedTransactions.forEach(transaction => {
                 const pack = transaction.metadata?.pack;
                 const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
-                const amountDisplay = transaction.converted_amount 
-                    ? `${transaction.converted_amount} ${transaction.selected_currency}`
-                    : `${transaction.amount} FCFA`;
+                
+                // Calcul du montant converti avec devise
+                const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
+                const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
+                const symbol = getCurrencySymbol(currency);
+                const amountDisplay = `${convertedAmount.toLocaleString()} ${symbol}`;
                 
                 let statusBadge = '';
                 let statusText = '';
@@ -2854,9 +2860,12 @@
 
             const pack = transaction.metadata?.pack;
             const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
-            const amountDisplay = transaction.converted_amount 
-                ? `${transaction.converted_amount} ${transaction.selected_currency}`
-                : `${transaction.amount} FCFA`;
+            
+            // Calcul du montant converti avec devise
+            const convertedAmount = transaction.converted_amount || transaction.metadata?.converted_amount || transaction.amount || 0;
+            const currency = transaction.selected_currency || transaction.metadata?.selected_currency || 'XAF';
+            const symbol = getCurrencySymbol(currency);
+            const amountDisplay = `${convertedAmount.toLocaleString()} ${symbol}`;
             
             let statusText = '';
             if (transaction.status === 'pending_manual') statusText = 'En attente de capture';
@@ -2890,11 +2899,19 @@
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Montant en FCFA</span>
-                    <span class="modal-info-value">${transaction.amount.toLocaleString()} FCFA</span>
+                    <span class="modal-info-value">${transaction.amount?.toLocaleString() || '0'} FCFA</span>
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Montant payé</span>
-                    <span class="modal-info-value">${amountDisplay}</span>
+                    <span class="modal-info-value"><strong>${amountDisplay}</strong></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Devise</span>
+                    <span class="modal-info-value">${currency} (${symbol})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Taux de conversion</span>
+                    <span class="modal-info-value">${transaction.conversion_rate ? `1 ${currency} = ${transaction.conversion_rate} FCFA` : '-'}</span>
                 </div>
                 <div class="modal-info-item">
                     <span class="modal-info-label">Pays</span>
@@ -3121,7 +3138,7 @@
             const tbody = document.getElementById('paypalTableBody');
             
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td>';
                 return;
             }
 
@@ -3600,7 +3617,7 @@
             const tbody = document.getElementById('usersTableBody');
             
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td>';
+                tbody.innerHTML = '<td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3675,7 +3692,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucun serveur trouvé</td>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3778,7 +3795,7 @@
             const tbody = document.getElementById('transactionsTableBody');
             
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td>';
+                tbody.innerHTML = '<td colspan="8" style="text-align: center;">Aucune transaction trouvée</td>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3848,7 +3865,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé<\/td>';
+                tbody.innerHTML = '<td colspan="6" style="text-align: center;">Aucun log trouvé</td>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
