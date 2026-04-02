@@ -1886,21 +1886,25 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Email</th>
-                                <th>Rôle</th>
-                                <th>Coins</th>
-                                <th>Serveurs</th>
-                                <th>Statut</th>
-                                <th>Inscription</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Coins</th>
+                                    <th>Serveurs</th>
+                                    <th>Statut</th>
+                                    <th>Inscription</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="usersTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des utilisateurs...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des utilisateurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1943,20 +1947,24 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Propriétaire</th>
-                                <th>Plan</th>
-                                <th>Statut</th>
-                                <th>Création</th>
-                                <th>Expiration</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Propriétaire</th>
+                                    <th>Plan</th>
+                                    <th>Statut</th>
+                                    <th>Création</th>
+                                    <th>Expiration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="serversTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des serveurs...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des serveurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1997,20 +2005,24 @@
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant</th>
-                                <th>Statut</th>
-                                <th>Moyen</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Moyen</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="transactionsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2096,20 +2108,24 @@
                     <div class="table-container">
                         <table id="logsTable">
                             <thead>
-                                <th>Date (Cameroun)</th>
-                                <th>Admin</th>
-                                <th>Action</th>
-                                <th>Cible</th>
-                                <th>Détails</th>
-                                <th>IP</th>
-                             </thead>
+                                <tr>
+                                    <th>Date (Cameroun)</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Cible</th>
+                                    <th>Détails</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
                             <tbody id="logsTableBody">
-                                <td colspan="6" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des logs...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="6" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des logs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
 
                     <!-- Pagination -->
@@ -2153,23 +2169,27 @@
                     <div class="table-container">
                         <table id="paypalTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant (FCFA)</th>
-                                <th>Montant (devise)</th>
-                                <th>Email PayPal</th>
-                                <th>Nom complet</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant (FCFA)</th>
+                                    <th>Montant (devise)</th>
+                                    <th>Email PayPal</th>
+                                    <th>Nom complet</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="paypalTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions PayPal...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions PayPal...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
                 </div>
 
@@ -2201,24 +2221,28 @@
                     <div class="table-container">
                         <table id="minipayTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Pack</th>
-                                <th>Coins</th>
-                                <th>Montant (local)</th>
-                                <th>Pays</th>
-                                <th>Téléphone</th>
-                                <th>Statut</th>
-                                <th>Capture</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Pack</th>
+                                    <th>Coins</th>
+                                    <th>Montant (local)</th>
+                                    <th>Pays</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut</th>
+                                    <th>Capture</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="minipayTableBody">
-                                <td colspan="10" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions Minipay...</p>
-                                </td>
+                                <tr>
+                                    <td colspan="10" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions Minipay...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
                 </div>
 
@@ -2307,7 +2331,7 @@
         </main>
     </div>
 
-    <!-- MODAL: Édition utilisateur -->
+    <!-- MODAL: Édition utilisateur (CORRIGÉ) -->
     <div class="modal" id="userEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2385,7 +2409,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Édition serveur (corrigée) -->
+    <!-- MODAL: Édition serveur (CORRIGÉ) -->
     <div class="modal" id="serverEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -3729,7 +3753,7 @@
             const tbody = document.getElementById('serversTableBody');
             
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
+                tbody.innerHTML = '<td><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3902,7 +3926,7 @@
             const tbody = document.getElementById('logsTableBody');
             
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<td><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
