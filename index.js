@@ -98,7 +98,7 @@ const PAYPAL_CONFIG = {
 // CONFIGURATION MINIPAY (PAIEMENT MANUEL)
 // =============================================
 const MINIPAY_CONFIG = {
-    phone_number: '659535227',
+    phone_number: '+237659535227',
     instructions: 'Envoyez le montant exact via Minipay à ce numéro, puis téléchargez la capture d\'écran de la transaction',
     appStoreUrl: 'https://apps.apple.com/app/id6504087257',
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.opera.minipay&pcampaignid=web_share',
@@ -2288,7 +2288,6 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
             return res.status(400).json({ success: false, error: 'Numéro de téléphone requis', code: 'PHONE_REQUIRED' });
         }
 
-        // Nettoyer le numéro de téléphone
         let cleanPhone = phone.replace(/\s/g, '');
         if (!/^[0-9]{9,12}$/.test(cleanPhone)) {
             return res.status(400).json({ success: false, error: 'Numéro de téléphone invalide', code: 'INVALID_PHONE' });
@@ -2297,13 +2296,39 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
         const pack = COIN_PACKS[pack_id];
         const totalCoins = pack.coins + (pack.bonus || 0);
         
-        // Trouver le pays sélectionné
         let selectedCountry = AFRICAN_COUNTRIES.find(c => c.code === country_code);
         if (!selectedCountry) {
             selectedCountry = AFRICAN_COUNTRIES.find(c => c.currency === 'XAF');
         }
         
-        const convertedAmount = convertFcfaToCurrency(pack.price_fcfa, selectedCountry.currency);
+        // ===== CORRECTION DU CALCUL DE CONVERSION =====
+        const USD_TO_FCFA = 615;
+        const amountInUsd = pack.price_fcfa / USD_TO_FCFA;
+        
+        // Taux de conversion USD vers devise locale (1 USD = X unités)
+        const conversionRates = {
+            'XAF': 615,    // 1 USD = 615 FCFA
+            'XOF': 615,    // 1 USD = 615 FCFA
+            'NGN': 1538,   // 1 USD = 1538 Naira
+            'GHS': 12.5,   // 1 USD = 12.5 Cedi
+            'KES': 135,    // 1 USD = 135 Shilling Kenyan
+            'TZS': 2650,   // 1 USD = 2650 Shilling Tanzanien
+            'UGX': 3800,   // 1 USD = 3800 Shilling Ougandais
+            'RWF': 1350,   // 1 USD = 1350 Franc Rwandais
+            'ZAR': 18.5,   // 1 USD = 18.5 Rand
+            'MAD': 10,     // 1 USD = 10 Dirham Marocain
+            'DZD': 135,    // 1 USD = 135 Dinar Algérien
+            'TND': 3.1,    // 1 USD = 3.1 Dinar Tunisien
+            'EUR': 0.937,  // 1 USD = 0.937 Euro
+            'GBP': 0.788,  // 1 USD = 0.788 Livre
+            'CAD': 1.366   // 1 USD = 1.366 Dollar Canadien
+        };
+        
+        const rate = conversionRates[selectedCountry.currency] || 615;
+        const convertedAmount = Math.round(amountInUsd * rate);
+        
+        console.log(`💰 Conversion Minipay: ${pack.price_fcfa} FCFA = ${amountInUsd.toFixed(2)} USD = ${convertedAmount} ${selectedCountry.currency}`);
+        
         const transactionId = generateTransactionId();
 
         const { data: transaction, error } = await supabase
@@ -2316,11 +2341,11 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
                 amount: pack.price_fcfa,
                 currency: selectedCountry.currency,
                 coins_amount: totalCoins,
-                status: 'pending_manual', // Statut spécial pour Minipay
+                status: 'pending_manual',
                 medium: 'MINIPAY',
                 minipay_phone: cleanPhone,
                 selected_currency: selectedCountry.currency,
-                converted_amount: convertedAmount,
+                converted_amount: convertedAmount,  // ← MONTANT CORRECT
                 country: selectedCountry.name,
                 metadata: { 
                     pack: {
@@ -2333,8 +2358,8 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
                     pack_id,
                     country_code,
                     country_name: selectedCountry.name,
-                    converted_amount: convertedAmount,
-                    local_currency: selectedCountry.currency,
+                    amount_in_usd: amountInUsd,
+                    conversion_rate: rate,
                     minipay_number: MINIPAY_CONFIG.phone_number
                 }
             }])
@@ -2350,14 +2375,12 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
             });
         }
 
-        // Envoyer email de confirmation à l'utilisateur
         await sendEmail(
             req.user.email,
             '⏳ Paiement Minipay - En attente de confirmation',
             getMinipayPendingHtml(req.user.username, pack, convertedAmount, getCurrencySymbol(selectedCountry.currency))
         );
 
-        // Notifier l'admin
         const adminHtml = getMinipayAdminNotificationHtml(req.user, pack, transaction, 'capture à uploader');
         await sendEmail(
             'bookmakerp@gmail.com',
