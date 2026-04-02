@@ -5411,6 +5411,31 @@ app.get('/api/admin/financial-stats', authenticateToken, requireAdmin, async (re
     }
 });
 
+app.get('/api/admin/fapshi/balance', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const balance = await fapshiBalance();
+        
+        if (balance.success) {
+            res.json({
+                success: true,
+                balance: balance.balance,
+                currency: balance.currency || 'XAF'
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: balance.message || 'Erreur lors de la récupération du solde Fapshi'
+            });
+        }
+    } catch (error) {
+        console.error('❌ Erreur récupération solde Fapshi:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erreur serveur'
+        });
+    }
+});
+
 // =============================================
 // NOUVELLE ROUTE ADMIN - NETTOYAGE DES UTILISATEURS PTERODACTYL ORPHELINS
 // =============================================
