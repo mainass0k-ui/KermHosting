@@ -19,6 +19,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
+    <!-- hCaptcha -->
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    
     <title>Inscription - KermHosting</title>
     
     <style>
@@ -240,73 +243,10 @@
             text-align: right;
         }
 
-        /* CAPTCHA BUTTON STYLES - Version sans API externe */
-        .captcha-button {
-            background: var(--bg-hover);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .h-captcha {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .captcha-button:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .captcha-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .captcha-checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-input);
-            display: flex;
-            align-items: center;
             justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .captcha-checkbox.verified {
-            background: var(--success);
-            border-color: var(--success);
-        }
-
-        .captcha-checkbox i {
-            color: white;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .captcha-checkbox.verified i {
-            opacity: 1;
-        }
-
-        .captcha-text {
-            font-size: 0.9rem;
-        }
-
-        .captcha-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .captcha-logo i {
-            font-size: 1.2rem;
+            margin: 10px 0;
         }
 
         .auth-btn {
@@ -496,7 +436,6 @@
             font-size: 1.2rem;
         }
 
-        /* Badge flottant */
         .captcha-badge-status {
             position: fixed;
             bottom: 20px;
@@ -633,26 +572,9 @@
                            placeholder="KERMXXXXXX">
                 </div>
 
-                <!-- CAPTCHA AntiBot - Version intégrée sans API externe -->
+                <!-- hCaptcha Widget -->
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-shield-alt"></i>
-                        Vérification AntiBot
-                    </label>
-                    <div class="captcha-button" id="captchaButton">
-                        <div class="captcha-left">
-                            <div class="captcha-checkbox" id="captchaCheckbox">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="captcha-text">
-                                <strong>Je ne suis pas un robot</strong>
-                            </div>
-                        </div>
-                        <div class="captcha-logo">
-                            <i class="fas fa-robot"></i>
-                            <span>AntiBot</span>
-                        </div>
-                    </div>
+                    <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001" data-callback="onCaptchaSuccess"></div>
                 </div>
 
                 <div class="checkbox-group">
@@ -671,8 +593,8 @@
                 </div>
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
-                    <span>Vérification requise</span>
-                    <i class="fas fa-lock"></i>
+                    <span>Vérification en cours...</span>
+                    <i class="fas fa-spinner fa-pulse"></i>
                 </button>
             </form>
 
@@ -685,26 +607,23 @@
         </div>
     </div>
 
-    <!-- Badge flottant - seulement le statut, pas de message qui pop -->
     <div class="captcha-badge-status" id="captchaBadge">
         <div class="captcha-waiting-badge">
             <i class="fas fa-shield-alt"></i>
-            <span>En attente de vérification...</span>
+            <span>Vérification en attente...</span>
         </div>
     </div>
 
     <script>
-        // ===== VÉRIFICATION SI DÉJÀ CONNECTÉ =====
+        // Vérification si déjà connecté
         async function checkAlreadyLoggedIn() {
             const token = localStorage.getItem('token');
-            
             if (!token) return false;
             
             try {
                 const response = await fetch('/api/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.user) {
@@ -715,78 +634,21 @@
             } catch (error) {
                 localStorage.removeItem('token');
             }
-            
             return false;
         }
 
         let captchaVerified = false;
+        let captchaToken = null;
 
-        // Détection du comportement humain - version silencieuse (pas de message pop)
-        function initCaptcha() {
-            let score = 0;
-            const startTime = Date.now();
-            
-            // Détection souris
-            let mouseMoves = 0;
-            document.addEventListener('mousemove', function() {
-                mouseMoves++;
-                if(mouseMoves > 5 && score < 2) {
-                    score = 2;
-                    validateCaptcha();
-                }
-            });
-            
-            // Clic sur le bouton CAPTCHA
-            const captchaBtn = document.getElementById('captchaButton');
-            captchaBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                if(score >= 2) {
-                    validateCaptcha();
-                }
-            });
-            
-            // Temps passé sur la page
-            setTimeout(() => {
-                if(Date.now() - startTime > 3000 && score < 2) {
-                    score = 2;
-                    validateCaptcha();
-                }
-            }, 3000);
-            
-            // Détection clavier
-            let keyPresses = 0;
-            document.addEventListener('keydown', function() {
-                keyPresses++;
-                if(keyPresses > 2 && score < 2) {
-                    score = 2;
-                    validateCaptcha();
-                }
-            });
-            
-            // Détection scroll
-            let scrollCount = 0;
-            window.addEventListener('scroll', function() {
-                scrollCount++;
-                if(scrollCount > 1 && score < 2) {
-                    score = 2;
-                    validateCaptcha();
-                }
-            });
-        }
-        
-        function validateCaptcha() {
-            if (captchaVerified) return;
-            
+        // Callback hCaptcha
+        window.onCaptchaSuccess = function(token) {
             captchaVerified = true;
-            const checkbox = document.getElementById('captchaCheckbox');
-            checkbox.classList.add('verified');
+            captchaToken = token;
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
             
-            // Mettre à jour le badge (pas de message pop)
             const badge = document.getElementById('captchaBadge');
             badge.innerHTML = `
                 <div class="captcha-verified-badge">
@@ -794,7 +656,7 @@
                     <span>✓ Site vérifié</span>
                 </div>
             `;
-        }
+        };
 
         function togglePassword() {
             const password = document.getElementById('password');
@@ -849,7 +711,6 @@
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
             const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
-            
             container.innerHTML = `
                 <div class="message ${type}">
                     <i class="fas ${icons[type]}"></i>
@@ -867,7 +728,6 @@
             const referral = document.getElementById('referral').value;
             const terms = document.getElementById('terms').checked;
             const newsletter = document.getElementById('newsletter').checked;
-            
             const submitBtn = document.getElementById('submitBtn');
             
             if (!terms) {
@@ -876,7 +736,7 @@
             }
             
             if (!captchaVerified) {
-                showMessage('error', 'Veuillez compléter la vérification anti-bot');
+                showMessage('error', 'Veuillez compléter la vérification');
                 return;
             }
             
@@ -888,20 +748,16 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        username, 
-                        email, 
-                        password, 
-                        referral_code: referral,
-                        newsletter,
-                        humanVerified: true
+                        username, email, password, 
+                        referral_code: referral, newsletter,
+                        'h-captcha-response': captchaToken
                     })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage('success', 'Compte créé ! Redirection vers la vérification email...');
-                    
+                    showMessage('success', 'Compte créé ! Redirection...');
                     setTimeout(() => {
                         window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
                     }, 2000);
@@ -909,16 +765,17 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
                     showMessage('error', data.error || 'Erreur lors de l\'inscription');
-                    captchaVerified = false;
-                    document.getElementById('captchaCheckbox').classList.remove('verified');
-                    document.getElementById('submitBtn').disabled = true;
-                    document.getElementById('submitBtn').innerHTML = '<span>Vérification requise</span><i class="fas fa-lock"></i>';
                     
-                    const badge = document.getElementById('captchaBadge');
-                    badge.innerHTML = `
+                    if(window.hcaptcha) window.hcaptcha.reset();
+                    captchaVerified = false;
+                    captchaToken = null;
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').innerHTML = '<span>Vérification en cours...</span><i class="fas fa-spinner fa-pulse"></i>';
+                    
+                    document.getElementById('captchaBadge').innerHTML = `
                         <div class="captcha-waiting-badge">
                             <i class="fas fa-shield-alt"></i>
-                            <span>En attente de vérification...</span>
+                            <span>Vérification en attente...</span>
                         </div>
                     `;
                 }
@@ -929,9 +786,6 @@
             }
         });
 
-        // Initialisation
-        initCaptcha();
-        
         document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', async () => {
             await checkAlreadyLoggedIn();
