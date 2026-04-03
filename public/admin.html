@@ -1015,8 +1015,8 @@
 
         /* ===== IMAGE PREVIEW ===== */
         .screenshot-preview {
-            max-width: 200px;
-            max-height: 150px;
+            max-width: 60px;
+            max-height: 50px;
             border-radius: var(--radius-md);
             cursor: pointer;
             transition: transform 0.2s;
@@ -1180,6 +1180,7 @@
         .modal-info-item {
             display: flex;
             flex-wrap: wrap;
+            align-items: baseline;
             gap: 8px;
             margin-bottom: 12px;
             padding-bottom: 12px;
@@ -1196,12 +1197,39 @@
             color: var(--text-secondary);
             font-size: 0.9rem;
             min-width: 120px;
+            font-weight: 500;
         }
 
         .modal-info-value {
             font-weight: 600;
-            color: var(--primary);
+            color: var(--text-primary);
             word-break: break-all;
+        }
+
+        .modal-form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .modal-input, .modal-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .modal-input:focus, .modal-select:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .modal-screenshot {
@@ -1886,30 +1914,25 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Email</th>
-                                    <th>Rôle</th>
-                                    <th>Coins</th>
-                                    <th>Serveurs</th>
-                                    <th>Statut</th>
-                                    <th>Inscription</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Coins</th>
+                                <th>Serveurs</th>
+                                <th>Statut</th>
+                                <th>Inscription</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="usersTableBody">
-                                <tr>
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des utilisateurs...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="9" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des utilisateurs...</p>
+                                  </td>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="pagination" id="userPagination">
                         <button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn" disabled>
                             <i class="fas fa-chevron-left"></i>
@@ -1947,29 +1970,24 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nom</th>
-                                    <th>Propriétaire</th>
-                                    <th>Plan</th>
-                                    <th>Statut</th>
-                                    <th>Création</th>
-                                    <th>Expiration</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Propriétaire</th>
+                                <th>Plan</th>
+                                <th>Statut</th>
+                                <th>Création</th>
+                                <th>Expiration</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="serversTableBody">
-                                <tr>
-                                    <td colspan="8" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des serveurs...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des serveurs...</p>
+                                  </td>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="pagination" id="serverPagination">
                         <button class="page-btn" onclick="changeServerPage('prev')" id="serverPrevBtn" disabled>
                             <i class="fas fa-chevron-left"></i>
@@ -2005,29 +2023,24 @@
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Type</th>
-                                    <th>Montant</th>
-                                    <th>Statut</th>
-                                    <th>Moyen</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Type</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Moyen</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="transactionsTableBody">
-                                <tr>
-                                    <td colspan="8" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des transactions...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions...</p>
+                                  </td>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="pagination" id="transactionPagination">
                         <button class="page-btn" onclick="changeTransactionPage('prev')" id="transactionPrevBtn" disabled>
                             <i class="fas fa-chevron-left"></i>
@@ -2108,27 +2121,22 @@
                     <div class="table-container">
                         <table id="logsTable">
                             <thead>
-                                <tr>
-                                    <th>Date (Cameroun)</th>
-                                    <th>Admin</th>
-                                    <th>Action</th>
-                                    <th>Cible</th>
-                                    <th>Détails</th>
-                                    <th>IP</th>
-                                </tr>
-                            </thead>
+                                <th>Date (Cameroun)</th>
+                                <th>Admin</th>
+                                <th>Action</th>
+                                <th>Cible</th>
+                                <th>Détails</th>
+                                <th>IP</th>
+                             </thead>
                             <tbody id="logsTableBody">
-                                <tr>
-                                    <td colspan="6" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des logs...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="6" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des logs...</p>
+                                  </td>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="pagination" id="logsPagination">
                         <button class="page-btn" onclick="changeLogsPage('prev')" id="logsPrevBtn" disabled>
                             <i class="fas fa-chevron-left"></i>
@@ -2169,27 +2177,23 @@
                     <div class="table-container">
                         <table id="paypalTable">
                             <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Utilisateur</th>
-                                    <th>Type</th>
-                                    <th>Montant (FCFA)</th>
-                                    <th>Montant (devise)</th>
-                                    <th>Email PayPal</th>
-                                    <th>Nom complet</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Type</th>
+                                <th>Montant (FCFA)</th>
+                                <th>Montant (devise)</th>
+                                <th>Email PayPal</th>
+                                <th>Nom complet</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="paypalTableBody">
-                                <tr>
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des transactions PayPal...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="9" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions PayPal...</p>
+                                  </td>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
                 </div>
 
@@ -2221,28 +2225,24 @@
                     <div class="table-container">
                         <table id="minipayTable">
                             <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Utilisateur</th>
-                                    <th>Pack</th>
-                                    <th>Coins</th>
-                                    <th>Montant (local)</th>
-                                    <th>Pays</th>
-                                    <th>Téléphone</th>
-                                    <th>Statut</th>
-                                    <th>Capture</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Pack</th>
+                                <th>Coins</th>
+                                <th>Montant (local)</th>
+                                <th>Pays</th>
+                                <th>Téléphone</th>
+                                <th>Statut</th>
+                                <th>Capture</th>
+                                <th>Actions</th>
+                             </thead>
                             <tbody id="minipayTableBody">
-                                <tr>
-                                    <td colspan="10" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement des transactions Minipay...</p>
-                                    </td>
-                                </tr>
+                                <td colspan="10" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des transactions Minipay...</p>
+                                  </td>
                             </tbody>
-                        </table>
+                         </table>
                     </div>
                 </div>
 
@@ -2331,7 +2331,7 @@
         </main>
     </div>
 
-    <!-- MODAL: Édition utilisateur (CORRIGÉ) -->
+    <!-- MODAL: Édition utilisateur -->
     <div class="modal" id="userEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2409,7 +2409,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Édition serveur (CORRIGÉ) -->
+    <!-- MODAL: Édition serveur - CORRIGÉ -->
     <div class="modal" id="serverEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2471,7 +2471,7 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button>
-                <button class="btn btn-danger" onclick="deleteServer(currentServerId)">Supprimer</button>
+                <button class="btn btn-danger" id="deleteServerBtn" onclick="deleteServer(currentServerId)">Supprimer</button>
                 <button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button>
             </div>
         </div>
@@ -2488,7 +2488,6 @@
             </div>
             <div class="modal-body">
                 <div class="modal-info" id="minipayTransactionDetails">
-                    <!-- Rempli dynamiquement -->
                 </div>
                 <div class="modal-screenshot" id="minipayScreenshotContainer" style="display: none;">
                     <p><strong>Capture d'écran :</strong></p>
@@ -2545,7 +2544,6 @@
             </div>
             <div class="modal-body">
                 <div class="modal-info" id="transactionDetails">
-                    <!-- Rempli dynamiquement -->
                 </div>
             </div>
             <div class="modal-actions">
@@ -2565,7 +2563,6 @@
             </div>
             <div class="modal-body">
                 <div class="modal-info" id="cleanupStats" style="display: none;">
-                    <!-- Rempli dynamiquement -->
                 </div>
                 <div id="cleanupInitial">
                     <p>Cette action va analyser tous les utilisateurs Pterodactyl et supprimer ceux qui :</p>
@@ -2580,7 +2577,6 @@
                     <p>Nettoyage en cours, veuillez patienter...</p>
                 </div>
                 <div id="cleanupResult" style="display: none;">
-                    <!-- Rempli dynamiquement -->
                 </div>
             </div>
             <div class="modal-actions" id="cleanupActions">
@@ -2617,26 +2613,15 @@
         // Pagination
         const itemsPerPage = 5;
         
-        // Users pagination
         let filteredUsers = [];
         let currentUserPage = 1;
-        
-        // Servers pagination
         let filteredServers = [];
         let currentServerPage = 1;
-        
-        // Transactions pagination
         let filteredTransactions = [];
         let currentTransactionPage = 1;
-        
-        // Logs pagination
         let filteredLogs = [];
         let currentLogsPage = 1;
-        
-        // PayPal pagination
         let currentPaypalPage = 1;
-        
-        // Minipay pagination
         let currentMinipayPage = 1;
 
         // ===== SIDEBAR FUNCTIONS =====
@@ -2678,16 +2663,14 @@
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                 <span>${message}</span>
             `;
-
             document.body.appendChild(toast);
-
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // ===== FORMAT DATE CAMEROUN (UTC+1) =====
+        // ===== FORMAT DATE CAMEROUN =====
         function formatDateCameroon(dateString) {
             const date = new Date(dateString);
             const options = {
@@ -2726,11 +2709,9 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     const balanceElement = document.getElementById('fapshiBalance');
                     const statusElement = document.getElementById('fapshiBalanceStatus');
-                    
                     if (data.balance !== undefined && data.balance !== null) {
                         balanceElement.textContent = data.balance.toLocaleString() + ' FCFA';
                         statusElement.textContent = '✅ Connecté';
@@ -2757,19 +2738,11 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-            
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
-
-            if (tabId === 'paypal') {
-                loadPaypalTransactions();
-            }
-            if (tabId === 'minipay') {
-                loadMinipayTransactions();
-            }
-            if (tabId === 'maintenance') {
-                loadMaintenanceConfig();
-            }
+            if (tabId === 'paypal') loadPaypalTransactions();
+            if (tabId === 'minipay') loadMinipayTransactions();
+            if (tabId === 'maintenance') loadMaintenanceConfig();
         }
 
         // ===== LOAD MINIPAY TRANSACTIONS =====
@@ -2779,7 +2752,6 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     allMinipayTransactions = data.transactions || [];
                     filteredMinipayTransactions = [...allMinipayTransactions];
@@ -2800,15 +2772,12 @@
         function filterMinipayTransactions() {
             const search = document.getElementById('minipaySearch').value.toLowerCase();
             const filter = document.getElementById('minipayFilter').value;
-            
             filteredMinipayTransactions = allMinipayTransactions.filter(trans => {
                 const matchesSearch = (trans.profiles?.username?.toLowerCase() || '').includes(search) ||
                                     (trans.profiles?.email?.toLowerCase() || '').includes(search) ||
                                     (trans.id || '').toLowerCase().includes(search) ||
                                     (trans.minipay_phone || '').includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 switch(filter) {
                     case 'pending_manual': return trans.status === 'pending_manual';
                     case 'pending_manual_with_proof': return trans.status === 'pending_manual_with_proof';
@@ -2817,7 +2786,6 @@
                     default: return true;
                 }
             });
-            
             currentMinipayPage = 1;
             document.getElementById('minipayCount').textContent = filteredMinipayTransactions.length;
             displayMinipayTransactions();
@@ -2834,26 +2802,21 @@
 
         function displayMinipayTransactions() {
             const tbody = document.getElementById('minipayTableBody');
-            
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td></tr>';
                 return;
             }
-
             const totalPages = Math.ceil(filteredMinipayTransactions.length / itemsPerPage);
             const startIndex = (currentMinipayPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredMinipayTransactions.length);
             const paginatedTransactions = filteredMinipayTransactions.slice(startIndex, endIndex);
-
             let html = '';
-            
             paginatedTransactions.forEach(transaction => {
                 const pack = transaction.metadata?.pack;
                 const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
                 const amountDisplay = transaction.converted_amount 
                     ? `${transaction.converted_amount} ${transaction.selected_currency}`
                     : `${transaction.amount} FCFA`;
-                
                 let statusBadge = '';
                 let statusText = '';
                 if (transaction.status === 'pending_manual') {
@@ -2869,13 +2832,11 @@
                     statusBadge = 'badge-danger';
                     statusText = 'Échouée';
                 }
-                
                 let screenshotHtml = '-';
                 if (transaction.payment_screenshot || transaction.payment_proof) {
                     const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
                     screenshotHtml = `<img src="${screenshotUrl}" class="screenshot-preview" onclick="event.stopPropagation(); openScreenshotModal('${screenshotUrl}')" style="max-width: 60px; max-height: 50px; cursor: pointer;">`;
                 }
-                
                 let actions = '';
                 if (transaction.status === 'pending_manual_with_proof') {
                     actions = `
@@ -2900,7 +2861,6 @@
                         </div>
                     `;
                 }
-                
                 html += `
                     <tr>
                         <td>${formatDateCameroon(transaction.created_at)}</td>
@@ -2916,32 +2876,27 @@
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
         function viewMinipayTransaction(transactionId) {
             const transaction = allMinipayTransactions.find(t => t.id === transactionId);
             if (!transaction) return;
-
             const pack = transaction.metadata?.pack;
             const totalCoins = (pack?.coins || 0) + (pack?.bonus || 0);
             const amountDisplay = transaction.converted_amount 
                 ? `${transaction.converted_amount} ${transaction.selected_currency}`
                 : `${transaction.amount} FCFA`;
-            
             let statusText = '';
             if (transaction.status === 'pending_manual') statusText = 'En attente de capture';
             else if (transaction.status === 'pending_manual_with_proof') statusText = 'Capture reçue, en attente de confirmation';
             else if (transaction.status === 'successful') statusText = 'Confirmée';
             else if (transaction.status === 'failed') statusText = 'Échouée';
-            
             let statusColor = '';
             if (transaction.status === 'pending_manual') statusColor = 'badge-warning';
             else if (transaction.status === 'pending_manual_with_proof') statusColor = 'badge-info';
             else if (transaction.status === 'successful') statusColor = 'badge-success';
             else if (transaction.status === 'failed') statusColor = 'badge-danger';
-            
             const detailsDiv = document.getElementById('minipayTransactionDetails');
             detailsDiv.innerHTML = `
                 <div class="modal-info-item">
@@ -3007,18 +2962,15 @@
                 </div>
                 ` : ''}
             `;
-
             const screenshotContainer = document.getElementById('minipayScreenshotContainer');
             const screenshotImg = document.getElementById('minipayScreenshot');
             const screenshotUrl = transaction.payment_screenshot || transaction.payment_proof;
-            
             if (screenshotUrl) {
                 screenshotImg.src = screenshotUrl;
                 screenshotContainer.style.display = 'block';
             } else {
                 screenshotContainer.style.display = 'none';
             }
-
             const actionsDiv = document.getElementById('minipayModalActions');
             if (transaction.status === 'pending_manual_with_proof') {
                 actionsDiv.innerHTML = `
@@ -3033,7 +2985,6 @@
             } else {
                 actionsDiv.innerHTML = `<button class="btn btn-primary" onclick="closeModal('minipayTransactionModal')">Fermer</button>`;
             }
-
             openModal('minipayTransactionModal');
         }
 
@@ -3046,13 +2997,11 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
             document.getElementById('confirmTitle').textContent = 'Confirmer le paiement Minipay';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir confirmer ce paiement ? L\'utilisateur recevra ses coins immédiatement.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-success';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
                 showToast('info', 'Confirmation en cours...');
-                
                 try {
                     const res = await fetch(`/api/admin/minipay/confirm/${transactionId}`, {
                         method: 'POST',
@@ -3062,9 +3011,7 @@
                         },
                         body: JSON.stringify({ admin_notes: 'Paiement confirmé par admin' })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Transaction Minipay confirmée avec succès !');
                         loadMinipayTransactions();
@@ -3077,7 +3024,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -3085,13 +3031,11 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
             document.getElementById('confirmTitle').textContent = 'Paiement Minipay échoué';
             document.getElementById('confirmMessage').textContent = 'Marquer ce paiement comme échoué ? L\'utilisateur recevra un email d\'échec.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
                 showToast('info', 'Traitement en cours...');
-                
                 try {
                     const res = await fetch(`/api/admin/minipay/fail/${transactionId}`, {
                         method: 'POST',
@@ -3101,9 +3045,7 @@
                         },
                         body: JSON.stringify({ admin_notes: 'Paiement non vérifié' })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Transaction Minipay marquée comme échouée');
                         loadMinipayTransactions();
@@ -3116,7 +3058,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -3137,7 +3078,6 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     allPaypalTransactions = data.transactions || [];
                     filteredPaypalTransactions = [...allPaypalTransactions];
@@ -3158,15 +3098,12 @@
         function filterPaypalTransactions() {
             const search = document.getElementById('paypalSearch').value.toLowerCase();
             const filter = document.getElementById('paypalFilter').value;
-            
             filteredPaypalTransactions = allPaypalTransactions.filter(trans => {
                 const matchesSearch = (trans.paypal_email?.toLowerCase() || '').includes(search) ||
                                     (trans.paypal_name?.toLowerCase() || '').includes(search) ||
                                     (trans.profiles?.username?.toLowerCase() || '').includes(search) ||
                                     (trans.id || '').toLowerCase().includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 switch(filter) {
                     case 'pending': return trans.status === 'pending';
                     case 'successful': return trans.status === 'successful';
@@ -3176,7 +3113,6 @@
                     default: return true;
                 }
             });
-            
             currentPaypalPage = 1;
             document.getElementById('paypalCount').textContent = filteredPaypalTransactions.length;
             displayPaypalTransactions();
@@ -3193,41 +3129,29 @@
 
         function displayPaypalTransactions() {
             const tbody = document.getElementById('paypalTableBody');
-            
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td></tr>';
                 return;
             }
-
             const totalPages = Math.ceil(filteredPaypalTransactions.length / itemsPerPage);
             const startIndex = (currentPaypalPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredPaypalTransactions.length);
             const paginatedTransactions = filteredPaypalTransactions.slice(startIndex, endIndex);
-
             let html = '';
-            
             paginatedTransactions.forEach(transaction => {
                 const typeText = {
                     'coins_purchase': 'Achat de coins',
                     'server_purchase': 'Achat de serveur',
                     'server_renewal': 'Renouvellement'
                 }[transaction.type] || transaction.type;
-                
                 const amountDisplay = transaction.paypal_amount_converted 
                     ? `${transaction.paypal_amount_converted} ${transaction.paypal_currency}`
                     : `${transaction.amount} FCFA`;
-                
                 let statusBadge = '';
-                if (transaction.status === 'pending') {
-                    statusBadge = '<span class="badge badge-warning">En attente</span>';
-                } else if (transaction.status === 'successful') {
-                    statusBadge = '<span class="badge badge-success">Confirmée</span>';
-                } else if (transaction.status === 'failed') {
-                    statusBadge = '<span class="badge badge-danger">Échouée</span>';
-                } else {
-                    statusBadge = `<span class="badge badge-info">${transaction.status}</span>`;
-                }
-                
+                if (transaction.status === 'pending') statusBadge = '<span class="badge badge-warning">En attente</span>';
+                else if (transaction.status === 'successful') statusBadge = '<span class="badge badge-success">Confirmée</span>';
+                else if (transaction.status === 'failed') statusBadge = '<span class="badge badge-danger">Échouée</span>';
+                else statusBadge = `<span class="badge badge-info">${transaction.status}</span>`;
                 let actions = '';
                 if (transaction.status === 'pending') {
                     actions = `
@@ -3252,7 +3176,6 @@
                         </div>
                     `;
                 }
-                
                 html += `
                     <tr>
                         <td>${formatDateCameroon(transaction.created_at)}</td>
@@ -3267,7 +3190,6 @@
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
@@ -3275,13 +3197,11 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
             document.getElementById('confirmTitle').textContent = 'Confirmer le paiement PayPal';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr d\'avoir reçu ce paiement ? L\'utilisateur recevra ses coins/serveur immédiatement.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-success';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
                 showToast('info', 'Confirmation en cours...');
-                
                 try {
                     const res = await fetch(`/api/admin/paypal/confirm/${transactionId}`, {
                         method: 'POST',
@@ -3291,9 +3211,7 @@
                         },
                         body: JSON.stringify({ admin_notes: 'Paiement confirmé par admin' })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Transaction PayPal confirmée avec succès !');
                         loadPaypalTransactions();
@@ -3305,7 +3223,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -3313,13 +3230,11 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
             document.getElementById('confirmTitle').textContent = 'Paiement PayPal échoué';
             document.getElementById('confirmMessage').textContent = 'Marquer ce paiement comme échoué ? L\'utilisateur recevra un email d\'échec.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
                 showToast('info', 'Traitement en cours...');
-                
                 try {
                     const res = await fetch(`/api/admin/paypal/fail/${transactionId}`, {
                         method: 'POST',
@@ -3329,9 +3244,7 @@
                         },
                         body: JSON.stringify({ admin_notes: 'Paiement non reçu' })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Transaction PayPal marquée comme échouée');
                         loadPaypalTransactions();
@@ -3343,27 +3256,22 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
         function viewPaypalTransaction(transactionId) {
             const transaction = allPaypalTransactions.find(t => t.id === transactionId);
             if (!transaction) return;
-
             const detailsDiv = document.getElementById('transactionDetails');
-            
             let statusText = '';
             if (transaction.status === 'pending') statusText = 'En attente';
             else if (transaction.status === 'successful') statusText = 'Confirmée';
             else if (transaction.status === 'failed') statusText = 'Échouée';
             else statusText = transaction.status;
-            
             let statusColor = '';
             if (transaction.status === 'pending') statusColor = 'badge-warning';
             else if (transaction.status === 'successful') statusColor = 'badge-success';
             else if (transaction.status === 'failed') statusColor = 'badge-danger';
-            
             detailsDiv.innerHTML = `
                 <div class="modal-info-item">
                     <span class="modal-info-label">ID Transaction</span>
@@ -3426,7 +3334,6 @@
                 </div>
                 ` : ''}
             `;
-
             openModal('transactionModal');
         }
 
@@ -3437,20 +3344,16 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     userData = data.user;
-                    
                     document.getElementById('sidebarUserName').textContent = userData.username;
                     document.getElementById('sidebarUserEmail').textContent = userData.email;
                     document.getElementById('sidebarUserBadge').textContent = userData.role;
                     document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
                     document.getElementById('sidebarCoins').textContent = userData.coins;
                     document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
-
                     loadAdminData();
                     loadFapshiBalance();
-                    
                     if (fapshiBalanceInterval) clearInterval(fapshiBalanceInterval);
                     fapshiBalanceInterval = setInterval(loadFapshiBalance, 30000);
                 } else {
@@ -3470,22 +3373,17 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     financialStats = data.financial;
-
                     document.getElementById('financialTotal').textContent = data.financial.total_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = data.financial.today_revenue.toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = data.financial.avg_transaction.toLocaleString() + ' FCFA';
                     document.getElementById('financialCount').textContent = data.financial.total_transactions;
-                    
                     document.getElementById('financialTodaySub').textContent = data.financial.today_transactions + ' transactions';
-                    
                     document.getElementById('financialCoinsPurchases').textContent = (data.financial.by_type?.coins_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialServerPurchases').textContent = (data.financial.by_type?.server_purchase || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialRenewals').textContent = (data.financial.by_type?.server_renewal || 0).toLocaleString() + ' FCFA';
                     document.getElementById('financialOther').textContent = (data.financial.by_type?.other || 0).toLocaleString() + ' FCFA';
-
                     if (data.financial.top_buyers && data.financial.top_buyers.length > 0) {
                         let buyersHtml = '';
                         data.financial.top_buyers.slice(0, 10).forEach((buyer, index) => {
@@ -3507,7 +3405,6 @@
                         });
                         document.getElementById('topBuyersList').innerHTML = buyersHtml;
                     }
-
                     updateCharts(data.financial);
                 }
             } catch (error) {
@@ -3519,7 +3416,6 @@
         function updateCharts(financial) {
             if (charts.revenue) charts.revenue.destroy();
             if (charts.type) charts.type.destroy();
-
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             charts.revenue = new Chart(revenueCtx, {
                 type: 'line',
@@ -3537,27 +3433,13 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#F3F4F6' }
-                        }
-                    },
+                    plugins: { legend: { labels: { color: '#F3F4F6' } } },
                     scales: {
-                        y: {
-                            grid: { color: '#2D3748' },
-                            ticks: { 
-                                color: '#9CA3AF',
-                                callback: value => value.toLocaleString() + ' FCFA'
-                            }
-                        },
-                        x: {
-                            grid: { color: '#2D3748' },
-                            ticks: { color: '#9CA3AF' }
-                        }
+                        y: { grid: { color: '#2D3748' }, ticks: { color: '#9CA3AF', callback: value => value.toLocaleString() + ' FCFA' } },
+                        x: { grid: { color: '#2D3748' }, ticks: { color: '#9CA3AF' } }
                     }
                 }
             });
-
             const typeCtx = document.getElementById('typeChart').getContext('2d');
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
@@ -3569,22 +3451,14 @@
                             financial.by_type?.server_purchase || 0,
                             financial.by_type?.server_renewal || 0
                         ],
-                        backgroundColor: [
-                            '#F59E0B',
-                            '#7C3AED',
-                            '#10B981'
-                        ],
+                        backgroundColor: ['#F59E0B', '#7C3AED', '#10B981'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#F3F4F6' }
-                        }
-                    }
+                    plugins: { legend: { labels: { color: '#F3F4F6' } } }
                 }
             });
         }
@@ -3596,28 +3470,22 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const statsData = await statsRes.json();
-
                 if (statsData.success) {
                     document.getElementById('statTotalUsers').textContent = statsData.stats.total_users || 0;
                     document.getElementById('statVerifiedUsers').textContent = (statsData.stats.verified_users || 0) + ' vérifiés';
                     document.getElementById('statTotalServers').textContent = statsData.stats.total_servers || 0;
                     document.getElementById('statActiveServers').textContent = (statsData.stats.active_servers || 0) + ' actifs';
                     document.getElementById('statTotalCoins').textContent = statsData.stats.total_coins || 0;
-                    
                     const avgCoins = statsData.stats.total_users ? Math.round(statsData.stats.total_coins / statsData.stats.total_users) : 0;
                     document.getElementById('statAvgCoins').textContent = avgCoins + ' par user';
-                    
                     document.getElementById('statBannedUsers').textContent = statsData.stats.banned_users || 0;
-                    
                     const bannedPercent = statsData.stats.total_users ? Math.round((statsData.stats.banned_users / statsData.stats.total_users) * 100) : 0;
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
-
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const usersData = await usersRes.json();
-
                 if (usersData.success) {
                     allUsers = usersData.users;
                     filteredUsers = [...allUsers];
@@ -3625,12 +3493,10 @@
                     currentUserPage = 1;
                     displayUsers();
                 }
-
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const serversData = await serversRes.json();
-
                 if (serversData.success) {
                     allServers = serversData.servers;
                     filteredServers = [...allServers];
@@ -3638,12 +3504,10 @@
                     currentServerPage = 1;
                     displayServers();
                 }
-
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const transData = await transRes.json();
-
                 if (transData.success) {
                     allTransactions = transData.transactions;
                     filteredTransactions = [...allTransactions];
@@ -3651,12 +3515,10 @@
                     currentTransactionPage = 1;
                     displayTransactions();
                 }
-
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const logsData = await logsRes.json();
-
                 if (logsData.success) {
                     allLogs = logsData.logs;
                     filteredLogs = [...allLogs];
@@ -3664,9 +3526,7 @@
                     currentLogsPage = 1;
                     displayLogs();
                 }
-
                 await loadFinancialStats();
-
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
                 showToast('error', 'Erreur de chargement des données');
@@ -3676,31 +3536,24 @@
         // ===== DISPLAY USERS =====
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
-            
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td></tr>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
-
             document.getElementById('userPagination').style.display = 'flex';
-
             const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
             const startIndex = (currentUserPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
             const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
             document.getElementById('userPageInfo').textContent = `Page ${currentUserPage} / ${totalPages}`;
             document.getElementById('userPrevBtn').disabled = currentUserPage === 1;
             document.getElementById('userNextBtn').disabled = currentUserPage === totalPages;
-
             let html = '';
-            
             paginatedUsers.forEach(user => {
                 const status = user.banned ? 'Banni' : (user.email_verified ? 'Actif' : 'Non vérifié');
                 const statusClass = user.banned ? 'badge-danger' : (user.email_verified ? 'badge-success' : 'badge-warning');
                 const roleClass = user.role === 'superadmin' ? 'badge-danger' : (user.role === 'admin' ? 'badge-primary' : 'badge-info');
-                
                 html += `
                     <tr>
                         <td><code>${user.id.substring(0, 8)}...</code></td>
@@ -3713,96 +3566,57 @@
                         <td>${new Date(user.created_at).toLocaleDateString('fr-FR')}</td>
                         <td>
                             <div class="action-group">
-                                <button class="action-btn edit" title="Modifier" onclick="editUser('${user.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn view" title="Voir serveurs" onclick="viewUserServers('${user.id}')">
-                                    <i class="fas fa-server"></i>
-                                </button>
-                                <button class="action-btn ban" title="${user.banned ? 'Débannir' : 'Bannir'}" onclick="toggleBan('${user.id}', ${user.banned})">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                                <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <button class="action-btn" title="Voir transactions" onclick="viewUserTransactions('${user.id}')">
-                                    <i class="fas fa-history"></i>
-                                </button>
+                                <button class="action-btn edit" title="Modifier" onclick="editUser('${user.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn view" title="Voir serveurs" onclick="viewUserServers('${user.id}')"><i class="fas fa-server"></i></button>
+                                <button class="action-btn ban" title="${user.banned ? 'Débannir' : 'Bannir'}" onclick="toggleBan('${user.id}', ${user.banned})"><i class="fas fa-ban"></i></button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
+                                <button class="action-btn" title="Voir transactions" onclick="viewUserTransactions('${user.id}')"><i class="fas fa-history"></i></button>
                             </div>
                         </td>
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
         function changeUserPage(direction) {
             const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-            
-            if (direction === 'prev' && currentUserPage > 1) {
-                currentUserPage--;
-            } else if (direction === 'next' && currentUserPage < totalPages) {
-                currentUserPage++;
-            }
+            if (direction === 'prev' && currentUserPage > 1) currentUserPage--;
+            else if (direction === 'next' && currentUserPage < totalPages) currentUserPage++;
             displayUsers();
         }
 
         // ===== DISPLAY SERVERS =====
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
-            
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<td><td colspan="8" style="text-align: center;">Aucun serveur trouvé</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td></tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
-
             document.getElementById('serverPagination').style.display = 'flex';
-
             const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
             const startIndex = (currentServerPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredServers.length);
             const paginatedServers = filteredServers.slice(startIndex, endIndex);
-
             document.getElementById('serverPageInfo').textContent = `Page ${currentServerPage} / ${totalPages}`;
             document.getElementById('serverPrevBtn').disabled = currentServerPage === 1;
             document.getElementById('serverNextBtn').disabled = currentServerPage === totalPages;
-
             let html = '';
-            
             paginatedServers.forEach(server => {
                 const now = new Date();
                 const expiry = new Date(server.expires_at);
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-                
                 let statusClass = 'badge-success';
                 let statusText = 'Actif';
-                
                 switch(server.status) {
-                    case 'suspended':
-                        statusClass = 'badge-danger';
-                        statusText = 'Suspendu';
-                        break;
-                    case 'stopped':
-                        statusClass = 'badge-warning';
-                        statusText = 'Arrêté';
-                        break;
-                    case 'active':
+                    case 'suspended': statusClass = 'badge-danger'; statusText = 'Suspendu'; break;
+                    case 'stopped': statusClass = 'badge-warning'; statusText = 'Arrêté'; break;
                     default:
-                        if (daysLeft < 0) {
-                            statusClass = 'badge-danger';
-                            statusText = 'Expiré';
-                        } else if (daysLeft <= 3) {
-                            statusClass = 'badge-warning';
-                            statusText = 'Expire bientôt';
-                        } else {
-                            statusClass = 'badge-success';
-                            statusText = 'Actif';
-                        }
+                        if (daysLeft < 0) { statusClass = 'badge-danger'; statusText = 'Expiré'; }
+                        else if (daysLeft <= 3) { statusClass = 'badge-warning'; statusText = 'Expire bientôt'; }
                         break;
                 }
-                
                 html += `
                     <tr>
                         <td><code>${server.id.substring(0, 8)}...</code></td>
@@ -3814,76 +3628,53 @@
                         <td>${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td>
                         <td>
                             <div class="action-group">
-                                <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')">
-                                    <i class="fas fa-user"></i>
-                                </button>
+                                <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')"><i class="fas fa-user"></i></button>
                                 ${server.status === 'suspended' ? 
-                                    `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendServer('${server.id}')">
-                                        <i class="fas fa-play"></i>
-                                    </button>` : 
-                                    `<button class="action-btn suspend" title="Suspendre" onclick="suspendServer('${server.id}')">
-                                        <i class="fas fa-pause"></i>
-                                    </button>`
+                                    `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendServer('${server.id}')"><i class="fas fa-play"></i></button>` : 
+                                    `<button class="action-btn suspend" title="Suspendre" onclick="suspendServer('${server.id}')"><i class="fas fa-pause"></i></button>`
                                 }
-                                <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteServer('${server.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
         function changeServerPage(direction) {
             const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
-            
-            if (direction === 'prev' && currentServerPage > 1) {
-                currentServerPage--;
-            } else if (direction === 'next' && currentServerPage < totalPages) {
-                currentServerPage++;
-            }
+            if (direction === 'prev' && currentServerPage > 1) currentServerPage--;
+            else if (direction === 'next' && currentServerPage < totalPages) currentServerPage++;
             displayServers();
         }
 
         // ===== DISPLAY TRANSACTIONS =====
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
-            
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
-
             document.getElementById('transactionPagination').style.display = 'flex';
-
             const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
             const startIndex = (currentTransactionPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredTransactions.length);
             const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
-
             document.getElementById('transactionPageInfo').textContent = `Page ${currentTransactionPage} / ${totalPages}`;
             document.getElementById('transactionPrevBtn').disabled = currentTransactionPage === 1;
             document.getElementById('transactionNextBtn').disabled = currentTransactionPage === totalPages;
-
             let html = '';
-            
             paginatedTransactions.forEach(transaction => {
                 const statusClass = transaction.status === 'successful' ? 'badge-success' : 
                                    transaction.status === 'pending' ? 'badge-warning' : 'badge-danger';
-                
                 const typeText = {
                     'coins_purchase': 'Achat de coins',
                     'server_purchase': 'Achat de serveur',
                     'server_renewal': 'Renouvellement'
                 }[transaction.type] || transaction.type;
-                
                 html += `
                     <tr>
                         <td><code>${transaction.id.substring(0, 8)}...</code></td>
@@ -3895,55 +3686,40 @@
                         <td>${formatDateCameroon(transaction.created_at)}</td>
                         <td>
                             <div class="action-group">
-                                <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')">
-                                    <i class="fas fa-user"></i>
-                                </button>
+                                <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')"><i class="fas fa-info-circle"></i></button>
+                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')"><i class="fas fa-user"></i></button>
                             </div>
                         </td>
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
         function changeTransactionPage(direction) {
             const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-            
-            if (direction === 'prev' && currentTransactionPage > 1) {
-                currentTransactionPage--;
-            } else if (direction === 'next' && currentTransactionPage < totalPages) {
-                currentTransactionPage++;
-            }
+            if (direction === 'prev' && currentTransactionPage > 1) currentTransactionPage--;
+            else if (direction === 'next' && currentTransactionPage < totalPages) currentTransactionPage++;
             displayTransactions();
         }
 
         // ===== DISPLAY LOGS =====
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
-            
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé<\/td></tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
-
             document.getElementById('logsPagination').style.display = 'flex';
-
             const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
             const startIndex = (currentLogsPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredLogs.length);
             const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
-
             document.getElementById('logsPageInfo').textContent = `Page ${currentLogsPage} / ${totalPages}`;
             document.getElementById('logsPrevBtn').disabled = currentLogsPage === 1;
             document.getElementById('logsNextBtn').disabled = currentLogsPage === totalPages;
-
             let html = '';
-            
             paginatedLogs.forEach(log => {
                 html += `
                     <tr>
@@ -3956,18 +3732,13 @@
                     </tr>
                 `;
             });
-            
             tbody.innerHTML = html;
         }
 
         function changeLogsPage(direction) {
             const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
-            
-            if (direction === 'prev' && currentLogsPage > 1) {
-                currentLogsPage--;
-            } else if (direction === 'next' && currentLogsPage < totalPages) {
-                currentLogsPage++;
-            }
+            if (direction === 'prev' && currentLogsPage > 1) currentLogsPage--;
+            else if (direction === 'next' && currentLogsPage < totalPages) currentLogsPage++;
             displayLogs();
         }
 
@@ -3975,14 +3746,11 @@
         function filterUsers() {
             const search = document.getElementById('userSearch').value.toLowerCase();
             const filter = document.getElementById('userFilter').value;
-            
             filteredUsers = allUsers.filter(user => {
                 const matchesSearch = (user.username?.toLowerCase() || '').includes(search) ||
                                     (user.email?.toLowerCase() || '').includes(search) ||
                                     (user.id || '').toLowerCase().includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 switch(filter) {
                     case 'verified': return user.email_verified;
                     case 'unverified': return !user.email_verified;
@@ -3994,7 +3762,6 @@
                     default: return true;
                 }
             });
-            
             currentUserPage = 1;
             document.getElementById('userCount').textContent = filteredUsers.length;
             displayUsers();
@@ -4012,18 +3779,14 @@
         function filterServers() {
             const search = document.getElementById('serverSearch').value.toLowerCase();
             const filter = document.getElementById('serverFilter').value;
-            
             filteredServers = allServers.filter(server => {
                 const matchesSearch = (server.server_name?.toLowerCase() || '').includes(search) ||
                                     (server.owner_username || '').toLowerCase().includes(search) ||
                                     (server.id || '').includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 const now = new Date();
                 const expiry = new Date(server.expires_at);
                 const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-                
                 switch(filter) {
                     case 'active': return daysLeft > 0 && server.status === 'active';
                     case 'expired': return daysLeft < 0;
@@ -4036,7 +3799,6 @@
                     default: return true;
                 }
             });
-            
             currentServerPage = 1;
             document.getElementById('serverCount').textContent = filteredServers.length;
             displayServers();
@@ -4045,13 +3807,10 @@
         function filterTransactions() {
             const search = document.getElementById('transactionSearch').value.toLowerCase();
             const filter = document.getElementById('transactionFilter').value;
-            
             filteredTransactions = allTransactions.filter(trans => {
                 const matchesSearch = (trans.id || '').includes(search) ||
                                     (trans.user_username || '').toLowerCase().includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 switch(filter) {
                     case 'completed': return trans.status === 'successful';
                     case 'pending': return trans.status === 'pending';
@@ -4062,7 +3821,6 @@
                     default: return true;
                 }
             });
-            
             currentTransactionPage = 1;
             document.getElementById('transactionCount').textContent = filteredTransactions.length;
             displayTransactions();
@@ -4071,13 +3829,10 @@
         function filterLogs() {
             const search = document.getElementById('logSearch').value.toLowerCase();
             const filter = document.getElementById('logFilter').value;
-            
             filteredLogs = allLogs.filter(log => {
                 const matchesSearch = (log.description || '').toLowerCase().includes(search) ||
                                     (log.admin_username || '').toLowerCase().includes(search);
-                
                 if (!matchesSearch) return false;
-                
                 switch(filter) {
                     case 'ban': return (log.action_type || '').includes('ban');
                     case 'role': return (log.action_type || '').includes('role');
@@ -4087,7 +3842,6 @@
                     default: return true;
                 }
             });
-            
             currentLogsPage = 1;
             document.getElementById('logCount').textContent = filteredLogs.length;
             displayLogs();
@@ -4097,9 +3851,7 @@
         function editUser(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
-
             currentUserId = userId;
-            
             document.getElementById('editUserId').textContent = user.id;
             document.getElementById('editUsername').textContent = user.username;
             document.getElementById('editEmail').textContent = user.email;
@@ -4107,10 +3859,8 @@
             document.getElementById('editRole').value = user.role;
             document.getElementById('editEmailVerified').value = user.email_verified ? 'true' : 'false';
             document.getElementById('editBanned').value = user.banned ? 'true' : 'false';
-            
             const userServers = allServers.filter(s => s.user_id === userId);
             const serversDiv = document.getElementById('editUserServers');
-            
             if (userServers.length === 0) {
                 serversDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Aucun serveur</p>';
             } else {
@@ -4123,22 +3873,15 @@
                                 <p>${window.PLANS?.[server.server_type]?.name || server.server_type} - Expire: ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div class="server-mini-actions">
-                                <button class="action-btn edit" onclick="editServer('${server.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="deleteServer('${server.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="action-btn edit" onclick="editServer('${server.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" onclick="deleteServer('${server.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
                 });
-                if (userServers.length > 3) {
-                    html += `<p style="text-align: center; color: var(--text-secondary); margin-top: 8px;">... et ${userServers.length - 3} autres</p>`;
-                }
+                if (userServers.length > 3) html += `<p style="text-align: center; color: var(--text-secondary); margin-top: 8px;">... et ${userServers.length - 3} autres</p>`;
                 serversDiv.innerHTML = html;
             }
-            
             openModal('userEditModal');
         }
 
@@ -4163,43 +3906,17 @@
         function viewTransaction(transactionId) {
             const transaction = allTransactions.find(t => t.id === transactionId);
             if (!transaction) return;
-
             const detailsDiv = document.getElementById('transactionDetails');
             detailsDiv.innerHTML = `
-                <div class="modal-info-item">
-                    <span class="modal-info-label">ID</span>
-                    <span class="modal-info-value">${transaction.id}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Utilisateur</span>
-                    <span class="modal-info-value">${transaction.user_username || 'Inconnu'} (${transaction.user_id})</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Type</span>
-                    <span class="modal-info-value">${transaction.type}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Montant</span>
-                    <span class="modal-info-value">${transaction.amount} ${transaction.currency}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Statut</span>
-                    <span class="modal-info-value"><span class="badge ${transaction.status === 'successful' ? 'badge-success' : 'badge-warning'}">${transaction.status}</span></span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Moyen</span>
-                    <span class="modal-info-value">${transaction.medium || 'N/A'}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Date</span>
-                    <span class="modal-info-value">${formatDateCameroon(transaction.created_at)}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Fapshi ID</span>
-                    <span class="modal-info-value">${transaction.fapshi_transaction_id || 'N/A'}</span>
-                </div>
+                <div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${transaction.id}</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${transaction.user_username || 'Inconnu'} (${transaction.user_id})</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Type</span><span class="modal-info-value">${transaction.type}</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${transaction.amount} ${transaction.currency}</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value"><span class="badge ${transaction.status === 'successful' ? 'badge-success' : 'badge-warning'}">${transaction.status}</span></span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Moyen</span><span class="modal-info-value">${transaction.medium || 'N/A'}</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Date</span><span class="modal-info-value">${formatDateCameroon(transaction.created_at)}</span></div>
+                <div class="modal-info-item"><span class="modal-info-label">Fapshi ID</span><span class="modal-info-value">${transaction.fapshi_transaction_id || 'N/A'}</span></div>
             `;
-
             openModal('transactionModal');
         }
 
@@ -4207,24 +3924,17 @@
             document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>`;
             document.getElementById('confirmTitle').textContent = currentBanned ? 'Débannir' : 'Bannir';
             document.getElementById('confirmMessage').textContent = `Êtes-vous sûr de vouloir ${currentBanned ? 'débannir' : 'bannir'} cet utilisateur ?`;
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-warning';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
-                
                 try {
                     const res = await fetch(`/api/admin/users/${userId}/ban`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ banned: !currentBanned })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', data.message);
                         loadAdminData();
@@ -4235,7 +3945,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -4243,20 +3952,16 @@
             document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
             document.getElementById('confirmTitle').textContent = 'Supprimer utilisateur';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible !';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
-                
                 try {
                     const res = await fetch(`/api/admin/users/${userId}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Utilisateur supprimé');
                         loadAdminData();
@@ -4267,7 +3972,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -4277,19 +3981,13 @@
                 showToast('error', 'Montant invalide');
                 return;
             }
-            
             try {
                 const res = await fetch(`/api/admin/users/${currentUserId}/coins`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: parseInt(amount) })
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', `${amount} coins ajoutés`);
                     document.getElementById('editCoinsAmount').value = '';
@@ -4308,19 +4006,13 @@
                 showToast('error', 'Montant invalide');
                 return;
             }
-            
             try {
                 const res = await fetch(`/api/admin/users/${currentUserId}/coins/remove`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: parseInt(amount) })
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', `${amount} coins retirés`);
                     document.getElementById('editCoinsAmount').value = '';
@@ -4337,19 +4029,13 @@
             const role = document.getElementById('editRole').value;
             const emailVerified = document.getElementById('editEmailVerified').value === 'true';
             const banned = document.getElementById('editBanned').value === 'true';
-            
             try {
                 const res = await fetch(`/api/admin/users/${currentUserId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ role, email_verified: emailVerified, banned })
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', 'Utilisateur modifié');
                     closeModal('userEditModal');
@@ -4366,22 +4052,17 @@
         function editServer(serverId) {
             const server = allServers.find(s => s.id === serverId);
             if (!server) return;
-
             currentServerId = serverId;
-            
             document.getElementById('editServerId').textContent = server.id;
             document.getElementById('editServerName').textContent = server.server_name;
             document.getElementById('editServerOwner').textContent = server.owner_username || 'Inconnu';
             document.getElementById('editServerPlan').value = server.server_type;
             document.getElementById('editServerStatus').value = server.status || 'active';
-            
             const expiryDate = new Date(server.expires_at);
             const formattedDate = expiryDate.toISOString().slice(0, 16);
             document.getElementById('editServerExpiry').value = formattedDate;
-            
             document.getElementById('editServerPteroUser').value = server.username || '';
             document.getElementById('editServerPassword').value = '';
-            
             openModal('serverEditModal');
         }
 
@@ -4391,25 +4072,13 @@
             const expiry = document.getElementById('editServerExpiry').value;
             const username = document.getElementById('editServerPteroUser').value;
             const password = document.getElementById('editServerPassword').value;
-            
             try {
                 const res = await fetch(`/api/admin/servers/${currentServerId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        server_type: plan, 
-                        status, 
-                        expires_at: expiry,
-                        username,
-                        password: password || undefined
-                    })
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ server_type: plan, status, expires_at: expiry, username, password: password || undefined })
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', 'Serveur modifié');
                     closeModal('serverEditModal');
@@ -4427,29 +4096,22 @@
                 showToast('error', 'ID du serveur non spécifié');
                 return;
             }
-            
             document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
             document.getElementById('confirmTitle').textContent = 'Supprimer serveur';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce serveur ?';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
-                
                 try {
                     const res = await fetch(`/api/admin/servers/${serverId}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Serveur supprimé');
-                        if (currentServerId === serverId) {
-                            closeModal('serverEditModal');
-                        }
+                        if (currentServerId === serverId) closeModal('serverEditModal');
                         loadAdminData();
                     } else {
                         showToast('error', data.error || 'Erreur lors de la suppression');
@@ -4458,7 +4120,6 @@
                     showToast('error', 'Erreur réseau');
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -4466,26 +4127,18 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
             document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ? Le propriétaire ne pourra plus y accéder.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-warning';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
-                
+                showToast('info', 'Suspension en cours...');
                 try {
-                    showToast('info', 'Suspension en cours...');
-                    
                     const res = await fetch(`/api/admin/servers/${serverId}/suspend`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'suspend' })
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Serveur suspendu avec succès');
                         loadAdminData();
@@ -4494,10 +4147,8 @@
                     }
                 } catch (error) {
                     showToast('error', 'Erreur réseau');
-                    console.error('Erreur:', error);
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -4505,25 +4156,17 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
             document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ? Le propriétaire pourra de nouveau y accéder.';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-success';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
-                
+                showToast('info', 'Réactivation en cours...');
                 try {
-                    showToast('info', 'Réactivation en cours...');
-                    
                     const res = await fetch(`/api/admin/servers/${serverId}/unsuspend`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
                     });
-                    
                     const data = await res.json();
-                    
                     if (data.success) {
                         showToast('success', 'Serveur réactivé avec succès');
                         loadAdminData();
@@ -4532,10 +4175,8 @@
                     }
                 } catch (error) {
                     showToast('error', 'Erreur réseau');
-                    console.error('Erreur:', error);
                 }
             };
-            
             openModal('confirmModal');
         }
 
@@ -4544,26 +4185,21 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
             document.getElementById('confirmTitle').textContent = 'Supprimer tous les serveurs';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer TOUS les serveurs ? Cette action est irréversible !';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = deleteAllServers;
-            
             openModal('confirmModal');
         }
 
         async function deleteAllServers() {
             closeModal('confirmModal');
             showToast('info', 'Suppression en cours...');
-            
             try {
                 const res = await fetch('/api/admin/servers/delete-all', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', 'Tous les serveurs ont été supprimés');
                     loadAdminData();
@@ -4579,26 +4215,21 @@
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
             document.getElementById('confirmTitle').textContent = 'Supprimer tous les logs';
             document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer TOUS les logs d\'administration ? Cette action est irréversible !';
-            
             const confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = deleteAllLogs;
-            
             openModal('confirmModal');
         }
 
         async function deleteAllLogs() {
             closeModal('confirmModal');
             showToast('info', 'Suppression des logs...');
-            
             try {
                 const res = await fetch('/api/admin/logs/delete-all', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', 'Tous les logs ont été supprimés');
                     loadAdminData();
@@ -4616,14 +4247,12 @@
             document.getElementById('cleanupInitial').style.display = 'block';
             document.getElementById('cleanupProgress').style.display = 'none';
             document.getElementById('cleanupResult').style.display = 'none';
-            
             document.getElementById('cleanupActions').innerHTML = `
                 <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
                 <button class="btn btn-warning" onclick="startPterodactylCleanup()" id="startCleanupBtn">
                     <i class="fas fa-broom"></i> Lancer le nettoyage
                 </button>
             `;
-            
             openModal('pteroCleanupModal');
         }
 
@@ -4632,88 +4261,38 @@
             document.getElementById('cleanupProgress').style.display = 'block';
             document.getElementById('cleanupStats').style.display = 'none';
             document.getElementById('cleanupResult').style.display = 'none';
-            
-            document.getElementById('cleanupActions').innerHTML = `
-                <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
-            `;
-            
+            document.getElementById('cleanupActions').innerHTML = `<button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>`;
             try {
                 const res = await fetch('/api/admin/pterodactyl/cleanup-users', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 const data = await res.json();
-                
                 document.getElementById('cleanupProgress').style.display = 'none';
-                
                 if (data.success) {
                     const stats = data.stats;
-                    
                     document.getElementById('cleanupStats').innerHTML = `
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i>
-                        </div>
+                        <div style="text-align: center; margin-bottom: 16px;"><i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success);"></i></div>
                         <h3 style="text-align: center; margin-bottom: 16px;">Nettoyage terminé</h3>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Utilisateurs Pterodactyl</span>
-                            <span class="modal-info-value">${stats.total_ptero_users}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Liés à KermHosting</span>
-                            <span class="modal-info-value">${stats.linked_users}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Orphelins avec serveurs</span>
-                            <span class="modal-info-value">${stats.orphan_with_servers}</span>
-                        </div>
-                        <div class="modal-info-item">
-                            <span class="modal-info-label">Orphelins sans serveurs</span>
-                            <span class="modal-info-value">${stats.orphan_without_servers}</span>
-                        </div>
-                        <div class="modal-info-item" style="border-bottom: none;">
-                            <span class="modal-info-label">Supprimés</span>
-                            <span class="modal-info-value" style="color: var(--success);">${stats.deleted_users}</span>
-                        </div>
-                        <div style="margin-top: 16px; text-align: center;">
-                            <span class="badge ${stats.success_rate === 100 ? 'badge-success' : stats.success_rate > 50 ? 'badge-warning' : 'badge-danger'}" style="font-size: 1rem; padding: 8px 16px;">
-                                Taux de réussite: ${stats.success_rate}%
-                            </span>
-                        </div>
+                        <div class="modal-info-item"><span class="modal-info-label">Utilisateurs Pterodactyl</span><span class="modal-info-value">${stats.total_ptero_users}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">Liés à KermHosting</span><span class="modal-info-value">${stats.linked_users}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">Orphelins avec serveurs</span><span class="modal-info-value">${stats.orphan_with_servers}</span></div>
+                        <div class="modal-info-item"><span class="modal-info-label">Orphelins sans serveurs</span><span class="modal-info-value">${stats.orphan_without_servers}</span></div>
+                        <div class="modal-info-item" style="border-bottom: none;"><span class="modal-info-label">Supprimés</span><span class="modal-info-value" style="color: var(--success);">${stats.deleted_users}</span></div>
+                        <div style="margin-top: 16px; text-align: center;"><span class="badge ${stats.success_rate === 100 ? 'badge-success' : stats.success_rate > 50 ? 'badge-warning' : 'badge-danger'}" style="font-size: 1rem; padding: 8px 16px;">Taux de réussite: ${stats.success_rate}%</span></div>
                     `;
-                    
                     document.getElementById('cleanupStats').style.display = 'block';
-                    document.getElementById('cleanupResult').style.display = 'none';
-                    
-                    document.getElementById('cleanupActions').innerHTML = `
-                        <button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>
-                    `;
-                    
+                    document.getElementById('cleanupActions').innerHTML = `<button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>`;
                     showToast('success', data.message);
-                    
                 } else {
-                    document.getElementById('cleanupResult').innerHTML = `
-                        <div style="text-align: center;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
-                            <h3 style="margin: 16px 0;">Erreur</h3>
-                            <p>${data.error || 'Une erreur est survenue'}</p>
-                        </div>
-                    `;
+                    document.getElementById('cleanupResult').innerHTML = `<div style="text-align: center;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i><h3 style="margin: 16px 0;">Erreur</h3><p>${data.error || 'Une erreur est survenue'}</p></div>`;
                     document.getElementById('cleanupResult').style.display = 'block';
-                    
                     showToast('error', data.error || 'Erreur lors du nettoyage');
                 }
             } catch (error) {
                 document.getElementById('cleanupProgress').style.display = 'none';
-                document.getElementById('cleanupResult').innerHTML = `
-                    <div style="text-align: center;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i>
-                        <h3 style="margin: 16px 0;">Erreur réseau</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
+                document.getElementById('cleanupResult').innerHTML = `<div style="text-align: center;"><i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger);"></i><h3 style="margin: 16px 0;">Erreur réseau</h3><p>${error.message}</p></div>`;
                 document.getElementById('cleanupResult').style.display = 'block';
-                
                 showToast('error', 'Erreur réseau');
             }
         }
@@ -4725,32 +4304,26 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     const config = data.maintenance;
-                    
                     document.getElementById('maintenanceActive').checked = config.is_active;
                     document.getElementById('maintenanceMessage').value = config.message;
                     document.getElementById('maintenanceEmail').value = config.support_email;
                     document.getElementById('maintenanceWhatsApp').value = config.support_whatsapp;
                     document.getElementById('maintenanceDiscord').value = config.discord_link;
-                    
                     if (config.estimated_end_time) {
                         const endDate = new Date(config.estimated_end_time);
                         const formattedDate = endDate.toISOString().slice(0, 16);
                         document.getElementById('maintenanceEndTime').value = formattedDate;
                     }
-                    
                     if (config.allow_ips && config.allow_ips.length > 0) {
                         document.getElementById('maintenanceIPs').value = config.allow_ips.join('\n');
                     } else {
                         document.getElementById('maintenanceIPs').value = '';
                     }
-                    
                     const indicator = document.getElementById('maintenanceStatusIndicator');
                     const dot = document.getElementById('maintenanceStatusDot');
                     const text = document.getElementById('maintenanceStatusText');
-                    
                     if (config.is_active) {
                         indicator.className = 'status-indicator active';
                         dot.className = 'status-dot active';
@@ -4760,7 +4333,6 @@
                         dot.className = 'status-dot inactive';
                         text.textContent = 'Maintenance inactive';
                     }
-                    
                     document.getElementById('currentMessage').textContent = config.message;
                     document.getElementById('currentEndTime').textContent = config.estimated_end_time 
                         ? new Date(config.estimated_end_time).toLocaleString('fr-FR', { timeZone: 'Africa/Douala' })
@@ -4783,11 +4355,7 @@
             const whatsapp = document.getElementById('maintenanceWhatsApp').value;
             const discord = document.getElementById('maintenanceDiscord').value;
             const ipsText = document.getElementById('maintenanceIPs').value;
-            
-            const allowIPs = ipsText.split('\n')
-                .map(ip => ip.trim())
-                .filter(ip => ip.length > 0);
-            
+            const allowIPs = ipsText.split('\n').map(ip => ip.trim()).filter(ip => ip.length > 0);
             const config = {
                 is_active: isActive,
                 message: message || '🚧 Site en maintenance. Nous revenons très bientôt !',
@@ -4797,19 +4365,13 @@
                 discord_link: discord || 'https://discord.gg/kermhosting',
                 allow_ips: allowIPs
             };
-            
             try {
                 const res = await fetch('/api/admin/maintenance', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
-                
                 const data = await res.json();
-                
                 if (data.success) {
                     showToast('success', data.message);
                     loadMaintenanceConfig();
@@ -4825,22 +4387,14 @@
         // ===== EXPORT FUNCTIONS =====
         function exportUsers(format) {
             const data = filteredUsers.map(u => ({
-                id: u.id,
-                username: u.username,
-                email: u.email,
-                role: u.role,
-                coins: u.coins,
-                servers: u.servers_count || 0,
-                verified: u.email_verified,
-                banned: u.banned,
-                created_at: u.created_at
+                id: u.id, username: u.username, email: u.email, role: u.role,
+                coins: u.coins, servers: u.servers_count || 0, verified: u.email_verified,
+                banned: u.banned, created_at: u.created_at
             }));
-
             if (format === 'csv') {
                 const headers = Object.keys(data[0]).join(',');
                 const rows = data.map(obj => Object.values(obj).map(v => `"${v}"`).join(',')).join('\n');
                 const csv = headers + '\n' + rows;
-                
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -4855,7 +4409,6 @@
                 a.download = `users_export_${new Date().toISOString().slice(0,10)}.json`;
                 a.click();
             }
-            
             showToast('success', `Export ${format.toUpperCase()} téléchargé`);
         }
 
@@ -4864,12 +4417,8 @@
             showToast('info', 'Actualisation des données...');
             loadAdminData();
             loadFapshiBalance();
-            if (document.getElementById('tab-paypal').classList.contains('active')) {
-                loadPaypalTransactions();
-            }
-            if (document.getElementById('tab-minipay').classList.contains('active')) {
-                loadMinipayTransactions();
-            }
+            if (document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions();
+            if (document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions();
         }
 
         // ===== LOGOUT =====
@@ -4890,9 +4439,7 @@
 
         // ===== RESPONSIVE =====
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                closeSidebarFunc();
-            }
+            if (window.innerWidth > 1024) closeSidebarFunc();
         });
 
         // ===== INIT =====
@@ -4951,8 +4498,6 @@
         window.changeLogsPage = changeLogsPage;
         window.formatDateCameroon = formatDateCameroon;
         window.loadFapshiBalance = loadFapshiBalance;
-        
-        // Fonctions maintenance
         window.loadMaintenanceConfig = loadMaintenanceConfig;
         window.saveMaintenanceConfig = saveMaintenanceConfig;
     </script>
