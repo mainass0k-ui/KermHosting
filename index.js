@@ -3357,29 +3357,46 @@ app.post('/api/resend-verification', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { identifier, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ success: false, error: 'Email et mot de passe requis', code: 'MISSING_FIELDS' });
+        if (!identifier || !password) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Email/Nom d\'utilisateur et mot de passe requis', 
+                code: 'MISSING_FIELDS' 
+            });
         }
 
-        const { data: user, error } = await supabase
+        // Chercher l'utilisateur par email OU par nom d'utilisateur
+        let { data: user, error } = await supabase
             .from('profiles')
             .select('*')
-            .eq('email', email)
-            .single();
+            .or(`email.eq.${identifier},username.eq.${identifier}`)
+            .maybeSingle();
 
         if (error || !user) {
-            return res.status(400).json({ success: false, error: 'Email ou mot de passe incorrect', code: 'INVALID_CREDENTIALS' });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Identifiant ou mot de passe incorrect', 
+                code: 'INVALID_CREDENTIALS' 
+            });
         }
 
         if (user.banned) {
-            return res.status(403).json({ success: false, error: 'Compte suspendu', code: 'ACCOUNT_BANNED' });
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Compte suspendu', 
+                code: 'ACCOUNT_BANNED' 
+            });
         }
 
         const validPassword = await bcrypt.compare(password, user.password_hash);
         if (!validPassword) {
-            return res.status(400).json({ success: false, error: 'Email ou mot de passe incorrect', code: 'INVALID_CREDENTIALS' });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Identifiant ou mot de passe incorrect', 
+                code: 'INVALID_CREDENTIALS' 
+            });
         }
 
         if (!user.email_verified) {
@@ -3419,7 +3436,11 @@ app.post('/api/login', async (req, res) => {
 
     } catch (error) {
         console.error('❌ Erreur login:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur', code: 'INTERNAL_ERROR' });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur', 
+            code: 'INTERNAL_ERROR' 
+        });
     }
 });
 
