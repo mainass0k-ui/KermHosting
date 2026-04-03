@@ -7,7 +7,7 @@
     <meta name="description" content="Connectez-vous à KermHosting - Hébergement Node.js en FCFA">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -25,7 +25,6 @@
     <title>Connexion - KermHosting</title>
     
     <style>
-        /* ===== VARIABLES (identiques à l'index) ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -112,7 +111,6 @@
             }
         }
 
-        /* ===== CARTE DE CONNEXION ===== */
         .auth-card {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
@@ -134,7 +132,6 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
         }
 
-        /* ===== EN-TÊTE ===== */
         .auth-header {
             text-align: center;
             margin-bottom: 32px;
@@ -174,11 +171,10 @@
             font-size: 1rem;
         }
 
-        /* ===== FORMULAIRE ===== */
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
@@ -226,7 +222,96 @@
             opacity: 0.7;
         }
 
-        /* ===== BOUTONS ===== */
+        /* CAPTCHA BUTTON STYLES */
+        .captcha-button {
+            background: var(--bg-hover);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .captcha-button:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .captcha-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .captcha-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .captcha-checkbox.verified {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .captcha-checkbox i {
+            color: white;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .captcha-checkbox.verified i {
+            opacity: 1;
+        }
+
+        .captcha-text {
+            font-size: 0.9rem;
+        }
+
+        .captcha-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .captcha-logo i {
+            font-size: 1.2rem;
+        }
+
+        /* Checkbox Remember Me */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
         .auth-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -275,7 +360,11 @@
             transform: translateX(5px);
         }
 
-        /* ===== LIENS ===== */
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .auth-links {
             text-align: center;
             margin-top: 24px;
@@ -315,7 +404,6 @@
             margin: 12px 0;
         }
 
-        /* ===== MESSAGES D'ERREUR/SUCCÈS ===== */
         .message {
             padding: 16px;
             border-radius: var(--radius-md);
@@ -360,7 +448,6 @@
             color: var(--primary);
         }
 
-        /* ===== LOADER ===== */
         .loader {
             display: inline-block;
             width: 20px;
@@ -375,26 +462,68 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 480px) {
-            .auth-card {
-                padding: 30px 20px;
-            }
+        .forgot-password {
+            text-align: right;
+            margin-top: 4px;
+        }
 
-            .auth-logo {
-                font-size: 1.75rem;
-            }
+        .forgot-password a {
+            color: var(--primary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
 
-            .auth-title {
-                font-size: 1.75rem;
-            }
+        .forgot-password a:hover {
+            color: var(--primary-light);
+        }
 
-            .auth-btn {
-                padding: 14px;
+        /* Badge flottant */
+        .captcha-badge-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-verified-badge {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-md);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
-        /* ===== DÉCORATIONS ===== */
+        .captcha-waiting-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
         .floating-shape {
             position: fixed;
             width: 300px;
@@ -417,16 +546,33 @@
             right: -100px;
             background: var(--secondary);
         }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 20px;
+            }
+            .auth-logo {
+                font-size: 1.75rem;
+            }
+            .auth-title {
+                font-size: 1.75rem;
+            }
+            .auth-btn {
+                padding: 14px;
+            }
+            .captcha-badge-status {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Formes décoratives -->
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
 
     <div class="auth-container">
         <div class="auth-card">
-            <!-- En-tête -->
             <div class="auth-header">
                 <div class="auth-logo">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -436,19 +582,17 @@
                 <p class="auth-subtitle">Connectez-vous pour gérer vos serveurs</p>
             </div>
 
-            <!-- Message d'erreur/succès -->
             <div id="messageContainer"></div>
 
-            <!-- Formulaire -->
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
                     <label class="form-label">
-                        <i class="fas fa-envelope"></i>
-                        Adresse email
+                        <i class="fas fa-user"></i>
+                        Email ou Nom d'utilisateur
                     </label>
-                    <input type="email" class="form-input" id="email" 
-                           placeholder="exemple@email.com" required 
-                           autocomplete="email">
+                    <input type="text" class="form-input" id="loginIdentifier" 
+                           placeholder="exemple@email.com ou johndoe" required 
+                           autocomplete="username">
                 </div>
 
                 <div class="form-group">
@@ -468,19 +612,41 @@
                     </div>
                 </div>
 
-                <div style="text-align: right;">
-                    <a href="/forgot-password" style="color: var(--primary); font-size: 0.9rem; text-decoration: none;">
-                        Mot de passe oublié ?
-                    </a>
+                <!-- CAPTCHA AntiBot -->
+                <div class="form-group">
+                    <div class="captcha-button" id="captchaButton">
+                        <div class="captcha-left">
+                            <div class="captcha-checkbox" id="captchaCheckbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="captcha-text">
+                                <strong>Je ne suis pas un robot</strong>
+                            </div>
+                        </div>
+                        <div class="captcha-logo">
+                            <i class="fas fa-robot"></i>
+                            <span>hCaptcha</span>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit" class="auth-btn" id="submitBtn">
-                    <span>Se connecter</span>
-                    <i class="fas fa-arrow-right"></i>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">
+                        Se souvenir de moi
+                    </label>
+                </div>
+
+                <div class="forgot-password">
+                    <a href="/forgot-password">Mot de passe oublié ?</a>
+                </div>
+
+                <button type="submit" class="auth-btn" id="submitBtn" disabled>
+                    <span>Vérification requise</span>
+                    <i class="fas fa-lock"></i>
                 </button>
             </form>
 
-            <!-- Liens -->
             <div class="auth-links">
                 <p>Pas encore de compte ?</p>
                 <a href="/register" style="font-size: 1.1rem;">
@@ -494,16 +660,21 @@
         </div>
     </div>
 
+    <!-- Badge flottant -->
+    <div class="captcha-badge-status" id="captchaBadge">
+        <div class="captcha-waiting-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>En attente de vérification...</span>
+        </div>
+    </div>
+
     <script>
-        // ===== INTERCEPTEUR MAINTENANCE CORRIGÉ =====
-        // À mettre TOUT EN HAUT du script
+        // ===== INTERCEPTEUR MAINTENANCE =====
         const originalFetch = window.fetch;
         window.fetch = async function(...args) {
             const response = await originalFetch(...args);
             
-            // Si la réponse n'est pas OK (status 503 par exemple)
             if (!response.ok) {
-                // Vérifier si c'est une erreur 503 (Service Unavailable)
                 if (response.status === 503) {
                     console.log('🚧 Site en maintenance (503), redirection...');
                     window.location.href = '/maintenance';
@@ -511,7 +682,6 @@
                 }
             }
             
-            // Pour les réponses OK, vérifier si c'est du JSON avec erreur maintenance
             const clonedResponse = response.clone();
             const contentType = response.headers.get('content-type');
             
@@ -523,14 +693,118 @@
                         window.location.href = '/maintenance';
                         return response;
                     }
-                } catch (e) {
-                    // Pas du JSON valide, ignorer
-                }
+                } catch (e) {}
             }
             
             return response;
         };
-        // ===== FIN INTERCEPTEUR =====
+
+        // Variables CAPTCHA
+        let captchaVerified = false;
+        let verificationScore = 0;
+
+        // Détection du comportement humain
+        function detectHumanBehavior() {
+            let score = 0;
+            const startTime = Date.now();
+            
+            let mouseMoves = 0;
+            document.addEventListener('mousemove', function() {
+                mouseMoves++;
+                if(mouseMoves > 5 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+            
+            const captchaBtn = document.getElementById('captchaButton');
+            captchaBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if(score >= 2) {
+                    captchaVerified = true;
+                    const checkbox = document.getElementById('captchaCheckbox');
+                    checkbox.classList.add('verified');
+                    
+                    const submitBtn = document.getElementById('submitBtn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
+                    
+                    const badge = document.getElementById('captchaBadge');
+                    badge.innerHTML = `
+                        <div class="captcha-verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>✓ Site vérifié - AntiBot actif</span>
+                        </div>
+                    `;
+                    
+                    showMessage('success', '✅ Vérification anti-bot réussie !');
+                    
+                    setTimeout(() => {
+                        const msgContainer = document.getElementById('messageContainer');
+                        if(msgContainer.children[0] && msgContainer.children[0].classList.contains('success')) {
+                            msgContainer.innerHTML = '';
+                        }
+                    }, 3000);
+                } else {
+                    showMessage('info', '🤖 Veuillez bouger votre souris sur la page pour confirmer que vous êtes humain');
+                    
+                    setTimeout(() => {
+                        const msgContainer = document.getElementById('messageContainer');
+                        if(msgContainer.children[0] && msgContainer.children[0].classList.contains('info')) {
+                            msgContainer.innerHTML = '';
+                        }
+                    }, 4000);
+                }
+            });
+            
+            setTimeout(() => {
+                if(Date.now() - startTime > 3000 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            }, 3000);
+            
+            let keyPresses = 0;
+            document.addEventListener('keydown', function() {
+                keyPresses++;
+                if(keyPresses > 2 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+            
+            let scrollCount = 0;
+            window.addEventListener('scroll', function() {
+                scrollCount++;
+                if(scrollCount > 1 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+        }
+        
+        function updateVerification() {
+            verificationScore = 2;
+        }
+        
+        function isBot() {
+            const suspiciousProps = [
+                !navigator.userAgent,
+                navigator.webdriver === true,
+                window.chrome && window.chrome.webstore === undefined,
+                navigator.plugins.length === 0,
+                navigator.languages === undefined
+            ];
+            
+            const botScore = suspiciousProps.filter(prop => prop === true).length;
+            
+            if(botScore >= 2) {
+                showMessage('error', '⚠️ Activité suspecte détectée. Veuillez rafraîchir la page.');
+                return true;
+            }
+            return false;
+        }
 
         // Toggle password visibility
         function togglePassword() {
@@ -548,7 +822,6 @@
             }
         }
 
-        // Afficher un message
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
             const icons = {
@@ -565,15 +838,57 @@
             `;
         }
 
+        // Charger les identifiants sauvegardés
+        function loadSavedCredentials() {
+            const savedIdentifier = localStorage.getItem('savedIdentifier');
+            const savedPassword = localStorage.getItem('savedPassword');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            
+            if (rememberMe && savedIdentifier) {
+                document.getElementById('loginIdentifier').value = savedIdentifier;
+                if (savedPassword) {
+                    document.getElementById('password').value = savedPassword;
+                }
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
+
+        // Sauvegarder les identifiants
+        function saveCredentials(identifier, password, remember) {
+            if (remember) {
+                localStorage.setItem('savedIdentifier', identifier);
+                localStorage.setItem('savedPassword', password);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.removeItem('savedIdentifier');
+                localStorage.removeItem('savedPassword');
+                localStorage.setItem('rememberMe', 'false');
+            }
+        }
+
         // Gestionnaire de connexion
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const identifier = document.getElementById('loginIdentifier').value.trim();
             const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
             const submitBtn = document.getElementById('submitBtn');
             
-            // Désactiver le bouton
+            if (!identifier) {
+                showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur');
+                return;
+            }
+            
+            if (!captchaVerified) {
+                showMessage('error', 'Veuillez compléter la vérification anti-bot en cliquant sur "Je ne suis pas un robot"');
+                return;
+            }
+            
+            if(isBot()) {
+                return;
+            }
+            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
             
@@ -581,33 +896,52 @@
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ 
+                        identifier: identifier,
+                        password: password,
+                        humanVerified: true,
+                        verificationScore: verificationScore
+                    })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Sauvegarder les identifiants si "Remember Me" est coché
+                    saveCredentials(identifier, password, rememberMe);
+                    
                     localStorage.setItem('token', data.token);
                     
-                    // Message de succès
                     showMessage('success', 'Connexion réussie ! Redirection...');
                     
-                    // Redirection après un délai
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1500);
                 } else {
-                    // Réactiver le bouton
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
                     
                     if (data.requiresVerification) {
                         showMessage('info', 'Email non vérifié. Redirection vers la vérification...');
                         setTimeout(() => {
-                            window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
+                            window.location.href = `/email-verification?email=${encodeURIComponent(identifier)}`;
                         }, 2000);
                     } else {
-                        showMessage('error', data.error || 'Email ou mot de passe incorrect');
+                        showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
+                        
+                        // Réinitialiser le CAPTCHA en cas d'erreur
+                        captchaVerified = false;
+                        document.getElementById('captchaCheckbox').classList.remove('verified');
+                        document.getElementById('submitBtn').disabled = true;
+                        document.getElementById('submitBtn').innerHTML = '<span>Vérification requise</span><i class="fas fa-lock"></i>';
+                        
+                        const badge = document.getElementById('captchaBadge');
+                        badge.innerHTML = `
+                            <div class="captcha-waiting-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>En attente de vérification...</span>
+                            </div>
+                        `;
                     }
                 }
             } catch (error) {
@@ -617,6 +951,12 @@
             }
         });
 
+        // Charger les identifiants sauvegardés au chargement de la page
+        loadSavedCredentials();
+        
+        // Démarrer la détection de comportement humain
+        detectHumanBehavior();
+        
         // Animation d'entrée
         document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', () => {
