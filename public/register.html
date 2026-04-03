@@ -19,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- hCaptcha -->
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     
     <title>Inscription - KermHosting</title>
     
@@ -243,7 +243,8 @@
             text-align: right;
         }
 
-        .h-captcha {
+        /* Cloudflare Turnstile */
+        .cf-turnstile {
             display: flex;
             justify-content: center;
             margin: 10px 0;
@@ -572,9 +573,9 @@
                            placeholder="KERMXXXXXX">
                 </div>
 
-                <!-- hCaptcha Widget -->
+                <!-- Cloudflare Turnstile - REMPLACEZ VOTRE SITE KEY ICI -->
                 <div class="form-group">
-                    <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001" data-callback="onCaptchaSuccess"></div>
+                    <div class="cf-turnstile" data-sitekey="VOTRE_SITE_KEY_CLOUDFLARE" data-callback="onTurnstileSuccess"></div>
                 </div>
 
                 <div class="checkbox-group">
@@ -615,6 +616,27 @@
     </div>
 
     <script>
+        let turnstileVerified = false;
+        let turnstileToken = null;
+
+        // Callback Cloudflare Turnstile
+        window.onTurnstileSuccess = function(token) {
+            turnstileVerified = true;
+            turnstileToken = token;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
+            
+            const badge = document.getElementById('captchaBadge');
+            badge.innerHTML = `
+                <div class="captcha-verified-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>✓ Site vérifié</span>
+                </div>
+            `;
+        };
+
         // Vérification si déjà connecté
         async function checkAlreadyLoggedIn() {
             const token = localStorage.getItem('token');
@@ -636,27 +658,6 @@
             }
             return false;
         }
-
-        let captchaVerified = false;
-        let captchaToken = null;
-
-        // Callback hCaptcha
-        window.onCaptchaSuccess = function(token) {
-            captchaVerified = true;
-            captchaToken = token;
-            
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
-            
-            const badge = document.getElementById('captchaBadge');
-            badge.innerHTML = `
-                <div class="captcha-verified-badge">
-                    <i class="fas fa-check-circle"></i>
-                    <span>✓ Site vérifié</span>
-                </div>
-            `;
-        };
 
         function togglePassword() {
             const password = document.getElementById('password');
@@ -735,7 +736,7 @@
                 return;
             }
             
-            if (!captchaVerified) {
+            if (!turnstileVerified) {
                 showMessage('error', 'Veuillez compléter la vérification');
                 return;
             }
@@ -750,7 +751,7 @@
                     body: JSON.stringify({ 
                         username, email, password, 
                         referral_code: referral, newsletter,
-                        'h-captcha-response': captchaToken
+                        'cf-turnstile-response': turnstileToken
                     })
                 });
                 
@@ -766,9 +767,8 @@
                     submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
                     showMessage('error', data.error || 'Erreur lors de l\'inscription');
                     
-                    if(window.hcaptcha) window.hcaptcha.reset();
-                    captchaVerified = false;
-                    captchaToken = null;
+                    turnstileVerified = false;
+                    turnstileToken = null;
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').innerHTML = '<span>Vérification en cours...</span><i class="fas fa-spinner fa-pulse"></i>';
                     
@@ -778,6 +778,11 @@
                             <span>Vérification en attente...</span>
                         </div>
                     `;
+                    
+                    // Réinitialiser Turnstile
+                    if(window.turnstile) {
+                        turnstile.reset();
+                    }
                 }
             } catch (error) {
                 submitBtn.disabled = false;
