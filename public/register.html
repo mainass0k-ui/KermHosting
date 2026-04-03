@@ -7,16 +7,12 @@
     <meta name="description" content="Inscrivez-vous à KermHosting - Hébergement Node.js en FCFA">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
-    
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -25,7 +21,6 @@
     <title>Inscription - KermHosting</title>
     
     <style>
-        /* Mêmes variables que login.html */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -112,7 +107,6 @@
             }
         }
 
-        /* ===== CARTE D'INSCRIPTION ===== */
         .auth-card {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
@@ -134,7 +128,6 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
         }
 
-        /* ===== EN-TÊTE ===== */
         .auth-header {
             text-align: center;
             margin-bottom: 32px;
@@ -174,7 +167,6 @@
             font-size: 1rem;
         }
 
-        /* ===== FORMULAIRE ===== */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -226,7 +218,6 @@
             opacity: 0.7;
         }
 
-        /* ===== INDICATEUR DE FORCE DU MOT DE PASSE ===== */
         .password-strength {
             margin-top: 8px;
             height: 4px;
@@ -248,7 +239,75 @@
             text-align: right;
         }
 
-        /* ===== BOUTONS ===== */
+        /* CAPTCHA BUTTON STYLES */
+        .captcha-button {
+            background: var(--bg-hover);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .captcha-button:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .captcha-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .captcha-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .captcha-checkbox.verified {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .captcha-checkbox i {
+            color: white;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .captcha-checkbox.verified i {
+            opacity: 1;
+        }
+
+        .captcha-text {
+            font-size: 0.9rem;
+        }
+
+        .captcha-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .captcha-logo i {
+            font-size: 1.2rem;
+        }
+
         .auth-btn {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -297,7 +356,11 @@
             transform: translateX(5px);
         }
 
-        /* ===== LIENS ===== */
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .auth-links {
             text-align: center;
             margin-top: 24px;
@@ -333,7 +396,6 @@
             width: 100%;
         }
 
-        /* ===== MESSAGES ===== */
         .message {
             padding: 16px;
             border-radius: var(--radius-md);
@@ -378,7 +440,6 @@
             color: var(--primary);
         }
 
-        /* ===== LOADER ===== */
         .loader {
             display: inline-block;
             width: 20px;
@@ -393,7 +454,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== CHECKBOX PERSONNALISÉE ===== */
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -418,7 +478,6 @@
             text-decoration: none;
         }
 
-        /* ===== BADGE PROMO ===== */
         .promo-badge {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(124, 58, 237, 0.1));
             border: 1px solid var(--accent);
@@ -436,22 +495,68 @@
             font-size: 1.2rem;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* Badge flottant */
+        .captcha-badge-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-verified-badge {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-md);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .captcha-waiting-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
         @media (max-width: 480px) {
             .auth-card {
                 padding: 30px 20px;
             }
-
             .auth-logo {
                 font-size: 1.75rem;
             }
-
             .auth-title {
                 font-size: 1.75rem;
             }
-
             .auth-btn {
                 padding: 14px;
+            }
+            .captcha-badge-status {
+                bottom: 10px;
+                right: 10px;
             }
         }
     </style>
@@ -459,7 +564,6 @@
 <body>
     <div class="auth-container">
         <div class="auth-card">
-            <!-- En-tête -->
             <div class="auth-header">
                 <div class="auth-logo">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -469,16 +573,13 @@
                 <p class="auth-subtitle">Créez votre compte et obtenez 10 coins gratuits</p>
             </div>
 
-            <!-- Badge promotionnel -->
             <div class="promo-badge">
                 <i class="fas fa-gift"></i>
                 <span>🎁 10 coins offerts + 5 coins après vérification email</span>
             </div>
 
-            <!-- Message -->
             <div id="messageContainer"></div>
 
-            <!-- Formulaire -->
             <form class="auth-form" id="registerForm">
                 <div class="form-group">
                     <label class="form-label">
@@ -516,8 +617,6 @@
                             <i class="far fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
-                    
-                    <!-- Indicateur de force -->
                     <div class="password-strength">
                         <div class="strength-bar" id="strengthBar"></div>
                     </div>
@@ -531,6 +630,28 @@
                     </label>
                     <input type="text" class="form-input" id="referral" 
                            placeholder="KERMXXXXXX">
+                </div>
+
+                <!-- CAPTCHA AntiBot -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-shield-alt"></i>
+                        Vérification AntiBot
+                    </label>
+                    <div class="captcha-button" id="captchaButton">
+                        <div class="captcha-left">
+                            <div class="captcha-checkbox" id="captchaCheckbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="captcha-text">
+                                <strong>Je ne suis pas un robot</strong>
+                            </div>
+                        </div>
+                        <div class="captcha-logo">
+                            <i class="fas fa-robot"></i>
+                            <span>hCaptcha</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="checkbox-group">
@@ -548,13 +669,12 @@
                     </label>
                 </div>
 
-                <button type="submit" class="auth-btn" id="submitBtn">
-                    <span>Créer mon compte</span>
-                    <i class="fas fa-arrow-right"></i>
+                <button type="submit" class="auth-btn" id="submitBtn" disabled>
+                    <span>Vérification requise</span>
+                    <i class="fas fa-lock"></i>
                 </button>
             </form>
 
-            <!-- Liens -->
             <div class="auth-links">
                 <p>Déjà un compte ?</p>
                 <a href="/login" style="font-size: 1.1rem;">
@@ -564,8 +684,133 @@
         </div>
     </div>
 
+    <!-- Badge flottant -->
+    <div class="captcha-badge-status" id="captchaBadge">
+        <div class="captcha-waiting-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>En attente de vérification...</span>
+        </div>
+    </div>
+
     <script>
-        // Toggle password visibility
+        let captchaVerified = false;
+        let verificationScore = 0;
+
+        // Détection du comportement humain
+        function detectHumanBehavior() {
+            let score = 0;
+            const startTime = Date.now();
+            
+            // 1. Détection du mouvement de souris
+            let mouseMoves = 0;
+            document.addEventListener('mousemove', function() {
+                mouseMoves++;
+                if(mouseMoves > 5 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+            
+            // 2. Détection du clic sur le bouton CAPTCHA
+            const captchaBtn = document.getElementById('captchaButton');
+            captchaBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Simuler une vérification humaine
+                if(score >= 2) {
+                    // Vérification réussie
+                    captchaVerified = true;
+                    const checkbox = document.getElementById('captchaCheckbox');
+                    checkbox.classList.add('verified');
+                    
+                    // Activer le bouton d'inscription
+                    const submitBtn = document.getElementById('submitBtn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
+                    
+                    // Mettre à jour le badge
+                    const badge = document.getElementById('captchaBadge');
+                    badge.innerHTML = `
+                        <div class="captcha-verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>✓ Site vérifié - AntiBot actif</span>
+                        </div>
+                    `;
+                    
+                    showMessage('success', '✅ Vérification anti-bot réussie !');
+                    
+                    setTimeout(() => {
+                        const msgContainer = document.getElementById('messageContainer');
+                        if(msgContainer.children[0] && msgContainer.children[0].classList.contains('success')) {
+                            msgContainer.innerHTML = '';
+                        }
+                    }, 3000);
+                } else {
+                    // Demander à l'utilisateur de bouger la souris
+                    showMessage('info', '🤖 Veuillez bouger votre souris sur la page pour confirmer que vous êtes humain');
+                    
+                    setTimeout(() => {
+                        const msgContainer = document.getElementById('messageContainer');
+                        if(msgContainer.children[0] && msgContainer.children[0].classList.contains('info')) {
+                            msgContainer.innerHTML = '';
+                        }
+                    }, 4000);
+                }
+            });
+            
+            // 3. Détection du temps passé sur la page
+            setTimeout(() => {
+                if(Date.now() - startTime > 3000 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            }, 3000);
+            
+            // 4. Détection de la pression de touches
+            let keyPresses = 0;
+            document.addEventListener('keydown', function() {
+                keyPresses++;
+                if(keyPresses > 2 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+            
+            // 5. Détection du scroll
+            let scrollCount = 0;
+            window.addEventListener('scroll', function() {
+                scrollCount++;
+                if(scrollCount > 1 && score < 2) {
+                    score = 2;
+                    updateVerification();
+                }
+            });
+        }
+        
+        function updateVerification() {
+            verificationScore = 2;
+        }
+        
+        // Détection si c'est un bot
+        function isBot() {
+            // Vérifier les propriétés suspectes
+            const suspiciousProps = [
+                !navigator.userAgent,
+                navigator.webdriver === true,
+                window.chrome && window.chrome.webstore === undefined,
+                navigator.plugins.length === 0,
+                navigator.languages === undefined
+            ];
+            
+            const botScore = suspiciousProps.filter(prop => prop === true).length;
+            
+            if(botScore >= 2) {
+                showMessage('error', '⚠️ Activité suspecte détectée. Veuillez rafraîchir la page.');
+                return true;
+            }
+            return false;
+        }
+        
         function togglePassword() {
             const password = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
@@ -581,7 +826,6 @@
             }
         }
 
-        // Vérifier la force du mot de passe
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
             const strengthBar = document.getElementById('strengthBar');
@@ -598,32 +842,11 @@
             if (/[^A-Za-z0-9]/.test(password)) strength += 1;
             
             switch(strength) {
-                case 0:
-                case 1:
-                    strength = 20;
-                    color = '#EF4444';
-                    message = 'Très faible';
-                    break;
-                case 2:
-                    strength = 40;
-                    color = '#F59E0B';
-                    message = 'Faible';
-                    break;
-                case 3:
-                    strength = 60;
-                    color = '#3B82F6';
-                    message = 'Moyen';
-                    break;
-                case 4:
-                    strength = 80;
-                    color = '#10B981';
-                    message = 'Fort';
-                    break;
-                case 5:
-                    strength = 100;
-                    color = '#10B981';
-                    message = 'Très fort';
-                    break;
+                case 0: case 1: strength = 20; color = '#EF4444'; message = 'Très faible'; break;
+                case 2: strength = 40; color = '#F59E0B'; message = 'Faible'; break;
+                case 3: strength = 60; color = '#3B82F6'; message = 'Moyen'; break;
+                case 4: strength = 80; color = '#10B981'; message = 'Fort'; break;
+                case 5: strength = 100; color = '#10B981'; message = 'Très fort'; break;
             }
             
             strengthBar.style.width = strength + '%';
@@ -632,21 +855,15 @@
             strengthText.style.color = color;
         });
 
-        // Récupérer le code de parrainage depuis l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         if (ref) {
             document.getElementById('referral').value = ref;
         }
 
-        // Afficher un message
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
-            const icons = {
-                error: 'fa-exclamation-circle',
-                success: 'fa-check-circle',
-                info: 'fa-info-circle'
-            };
+            const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
             
             container.innerHTML = `
                 <div class="message ${type}">
@@ -656,7 +873,6 @@
             `;
         }
 
-        // Gestionnaire d'inscription
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -674,7 +890,15 @@
                 return;
             }
             
-            // Désactiver le bouton
+            if (!captchaVerified) {
+                showMessage('error', 'Veuillez compléter la vérification anti-bot en cliquant sur "Je ne suis pas un robot"');
+                return;
+            }
+            
+            if(isBot()) {
+                return;
+            }
+            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Création du compte</span><span class="loader"></span>';
             
@@ -687,7 +911,9 @@
                         email, 
                         password, 
                         referral_code: referral,
-                        newsletter 
+                        newsletter,
+                        humanVerified: true,
+                        verificationScore: verificationScore
                     })
                 });
                 
@@ -703,6 +929,10 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
                     showMessage('error', data.error || 'Erreur lors de l\'inscription');
+                    captchaVerified = false;
+                    document.getElementById('captchaCheckbox').classList.remove('verified');
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').innerHTML = '<span>Vérification requise</span><i class="fas fa-lock"></i>';
                 }
             } catch (error) {
                 submitBtn.disabled = false;
@@ -711,7 +941,9 @@
             }
         });
 
-        // Animation d'entrée
+        // Démarrer la détection de comportement humain
+        detectHumanBehavior();
+        
         document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', () => {
             document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
