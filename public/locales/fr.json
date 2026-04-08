@@ -1,0 +1,445 @@
+{
+  "site": {
+    "name": "KermHosting",
+    "slogan": "Hébergement Node.js nouvelle génération"
+  },
+  "nav": {
+    "home": "Accueil",
+    "pricing": "Tarifs",
+    "dashboard": "Dashboard",
+    "login": "Connexion",
+    "register": "Inscription",
+    "profile": "Profil",
+    "admin": "Administration",
+    "logout": "Déconnexion",
+    "support": "Support",
+    "transactions": "Transactions",
+    "buy_coins": "Acheter des coins"
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Confidentialité",
+    "contact": "Contact",
+    "made_with": "Fait avec ❤️ pour l'Afrique et le monde"
+  },
+  "home": {
+    "hero": {
+      "title": "Hébergement Node.js en FCFA, PayPal & Minipay",
+      "subtitle": "Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.",
+      "cta": "Commencer maintenant",
+      "stats": {
+        "users": "Utilisateurs",
+        "servers": "Serveurs actifs",
+        "uptime": "Uptime"
+      }
+    },
+    "why_us": {
+      "title": "Pourquoi choisir KermHosting ?",
+      "subtitle": "L'hébergement adapté aux besoins africains et internationaux",
+      "fcfa": {
+        "title": "Paiement en FCFA",
+        "desc": "Payez en Franc CFA par Orange Money, MTN Mobile Money. Pas de frais cachés."
+      },
+      "paypal": {
+        "title": "Paiement PayPal",
+        "desc": "Payez en Euro, Dollar US, Livre Sterling ou Dollar Canadien via PayPal. Transactions sécurisées."
+      },
+      "minipay": {
+        "title": "Paiement Minipay",
+        "desc": "Payez en devises locales africaines via Minipay. Support pour plus de 40 pays africains."
+      },
+      "instant": {
+        "title": "Démarrage instantané",
+        "desc": "Créez votre serveur en moins d'une minute après paiement. Tout est automatisé."
+      },
+      "coins": {
+        "title": "Système de coins",
+        "desc": "Gagnez des coins chaque jour et parrainez vos amis pour payer moins cher."
+      },
+      "files": {
+        "title": "Gestion de fichiers",
+        "desc": "Éditeur de code intégré, upload de fichiers, gestion des variables d'environnement."
+      },
+      "support": {
+        "title": "Support WhatsApp",
+        "desc": "Support réactif sur WhatsApp et email. Une équipe à l'écoute de vos besoins."
+      }
+    },
+    "plans": {
+      "title": "Des plans à partir de 500 FCFA",
+      "subtitle": "Du simple bot Discord à l'application d'entreprise",
+      "free": "GRATUIT",
+      "popular": "POPULAIRE",
+      "pro": "PRO",
+      "payment_accepted": "Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)"
+    },
+    "how_it_works": {
+      "title": "Comment ça marche ?",
+      "step1": {
+        "title": "Créez votre compte",
+        "desc": "Inscription gratuite en 30 secondes. Vérification email requise pour activer votre compte."
+      },
+      "step2": {
+        "title": "Achetez des coins ou payez directement",
+        "desc": "Payez en FCFA par Mobile Money (Orange, MTN), en devises internationales via PayPal, ou en devises locales africaines via Minipay."
+      },
+      "step3": {
+        "title": "Créez votre serveur",
+        "desc": "Choisissez un plan, nommez votre serveur et lancez-le instantanément."
+      },
+      "step4": {
+        "title": "Déployez votre code",
+        "desc": "Upload, éditez, gérez vos variables d'env et lancez votre application."
+      }
+    },
+    "testimonials": {
+      "title": "Ce que disent nos utilisateurs",
+      "testimonial1": {
+        "text": "Enfin un hébergeur qui accepte le FCFA et Minipay ! Je paye avec Orange Money ou Minipay, c'est super pratique. Et le support est génial !",
+        "author": "Jean P.",
+        "location": "Client à Yaoundé"
+      },
+      "testimonial2": {
+        "text": "Je vis en Europe et pouvoir payer mes serveurs en Euro via PayPal c'est top ! Interface super intuitive.",
+        "author": "Sarah K.",
+        "location": "Développeuse à Paris"
+      },
+      "testimonial3": {
+        "text": "Le support est super réactif sur WhatsApp. J'ai payé avec Minipay depuis le Nigeria, ça a marché parfaitement !",
+        "author": "Alex R.",
+        "location": "Hébergeur à Lagos"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "q1": {
+        "q": "Quels moyens de paiement acceptez-vous ?",
+        "a": "Nous acceptons Orange Money, MTN Mobile Money. Le paiement est instantané et sécurisé via Fapshi."
+      },
+      "q2": {
+        "q": "Comment fonctionne le paiement PayPal ?",
+        "a": "Nous acceptons PayPal en Euro (€), Dollar US ($), Livre Sterling (£) et Dollar Canadien (CA$). Le paiement est sécurisé et les devises sont automatiquement converties. La transaction est validée manuellement par notre équipe après réception du virement."
+      },
+      "q3": {
+        "q": "Qu'est-ce que Minipay et quels pays sont supportés ?",
+        "a": "Minipay est une solution de paiement mobile accessible dans plus de 40 pays africains. Chez KermHosting, nous supportons actuellement : Cameroun, Côte d'Ivoire, Sénégal, Mali, Burkina Faso, Bénin, Niger, Togo, Gabon, Congo, Tchad, Nigeria, Ghana, Kenya, Tanzanie, Ouganda, Rwanda, Afrique du Sud, Maroc, Algérie, Tunisie et d'autres à venir ! Vous payez dans votre devise locale avec un simple téléchargement de capture d'écran."
+      },
+      "q4": {
+        "q": "Comment fonctionne le système de coins ?",
+        "a": "Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA, via PayPal ou Minipay et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs."
+      },
+      "q5": {
+        "q": "Puis-je utiliser mon propre nom de domaine ?",
+        "a": "Oui ! Vous pouvez configurer vos propres noms de domaine pour vos serveurs. Nous fournissons également des sous-domaines gratuits."
+      },
+      "q6": {
+        "q": "Que se passe-t-il quand mon serveur expire ?",
+        "a": "Vous recevez un email 3 jours avant l'expiration. Si vous ne renouvelez pas, le serveur est automatiquement supprimé après 3 jours."
+      }
+    },
+    "cta_footer": {
+      "title": "Prêt à lancer votre projet ?",
+      "subtitle": "Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance",
+      "button": "Créer un compte gratuit"
+    }
+  },
+  "auth": {
+    "login_title": "Connexion",
+    "register_title": "Inscription",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "remember_me": "Se souvenir de moi",
+    "login_button": "Se connecter",
+    "register_button": "S'inscrire",
+    "no_account": "Pas encore de compte ?",
+    "has_account": "Déjà un compte ?",
+    "register_link": "S'inscrire",
+    "login_link": "Se connecter",
+    "reset_password": "Réinitialiser le mot de passe",
+    "send_reset": "Envoyer le code",
+    "verification_code": "Code de vérification",
+    "verify_email": "Vérifier l'email",
+    "resend_code": "Renvoyer le code",
+    "logout_confirm": "Êtes-vous sûr de vouloir vous déconnecter ?"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue",
+    "overview": "Vue d'ensemble",
+    "your_servers": "Vos serveurs",
+    "no_servers": "Aucun serveur pour le moment",
+    "create_first": "Créer votre premier serveur",
+    "create_server": "Créer un serveur",
+    "coins_balance": "Solde de coins",
+    "daily_reward": "Récompense quotidienne",
+    "claim": "Réclamer",
+    "already_claimed": "Déjà réclamé",
+    "streak": "Série",
+    "days": "jours",
+    "recent_activity": "Activité récente",
+    "no_activity": "Aucune activité récente",
+    "quick_actions": "Actions rapides",
+    "buy_coins": "Acheter des coins",
+    "view_profile": "Voir le profil",
+    "referral": "Parrainage",
+    "referral_code": "Votre code de parrainage",
+    "referral_link": "Lien de parrainage",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "referral_count": "Nombre de filleuls",
+    "referral_coins": "Coins gagnés via parrainage"
+  },
+  "servers": {
+    "status": "Statut",
+    "active": "Actif",
+    "suspended": "Suspendu",
+    "deleted": "Supprimé",
+    "expires_in": "Expire dans",
+    "expired": "Expiré",
+    "renew": "Renouveler",
+    "start": "Démarrer",
+    "stop": "Arrêter",
+    "restart": "Redémarrer",
+    "kill": "Forcer l'arrêt",
+    "console": "Console",
+    "files": "Fichiers",
+    "settings": "Paramètres",
+    "credentials": "Identifiants",
+    "server_name": "Nom du serveur",
+    "server_type": "Type de serveur",
+    "created": "Créé le",
+    "auto_renew": "Auto-renouvellement",
+    "auto_renew_enabled": "Activé",
+    "auto_renew_disabled": "Désactivé",
+    "enable_auto_renew": "Activer l'auto-renouvellement",
+    "disable_auto_renew": "Désactiver l'auto-renouvellement",
+    "confirm_delete": "Supprimer ce serveur ?",
+    "delete_warning": "Cette action est irréversible. Toutes les données seront perdues.",
+    "resources": "Ressources",
+    "ram": "RAM",
+    "cpu": "CPU",
+    "disk": "Disque",
+    "used": "Utilisé",
+    "total": "Total"
+  },
+  "pricing": {
+    "title": "Nos plans d'hébergement",
+    "subtitle": "Choisissez le plan qui correspond à vos besoins",
+    "free_plan": "Plan gratuit",
+    "free_duration": "24h d'essai",
+    "per_week": "par semaine",
+    "features": "Fonctionnalités",
+    "select_plan": "Choisir ce plan",
+    "current_plan": "Plan actuel",
+    "ram": "RAM DDR4",
+    "storage": "Stockage NVMe",
+    "cpu_limit": "CPU",
+    "databases": "bases de données",
+    "backups": "backups",
+    "support": "Support",
+    "support_standard": "Support standard",
+    "support_priority": "Support prioritaire",
+    "support_vip": "Support VIP 24/7",
+    "free_domain": "Domaine gratuit",
+    "ssl": "SSL dédié"
+  },
+  "coins": {
+    "title": "Acheter des coins",
+    "subtitle": "Rechargez votre solde et économisez sur vos serveurs",
+    "your_balance": "Votre solde",
+    "select_pack": "Sélectionnez un pack",
+    "discovery": "Pack Découverte",
+    "popular": "Pack Populaire",
+    "performance": "Pack Performance",
+    "ultimate": "Pack Ultimate",
+    "coins": "coins",
+    "bonus": "bonus",
+    "total": "Total",
+    "price": "Prix",
+    "payment_method": "Moyen de paiement",
+    "mobile_money": "Mobile Money",
+    "paypal": "PayPal",
+    "minipay": "Minipay",
+    "phone_number": "Numéro de téléphone",
+    "pay_now": "Payer maintenant",
+    "processing": "Traitement en cours...",
+    "success": "Achat réussi !",
+    "success_desc": "Vos coins ont été crédités avec succès."
+  },
+  "profile": {
+    "title": "Mon profil",
+    "personal_info": "Informations personnelles",
+    "change_username": "Changer le nom d'utilisateur",
+    "change_email": "Changer l'email",
+    "change_password": "Changer le mot de passe",
+    "current_password": "Mot de passe actuel",
+    "new_password": "Nouveau mot de passe",
+    "confirm_new_password": "Confirmer le nouveau mot de passe",
+    "update": "Mettre à jour",
+    "api_key": "Clé API",
+    "regenerate": "Régénérer",
+    "regenerate_confirm": "Régénérer la clé API ? L'ancienne clé ne fonctionnera plus.",
+    "delete_account": "Supprimer mon compte",
+    "delete_warning": "Cette action est irréversible. Tous vos serveurs et données seront définitivement supprimés.",
+    "enter_password_confirm": "Entrez votre mot de passe pour confirmer",
+    "profile_picture": "Photo de profil",
+    "upload_photo": "Télécharger une photo",
+    "remove_photo": "Supprimer la photo",
+    "language": "Langue",
+    "french": "Français",
+    "english": "Anglais"
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "servers": "Serveurs",
+    "transactions": "Transactions",
+    "logs": "Logs",
+    "settings": "Paramètres",
+    "stats": {
+      "total_users": "Utilisateurs totaux",
+      "verified_users": "Utilisateurs vérifiés",
+      "banned_users": "Utilisateurs bannis",
+      "total_servers": "Serveurs totaux",
+      "active_servers": "Serveurs actifs",
+      "suspended_servers": "Serveurs suspendus",
+      "total_coins": "Coins en circulation",
+      "total_revenue": "Revenu total",
+      "today_revenue": "Revenu aujourd'hui"
+    },
+    "actions": {
+      "ban": "Bannir",
+      "unban": "Débannir",
+      "add_coins": "Ajouter des coins",
+      "remove_coins": "Retirer des coins",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "confirm": "Confirmer",
+      "cancel": "Annuler"
+    },
+    "broadcast": {
+      "title": "Envoyer une annonce",
+      "target": "Destinataires",
+      "all_users": "Tous les utilisateurs",
+      "verified_users": "Utilisateurs vérifiés",
+      "active_servers": "Utilisateurs avec serveur actif",
+      "admins_only": "Admins uniquement",
+      "subject": "Sujet",
+      "message": "Message",
+      "send": "Envoyer à tous",
+      "sending": "Envoi en cours...",
+      "success": "Emails envoyés avec succès",
+      "warning": "L'envoi peut prendre quelques minutes selon le nombre d'utilisateurs."
+    },
+    "maintenance": {
+      "title": "Mode maintenance",
+      "enable": "Activer la maintenance",
+      "disable": "Désactiver la maintenance",
+      "message": "Message de maintenance",
+      "end_time": "Fin estimée",
+      "allowed_ips": "IPs autorisées (une par ligne)",
+      "save": "Enregistrer"
+    }
+  },
+  "transactions": {
+    "title": "Historique des transactions",
+    "no_transactions": "Aucune transaction",
+    "type": "Type",
+    "amount": "Montant",
+    "date": "Date",
+    "status": "Statut",
+    "pending": "En attente",
+    "successful": "Réussi",
+    "failed": "Échoué",
+    "expired": "Expiré",
+    "types": {
+      "coins_purchase": "Achat de coins",
+      "server_purchase": "Achat de serveur",
+      "server_renewal": "Renouvellement",
+      "referral_bonus": "Bonus parrainage",
+      "daily_reward": "Récompense quotidienne"
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Nous sommes là pour vous aider",
+    "whatsapp": "WhatsApp",
+    "whatsapp_desc": "Contactez-nous directement sur WhatsApp pour une assistance rapide.",
+    "email": "Email",
+    "email_desc": "Envoyez-nous un email, nous répondons sous 24h.",
+    "discord": "Discord",
+    "discord_desc": "Rejoignez notre communauté Discord pour échanger avec d'autres utilisateurs.",
+    "faq": "FAQ",
+    "faq_desc": "Consultez les questions fréquentes pour trouver rapidement une réponse."
+  },
+  "notifications": {
+    "new": "Nouveau !",
+    "paypal_new": "Nouveau ! Paiement PayPal",
+    "paypal_desc": "Payez désormais en Euro, Dollar, Livre ou FCFA via PayPal",
+    "minipay_new": "Nouveau ! Paiement Minipay",
+    "minipay_desc": "Payez en devises locales africaines via Minipay.",
+    "welcome": "Bienvenue sur KermHosting !",
+    "welcome_desc": "Créez votre premier serveur et obtenez 10 coins gratuits",
+    "promo": "Promotion -20%",
+    "promo_desc": "Sur tous les packs de coins cette semaine",
+    "just_now": "À l'instant",
+    "minutes_ago": "il y a {{count}} minute(s)",
+    "hours_ago": "il y a {{count}} heure(s)",
+    "days_ago": "il y a {{count}} jour(s)",
+    "server_expiring": "Votre serveur expire dans 3 jours",
+    "server_expired": "Votre serveur a expiré",
+    "server_suspended": "Votre serveur a été suspendu",
+    "server_deleted": "Votre serveur a été supprimé",
+    "renewal_success": "Renouvellement réussi",
+    "renewal_failed": "Échec du renouvellement - Coins insuffisants"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "success": "Succès",
+    "yes": "Oui",
+    "no": "Non",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "more": "Plus",
+    "less": "Moins",
+    "all": "Tous",
+    "none": "Aucun",
+    "refresh": "Actualiser",
+    "download": "Télécharger",
+    "upload": "Téléverser"
+  },
+  "errors": {
+    "required": "Ce champ est requis",
+    "invalid_email": "Email invalide",
+    "invalid_phone": "Numéro de téléphone invalide",
+    "password_too_short": "Mot de passe trop court (6 caractères minimum)",
+    "passwords_dont_match": "Les mots de passe ne correspondent pas",
+    "username_taken": "Nom d'utilisateur déjà utilisé",
+    "email_taken": "Email déjà utilisé",
+    "invalid_credentials": "Identifiants incorrects",
+    "account_banned": "Votre compte a été suspendu",
+    "email_not_verified": "Email non vérifié",
+    "insufficient_coins": "Coins insuffisants",
+    "server_error": "Erreur serveur, réessayez plus tard",
+    "not_found": "Ressource non trouvée",
+    "unauthorized": "Non autorisé",
+    "forbidden": "Accès interdit",
+    "maintenance": "Site en maintenance, nous revenons bientôt"
+  }
+}
