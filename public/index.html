@@ -366,6 +366,80 @@
             transform: translateY(-2px);
         }
 
+        /* ===== SÉLECTEUR DE LANGUE ===== */
+        .lang-switcher {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lang-current {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: var(--radius-full);
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 60px;
+        }
+
+        .lang-current:hover {
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 70px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .lang-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .lang-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .lang-option.active {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
         /* ===== MAIN CONTENT ===== */
         .main-content {
             flex: 1;
@@ -1246,18 +1320,26 @@
             </nav>
             
             <div class="sidebar-footer">
+                <!-- Sélecteur de langue -->
+                <div class="lang-switcher" data-lang-switcher style="margin-bottom: 16px; text-align: center;">
+                    <button class="lang-current" data-lang-toggle data-lang-current>
+                        🇫🇷
+                    </button>
+                    <div class="lang-dropdown" data-lang-dropdown></div>
+                </div>
+                
                 <div class="sidebar-stats">
                     <div class="stat">
                         <span class="stat-value" id="statUsers">1K+</span>
-                        <span class="stat-label">Utilisateurs</span>
+                        <span class="stat-label" id="statUsersLabel">Utilisateurs</span>
                     </div>
                     <div class="stat">
                         <span class="stat-value" id="statServers">500+</span>
-                        <span class="stat-label">Serveurs</span>
+                        <span class="stat-label" id="statServersLabel">Serveurs</span>
                     </div>
                     <div class="stat">
                         <span class="stat-value" id="statUptime">99.9%</span>
-                        <span class="stat-label">Uptime</span>
+                        <span class="stat-label" id="statUptimeLabel">Uptime</span>
                     </div>
                 </div>
                 <div class="sidebar-social">
@@ -1280,6 +1362,14 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
+                    <!-- Sélecteur de langue mobile -->
+                    <div class="lang-switcher" data-lang-switcher>
+                        <button class="lang-current" data-lang-toggle data-lang-current>
+                            🇫🇷
+                        </button>
+                        <div class="lang-dropdown" data-lang-dropdown></div>
+                    </div>
+                    
                     <button class="notification-btn" id="notificationBtn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">3</span>
@@ -1293,50 +1383,11 @@
             <!-- Notifications Panel -->
             <div class="notifications-panel" id="notificationsPanel">
                 <div class="notifications-header">
-                    <h3>Notifications</h3>
+                    <h3 id="notificationsTitle">Notifications</h3>
                     <button id="closeNotifications"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="notifications-list">
-                    <div class="notification-item unread">
-                        <i class="fab fa-paypal notification-icon" style="color: #0070BA;"></i>
-                        <div class="notification-content">
-                            <div class="notification-title">Nouveau ! Paiement PayPal</div>
-                            <div class="notification-message">Payez désormais en Euro, Dollar, Livre ou FCFA via PayPal</div>
-                            <div class="notification-time">À l'instant</div>
-                        </div>
-                    </div>
-                    <div class="notification-item unread">
-                        <i class="fas fa-credit-card notification-icon" style="color: #00C4B3;"></i>
-                        <div class="notification-content">
-                            <div class="notification-title">Nouveau ! Paiement Minipay</div>
-                            <div class="notification-message">Payez en devises locales africaines via Minipay. Pays supportés : 🇨🇲 Cameroun, 🇨🇮 Côte d'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie et plus encore !</div>
-                            <div class="notification-time">À l'instant</div>
-                        </div>
-                    </div>
-                    <div class="notification-item unread">
-                        <i class="fas fa-gift notification-icon"></i>
-                        <div class="notification-content">
-                            <div class="notification-title">Bienvenue sur KermHosting !</div>
-                            <div class="notification-message">Créez votre premier serveur et obtenez 10 coins gratuits</div>
-                            <div class="notification-time">Il y a 5 minutes</div>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <i class="fas fa-percent notification-icon"></i>
-                        <div class="notification-content">
-                            <div class="notification-title">Promotion -20%</div>
-                            <div class="notification-message">Sur tous les packs de coins cette semaine</div>
-                            <div class="notification-time">Il y a 2 heures</div>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <i class="fas fa-shield-alt notification-icon"></i>
-                        <div class="notification-content">
-                            <div class="notification-title">Paiement FCFA, PayPal & Minipay</div>
-                            <div class="notification-message">Paiement en Franc CFA, en devises internationales via PayPal ou en devises locales africaines via Minipay !</div>
-                            <div class="notification-time">Hier</div>
-                        </div>
-                    </div>
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Rempli dynamiquement -->
                 </div>
             </div>
 
@@ -1346,370 +1397,113 @@
                 <section class="hero-section">
                     <div class="hero-badge">
                         <span class="badge-pulse"></span>
-                        🇨🇲 Paiement FCFA | 🌍 PayPal | 📱 Minipay
+                        🇨🇲 <span id="badgeFcfa">Paiement FCFA</span> | 🌍 <span id="badgePaypal">PayPal</span> | 📱 <span id="badgeMinipay">Minipay</span>
                     </div>
-                    <h1 class="hero-title">
+                    <h1 class="hero-title" id="heroTitle">
                         Hébergement <span class="gradient-text">Node.js</span> en FCFA, PayPal & Minipay
                     </h1>
-                    <p class="hero-subtitle">
+                    <p class="hero-subtitle" id="heroSubtitle">
                         Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.
                     </p>
                     <div class="hero-actions">
                         <button class="btn btn-primary" id="getStartedBtn">
-                            Commencer maintenant
+                            <span id="heroCta">Commencer maintenant</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                         <button class="btn btn-outline" id="viewPricingBtn">
-                            Voir les tarifs
+                            <span id="viewPricingText">Voir les tarifs</span>
                         </button>
                     </div>
                     <div class="hero-stats">
                         <div class="stat-item">
                             <span class="stat-number">1K+</span>
-                            <span class="stat-text">Utilisateurs</span>
+                            <span class="stat-text" id="statUsersText">Utilisateurs</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">500+</span>
-                            <span class="stat-text">Serveurs actifs</span>
+                            <span class="stat-text" id="statServersText">Serveurs actifs</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">99.9%</span>
-                            <span class="stat-text">Uptime</span>
+                            <span class="stat-text" id="statUptimeText">Uptime</span>
                         </div>
                     </div>
                 </section>
 
                 <!-- Features Section -->
                 <section class="features-section">
-                    <h2 class="section-title">Pourquoi choisir <span class="gradient-text">KermHosting</span> ?</h2>
-                    <p class="section-subtitle">L'hébergement adapté aux besoins africains et internationaux</p>
+                    <h2 class="section-title">
+                        <span id="whyUsTitle">Pourquoi choisir</span> <span class="gradient-text">KermHosting</span> ?
+                    </h2>
+                    <p class="section-subtitle" id="whyUsSubtitle">L'hébergement adapté aux besoins africains et internationaux</p>
                     
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #7C3AED20, #C084FC20)">
-                                <i class="fas fa-money-bill-wave" style="color: #7C3AED"></i>
-                            </div>
-                            <h3 class="feature-title">Paiement en FCFA</h3>
-                            <p class="feature-description">
-                                Payez en Franc CFA par Orange Money, MTN Mobile Money. Pas de frais cachés.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #0070BA20, #3B9CFF20)">
-                                <i class="fab fa-paypal" style="color: #0070BA"></i>
-                            </div>
-                            <h3 class="feature-title">Paiement PayPal</h3>
-                            <p class="feature-description">
-                                Payez en Euro, Dollar US, Livre Sterling ou Dollar Canadien via PayPal. Transactions sécurisées.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #00C4B320, #40E0D020)">
-                                <i class="fas fa-mobile-alt" style="color: #00C4B3"></i>
-                            </div>
-                            <h3 class="feature-title">Paiement Minipay</h3>
-                            <p class="feature-description">
-                                Payez en devises locales africaines via Minipay. Support pour plus de 40 pays africains.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #3B82F620, #60A5FA20)">
-                                <i class="fas fa-bolt" style="color: #3B82F6"></i>
-                            </div>
-                            <h3 class="feature-title">Démarrage instantané</h3>
-                            <p class="feature-description">
-                                Créez votre serveur en moins d'une minute après paiement. Tout est automatisé.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #10B98120, #34D39920)">
-                                <i class="fas fa-coins" style="color: #10B981"></i>
-                            </div>
-                            <h3 class="feature-title">Système de coins</h3>
-                            <p class="feature-description">
-                                Gagnez des coins chaque jour et parrainez vos amis pour payer moins cher.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #EC489920, #F472B620)">
-                                <i class="fas fa-code" style="color: #EC4899"></i>
-                            </div>
-                            <h3 class="feature-title">Gestion de fichiers</h3>
-                            <p class="feature-description">
-                                Éditeur de code intégré, upload de fichiers, gestion des variables d'environnement.
-                            </p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF620, #A78BFA20)">
-                                <i class="fas fa-headset" style="color: #8B5CF6"></i>
-                            </div>
-                            <h3 class="feature-title">Support WhatsApp</h3>
-                            <p class="feature-description">
-                                Support réactif sur WhatsApp et email. Une équipe à l'écoute de vos besoins.
-                            </p>
-                        </div>
-                    </div>
+                    <div class="features-grid" id="featuresGrid"></div>
                 </section>
 
                 <!-- Pricing Preview -->
                 <section class="pricing-preview">
-                    <h2 class="section-title">Des plans à partir de <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;">(ou via PayPal / Minipay)</span></h2>
-                    <p class="section-subtitle">Du simple bot Discord à l'application d'entreprise</p>
+                    <h2 class="section-title">
+                        <span id="plansTitle">Des plans à partir de</span> <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;" id="plansSubtitleOr">(ou via PayPal / Minipay)</span>
+                    </h2>
+                    <p class="section-subtitle" id="plansSubtitle">Du simple bot Discord à l'application d'entreprise</p>
                     
-                    <div class="pricing-cards">
-                        <div class="pricing-card">
-                            <div class="pricing-badge">GRATUIT</div>
-                            <h3 class="pricing-name">Free</h3>
-                            <div class="pricing-price">
-                                <span class="price">0</span>
-                                <span class="currency">FCFA</span>
-                            </div>
-                            <ul class="pricing-features">
-                                <li><i class="fas fa-check"></i> 256 MB RAM</li>
-                                <li><i class="fas fa-check"></i> 5 GB Stockage</li>
-                                <li><i class="fas fa-check"></i> 50% CPU</li>
-                                <li><i class="fas fa-check"></i> 24h d'essai</li>
-                                <li class="disabled"><i class="fas fa-times"></i> Support prioritaire</li>
-                            </ul>
-                            <button class="btn btn-outline pricing-btn" onclick="location.href='/register'">Essayer</button>
-                        </div>
-                        
-                        <div class="pricing-card popular">
-                            <div class="pricing-badge">POPULAIRE</div>
-                            <h3 class="pricing-name">Starter</h3>
-                            <div class="pricing-price">
-                                <span class="price">500</span>
-                                <span class="currency">FCFA / 0.76€ / ~1000₦</span>
-                            </div>
-                            <ul class="pricing-features">
-                                <li><i class="fas fa-check"></i> 1 GB RAM</li>
-                                <li><i class="fas fa-check"></i> 10 GB Stockage</li>
-                                <li><i class="fas fa-check"></i> 100% CPU</li>
-                                <li><i class="fas fa-check"></i> 7 jours</li>
-                                <li><i class="fas fa-check"></i> Support standard</li>
-                            </ul>
-                            <button class="btn btn-primary pricing-btn" onclick="location.href='/register'">Choisir</button>
-                        </div>
-                        
-                        <div class="pricing-card">
-                            <div class="pricing-badge">PRO</div>
-                            <h3 class="pricing-name">Pro</h3>
-                            <div class="pricing-price">
-                                <span class="price">1 300</span>
-                                <span class="currency">FCFA / 1.98€ / ~2600₦</span>
-                            </div>
-                            <ul class="pricing-features">
-                                <li><i class="fas fa-check"></i> 4 GB RAM</li>
-                                <li><i class="fas fa-check"></i> 40 GB Stockage</li>
-                                <li><i class="fas fa-check"></i> 400% CPU</li>
-                                <li><i class="fas fa-check"></i> 7 jours</li>
-                                <li><i class="fas fa-check"></i> Support prioritaire</li>
-                            </ul>
-                            <button class="btn btn-outline pricing-btn" onclick="location.href='/register'">Choisir</button>
-                        </div>
-                    </div>
+                    <div class="pricing-cards" id="pricingCards"></div>
                     
                     <div class="pricing-note">
                         <i class="fas fa-credit-card"></i>
-                        <span>💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)</span>
+                        <span id="paymentAcceptedText">💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)</span>
                     </div>
                     
                     <div class="pricing-cta">
-                        <a href="/pricing" class="btn btn-link">Voir tous les plans <i class="fas fa-arrow-right"></i></a>
+                        <a href="/pricing" class="btn btn-link">
+                            <span id="viewAllPlansText">Voir tous les plans</span> <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </section>
 
                 <!-- How It Works -->
                 <section class="how-it-works">
-                    <h2 class="section-title">Comment ça <span class="gradient-text">marche</span> ?</h2>
+                    <h2 class="section-title">
+                        <span id="howItWorksTitle">Comment ça</span> <span class="gradient-text">marche</span> ?
+                    </h2>
                     
-                    <div class="steps">
-                        <div class="step">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h3>Créez votre compte</h3>
-                                <p>Inscription gratuite en 30 secondes. Vérification email requise pour activer votre compte.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="step">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h3>Achetez des coins ou payez directement</h3>
-                                <p>Payez en FCFA par Mobile Money (Orange, MTN), en devises internationales via PayPal, ou en devises locales africaines via Minipay.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="step">
-                            <div class="step-number">3</div>
-                            <div class="step-content">
-                                <h3>Créez votre serveur</h3>
-                                <p>Choisissez un plan, nommez votre serveur et lancez-le instantanément.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="step">
-                            <div class="step-number">4</div>
-                            <div class="step-content">
-                                <h3>Déployez votre code</h3>
-                                <p>Upload, éditez, gérez vos variables d'env et lancez votre application.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="steps" id="stepsContainer"></div>
                 </section>
 
                 <!-- Testimonials -->
                 <section class="testimonials">
-                    <h2 class="section-title">Ce que disent <span class="gradient-text">nos utilisateurs</span></h2>
+                    <h2 class="section-title">
+                        <span id="testimonialsTitle">Ce que disent</span> <span class="gradient-text">nos utilisateurs</span>
+                    </h2>
                     
-                    <div class="testimonials-slider">
-                        <div class="testimonial-card">
-                            <div class="testimonial-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <p class="testimonial-text">
-                                "Enfin un hébergeur qui accepte le FCFA et Minipay ! Je paye avec Orange Money ou Minipay, c'est super pratique. Et le support est génial !"
-                            </p>
-                            <div class="testimonial-author">
-                                <img src="https://ui-avatars.com/api/?name=Jean+P&background=7C3AED&color=fff&size=40" alt="Author">
-                                <div>
-                                    <strong>Jean P.</strong>
-                                    <span>Client à Yaoundé</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="testimonial-card">
-                            <div class="testimonial-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <p class="testimonial-text">
-                                "Je vis en Europe et pouvoir payer mes serveurs en Euro via PayPal c'est top ! Interface super intuitive."
-                            </p>
-                            <div class="testimonial-author">
-                                <img src="https://ui-avatars.com/api/?name=Sarah+K&background=10B981&color=fff&size=40" alt="Author">
-                                <div>
-                                    <strong>Sarah K.</strong>
-                                    <span>Développeuse à Paris</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="testimonial-card">
-                            <div class="testimonial-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <p class="testimonial-text">
-                                "Le support est super réactif sur WhatsApp. J'ai payé avec Minipay depuis le Nigeria, ça a marché parfaitement !"
-                            </p>
-                            <div class="testimonial-author">
-                                <img src="https://ui-avatars.com/api/?name=Alex+R&background=F59E0B&color=fff&size=40" alt="Author">
-                                <div>
-                                    <strong>Alex R.</strong>
-                                    <span>Hébergeur à Lagos</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="testimonials-slider" id="testimonialsSlider"></div>
                 </section>
 
                 <!-- FAQ Preview -->
                 <section class="faq-preview">
-                    <h2 class="section-title">Questions <span class="gradient-text">fréquentes</span></h2>
+                    <h2 class="section-title">
+                        <span id="faqTitle">Questions</span> <span class="gradient-text">fréquentes</span>
+                    </h2>
                     
-                    <div class="faq-list">
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Comment payer en FCFA ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Nous acceptons Orange Money, MTN Mobile Money. Le paiement est instantané et sécurisé via Fapshi.
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Comment payer avec PayPal ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Nous acceptons PayPal en Euro (€), Dollar US ($), Livre Sterling (£) et Dollar Canadien (CA$). Le paiement est sécurisé et les devises sont automatiquement converties. La transaction est validée manuellement par notre équipe après réception du virement.
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Qu'est-ce que Minipay et quels pays sont supportés ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Minipay est une solution de paiement mobile accessible dans plus de 40 pays africains. Chez KermHosting, nous supportons actuellement les pays suivants : <strong>🇨🇲 Cameroun, 🇨🇮 Côte d'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie</strong> et d'autres à venir ! Vous payez dans votre devise locale avec un simple téléchargement de capture d'écran.
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Qu'est-ce que les coins ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA, via PayPal ou Minipay et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Puis-je utiliser mon propre nom de domaine ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Oui ! Vous pouvez configurer vos propres noms de domaine pour vos serveurs. Nous fournissons également des sous-domaines gratuits.
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question">
-                                <span>Que se passe-t-il quand mon serveur expire ?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="faq-answer">
-                                Vous recevez un email 3 jours avant l'expiration. Si vous ne renouvelez pas, le serveur est automatiquement supprimé après 7 jours.
-                            </div>
-                        </div>
-                    </div>
+                    <div class="faq-list" id="faqList"></div>
                     
                     <div class="faq-cta">
-                        <a href="/support" class="btn btn-link">Voir toutes les FAQs <i class="fas fa-arrow-right"></i></a>
+                        <a href="/support" class="btn btn-link">
+                            <span id="viewAllFaqText">Voir toutes les FAQs</span> <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </section>
 
                 <!-- CTA Section -->
                 <section class="cta-section">
                     <div class="cta-content">
-                        <h2>Prêt à lancer <span class="gradient-text">votre projet</span> ?</h2>
-                        <p>Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance</p>
+                        <h2>
+                            <span id="ctaTitle">Prêt à lancer</span> <span class="gradient-text">votre projet</span> ?
+                        </h2>
+                        <p id="ctaSubtitle">Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance</p>
                         <div class="cta-actions">
                             <button class="btn btn-primary btn-large" id="finalCtaBtn">
-                                Créer mon compte gratuit
+                                <span id="ctaButtonText">Créer mon compte gratuit</span>
                                 <i class="fas fa-rocket"></i>
                             </button>
                         </div>
@@ -1725,22 +1519,22 @@
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>KermHosting</span>
                         </div>
-                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.</p>
+                        <p id="footerDescription">Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.</p>
                     </div>
                     
                     <div class="footer-links">
                         <div class="footer-column">
-                            <h4>Produit</h4>
+                            <h4 id="footerProduct">Produit</h4>
                             <ul>
-                                <li><a href="/pricing">Tarifs</a></li>
-                                <li><a href="/buy-coins">Acheter des coins</a></li>
+                                <li><a href="/pricing" id="footerPricing">Tarifs</a></li>
+                                <li><a href="/buy-coins" id="footerBuyCoins">Acheter des coins</a></li>
                                 <li><a href="#">Fonctionnalités</a></li>
                                 <li><a href="#">Statut</a></li>
                             </ul>
                         </div>
                         
                         <div class="footer-column">
-                            <h4>Ressources</h4>
+                            <h4 id="footerResources">Ressources</h4>
                             <ul>
                                 <li><a href="/support">FAQ & Support</a></li>
                                 <li><a href="#">Documentation</a></li>
@@ -1751,7 +1545,7 @@
                         </div>
                         
                         <div class="footer-column">
-                            <h4>Légal</h4>
+                            <h4 id="footerLegal">Légal</h4>
                             <ul>
                                 <li><a href="#">CGU</a></li>
                                 <li><a href="#">Confidentialité</a></li>
@@ -1762,7 +1556,7 @@
                 </div>
                 
                 <div class="footer-bottom">
-                    <p>&copy; 2026 KermHosting. Tous droits réservés.</p>
+                    <p>&copy; 2026 KermHosting. <span id="footerRights">Tous droits réservés.</span></p>
                     <div class="footer-social">
                         <a href="#"><i class="fab fa-whatsapp"></i></a>
                         <a href="#"><i class="fab fa-discord"></i></a>
@@ -1775,6 +1569,318 @@
     </div>
 
     <script>
+        // ===== TRADUCTIONS =====
+        const translations = {
+            fr: {
+                siteName: 'KermHosting',
+                badgeFcfa: 'Paiement FCFA',
+                badgePaypal: 'PayPal',
+                badgeMinipay: 'Minipay',
+                heroTitle: 'Hébergement <span class="gradient-text">Node.js</span> en FCFA, PayPal & Minipay',
+                heroSubtitle: 'Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.',
+                heroCta: 'Commencer maintenant',
+                viewPricingText: 'Voir les tarifs',
+                statUsersText: 'Utilisateurs',
+                statServersText: 'Serveurs actifs',
+                statUptimeText: 'Uptime',
+                whyUsTitle: 'Pourquoi choisir',
+                whyUsSubtitle: 'L\'hébergement adapté aux besoins africains et internationaux',
+                plansTitle: 'Des plans à partir de',
+                plansSubtitleOr: '(ou via PayPal / Minipay)',
+                plansSubtitle: 'Du simple bot Discord à l\'application d\'entreprise',
+                paymentAcceptedText: '💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)',
+                viewAllPlansText: 'Voir tous les plans',
+                howItWorksTitle: 'Comment ça',
+                testimonialsTitle: 'Ce que disent',
+                faqTitle: 'Questions',
+                viewAllFaqText: 'Voir toutes les FAQs',
+                ctaTitle: 'Prêt à lancer',
+                ctaSubtitle: 'Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance',
+                ctaButtonText: 'Créer mon compte gratuit',
+                footerDescription: 'Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.',
+                footerProduct: 'Produit',
+                footerResources: 'Ressources',
+                footerLegal: 'Légal',
+                footerPricing: 'Tarifs',
+                footerBuyCoins: 'Acheter des coins',
+                footerRights: 'Tous droits réservés.',
+                notificationsTitle: 'Notifications',
+                notif1title: 'Nouveau ! Paiement PayPal',
+                notif1msg: 'Payez désormais en Euro, Dollar, Livre ou FCFA via PayPal',
+                notif2title: 'Nouveau ! Paiement Minipay',
+                notif2msg: 'Payez en devises locales africaines via Minipay. Pays supportés : 🇨🇲 Cameroun, 🇨🇮 Côte d\'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie et plus encore !',
+                notif3title: 'Bienvenue sur KermHosting !',
+                notif3msg: 'Créez votre premier serveur et obtenez 10 coins gratuits',
+                notif4title: 'Promotion -20%',
+                notif4msg: 'Sur tous les packs de coins cette semaine',
+                notif5title: 'Paiement FCFA, PayPal & Minipay',
+                notif5msg: 'Paiement en Franc CFA, en devises internationales via PayPal ou en devises locales africaines via Minipay !',
+                justNow: 'À l\'instant',
+                minutesAgo: 'Il y a 5 minutes',
+                hoursAgo: 'Il y a 2 heures',
+                yesterday: 'Hier',
+                free: 'GRATUIT',
+                popular: 'POPULAIRE',
+                pro: 'PRO',
+                try: 'Essayer',
+                choose: 'Choisir',
+                feature1title: 'Paiement en FCFA',
+                feature1desc: 'Payez en Franc CFA par Orange Money, MTN Mobile Money. Pas de frais cachés.',
+                feature2title: 'Paiement PayPal',
+                feature2desc: 'Payez en Euro, Dollar US, Livre Sterling ou Dollar Canadien via PayPal. Transactions sécurisées.',
+                feature3title: 'Paiement Minipay',
+                feature3desc: 'Payez en devises locales africaines via Minipay. Support pour plus de 40 pays africains.',
+                feature4title: 'Démarrage instantané',
+                feature4desc: 'Créez votre serveur en moins d\'une minute après paiement. Tout est automatisé.',
+                feature5title: 'Système de coins',
+                feature5desc: 'Gagnez des coins chaque jour et parrainez vos amis pour payer moins cher.',
+                feature6title: 'Gestion de fichiers',
+                feature6desc: 'Éditeur de code intégré, upload de fichiers, gestion des variables d\'environnement.',
+                feature7title: 'Support WhatsApp',
+                feature7desc: 'Support réactif sur WhatsApp et email. Une équipe à l\'écoute de vos besoins.',
+                step1title: 'Créez votre compte',
+                step1desc: 'Inscription gratuite en 30 secondes. Vérification email requise pour activer votre compte.',
+                step2title: 'Achetez des coins ou payez directement',
+                step2desc: 'Payez en FCFA par Mobile Money (Orange, MTN), en devises internationales via PayPal, ou en devises locales africaines via Minipay.',
+                step3title: 'Créez votre serveur',
+                step3desc: 'Choisissez un plan, nommez votre serveur et lancez-le instantanément.',
+                step4title: 'Déployez votre code',
+                step4desc: 'Upload, éditez, gérez vos variables d\'env et lancez votre application.',
+                testimonial1text: '"Enfin un hébergeur qui accepte le FCFA et Minipay ! Je paye avec Orange Money ou Minipay, c\'est super pratique. Et le support est génial !"',
+                testimonial1author: 'Jean P.',
+                testimonial1location: 'Client à Yaoundé',
+                testimonial2text: '"Je vis en Europe et pouvoir payer mes serveurs en Euro via PayPal c\'est top ! Interface super intuitive."',
+                testimonial2author: 'Sarah K.',
+                testimonial2location: 'Développeuse à Paris',
+                testimonial3text: '"Le support est super réactif sur WhatsApp. J\'ai payé avec Minipay depuis le Nigeria, ça a marché parfaitement !"',
+                testimonial3author: 'Alex R.',
+                testimonial3location: 'Hébergeur à Lagos',
+                faq1q: 'Comment payer en FCFA ?',
+                faq1a: 'Nous acceptons Orange Money, MTN Mobile Money. Le paiement est instantané et sécurisé via Fapshi.',
+                faq2q: 'Comment payer avec PayPal ?',
+                faq2a: 'Nous acceptons PayPal en Euro (€), Dollar US ($), Livre Sterling (£) et Dollar Canadien (CA$). Le paiement est sécurisé et les devises sont automatiquement converties. La transaction est validée manuellement par notre équipe après réception du virement.',
+                faq3q: 'Qu\'est-ce que Minipay et quels pays sont supportés ?',
+                faq3a: 'Minipay est une solution de paiement mobile accessible dans plus de 40 pays africains. Chez KermHosting, nous supportons actuellement les pays suivants : <strong>🇨🇲 Cameroun, 🇨🇮 Côte d\'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie</strong> et d\'autres à venir ! Vous payez dans votre devise locale avec un simple téléchargement de capture d\'écran.',
+                faq4q: 'Qu\'est-ce que les coins ?',
+                faq4a: 'Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA, via PayPal ou Minipay et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.',
+                faq5q: 'Puis-je utiliser mon propre nom de domaine ?',
+                faq5a: 'Oui ! Vous pouvez configurer vos propres noms de domaine pour vos serveurs. Nous fournissons également des sous-domaines gratuits.',
+                faq6q: 'Que se passe-t-il quand mon serveur expire ?',
+                faq6a: 'Vous recevez un email 3 jours avant l\'expiration. Si vous ne renouvelez pas, le serveur est automatiquement supprimé après 7 jours.',
+                dashboard: 'Tableau de bord',
+                pricing: 'Tarifs',
+                buyCoins: 'Acheter des coins',
+                profile: 'Profil',
+                support: 'Support',
+                admin: 'Administration',
+                logout: 'Déconnexion',
+                home: 'Accueil',
+                login: 'Connexion',
+                register: 'Inscription'
+            },
+            en: {
+                siteName: 'KermHosting',
+                badgeFcfa: 'FCFA Payment',
+                badgePaypal: 'PayPal',
+                badgeMinipay: 'Minipay',
+                heroTitle: '<span class="gradient-text">Node.js</span> Hosting in FCFA, PayPal & Minipay',
+                heroSubtitle: 'Create your server in 1 minute. Pay in FCFA via Mobile Money, in international currencies via PayPal, or in local African currencies via Minipay. Mobile-friendly interface, complete management.',
+                heroCta: 'Get Started',
+                viewPricingText: 'View Pricing',
+                statUsersText: 'Users',
+                statServersText: 'Active Servers',
+                statUptimeText: 'Uptime',
+                whyUsTitle: 'Why choose',
+                whyUsSubtitle: 'Hosting tailored to African and international needs',
+                plansTitle: 'Plans starting from',
+                plansSubtitleOr: '(or via PayPal / Minipay)',
+                plansSubtitle: 'From simple Discord bot to enterprise application',
+                paymentAcceptedText: '💳 Accepted payment: Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (local African currencies)',
+                viewAllPlansText: 'View all plans',
+                howItWorksTitle: 'How it',
+                testimonialsTitle: 'What our',
+                faqTitle: 'Frequently asked',
+                viewAllFaqText: 'View all FAQs',
+                ctaTitle: 'Ready to launch',
+                ctaSubtitle: 'Join hundreds of African and international developers who trust us',
+                ctaButtonText: 'Create free account',
+                footerDescription: 'Next generation Node.js hosting, with payment in FCFA, PayPal and Minipay.',
+                footerProduct: 'Product',
+                footerResources: 'Resources',
+                footerLegal: 'Legal',
+                footerPricing: 'Pricing',
+                footerBuyCoins: 'Buy Coins',
+                footerRights: 'All rights reserved.',
+                notificationsTitle: 'Notifications',
+                notif1title: 'New! PayPal Payment',
+                notif1msg: 'Now pay in Euro, Dollar, Pound or FCFA via PayPal',
+                notif2title: 'New! Minipay Payment',
+                notif2msg: 'Pay in local African currencies via Minipay. Supported countries: 🇨🇲 Cameroon, 🇨🇮 Ivory Coast, 🇸🇳 Senegal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Benin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Chad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzania, 🇺🇬 Uganda, 🇷🇼 Rwanda, 🇿🇦 South Africa, 🇲🇦 Morocco, 🇩🇿 Algeria, 🇹🇳 Tunisia and more!',
+                notif3title: 'Welcome to KermHosting!',
+                notif3msg: 'Create your first server and get 10 free coins',
+                notif4title: 'Promotion -20%',
+                notif4msg: 'On all coin packs this week',
+                notif5title: 'FCFA, PayPal & Minipay Payment',
+                notif5msg: 'Pay in CFA Franc, in international currencies via PayPal or in local African currencies via Minipay!',
+                justNow: 'Just now',
+                minutesAgo: '5 minutes ago',
+                hoursAgo: '2 hours ago',
+                yesterday: 'Yesterday',
+                free: 'FREE',
+                popular: 'POPULAR',
+                pro: 'PRO',
+                try: 'Try',
+                choose: 'Choose',
+                feature1title: 'FCFA Payment',
+                feature1desc: 'Pay in CFA Franc via Orange Money, MTN Mobile Money. No hidden fees.',
+                feature2title: 'PayPal Payment',
+                feature2desc: 'Pay in Euro, US Dollar, British Pound or Canadian Dollar via PayPal. Secure transactions.',
+                feature3title: 'Minipay Payment',
+                feature3desc: 'Pay in local African currencies via Minipay. Support for over 40 African countries.',
+                feature4title: 'Instant Deployment',
+                feature4desc: 'Create your server in less than a minute after payment. Fully automated.',
+                feature5title: 'Coins System',
+                feature5desc: 'Earn coins daily and refer friends to pay less.',
+                feature6title: 'File Management',
+                feature6desc: 'Built-in code editor, file upload, environment variables management.',
+                feature7title: 'WhatsApp Support',
+                feature7desc: 'Responsive support on WhatsApp and email. A team that listens to your needs.',
+                step1title: 'Create your account',
+                step1desc: 'Free registration in 30 seconds. Email verification required to activate your account.',
+                step2title: 'Buy coins or pay directly',
+                step2desc: 'Pay in FCFA via Mobile Money (Orange, MTN), in international currencies via PayPal, or in local African currencies via Minipay.',
+                step3title: 'Create your server',
+                step3desc: 'Choose a plan, name your server and launch it instantly.',
+                step4title: 'Deploy your code',
+                step4desc: 'Upload, edit, manage your env variables and launch your application.',
+                testimonial1text: '"Finally a host that accepts FCFA and Minipay! I pay with Orange Money or Minipay, it\'s super convenient. And support is great!"',
+                testimonial1author: 'Jean P.',
+                testimonial1location: 'Customer in Yaoundé',
+                testimonial2text: '"I live in Europe and being able to pay for my servers in Euro via PayPal is great! Super intuitive interface."',
+                testimonial2author: 'Sarah K.',
+                testimonial2location: 'Developer in Paris',
+                testimonial3text: '"Support is super responsive on WhatsApp. I paid with Minipay from Nigeria, it worked perfectly!"',
+                testimonial3author: 'Alex R.',
+                testimonial3location: 'Hosting provider in Lagos',
+                faq1q: 'How to pay in FCFA?',
+                faq1a: 'We accept Orange Money, MTN Mobile Money. Payment is instant and secure via Fapshi.',
+                faq2q: 'How to pay with PayPal?',
+                faq2a: 'We accept PayPal in Euro (€), US Dollar ($), British Pound (£) and Canadian Dollar (CA$). Payment is secure and currencies are automatically converted. The transaction is manually validated by our team after receiving the transfer.',
+                faq3q: 'What is Minipay and which countries are supported?',
+                faq3a: 'Minipay is a mobile payment solution available in over 40 African countries. At KermHosting, we currently support: <strong>🇨🇲 Cameroon, 🇨🇮 Ivory Coast, 🇸🇳 Senegal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Benin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Chad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzania, 🇺🇬 Uganda, 🇷🇼 Rwanda, 🇿🇦 South Africa, 🇲🇦 Morocco, 🇩🇿 Algeria, 🇹🇳 Tunisia</strong> and more to come! You pay in your local currency with a simple screenshot upload.',
+                faq4q: 'What are coins?',
+                faq4a: 'Coins are our virtual currency. You can buy them in FCFA, via PayPal or Minipay and get discounts. 100 coins = 500 FCFA, with bonuses depending on the packs.',
+                faq5q: 'Can I use my own domain name?',
+                faq5a: 'Yes! You can configure your own domain names for your servers. We also provide free subdomains.',
+                faq6q: 'What happens when my server expires?',
+                faq6a: 'You receive an email 3 days before expiration. If you don\'t renew, the server is automatically deleted after 7 days.',
+                dashboard: 'Dashboard',
+                pricing: 'Pricing',
+                buyCoins: 'Buy Coins',
+                profile: 'Profile',
+                support: 'Support',
+                admin: 'Administration',
+                logout: 'Logout',
+                home: 'Home',
+                login: 'Login',
+                register: 'Register'
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'fr';
+
+        function t(key) {
+            return translations[currentLang]?.[key] || key;
+        }
+
+        function updateUITexts() {
+            document.getElementById('badgeFcfa').textContent = t('badgeFcfa');
+            document.getElementById('badgePaypal').textContent = t('badgePaypal');
+            document.getElementById('badgeMinipay').textContent = t('badgeMinipay');
+            document.getElementById('heroTitle').innerHTML = t('heroTitle');
+            document.getElementById('heroSubtitle').textContent = t('heroSubtitle');
+            document.getElementById('heroCta').textContent = t('heroCta');
+            document.getElementById('viewPricingText').textContent = t('viewPricingText');
+            document.getElementById('statUsersText').textContent = t('statUsersText');
+            document.getElementById('statServersText').textContent = t('statServersText');
+            document.getElementById('statUptimeText').textContent = t('statUptimeText');
+            document.getElementById('statUsersLabel').textContent = t('statUsersText');
+            document.getElementById('statServersLabel').textContent = t('statServersText');
+            document.getElementById('statUptimeLabel').textContent = t('statUptimeText');
+            document.getElementById('whyUsTitle').textContent = t('whyUsTitle');
+            document.getElementById('whyUsSubtitle').textContent = t('whyUsSubtitle');
+            document.getElementById('plansTitle').textContent = t('plansTitle');
+            document.getElementById('plansSubtitleOr').textContent = t('plansSubtitleOr');
+            document.getElementById('plansSubtitle').textContent = t('plansSubtitle');
+            document.getElementById('paymentAcceptedText').textContent = t('paymentAcceptedText');
+            document.getElementById('viewAllPlansText').textContent = t('viewAllPlansText');
+            document.getElementById('howItWorksTitle').textContent = t('howItWorksTitle');
+            document.getElementById('testimonialsTitle').textContent = t('testimonialsTitle');
+            document.getElementById('faqTitle').textContent = t('faqTitle');
+            document.getElementById('viewAllFaqText').textContent = t('viewAllFaqText');
+            document.getElementById('ctaTitle').textContent = t('ctaTitle');
+            document.getElementById('ctaSubtitle').textContent = t('ctaSubtitle');
+            document.getElementById('ctaButtonText').textContent = t('ctaButtonText');
+            document.getElementById('footerDescription').textContent = t('footerDescription');
+            document.getElementById('footerProduct').textContent = t('footerProduct');
+            document.getElementById('footerResources').textContent = t('footerResources');
+            document.getElementById('footerLegal').textContent = t('footerLegal');
+            document.getElementById('footerPricing').textContent = t('footerPricing');
+            document.getElementById('footerBuyCoins').textContent = t('footerBuyCoins');
+            document.getElementById('footerRights').textContent = t('footerRights');
+            document.getElementById('notificationsTitle').textContent = t('notificationsTitle');
+
+            generateAllContent();
+            updateSidebarMenu();
+        }
+
+        function updateLangButtons(lang) {
+            document.querySelectorAll('[data-lang-current]').forEach(btn => {
+                btn.innerHTML = lang === 'fr' ? '🇫🇷' : '🇬🇧';
+            });
+        }
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.setAttribute('lang', lang);
+            updateLangButtons(lang);
+            updateUITexts();
+            document.querySelectorAll('[data-lang-dropdown]').forEach(d => d.classList.remove('show'));
+        }
+
+        function initLangSwitchers() {
+            document.querySelectorAll('[data-lang-dropdown]').forEach(dropdown => {
+                dropdown.innerHTML = `
+                    <button type="button" class="lang-option" data-lang="fr">🇫🇷</button>
+                    <button type="button" class="lang-option" data-lang="en">🇬🇧</button>
+                `;
+                dropdown.querySelectorAll('[data-lang]').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        switchLanguage(opt.getAttribute('data-lang'));
+                    });
+                });
+            });
+
+            document.querySelectorAll('[data-lang-toggle]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const dropdown = btn.closest('[data-lang-switcher]').querySelector('[data-lang-dropdown]');
+                    document.querySelectorAll('[data-lang-dropdown]').forEach(d => {
+                        if (d !== dropdown) d.classList.remove('show');
+                    });
+                    dropdown.classList.toggle('show');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('[data-lang-dropdown]').forEach(d => d.classList.remove('show'));
+            });
+
+            updateLangButtons(currentLang);
+        }
+
         // ===== SIDEBAR TOGGLE =====
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -1802,7 +1908,54 @@
         const notificationsPanel = document.getElementById('notificationsPanel');
         const closeNotifications = document.getElementById('closeNotifications');
 
+        function generateNotifications() {
+            const container = document.getElementById('notificationsList');
+            container.innerHTML = `
+                <div class="notification-item unread">
+                    <i class="fab fa-paypal notification-icon" style="color: #0070BA;"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif1title')}</div>
+                        <div class="notification-message">${t('notif1msg')}</div>
+                        <div class="notification-time">${t('justNow')}</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <i class="fas fa-credit-card notification-icon" style="color: #00C4B3;"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif2title')}</div>
+                        <div class="notification-message">${t('notif2msg')}</div>
+                        <div class="notification-time">${t('justNow')}</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <i class="fas fa-gift notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif3title')}</div>
+                        <div class="notification-message">${t('notif3msg')}</div>
+                        <div class="notification-time">${t('minutesAgo')}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <i class="fas fa-percent notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif4title')}</div>
+                        <div class="notification-message">${t('notif4msg')}</div>
+                        <div class="notification-time">${t('hoursAgo')}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <i class="fas fa-shield-alt notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif5title')}</div>
+                        <div class="notification-message">${t('notif5msg')}</div>
+                        <div class="notification-time">${t('yesterday')}</div>
+                    </div>
+                </div>
+            `;
+        }
+
         notificationBtn.addEventListener('click', () => {
+            generateNotifications();
             notificationsPanel.classList.toggle('active');
         });
 
@@ -1817,12 +1970,14 @@
         });
 
         // ===== FAQ TOGGLE =====
-        document.querySelectorAll('.faq-question').forEach(button => {
-            button.addEventListener('click', () => {
-                const faqItem = button.closest('.faq-item');
-                faqItem.classList.toggle('active');
+        function initFAQ() {
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const faqItem = button.closest('.faq-item');
+                    faqItem.classList.toggle('active');
+                });
             });
-        });
+        }
 
         // ===== AUTH STATE MANAGEMENT =====
         let isAuthenticated = false;
@@ -1840,156 +1995,250 @@
                     if (data.success) {
                         isAuthenticated = true;
                         userData = data.user;
-                        updateUIForAuth();
                     } else {
                         localStorage.removeItem('token');
                         isAuthenticated = false;
-                        updateUIForGuest();
                     }
                 } catch (error) {
                     console.error('Erreur auth:', error);
                     isAuthenticated = false;
-                    updateUIForGuest();
                 }
             } else {
                 isAuthenticated = false;
-                updateUIForGuest();
+            }
+            updateUIForAuthState();
+        }
+
+        function updateUIForAuthState() {
+            if (isAuthenticated && userData) {
+                document.getElementById('sidebarUserName').textContent = userData.username;
+                document.getElementById('sidebarUserEmail').textContent = userData.email;
+                document.getElementById('sidebarUserBadge').textContent = userData.role;
+                document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
+            } else {
+                document.getElementById('sidebarUserName').textContent = 'Invité';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+                document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+            }
+            updateSidebarMenu();
+        }
+
+        function updateSidebarMenu() {
+            const menu = document.getElementById('sidebarMenu');
+            
+            if (isAuthenticated && userData) {
+                menu.innerHTML = `
+                    <li>
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>${t('dashboard')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>${t('pricing')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>${t('buyCoins')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>${t('profile')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>${t('support')}</span>
+                        </a>
+                    </li>
+                    ${userData.role === 'admin' || userData.role === 'superadmin' ? `
+                    <li>
+                        <a href="/admin">
+                            <i class="fas fa-crown"></i>
+                            <span>${t('admin')}</span>
+                        </a>
+                    </li>
+                    ` : ''}
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="navLogout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>${t('logout')}</span>
+                        </a>
+                    </li>
+                `;
+                document.getElementById('navLogout')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    window.location.reload();
+                });
+            } else {
+                menu.innerHTML = `
+                    <li class="active">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>${t('home')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>${t('pricing')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>${t('buyCoins')}</span>
+                        </a>
+                    </li>
+                    <li>
+                       <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>KERM MD V1</span>
+                        </a>
+                   </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>${t('support')}</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>${t('login')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>${t('register')}</span>
+                        </a>
+                    </li>
+                `;
             }
         }
 
-        // ===== DYNAMIC SIDEBAR MENU =====
-        function updateUIForAuth() {
-            // Sidebar user info
-            document.getElementById('sidebarUserName').textContent = userData.username;
-            document.getElementById('sidebarUserEmail').textContent = userData.email;
-            document.getElementById('sidebarUserBadge').textContent = userData.role;
-            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
-
-            // Menu pour utilisateur connecté (SANS ACCUEIL)
-            const menuHtml = `
-                <li>
-                    <a href="/dashboard">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Tableau de bord</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/pricing">
-                        <i class="fas fa-tags"></i>
-                        <span>Tarifs</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/buy-coins">
-                        <i class="fas fa-coins"></i>
-                        <span>Acheter des coins</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/profile">
-                        <i class="fas fa-user"></i>
-                        <span>Profil</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/support">
-                        <i class="fas fa-headset"></i>
-                        <span>Support</span>
-                    </a>
-                </li>
-                ${userData.role === 'admin' || userData.role === 'superadmin' ? `
-                <li>
-                    <a href="/admin">
-                        <i class="fas fa-crown"></i>
-                        <span>Administration</span>
-                    </a>
-                </li>
-                ` : ''}
-                <li class="divider"></li>
-                <li>
-                    <a href="#" id="navLogout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span>
-                    </a>
-                </li>
-            `;
+        // ===== CONTENU DYNAMIQUE =====
+        function generateAllContent() {
+            // Features
+            const features = [
+                { icon: 'fa-money-bill-wave', color: '#7C3AED', title: t('feature1title'), desc: t('feature1desc') },
+                { icon: 'fab fa-paypal', color: '#0070BA', title: t('feature2title'), desc: t('feature2desc') },
+                { icon: 'fa-mobile-alt', color: '#00C4B3', title: t('feature3title'), desc: t('feature3desc') },
+                { icon: 'fa-bolt', color: '#3B82F6', title: t('feature4title'), desc: t('feature4desc') },
+                { icon: 'fa-coins', color: '#10B981', title: t('feature5title'), desc: t('feature5desc') },
+                { icon: 'fa-code', color: '#EC4899', title: t('feature6title'), desc: t('feature6desc') },
+                { icon: 'fa-headset', color: '#8B5CF6', title: t('feature7title'), desc: t('feature7desc') }
+            ];
             
-            document.getElementById('sidebarMenu').innerHTML = menuHtml;
+            document.getElementById('featuresGrid').innerHTML = features.map(f => `
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, ${f.color}20, ${f.color}40)">
+                        <i class="fas ${f.icon}" style="color: ${f.color}"></i>
+                    </div>
+                    <h3 class="feature-title">${f.title}</h3>
+                    <p class="feature-description">${f.desc}</p>
+                </div>
+            `).join('');
 
-            // Ajouter event listener pour déconnexion
-            document.getElementById('navLogout').addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('token');
-                window.location.reload();
-            });
-        }
-
-        function updateUIForGuest() {
-            // Sidebar user info pour invité
-            document.getElementById('sidebarUserName').textContent = 'Invité';
-            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
-            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
-            document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
-
-            // Menu pour invité (AVEC Accueil)
-            const menuHtml = `
-                <li class="active">
-                    <a href="/">
-                        <i class="fas fa-home"></i>
-                        <span>Accueil</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/pricing">
-                        <i class="fas fa-tags"></i>
-                        <span>Tarifs</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/buy-coins">
-                        <i class="fas fa-coins"></i>
-                        <span>Acheter des coins</span>
-                    </a>
-                </li>
-                <li>
-                   <a href="/bot">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>KERM MD V1</span>
-                    </a>
-               </li>
-                <li>
-                    <a href="/support">
-                        <i class="fas fa-headset"></i>
-                        <span>Support</span>
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#" id="navLogin">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Connexion</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="navRegister">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Inscription</span>
-                    </a>
-                </li>
-            `;
+            // Pricing
+            const plans = [
+                { badge: t('free'), name: 'Free', price: '0', features: ['256 MB RAM', '5 GB Stockage', '50% CPU', '24h d\'essai'], disabled: ['Support prioritaire'] },
+                { badge: t('popular'), name: 'Starter', price: '500', popular: true, features: ['1 GB RAM', '10 GB Stockage', '100% CPU', '7 jours', 'Support standard'] },
+                { badge: t('pro'), name: 'Pro', price: '1 300', features: ['4 GB RAM', '40 GB Stockage', '400% CPU', '7 jours', 'Support prioritaire'] }
+            ];
             
-            document.getElementById('sidebarMenu').innerHTML = menuHtml;
+            document.getElementById('pricingCards').innerHTML = plans.map(p => `
+                <div class="pricing-card ${p.popular ? 'popular' : ''}">
+                    <div class="pricing-badge">${p.badge}</div>
+                    <h3 class="pricing-name">${p.name}</h3>
+                    <div class="pricing-price">
+                        <span class="price">${p.price}</span>
+                        <span class="currency">FCFA</span>
+                    </div>
+                    <ul class="pricing-features">
+                        ${p.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
+                        ${p.disabled ? p.disabled.map(f => `<li class="disabled"><i class="fas fa-times"></i> ${f}</li>`).join('') : ''}
+                    </ul>
+                    <button class="btn ${p.popular ? 'btn-primary' : 'btn-outline'} pricing-btn" onclick="location.href='/register'">
+                        ${p.name === 'Free' ? t('try') : t('choose')}
+                    </button>
+                </div>
+            `).join('');
 
-            // Ajouter event listeners pour login/register
-            document.getElementById('navLogin').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.href = '/login';
-            });
+            // Steps
+            const steps = [
+                { title: t('step1title'), desc: t('step1desc') },
+                { title: t('step2title'), desc: t('step2desc') },
+                { title: t('step3title'), desc: t('step3desc') },
+                { title: t('step4title'), desc: t('step4desc') }
+            ];
+            
+            document.getElementById('stepsContainer').innerHTML = steps.map((s, i) => `
+                <div class="step">
+                    <div class="step-number">${i + 1}</div>
+                    <div class="step-content">
+                        <h3>${s.title}</h3>
+                        <p>${s.desc}</p>
+                    </div>
+                </div>
+            `).join('');
 
-            document.getElementById('navRegister').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.href = '/register';
-            });
+            // Testimonials
+            const testimonials = [
+                { text: t('testimonial1text'), author: t('testimonial1author'), location: t('testimonial1location') },
+                { text: t('testimonial2text'), author: t('testimonial2author'), location: t('testimonial2location') },
+                { text: t('testimonial3text'), author: t('testimonial3author'), location: t('testimonial3location') }
+            ];
+            
+            document.getElementById('testimonialsSlider').innerHTML = testimonials.map(t => `
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        ${'<i class="fas fa-star"></i>'.repeat(5)}
+                    </div>
+                    <p class="testimonial-text">${t.text}</p>
+                    <div class="testimonial-author">
+                        <img src="https://ui-avatars.com/api/?name=${t.author.replace(' ', '+')}&background=7C3AED&color=fff&size=40" alt="${t.author}">
+                        <div>
+                            <strong>${t.author}</strong>
+                            <span>${t.location}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // FAQ
+            const faqs = [
+                { q: t('faq1q'), a: t('faq1a') },
+                { q: t('faq2q'), a: t('faq2a') },
+                { q: t('faq3q'), a: t('faq3a') },
+                { q: t('faq4q'), a: t('faq4a') },
+                { q: t('faq5q'), a: t('faq5a') },
+                { q: t('faq6q'), a: t('faq6a') }
+            ];
+            
+            document.getElementById('faqList').innerHTML = faqs.map(f => `
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>${f.q}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">${f.a}</div>
+                </div>
+            `).join('');
+
+            initFAQ();
         }
 
         // ===== NAVIGATION INTELLIGENTE =====
@@ -2014,7 +2263,13 @@
         });
 
         // ===== INIT =====
-        checkAuth();
+        async function init() {
+            initLangSwitchers();
+            await checkAuth();
+            updateUITexts();
+        }
+
+        init();
 
         // Responsive
         window.addEventListener('resize', () => {
