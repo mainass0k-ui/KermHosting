@@ -26,6 +26,7 @@
     <title>Administration - KermHosting</title>
     
     <style>
+        /* ===== VARIABLES ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -1217,7 +1218,7 @@
             font-size: 0.9rem;
         }
 
-        .modal-input, .modal-select {
+        .modal-input, .modal-select, .modal-textarea {
             width: 100%;
             padding: 12px;
             background: var(--bg-input);
@@ -1227,7 +1228,12 @@
             font-size: 0.95rem;
         }
 
-        .modal-input:focus, .modal-select:focus {
+        .modal-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -1515,6 +1521,101 @@
             word-break: break-all;
         }
 
+        /* ===== EMAIL MASSIF STYLES ===== */
+        .email-campaign-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .email-campaign-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        .email-template-select {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .template-badge {
+            background: var(--bg-hover);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .template-badge:hover {
+            border-color: var(--primary);
+            background: var(--bg-input);
+        }
+
+        .template-badge.selected {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+        }
+
+        .campaign-stats {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .campaign-progress {
+            flex: 1;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .campaign-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .campaign-cancel-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .campaign-cancel-btn:hover {
+            background: #dc2626;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             .page-content {
@@ -1739,7 +1840,7 @@
                     </div>
                 </div>
 
-                <!-- STATS GLOBALES (toujours visibles) -->
+                <!-- STATS GLOBALES -->
                 <div class="stats-grid" id="statsContainer">
                     <div class="stat-card">
                         <div class="stat-header">
@@ -1798,7 +1899,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Stats (toujours visibles) -->
+                <!-- Financial Stats -->
                 <div class="financial-stats" id="financialStats">
                     <div class="financial-card">
                         <div class="financial-label"><i class="fas fa-chart-pie" style="margin-right: 5px;"></i>Revenus totaux</div>
@@ -1827,7 +1928,7 @@
                     </div>
                 </div>
 
-                <!-- Charts (toujours visibles) -->
+                <!-- Charts -->
                 <div class="charts-grid">
                     <div class="chart-card">
                         <h3><i class="fas fa-chart-line" style="color: var(--primary); margin-right: 8px;"></i>Revenus (30 jours)</h3>
@@ -1839,18 +1940,16 @@
                     </div>
                 </div>
 
-                <!-- Top Acheteurs (toujours visibles) -->
+                <!-- Top Acheteurs -->
                 <div class="top-buyers" id="topBuyers">
                     <h3>
                         <i class="fas fa-crown" style="color: var(--warning);"></i>
                         Top 10 acheteurs
                     </h3>
-                    <div class="buyer-list" id="topBuyersList">
-                        <!-- Rempli dynamiquement -->
-                    </div>
+                    <div class="buyer-list" id="topBuyersList"></div>
                 </div>
 
-                <!-- Tabs avec icônes -->
+                <!-- Tabs -->
                 <div class="tabs">
                     <div class="tab active" onclick="switchTab('users')">
                         <i class="fas fa-users"></i>Utilisateurs
@@ -1875,6 +1974,9 @@
                     </div>
                     <div class="tab" onclick="switchTab('maintenance')">
                         <i class="fas fa-tools"></i>Maintenance
+                    </div>
+                    <div class="tab" onclick="switchTab('email')">
+                        <i class="fas fa-envelope"></i>Emails Massifs
                     </div>
                 </div>
 
@@ -2327,6 +2429,102 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Tab: Emails Massifs (CORRIGÉ AVEC ASYNC) -->
+                <div class="tab-pane" id="tab-email">
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title">
+                            <i class="fas fa-envelope-open-text"></i>
+                            Envoi d'emails massifs
+                        </div>
+                        
+                        <div class="modal-form-group">
+                            <label>Type de template</label>
+                            <div class="email-template-select" id="templateSelect"></div>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label>Sujet de l'email</label>
+                            <input type="text" class="modal-input" id="emailSubject" placeholder="Sujet de l'email">
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label>Message personnalisé</label>
+                            <textarea class="modal-textarea" id="emailMessage" placeholder="Votre message ici..."></textarea>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label>Cible</label>
+                            <select class="modal-select" id="emailTarget">
+                                <option value="all">Tous les utilisateurs</option>
+                                <option value="user">Utilisateurs normaux</option>
+                                <option value="admin">Administrateurs</option>
+                                <option value="superadmin">Super Admins</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label>Email de test (optionnel)</label>
+                            <input type="email" class="modal-input" id="testEmail" placeholder="email@test.com pour tester avant envoi">
+                        </div>
+
+                        <div class="modal-actions" style="justify-content: center; margin-top: 20px;">
+                            <button class="btn btn-outline" onclick="sendTestEmail()">
+                                <i class="fas fa-flask"></i> Envoyer un test
+                            </button>
+                            <button class="btn btn-primary" id="sendMassEmailBtn" onclick="sendMassEmail()">
+                                <i class="fas fa-paper-plane"></i> Lancer la campagne
+                            </button>
+                        </div>
+
+                        <div id="campaignProgress" style="display: none; margin-top: 20px;">
+                            <div class="campaign-stats">
+                                <span><i class="fas fa-spinner fa-spin"></i> Envoi en cours...</span>
+                                <span id="campaignStatus">0 / 0</span>
+                                <div class="campaign-progress">
+                                    <div class="campaign-progress-bar" id="campaignProgressBar"></div>
+                                </div>
+                                <button class="campaign-cancel-btn" id="cancelCampaignBtn" onclick="cancelCurrentCampaign()">
+                                    <i class="fas fa-stop"></i> Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title">
+                            <i class="fas fa-history"></i>
+                            Historique des campagnes
+                        </div>
+                        <div class="table-container">
+                            <table id="campaignsTable">
+                                <thead>
+                                    <th>Date</th>
+                                    <th>Admin</th>
+                                    <th>Sujet</th>
+                                    <th>Template</th>
+                                    <th>Destinataires</th>
+                                    <th>Succès</th>
+                                    <th>Échecs</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                 </thead>
+                                <tbody id="campaignsTableBody">
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement de l'historique...</p>
+                                    </td>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="campaign-stats" style="margin-top: 12px;">
+                            <span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span>
+                            <button class="btn btn-small btn-outline" onclick="loadCampaignHistory()">
+                                <i class="fas fa-sync-alt"></i> Actualiser
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -2409,7 +2607,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Édition serveur - CORRIGÉ -->
+    <!-- MODAL: Édition serveur -->
     <div class="modal" id="serverEditModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2487,8 +2685,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-info" id="minipayTransactionDetails">
-                </div>
+                <div class="modal-info" id="minipayTransactionDetails"></div>
                 <div class="modal-screenshot" id="minipayScreenshotContainer" style="display: none;">
                     <p><strong>Capture d'écran :</strong></p>
                     <img id="minipayScreenshot" src="" alt="Capture d'écran" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); cursor: pointer;" onclick="openScreenshotModal(this.src)">
@@ -2543,8 +2740,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-info" id="transactionDetails">
-                </div>
+                <div class="modal-info" id="transactionDetails"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button>
@@ -2562,8 +2758,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-info" id="cleanupStats" style="display: none;">
-                </div>
+                <div class="modal-info" id="cleanupStats" style="display: none;"></div>
                 <div id="cleanupInitial">
                     <p>Cette action va analyser tous les utilisateurs Pterodactyl et supprimer ceux qui :</p>
                     <ul style="margin: 16px 0; padding-left: 20px; color: var(--text-secondary);">
@@ -2576,8 +2771,7 @@
                     <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 16px;"></i>
                     <p>Nettoyage en cours, veuillez patienter...</p>
                 </div>
-                <div id="cleanupResult" style="display: none;">
-                </div>
+                <div id="cleanupResult" style="display: none;"></div>
             </div>
             <div class="modal-actions" id="cleanupActions">
                 <button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>
@@ -2609,6 +2803,9 @@
         let currentServerId = null;
         let charts = {};
         let fapshiBalanceInterval = null;
+        let emailTemplates = [];
+        let currentCampaignId = null;
+        let campaignPollingInterval = null;
 
         // Pagination
         const itemsPerPage = 5;
@@ -2743,6 +2940,327 @@
             if (tabId === 'paypal') loadPaypalTransactions();
             if (tabId === 'minipay') loadMinipayTransactions();
             if (tabId === 'maintenance') loadMaintenanceConfig();
+            if (tabId === 'email') {
+                loadEmailTemplates();
+                loadCampaignHistory();
+            }
+        }
+
+        // ===== LOAD EMAIL TEMPLATES =====
+        async function loadEmailTemplates() {
+            try {
+                const res = await fetch('/api/admin/email-templates', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    emailTemplates = data.templates;
+                    const container = document.getElementById('templateSelect');
+                    let html = '';
+                    emailTemplates.forEach(template => {
+                        html += `
+                            <div class="template-badge" onclick="selectTemplate('${template.id}')" data-template="${template.id}">
+                                <span>${template.icon}</span>
+                                <span>${template.name}</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                    if (emailTemplates.length > 0) {
+                        selectTemplate(emailTemplates[0].id);
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur chargement templates:', error);
+                showToast('error', 'Erreur de chargement des templates');
+            }
+        }
+
+        let selectedTemplateId = null;
+
+        function selectTemplate(templateId) {
+            selectedTemplateId = templateId;
+            document.querySelectorAll('.template-badge').forEach(el => {
+                el.classList.remove('selected');
+                if (el.getAttribute('data-template') === templateId) {
+                    el.classList.add('selected');
+                }
+            });
+            const template = emailTemplates.find(t => t.id === templateId);
+            if (template) {
+                document.getElementById('emailSubject').value = template.default_subject;
+                document.getElementById('emailMessage').value = template.default_message;
+            }
+        }
+
+        // ===== LOAD CAMPAIGN HISTORY =====
+        async function loadCampaignHistory() {
+            try {
+                const res = await fetch('/api/admin/email-campaigns', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const campaigns = data.campaigns || [];
+                    const tbody = document.getElementById('campaignsTableBody');
+                    if (campaigns.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune campagne trouvée<\/td></tr>';
+                        document.getElementById('globalSuccessRate').textContent = '0%';
+                        return;
+                    }
+                    let totalSuccess = 0;
+                    let totalSent = 0;
+                    let html = '';
+                    campaigns.forEach(c => {
+                        totalSuccess += c.success_count || 0;
+                        totalSent += (c.success_count || 0) + (c.fail_count || 0);
+                        let statusBadge = '';
+                        if (c.status === 'completed') statusBadge = '<span class="badge badge-success">Terminée</span>';
+                        else if (c.status === 'in_progress') statusBadge = '<span class="badge badge-warning">En cours</span>';
+                        else if (c.status === 'cancelled') statusBadge = '<span class="badge badge-danger">Annulée</span>';
+                        else statusBadge = `<span class="badge badge-info">${c.status}</span>`;
+                        let actions = '';
+                        if (c.status === 'in_progress') {
+                            actions = `<button class="action-btn delete" onclick="cancelCampaign('${c.id}')" title="Annuler"><i class="fas fa-stop"></i></button>`;
+                        }
+                        html += `
+                            <tr>
+                                <td>${formatDateCameroon(c.created_at)}</td>
+                                <td>${c.profiles?.username || '-'}</td>
+                                <td>${c.subject.substring(0, 50)}${c.subject.length > 50 ? '...' : ''}</td>
+                                <td><span class="badge badge-primary">${c.template_type}</span></td>
+                                <td>${c.total_recipients || 0}</td>
+                                <td><span class="badge badge-success">${c.success_count || 0}</span></td>
+                                <td><span class="badge badge-danger">${c.fail_count || 0}</span></td>
+                                <td>${statusBadge}</td>
+                                <td>${actions}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                    const successRate = totalSent > 0 ? Math.round((totalSuccess / totalSent) * 100) : 0;
+                    document.getElementById('globalSuccessRate').textContent = successRate + '%';
+                }
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                showToast('error', 'Erreur de chargement de l\'historique');
+            }
+        }
+
+        // ===== CANCEL CAMPAIGN =====
+        async function cancelCampaign(campaignId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-stop-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Annuler la campagne';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir annuler cette campagne ? Les envois en cours seront interrompus.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Annulation en cours...');
+                try {
+                    const res = await fetch(`/api/admin/email-campaigns/${campaignId}/cancel`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Campagne annulée avec succès');
+                        loadCampaignHistory();
+                        if (campaignId === currentCampaignId) {
+                            if (campaignPollingInterval) clearInterval(campaignPollingInterval);
+                            currentCampaignId = null;
+                            document.getElementById('campaignProgress').style.display = 'none';
+                            document.getElementById('sendMassEmailBtn').disabled = false;
+                        }
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de l\'annulation');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function cancelCurrentCampaign() {
+            if (currentCampaignId) {
+                await cancelCampaign(currentCampaignId);
+            } else {
+                showToast('error', 'Aucune campagne en cours');
+            }
+        }
+
+        // ===== SEND TEST EMAIL =====
+        async function sendTestEmail() {
+            const testEmail = document.getElementById('testEmail').value;
+            if (!testEmail) {
+                showToast('error', 'Veuillez entrer un email de test');
+                return;
+            }
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+            const target = document.getElementById('emailTarget').value;
+            if (!subject) {
+                showToast('error', 'Veuillez entrer un sujet');
+                return;
+            }
+            if (!selectedTemplateId) {
+                showToast('error', 'Veuillez sélectionner un template');
+                return;
+            }
+            const payload = {
+                subject: subject,
+                template_type: selectedTemplateId,
+                custom_message: message,
+                target_role: target,
+                test_email: testEmail,
+                send_test_first: true
+            };
+            showToast('info', 'Envoi du test en cours...');
+            try {
+                const res = await fetch('/api/admin/send-mass-email', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Email de test envoyé ! Vérifiez votre boîte de réception.');
+                } else {
+                    showToast('error', data.error || 'Erreur lors de l\'envoi du test');
+                }
+            } catch (error) {
+                console.error('Erreur envoi test:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        // ===== SEND MASS EMAIL (ASYNC) =====
+        async function sendMassEmail() {
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+            const target = document.getElementById('emailTarget').value;
+            
+            if (!subject) {
+                showToast('error', 'Veuillez entrer un sujet');
+                return;
+            }
+            if (!selectedTemplateId) {
+                showToast('error', 'Veuillez sélectionner un template');
+                return;
+            }
+            
+            const testEmail = document.getElementById('testEmail').value;
+            if (!testEmail) {
+                document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>';
+                document.getElementById('confirmTitle').textContent = 'Confirmation envoi massif';
+                document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir envoyer cet email à TOUS les utilisateurs ? Les envois se feront en arrière-plan.';
+                const confirmBtn = document.getElementById('confirmActionBtn');
+                confirmBtn.className = 'btn btn-warning';
+                confirmBtn.onclick = async () => {
+                    closeModal('confirmModal');
+                    await executeMassEmailAsync();
+                };
+                openModal('confirmModal');
+                return;
+            }
+            await executeMassEmailAsync();
+        }
+
+        async function executeMassEmailAsync() {
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailMessage').value;
+            const target = document.getElementById('emailTarget').value;
+            
+            const payload = {
+                subject: subject,
+                template_type: selectedTemplateId,
+                custom_message: message,
+                target_role: target,
+                send_test_first: false
+            };
+            
+            const progressDiv = document.getElementById('campaignProgress');
+            progressDiv.style.display = 'block';
+            document.getElementById('campaignStatus').textContent = 'Démarrage...';
+            document.getElementById('campaignProgressBar').style.width = '0%';
+            document.getElementById('sendMassEmailBtn').disabled = true;
+            
+            showToast('info', 'Lancement de la campagne...');
+            
+            try {
+                const res = await fetch('/api/admin/send-mass-email', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('success', `Campagne lancée pour ${data.total_recipients} utilisateurs`);
+                    startCampaignMonitoring(data.campaign_id);
+                    loadCampaignHistory();
+                } else {
+                    progressDiv.style.display = 'none';
+                    document.getElementById('sendMassEmailBtn').disabled = false;
+                    showToast('error', data.error || 'Erreur lors du lancement');
+                }
+            } catch (error) {
+                progressDiv.style.display = 'none';
+                document.getElementById('sendMassEmailBtn').disabled = false;
+                console.error('Erreur lancement campagne:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        // ===== POLLING POUR SUIVRE L'AVANCEMENT =====
+        function startCampaignMonitoring(campaignId) {
+            if (campaignPollingInterval) clearInterval(campaignPollingInterval);
+            currentCampaignId = campaignId;
+            
+            campaignPollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/admin/email-campaign/${campaignId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        const campaign = data.campaign;
+                        const sent = (campaign.success_count || 0) + (campaign.fail_count || 0);
+                        const total = campaign.total_recipients || 0;
+                        const percent = total > 0 ? (sent / total) * 100 : 0;
+                        
+                        document.getElementById('campaignStatus').textContent = `${sent} / ${total}`;
+                        document.getElementById('campaignProgressBar').style.width = percent + '%';
+                        
+                        if (campaign.status === 'completed' || campaign.status === 'failed' || campaign.status === 'cancelled') {
+                            clearInterval(campaignPollingInterval);
+                            campaignPollingInterval = null;
+                            currentCampaignId = null;
+                            document.getElementById('campaignProgress').style.display = 'none';
+                            document.getElementById('sendMassEmailBtn').disabled = false;
+                            if (campaign.status === 'completed') {
+                                showToast('success', 'Campagne terminée !');
+                            } else if (campaign.status === 'cancelled') {
+                                showToast('info', 'Campagne annulée');
+                            } else {
+                                showToast('error', 'Campagne échouée');
+                            }
+                            loadCampaignHistory();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erreur polling campagne:', error);
+                }
+            }, 5000);
         }
 
         // ===== LOAD MINIPAY TRANSACTIONS =====
@@ -2803,7 +3321,7 @@
         function displayMinipayTransactions() {
             const tbody = document.getElementById('minipayTableBody');
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée<\/td></tr>';
                 return;
             }
             const totalPages = Math.ceil(filteredMinipayTransactions.length / itemsPerPage);
@@ -3537,7 +4055,7 @@
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td></td>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -3590,7 +4108,7 @@
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td></td>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -3654,7 +4172,7 @@
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></td>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -3707,7 +4225,7 @@
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé<\/td></td>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
@@ -4419,6 +4937,10 @@
             loadFapshiBalance();
             if (document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions();
             if (document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions();
+            if (document.getElementById('tab-email').classList.contains('active')) {
+                loadEmailTemplates();
+                loadCampaignHistory();
+            }
         }
 
         // ===== LOGOUT =====
@@ -4500,6 +5022,12 @@
         window.loadFapshiBalance = loadFapshiBalance;
         window.loadMaintenanceConfig = loadMaintenanceConfig;
         window.saveMaintenanceConfig = saveMaintenanceConfig;
+        window.selectTemplate = selectTemplate;
+        window.sendTestEmail = sendTestEmail;
+        window.sendMassEmail = sendMassEmail;
+        window.loadCampaignHistory = loadCampaignHistory;
+        window.cancelCampaign = cancelCampaign;
+        window.cancelCurrentCampaign = cancelCurrentCampaign;
     </script>
 </body>
 </html>
