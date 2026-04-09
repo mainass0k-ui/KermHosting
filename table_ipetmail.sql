@@ -1,4 +1,28 @@
--- Table pour l'historique des campagnes d'emails massifs
+-- Colonnes pour les serveurs
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS auto_renew BOOLEAN DEFAULT FALSE;
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS auto_renew_attempts INTEGER DEFAULT 0;
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS last_auto_renew_attempt TIMESTAMPTZ;
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS auto_renew_error TEXT;
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS warning_sent BOOLEAN DEFAULT FALSE;
+ALTER TABLE servers ADD COLUMN IF NOT EXISTS free_notification_sent BOOLEAN DEFAULT FALSE;
+
+-- Colonnes pour les profils
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS registration_ip TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ban_reason TEXT;
+
+-- Table auto_renew_logs
+CREATE TABLE IF NOT EXISTS auto_renew_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    server_id UUID REFERENCES servers(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES profiles(id),
+    status TEXT CHECK (status IN ('success', 'failed_insufficient_coins', 'failed_other', 'attempting')),
+    coins_required INTEGER,
+    coins_available INTEGER,
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Table mass_email_campaigns
 CREATE TABLE IF NOT EXISTS mass_email_campaigns (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     admin_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
@@ -15,18 +39,9 @@ CREATE TABLE IF NOT EXISTS mass_email_campaigns (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Index pour accélérer les recherches
+-- Index
+CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_server ON auto_renew_logs(server_id);
+CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_user ON auto_renew_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_admin ON mass_email_campaigns(admin_id);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_status ON mass_email_campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_created ON mass_email_campaigns(created_at DESC);
-
--- Ajout des colonnes pour l'anti-multi-comptes (si pas déjà présentes)
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS registration_ip TEXT;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ban_reason TEXT;
-
--- Ajout des colonnes pour les serveurs gratuits
-ALTER TABLE servers ADD COLUMN IF NOT EXISTS free_notification_sent BOOLEAN DEFAULT FALSE;
-
--- Ajout des colonnes pour les emails massifs (si besoin)
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_mass_email_sent TIMESTAMPTZ;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email_unsubscribed BOOLEAN DEFAULT FALSE;
