@@ -1,3 +1,7 @@
+-- =============================================
+-- MIGRATION COMPLÈTE KERMHOSTING (CORRIGÉE)
+-- =============================================
+
 -- Colonnes pour les serveurs
 ALTER TABLE servers ADD COLUMN IF NOT EXISTS auto_renew BOOLEAN DEFAULT FALSE;
 ALTER TABLE servers ADD COLUMN IF NOT EXISTS auto_renew_attempts INTEGER DEFAULT 0;
@@ -22,7 +26,7 @@ CREATE TABLE IF NOT EXISTS auto_renew_logs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Table mass_email_campaigns
+-- Table mass_email_campaigns (sans metadata d'abord)
 CREATE TABLE IF NOT EXISTS mass_email_campaigns (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     admin_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
@@ -39,9 +43,19 @@ CREATE TABLE IF NOT EXISTS mass_email_campaigns (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- AJOUTER la colonne metadata (si elle n'existe pas)
+ALTER TABLE mass_email_campaigns ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+
 -- Index
 CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_server ON auto_renew_logs(server_id);
 CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_user ON auto_renew_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_admin ON mass_email_campaigns(admin_id);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_status ON mass_email_campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_created ON mass_email_campaigns(created_at DESC);
+
+-- Index sur metadata (si la colonne existe)
+CREATE INDEX IF NOT EXISTS idx_mass_email_campaigns_metadata ON mass_email_campaigns USING gin(metadata);
+
+-- =============================================
+-- FIN DE LA MIGRATION
+-- =============================================
