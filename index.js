@@ -248,106 +248,6 @@ function getCurrencySymbol(code) {
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.serviceKey);
 
 // =============================================
-// CRÉATION AUTOMATIQUE DU BUCKET SUPABASE STORAGE
-// =============================================
-// 👉 INSÉRE LA FONCTION ICI
-async function ensureMinipayBucket() {
-    try {
-        console.log('🔧 Vérification du bucket payment-proofs...');
-        
-        // Vérifier si le bucket existe
-        const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-        
-        if (listError) {
-            console.error('❌ Erreur liste buckets:', listError);
-            return;
-        }
-        
-        const bucketExists = buckets?.some(b => b.name === 'payment-proofs');
-        
-        if (!bucketExists) {
-            console.log('📦 Création du bucket payment-proofs...');
-            
-            // Créer le bucket
-            const { data, error: createError } = await supabase.storage.createBucket('payment-proofs', {
-                public: false,
-                fileSizeLimit: 5 * 1024 * 1024,
-                allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
-            });
-            
-            if (createError) {
-                console.error('❌ Erreur création bucket:', createError);
-                
-                console.log('🔄 Tentative via API REST...');
-                try {
-                    const response = await fetch(`${SUPABASE_CONFIG.url}/storage/v1/bucket`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_CONFIG.serviceKey}`,
-                            'apikey': SUPABASE_CONFIG.serviceKey,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            id: 'payment-proofs',
-                            name: 'payment-proofs',
-                            public: false,
-                            file_size_limit: 5242880,
-                            allowed_mime_types: ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        console.log('✅ Bucket créé via API REST');
-                    } else {
-                        const errData = await response.json();
-                        console.error('❌ Échec création bucket via API:', errData);
-                    }
-                } catch (restError) {
-                    console.error('❌ Erreur API REST:', restError);
-                }
-            } else {
-                console.log('✅ Bucket payment-proofs créé avec succès');
-            }
-        } else {
-            console.log('✅ Bucket payment-proofs existe déjà');
-        }
-        
-        // Configurer les politiques de sécurité
-        try {
-            const { error: policyError } = await supabase.storage
-                .from('payment-proofs')
-                .createPolicy({
-                    name: 'allow_authenticated_uploads',
-                    definition: '(auth.role() = \'authenticated\')',
-                    operation: 'INSERT'
-                });
-            
-            if (policyError && !policyError.message?.includes('already exists')) {
-                console.warn('⚠️ Politique upload:', policyError.message);
-            }
-            
-            const { error: readPolicyError } = await supabase.storage
-                .from('payment-proofs')
-                .createPolicy({
-                    name: 'allow_admin_read',
-                    definition: '(auth.role() = \'authenticated\' AND (auth.jwt() ->> \'role\' IN (\'admin\', \'superadmin\')))',
-                    operation: 'SELECT'
-                });
-            
-            if (readPolicyError && !readPolicyError.message?.includes('already exists')) {
-                console.warn('⚠️ Politique lecture:', readPolicyError.message);
-            }
-            
-        } catch (policyErr) {
-            console.warn('⚠️ Erreur création politiques:', policyErr.message);
-        }
-        
-    } catch (error) {
-        console.error('❌ Erreur configuration bucket:', error);
-    }
-}
-
-// =============================================
 // CONFIGURATION DES PLANS
 // =============================================
 const PLANS = {
@@ -666,6 +566,77 @@ function validateUsername(username) {
 }
 
 // =============================================
+// ANTI-MULTI-COMPTES (NOUVEAU)
+// =============================================
+async function checkAndBanMultiAccounts(ip, userId, userEmail, username) {
+    // Vérifier si l'utilisateur est admin (exemption)
+    const { data: adminCheck } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+    
+    if (adminCheck && (adminCheck.role === 'admin' || adminCheck.role === 'superadmin')) {
+        return false; // Les admins sont exemptés
+    }
+    
+    // Chercher d'autres comptes avec la même IP
+    const { data: otherAccounts } = await supabase
+        .from('profiles')
+        .select('id, email, username')
+        .eq('registration_ip', ip)
+        .neq('id', userId);
+    
+    if (otherAccounts && otherAccounts.length > 0) {
+        // Bannir tous les comptes concernés
+        const allUserIds = [...otherAccounts.map(a => a.id), userId];
+        
+        for (const id of allUserIds) {
+            await supabase
+                .from('profiles')
+                .update({ 
+                    banned: true,
+                    ban_reason: 'Multi-comptes détectés (même IP)'
+                })
+                .eq('id', id);
+            
+            // Email à chaque compte banni
+            const { data: user } = await supabase
+                .from('profiles')
+                .select('email, username')
+                .eq('id', id)
+                .single();
+            
+            if (user) {
+                await sendEmail(
+                    user.email,
+                    '🔒 Compte suspendu - Multi-comptes',
+                    getMultiAccountBanHtml(user.username, ip)
+                );
+            }
+        }
+        
+        return true;
+    }
+    
+    return false;
+}
+
+function getMultiAccountBanHtml(username, ip) {
+    const content = `
+        <h2>🔒 Compte suspendu</h2>
+        <p>Bonjour ${username},</p>
+        <p>Votre compte a été suspendu car nous avons détecté plusieurs comptes créés depuis la même adresse IP.</p>
+        <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
+            <p><strong>Raison :</strong> Multi-comptes (IP: ${ip})</p>
+            <p>Pour faire réactiver votre compte, veuillez contacter un administrateur.</p>
+        </div>
+        <p><strong>Contact :</strong> ${SITE_CONFIG.supportEmail}</p>
+    `;
+    return getBaseEmailTemplate('🔒 Compte suspendu - Multi-comptes', content);
+}
+
+// =============================================
 // FONCTIONS EMAIL AVEC RESEND - VERSION OPTIMISÉE
 // =============================================
 async function sendEmail(to, subject, htmlContent) {
@@ -905,16 +876,16 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
                      <tr>
                         <td style="color: #666;">Bonus offert :</td>
                         <td style="font-weight: bold; color: #27ae60;">+${pack.bonus} coins</td>
-                     </tr>
+                      </tr>
                     ` : ''}
                      <tr>
                         <td style="color: #666;">Montant payé :</td>
                         <td style="font-weight: bold;">${pack.price_fcfa} FCFA</td>
-                     </tr>
+                      </tr>
                      <tr>
                         <td style="color: #666;">ID de transaction :</td>
                         <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
-                     </tr>
+                      </tr>
                  </table>
         
         <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
@@ -929,7 +900,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
     return getBaseEmailTemplate('💰 Achat de coins confirmé', content);
 }
 
-// 🎁 Template de notification de parrainage
+// 🎁 Template de notification de parrainage (MODIFIÉ: 10 coins)
 function getReferralNotificationHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Nouveau filleul !</h2>
@@ -939,7 +910,7 @@ function getReferralNotificationHtml(username, referrerName, referralLink) {
         <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">${referrerName} vient de s'inscrire sur KermHosting en utilisant votre lien de parrainage.</p>
         
         <div style="background: linear-gradient(145deg, #f9f9ff, #f0f0fa); border: 2px solid #7C3AED; border-radius: 12px; padding: 25px; text-align: center; margin: 25px 0;">
-            <div style="font-size: 36px; font-weight: 700; color: #7C3AED; margin-bottom: 5px;">20 coins</div>
+            <div style="font-size: 36px; font-weight: 700; color: #7C3AED; margin-bottom: 5px;">10 coins</div>
             <div style="color: #666;">Crédités sur votre compte</div>
         </div>
         
@@ -955,7 +926,7 @@ function getReferralNotificationHtml(username, referrerName, referralLink) {
     return getBaseEmailTemplate('🎁 Nouveau filleul !', content);
 }
 
-// 🎁 Template de bienvenue pour filleul
+// 🎁 Template de bienvenue pour filleul (MODIFIÉ: 5 coins)
 function getReferralWelcomeHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Bienvenue sur KermHosting !</h2>
@@ -965,8 +936,8 @@ function getReferralWelcomeHtml(username, referrerName, referralLink) {
         <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Vous avez été parrainé par ${referrerName}. Bienvenue dans notre communauté !</p>
         
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
-            <p style="margin: 5px 0; color: #555;"><strong>🎁 Bonus de bienvenue :</strong> 10 coins</p>
-            <p style="margin: 5px 0; color: #555;"><strong>💰 Total de départ :</strong> 15 coins (10 parrainage + 5 inscription)</p>
+            <p style="margin: 5px 0; color: #555;"><strong>🎁 Bonus de bienvenue :</strong> 5 coins (parrainage)</p>
+            <p style="margin: 5px 0; color: #555;"><strong>💰 Total de départ :</strong> 10 coins (5 parrainage + 5 vérification email)</p>
         </div>
         
         <div style="margin: 25px 0;">
@@ -1018,7 +989,7 @@ function getServerExpiringHtml(username, server, daysLeft) {
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
         </div>
         
-        <p style="color: #999; font-size: 13px; text-align: center; margin: 20px 0 0 0;">Si vous ne renouvelez pas, votre serveur sera suspendu à la date d'expiration puis supprimé définitivement après 7 jours.</p>
+        <p style="color: #999; font-size: 13px; text-align: center; margin: 20px 0 0 0;">Si vous ne renouvelez pas, votre serveur sera suspendu à la date d'expiration puis supprimé définitivement après 3 jours.</p>
     `;
     return getBaseEmailTemplate('⚠️ Alerte expiration', content);
 }
@@ -1033,7 +1004,7 @@ function getServerSuspendedHtml(username, server) {
         <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été suspendu car il a atteint sa date d'expiration.</p>
         
         <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
-            <p style="margin: 0; color: #b71c1c;"><strong>Important :</strong> Vous avez jusqu'au <strong>${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</strong> pour renouveler votre serveur. Passé ce délai, il sera définitivement supprimé.</p>
+            <p style="margin: 0; color: #b71c1c;"><strong>Important :</strong> Vous avez jusqu'au <strong>${new Date(new Date(server.expires_at).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</strong> pour renouveler votre serveur. Passé ce délai, il sera définitivement supprimé.</p>
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
@@ -1043,7 +1014,7 @@ function getServerSuspendedHtml(username, server) {
                      </tr>
                      <tr>
                         <td style="color: #666;">Date limite de renouvellement :</td>
-                        <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
+                        <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
                      </tr>
                      <tr>
                         <td style="color: #666;">Prix de renouvellement :</td>
@@ -1058,14 +1029,14 @@ function getServerSuspendedHtml(username, server) {
     return getBaseEmailTemplate('🔴 Serveur suspendu', content);
 }
 
-// 🗑️ Template de suppression de serveur (J+7)
+// 🗑️ Template de suppression de serveur (J+3)
 function getServerDeletedHtml(username, server) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Votre serveur a été supprimé</h2>
         
         <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
         
-        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les délais.</p>
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur <strong>"${server.server_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les 3 jours suivant son expiration.</p>
         
         <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
             <p style="margin: 0; color: #b71c1c;">Toutes les données associées à ce serveur ont été effacées de nos systèmes.</p>
@@ -1078,6 +1049,49 @@ function getServerDeletedHtml(username, server) {
         </div>
     `;
     return getBaseEmailTemplate('🗑️ Serveur supprimé', content);
+}
+
+// 🆓 Template pour serveur free - expiration dans 12h (NOUVEAU)
+function getFreeServerExpiringHtml(username, server) {
+    const content = `
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">⚠️ Votre serveur gratuit expire dans 12h</h2>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur gratuit <strong>"${server.server_name}"</strong> expirera dans 12 heures.</p>
+        
+        <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #92400e;">⏰ Après 24h, il sera automatiquement supprimé.</p>
+            <p style="margin: 10px 0 0 0; color: #92400e;">💡 Passez à un plan payant pour garder vos données.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Voir les offres</a>
+        </div>
+    `;
+    return getBaseEmailTemplate('⚠️ Serveur gratuit - expiration dans 12h', content);
+}
+
+// 🗑️ Template pour serveur free - suppression à 24h (NOUVEAU)
+function getFreeServerDeletedHtml(username, server) {
+    const content = `
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Votre serveur gratuit a été supprimé</h2>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: #7C3AED;">${username}</strong>,</p>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0;">Votre serveur gratuit <strong>"${server.server_name}"</strong> a été automatiquement supprimé après 24h.</p>
+        
+        <div style="background-color: #fee9e6; border-left: 4px solid #f44336; padding: 15px; margin: 25px 0;">
+            <p style="margin: 0; color: #b71c1c;">Toutes les données associées à ce serveur ont été effacées.</p>
+        </div>
+        
+        <p style="color: #555; line-height: 1.6; margin: 20px 0;">Vous pouvez créer un nouveau serveur gratuit ou passer à un plan payant.</p>
+        
+        <div style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/pricing" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Créer un serveur</a>
+        </div>
+    `;
+    return getBaseEmailTemplate('🗑️ Serveur gratuit supprimé', content);
 }
 
 // 🔒 Template de suspension de compte
@@ -1224,11 +1238,6 @@ function getMinipayAdminNotificationHtml(user, pack, transaction, proofUrl) {
         <p><strong>Pays :</strong> ${transaction.country || 'Non spécifié'}</p>
         <p><strong>Téléphone :</strong> ${transaction.minipay_phone || 'Non spécifié'}</p>
         <p><strong>ID Transaction :</strong> ${transaction.id}</p>
-        
-        <div style="margin: 20px 0;">
-            <strong>📸 Capture d'écran :</strong><br>
-            <a href="${proofUrl}" target="_blank" style="color: #7C3AED;">Voir la capture d'écran</a>
-        </div>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/admin" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Traiter la transaction</a>
@@ -2301,27 +2310,14 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
             selectedCountry = AFRICAN_COUNTRIES.find(c => c.currency === 'XAF');
         }
         
-        // ===== CORRECTION DU CALCUL DE CONVERSION =====
         const USD_TO_FCFA = 615;
         const amountInUsd = pack.price_fcfa / USD_TO_FCFA;
         
-        // Taux de conversion USD vers devise locale (1 USD = X unités)
         const conversionRates = {
-            'XAF': 615,    // 1 USD = 615 FCFA
-            'XOF': 615,    // 1 USD = 615 FCFA
-            'NGN': 1538,   // 1 USD = 1538 Naira
-            'GHS': 12.5,   // 1 USD = 12.5 Cedi
-            'KES': 135,    // 1 USD = 135 Shilling Kenyan
-            'TZS': 2650,   // 1 USD = 2650 Shilling Tanzanien
-            'UGX': 3800,   // 1 USD = 3800 Shilling Ougandais
-            'RWF': 1350,   // 1 USD = 1350 Franc Rwandais
-            'ZAR': 18.5,   // 1 USD = 18.5 Rand
-            'MAD': 10,     // 1 USD = 10 Dirham Marocain
-            'DZD': 135,    // 1 USD = 135 Dinar Algérien
-            'TND': 3.1,    // 1 USD = 3.1 Dinar Tunisien
-            'EUR': 0.937,  // 1 USD = 0.937 Euro
-            'GBP': 0.788,  // 1 USD = 0.788 Livre
-            'CAD': 1.366   // 1 USD = 1.366 Dollar Canadien
+            'XAF': 615, 'XOF': 615, 'NGN': 1538, 'GHS': 12.5,
+            'KES': 135, 'TZS': 2650, 'UGX': 3800, 'RWF': 1350,
+            'ZAR': 18.5, 'MAD': 10, 'DZD': 135, 'TND': 3.1,
+            'EUR': 0.937, 'GBP': 0.788, 'CAD': 1.366
         };
         
         const rate = conversionRates[selectedCountry.currency] || 615;
@@ -2345,7 +2341,7 @@ app.post('/api/payment/minipay/initiate', authenticateToken, requireEmailVerific
                 medium: 'MINIPAY',
                 minipay_phone: cleanPhone,
                 selected_currency: selectedCountry.currency,
-                converted_amount: convertedAmount,  // ← MONTANT CORRECT
+                converted_amount: convertedAmount,
                 country: selectedCountry.name,
                 metadata: { 
                     pack: {
@@ -2439,12 +2435,10 @@ app.post('/api/payment/minipay/upload-proof', upload.single('screenshot'), async
             return res.status(400).json({ success: false, error: 'Transaction déjà traitée' });
         }
 
-        // Convertir l'image en base64
         const base64Image = req.file.buffer.toString('base64');
         const mimeType = req.file.mimetype;
         const screenshotData = `data:${mimeType};base64,${base64Image}`;
 
-        // Stocker directement en base de données
         await supabase
             .from('transactions')
             .update({
@@ -2533,13 +2527,11 @@ app.post('/api/admin/minipay/confirm/:transactionId', authenticateToken, require
             coinsToAdd = Math.floor(transaction.amount / 5);
         }
 
-        // Ajouter les coins
         await supabase
             .from('profiles')
             .update({ coins: (user.coins || 0) + coinsToAdd })
             .eq('id', user.id);
 
-        // Mettre à jour la transaction
         await supabase
             .from('transactions')
             .update({
@@ -2551,7 +2543,6 @@ app.post('/api/admin/minipay/confirm/:transactionId', authenticateToken, require
             })
             .eq('id', transactionId);
 
-        // Log admin
         await supabase
             .from('admin_actions')
             .insert([{
@@ -2564,7 +2555,6 @@ app.post('/api/admin/minipay/confirm/:transactionId', authenticateToken, require
                 user_agent: req.headers['user-agent']
             }]);
 
-        // Email de confirmation à l'utilisateur
         await sendEmail(
             user.email,
             '💰 Achat de coins confirmé (Minipay)',
@@ -2616,7 +2606,6 @@ app.post('/api/admin/minipay/fail/:transactionId', authenticateToken, requireAdm
 
         const user = transaction.profiles;
 
-        // Mettre à jour la transaction
         await supabase
             .from('transactions')
             .update({
@@ -2627,7 +2616,6 @@ app.post('/api/admin/minipay/fail/:transactionId', authenticateToken, requireAdm
             })
             .eq('id', transactionId);
 
-        // Log admin
         await supabase
             .from('admin_actions')
             .insert([{
@@ -2640,7 +2628,6 @@ app.post('/api/admin/minipay/fail/:transactionId', authenticateToken, requireAdm
                 user_agent: req.headers['user-agent']
             }]);
 
-        // Email d'échec à l'utilisateur
         const failHtml = `
             <h2>❌ Paiement Minipay échoué</h2>
             <p>Bonjour ${user.username},</p>
@@ -2788,7 +2775,8 @@ async function processAutoRenew(server) {
                     expires_at: newExpiry.toISOString(),
                     warning_sent: false,
                     auto_renew_attempts: 0,
-                    auto_renew_error: null
+                    auto_renew_error: null,
+                    status: 'active'
                 })
                 .eq('id', server.id);
 
@@ -2929,54 +2917,19 @@ async function processAutoRenew(server) {
 // =============================================
 async function setupAutoRenewTables() {
     try {
-        const { error: addAutoRenewColumn } = await supabase.rpc('add_column_if_not_exists', {
-            table_name: 'servers',
-            column_name: 'auto_renew',
-            column_type: 'boolean'
-        }).catch(() => null);
+        console.log('⚠️ Assurez-vous que les colonnes suivantes existent dans Supabase:');
+        console.log('  - servers.auto_renew (boolean)');
+        console.log('  - servers.auto_renew_attempts (integer)');
+        console.log('  - servers.last_auto_renew_attempt (timestamptz)');
+        console.log('  - servers.auto_renew_error (text)');
+        console.log('  - servers.warning_sent (boolean)');
+        console.log('  - servers.free_notification_sent (boolean)');
+        console.log('  - profiles.registration_ip (text)');
+        console.log('  - profiles.ban_reason (text)');
+        console.log('  - auto_renew_logs (table)');
+        console.log('  - mass_email_campaigns (table)');
         
-        const { error: addAttemptsColumn } = await supabase.rpc('add_column_if_not_exists', {
-            table_name: 'servers',
-            column_name: 'auto_renew_attempts',
-            column_type: 'integer'
-        }).catch(() => null);
-        
-        const { error: addLastAttemptColumn } = await supabase.rpc('add_column_if_not_exists', {
-            table_name: 'servers',
-            column_name: 'last_auto_renew_attempt',
-            column_type: 'timestamptz'
-        }).catch(() => null);
-        
-        const { error: addErrorColumn } = await supabase.rpc('add_column_if_not_exists', {
-            table_name: 'servers',
-            column_name: 'auto_renew_error',
-            column_type: 'text'
-        }).catch(() => null);
-        
-        const { error: addExpiredNotifColumn } = await supabase.rpc('add_column_if_not_exists', {
-            table_name: 'servers',
-            column_name: 'expired_notification_sent',
-            column_type: 'boolean'
-        }).catch(() => null);
-        
-        const { error: createLogsTable } = await supabase.rpc('create_auto_renew_logs_table').catch(() => {
-            return supabase.query(`
-                CREATE TABLE IF NOT EXISTS auto_renew_logs (
-                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                    server_id UUID REFERENCES servers(id) ON DELETE CASCADE,
-                    user_id UUID REFERENCES profiles(id),
-                    status TEXT CHECK (status IN ('success', 'failed_insufficient_coins', 'failed_other', 'attempting')),
-                    coins_required INTEGER,
-                    coins_available INTEGER,
-                    error_message TEXT,
-                    created_at TIMESTAMPTZ DEFAULT NOW()
-                );
-                CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_server_id ON auto_renew_logs(server_id);
-                CREATE INDEX IF NOT EXISTS idx_auto_renew_logs_user_id ON auto_renew_logs(user_id);
-            `);
-        });
-        
-        console.log('✅ Tables d\'auto-renouvellement vérifiées/créées');
+        console.log('✅ Configuration auto-renouvellement vérifiée');
     } catch (error) {
         console.error('❌ Erreur configuration auto-renouvellement:', error);
     }
@@ -3082,34 +3035,138 @@ app.get('/api/servers/:serverId/auto-renew', authenticateToken, async (req, res)
 });
 
 // =============================================
-// CRON JOB: AUTO-RENOUVELLEMENT
+// NOUVEAU CRON JOB PRINCIPAL - TOUTES LES 30 SECONDES
 // =============================================
-
-cron.schedule('0 * * * *', async () => {
-    console.log('🔄 Vérification des serveurs à auto-renouveler...');
+setInterval(async () => {
+    console.log(`🔄 Vérification des serveurs - ${new Date().toISOString()}`);
     
     const now = new Date();
-    const expirationThreshold = new Date();
-    expirationThreshold.setHours(expirationThreshold.getHours() + 24);
+    
+    // 1. Serveurs gratuits : notification à 12h, suppression à 24h
+    const { data: freeServers } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .eq('server_type', 'free')
+        .eq('status', 'active');
 
-    const { data: serversToRenew } = await supabase
+    for (const server of freeServers || []) {
+        const createdAt = new Date(server.created_at);
+        const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
+        
+        if (hoursSinceCreation >= 12 && !server.free_notification_sent) {
+            console.log(`📧 Free server notification: ${server.server_name} (12h)`);
+            await sendEmail(
+                server.profiles.email,
+                '⚠️ Votre serveur gratuit expire dans 12h',
+                getFreeServerExpiringHtml(server.profiles.username, server)
+            );
+            await supabase
+                .from('servers')
+                .update({ free_notification_sent: true })
+                .eq('id', server.id);
+        }
+        
+        if (hoursSinceCreation >= 24) {
+            console.log(`🗑️ Suppression serveur free: ${server.server_name}`);
+            await deletePterodactylServer(server.pterodactyl_id);
+            await supabase.from('servers').delete().eq('id', server.id);
+            await sendEmail(
+                server.profiles.email,
+                '🗑️ Votre serveur gratuit a été supprimé',
+                getFreeServerDeletedHtml(server.profiles.username, server)
+            );
+        }
+    }
+    
+    // 2. Serveurs payants expirés : suspension immédiate
+    const { data: expiredServers } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .lt('expires_at', now.toISOString())
+        .eq('status', 'active')
+        .neq('server_type', 'free');
+
+    for (const server of expiredServers || []) {
+        console.log(`🔴 Suspension serveur expiré: ${server.server_name}`);
+        await suspendPterodactylServer(server.pterodactyl_id);
+        await supabase
+            .from('servers')
+            .update({ status: 'suspended' })
+            .eq('id', server.id);
+        await sendEmail(
+            server.profiles.email,
+            '🔴 Votre serveur a été suspendu',
+            getServerSuspendedHtml(server.profiles.username, server)
+        );
+    }
+    
+    // 3. Auto-renouvellement (UNIQUEMENT à expiration si auto_renew=true)
+    const { data: autoRenewServers } = await supabase
         .from('servers')
         .select('*, profiles(*)')
         .eq('auto_renew', true)
-        .lte('expires_at', expirationThreshold.toISOString())
-        .gte('expires_at', now.toISOString())
-        .in('status', ['active', 'suspended']);
+        .eq('status', 'suspended')
+        .lt('expires_at', now.toISOString())
+        .neq('server_type', 'free');
 
-    console.log(`📊 ${serversToRenew?.length || 0} serveurs à vérifier pour auto-renouvellement`);
-
-    for (const server of serversToRenew || []) {
-        console.log(`🔍 Vérification auto-renouvellement pour ${server.server_name} (expire le ${server.expires_at})`);
+    for (const server of autoRenewServers || []) {
+        console.log(`🔄 Tentative auto-renouvellement: ${server.server_name}`);
         await processAutoRenew(server);
     }
-});
+    
+    // 4. Suppression définitive après 3 jours (serveurs suspendus)
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    
+    const { data: serversToDelete } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .eq('status', 'suspended')
+        .lt('expires_at', threeDaysAgo.toISOString())
+        .neq('server_type', 'free');
+
+    for (const server of serversToDelete || []) {
+        console.log(`🗑️ Suppression définitive: ${server.server_name}`);
+        await deletePterodactylServer(server.pterodactyl_id);
+        await supabase.from('servers').delete().eq('id', server.id);
+        await sendEmail(
+            server.profiles.email,
+            '🗑️ Votre serveur a été supprimé définitivement',
+            getServerDeletedHtml(server.profiles.username, server)
+        );
+    }
+    
+    // 5. Notification J-3 pour serveurs actifs
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    
+    const { data: expiringSoon } = await supabase
+        .from('servers')
+        .select('*, profiles(*)')
+        .lte('expires_at', threeDaysFromNow.toISOString())
+        .gt('expires_at', now.toISOString())
+        .eq('warning_sent', false)
+        .eq('status', 'active')
+        .neq('server_type', 'free');
+
+    for (const server of expiringSoon || []) {
+        const daysLeft = Math.ceil((new Date(server.expires_at) - now) / (1000 * 60 * 60 * 24));
+        console.log(`📧 Envoi notification J-${daysLeft}: ${server.server_name}`);
+        await sendEmail(
+            server.profiles.email,
+            '⚠️ Votre serveur expire bientôt',
+            getServerExpiringHtml(server.profiles.username, server, daysLeft)
+        );
+        await supabase
+            .from('servers')
+            .update({ warning_sent: true })
+            .eq('id', server.id);
+    }
+    
+}, 30000);
 
 // =============================================
-// ROUTES AUTH (INCHANGÉES)
+// ROUTES AUTH (MODIFIÉES POUR COINS)
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -3140,6 +3197,8 @@ app.post('/api/register', async (req, res) => {
         const verificationCode = generateVerificationCode();
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+        
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
         let referrerId = null;
         let referrerName = null;
@@ -3168,7 +3227,8 @@ app.post('/api/register', async (req, res) => {
                 referred_by: referrerId,
                 email_verification_code: verificationCode,
                 email_verification_code_expires: expiresAt.toISOString(),
-                coins: 10,
+                registration_ip: clientIp,
+                coins: 5,
                 badges: []
             }])
             .select()
@@ -3176,6 +3236,15 @@ app.post('/api/register', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ success: false, error: 'Erreur création compte', code: 'REGISTER_ERROR' });
+        }
+
+        const banned = await checkAndBanMultiAccounts(clientIp, newUser.id, email, username);
+        if (banned) {
+            return res.status(403).json({ 
+                success: false, 
+                error: 'Compte banni pour multi-comptes. Contactez le support.',
+                code: 'MULTI_ACCOUNT_BANNED'
+            });
         }
 
         await sendEmail(
@@ -3194,13 +3263,13 @@ app.post('/api/register', async (req, res) => {
             if (referrerData) {
                 await supabase
                     .from('profiles')
-                    .update({ coins: referrerData.coins + 20 })
+                    .update({ coins: referrerData.coins + 10 })
                     .eq('id', referrerId);
             }
 
             await supabase
                 .from('profiles')
-                .update({ coins: 20 })
+                .update({ coins: 5 })
                 .eq('id', newUser.id);
 
             await supabase
@@ -3208,7 +3277,7 @@ app.post('/api/register', async (req, res) => {
                 .insert([{
                     referrer_id: referrerId,
                     referred_id: newUser.id,
-                    coins_rewarded: 20
+                    coins_rewarded: 10
                 }]);
 
             const { data: referrerEmail } = await supabase
@@ -3367,7 +3436,6 @@ app.post('/api/login', async (req, res) => {
             });
         }
 
-        // Chercher l'utilisateur par email OU par nom d'utilisateur
         let { data: user, error } = await supabase
             .from('profiles')
             .select('*')
@@ -3607,7 +3675,6 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 // ROUTES DE PAIEMENT FAPSHI
 // =============================================
 
-// Paiement direct pour acheter des serveurs
 app.post('/api/payment/direct-server', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { plan_id, phone, server_name, server_username } = req.body;
@@ -3713,7 +3780,6 @@ app.post('/api/payment/direct-server', authenticateToken, requireEmailVerificati
     }
 });
 
-// Paiement direct pour acheter des coins
 app.post('/api/payment/buy-coins', authenticateToken, requireEmailVerification, async (req, res) => {
     try {
         const { pack_id, phone } = req.body;
@@ -3916,9 +3982,6 @@ app.get('/api/payment/status/:transId', async (req, res) => {
     }
 });
 
-// =============================================
-// WEBHOOK FAPSHI
-// =============================================
 app.post('/api/fapshi-webhook', express.json(), async (req, res) => {
     try {
         const { transId } = req.body;
@@ -4934,7 +4997,7 @@ app.get('/api/referral/info', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES RÉCOMPENSE QUOTIDIENNE
+// ROUTES RÉCOMPENSE QUOTIDIENNE (MODIFIÉE: 1 coin)
 // =============================================
 
 app.post('/api/daily-reward', authenticateToken, async (req, res) => {
@@ -4949,14 +5012,13 @@ app.post('/api/daily-reward', authenticateToken, async (req, res) => {
             });
         }
 
-        let coinsReward = 5;
+        const coinsReward = 1;
         let streakCount = 1;
 
         const yesterday = new Date(Date.now() - 86400000).toDateString();
         
         if (req.user.last_daily_login === yesterday) {
             streakCount = (req.user.daily_login_streak || 0) + 1;
-            coinsReward = 5 + Math.min(5, streakCount);
         }
 
         await supabase
@@ -4975,12 +5037,12 @@ app.post('/api/daily-reward', authenticateToken, async (req, res) => {
                 user_id: req.user.id,
                 activity_type: 'daily_login',
                 coins_earned: coinsReward,
-                description: `Récompense quotidienne - Série: ${streakCount} jours`
+                description: `Récompense quotidienne - 1 coin (série: ${streakCount} jours)`
             }]);
 
         res.json({
             success: true,
-            message: `Félicitations ! Vous avez gagné ${coinsReward} coins (série: ${streakCount} jours)`,
+            message: `Félicitations ! Vous avez gagné ${coinsReward} coin (série: ${streakCount} jours)`,
             coins: coinsReward,
             streak: streakCount
         });
@@ -6308,115 +6370,477 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
 });
 
 // =============================================
-// CRON JOBS CORRIGÉS POUR LA GESTION DES EXPIRATIONS
+// ADMIN - EMAILS MASSIFS AVEC TEMPLATES ET DELAY (NOUVEAU)
 // =============================================
 
-cron.schedule('0 */6 * * *', async () => {
-    console.log('🔍 Vérification des serveurs expirant bientôt...');
+const EMAIL_TEMPLATES = {
+    'announcement': {
+        name: '📢 Annonce générale',
+        icon: '📢',
+        default_subject: 'Nouvelle annonce KermHosting',
+        default_message: 'Nous vous informons d\'une nouvelle mise à jour importante sur nos services.'
+    },
+    'maintenance': {
+        name: '🛠️ Maintenance planifiée',
+        icon: '🛠️',
+        default_subject: 'Maintenance planifiée sur KermHosting',
+        default_message: 'Une maintenance est prévue sur notre infrastructure. Des interruptions temporaires sont à prévoir.'
+    },
+    'promotion': {
+        name: '🎉 Offre promotionnelle',
+        icon: '🎉',
+        default_subject: 'Offre spéciale KermHosting',
+        default_message: 'Profitez de nos nouvelles offres sur les serveurs et packs de coins !'
+    },
+    'newsletter': {
+        name: '📰 Newsletter',
+        icon: '📰',
+        default_subject: 'Newsletter KermHosting',
+        default_message: 'Découvrez les dernières actualités de KermHosting.'
+    },
+    'alert': {
+        name: '⚠️ Alerte sécurité',
+        icon: '⚠️',
+        default_subject: 'Alerte de sécurité KermHosting',
+        default_message: 'Une action est requise de votre part concernant la sécurité de votre compte.'
+    },
+    'update': {
+        name: '🔄 Mise à jour système',
+        icon: '🔄',
+        default_subject: 'Mise à jour KermHosting',
+        default_message: 'De nouvelles fonctionnalités sont disponibles sur KermHosting.'
+    }
+};
+
+function getMassEmailTemplate(username, templateType, customMessage, customTitle) {
+    const template = EMAIL_TEMPLATES[templateType] || EMAIL_TEMPLATES['announcement'];
+    const title = customTitle || template.default_subject;
+    const message = customMessage || template.default_message;
     
-    const warningDate = new Date();
-    warningDate.setDate(warningDate.getDate() + 3);
-
-    const { data: expiringServers } = await supabase
-        .from('servers')
-        .select('*, profiles(*)')
-        .lte('expires_at', warningDate.toISOString())
-        .gt('expires_at', new Date().toISOString())
-        .eq('warning_sent', false)
-        .eq('status', 'active');
-
-    for (const server of expiringServers || []) {
-        const daysLeft = Math.ceil((new Date(server.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
+    let gradientColor = '#7C3AED';
+    
+    switch(templateType) {
+        case 'maintenance': gradientColor = '#f59e0b'; break;
+        case 'promotion': gradientColor = '#10b981'; break;
+        case 'alert': gradientColor = '#ef4444'; break;
+        case 'update': gradientColor = '#3b82f6'; break;
+        default: gradientColor = '#7C3AED';
+    }
+    
+    const content = `
+        <div style="text-align: center; margin-bottom: 25px;">
+            <span style="font-size: 48px;">${template.icon}</span>
+        </div>
         
-        console.log(`📧 Envoi rappel expiration pour ${server.server_name} (${daysLeft} jours)`);
+        <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600; text-align: center;">
+            ${title}
+        </h2>
         
-        await sendEmail(
-            server.profiles.email,
-            '⚠️ Votre serveur expire bientôt',
-            getServerExpiringHtml(server.profiles.username, server, daysLeft)
-        );
+        <div style="height: 3px; background: linear-gradient(90deg, ${gradientColor}, transparent); margin: 20px 0;"></div>
+        
+        <p style="color: #555; line-height: 1.6; margin: 0 0 10px 0;">Bonjour <strong style="color: ${gradientColor};">${username}</strong>,</p>
+        
+        <div style="background-color: #fafafc; border-radius: 12px; padding: 20px; margin: 20px 0;">
+            <p style="color: #444; line-height: 1.7; margin: 0; white-space: pre-line;">
+                ${message.replace(/\n/g, '<br>')}
+            </p>
+        </div>
+        
+        <div style="background-color: #f0f7ff; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: center;">
+            <p style="margin: 0 0 10px 0; color: #666;">Besoin d'aide ?</p>
+            <p style="margin: 0;">
+                <a href="${SITE_CONFIG.whatsapp}" style="color: ${gradientColor}; text-decoration: none;">WhatsApp</a> · 
+                <a href="${SITE_CONFIG.discord}" style="color: ${gradientColor}; text-decoration: none;">Discord</a> · 
+                <a href="mailto:${SITE_CONFIG.supportEmail}" style="color: ${gradientColor}; text-decoration: none;">Support</a>
+            </p>
+        </div>
+        
+        <p style="text-align: center; margin: 30px 0 15px 0;">
+            <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: ${gradientColor}; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">
+                Accéder à mon compte
+            </a>
+        </p>
+    `;
+    
+    return getBaseEmailTemplate(title, content);
+}
 
-        await supabase
-            .from('servers')
-            .update({ warning_sent: true })
-            .eq('id', server.id);
+app.get('/api/admin/email-templates', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            templates: Object.entries(EMAIL_TEMPLATES).map(([key, value]) => ({
+                id: key,
+                name: value.name,
+                icon: value.icon,
+                default_subject: value.default_subject,
+                default_message: value.default_message
+            }))
+        });
+    } catch (error) {
+        console.error('❌ Erreur récupération templates:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
-cron.schedule('0 * * * *', async () => {
-    console.log('🔍 Vérification des serveurs expirés...');
-    
-    const maintenant = new Date();
+// =============================================
+// ADMIN - EMAILS MASSIFS (VERSION ASYNC SANS TIMEOUT)
+// =============================================
 
-    const { data: expiredServers } = await supabase
-        .from('servers')
-        .select('*, profiles(*)')
-        .lt('expires_at', maintenant.toISOString())
-        .eq('status', 'active');
-
-    console.log(`📊 ${expiredServers?.length || 0} serveurs expirés trouvés`);
-
-    for (const server of expiredServers || []) {
-        console.log(`🔴 Suspension du serveur ${server.server_name} (expiré le ${server.expires_at})`);
+app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { 
+            subject, 
+            template_type, 
+            custom_message, 
+            target_role,
+            test_email,
+            send_test_first = true
+        } = req.body;
         
-        await suspendPterodactylServer(server.pterodactyl_id);
+        if (!template_type || !EMAIL_TEMPLATES[template_type]) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Type de template invalide',
+                available_templates: Object.keys(EMAIL_TEMPLATES)
+            });
+        }
         
+        if (!subject) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Sujet de l\'email requis' 
+            });
+        }
+        
+        let query = supabase.from('profiles').select('email, username, id, role');
+        
+        if (target_role && target_role !== 'all') {
+            query = query.eq('role', target_role);
+        }
+        
+        const { data: users, error } = await query;
+        
+        if (error) throw error;
+        
+        if (!users || users.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Aucun utilisateur trouvé pour ce filtre' 
+            });
+        }
+        
+        // MODE TEST : envoi immédiat d'un seul email
+        if (send_test_first && test_email) {
+            console.log(`📧 Mode test : envoi à ${test_email} uniquement`);
+            
+            const testUser = users.find(u => u.email === test_email) || { username: 'Test', email: test_email };
+            const testHtml = getMassEmailTemplate(testUser.username, template_type, custom_message, subject);
+            
+            const testResult = await sendEmail(test_email, `[TEST] ${subject}`, testHtml);
+            
+            if (!testResult.success) {
+                return res.status(500).json({
+                    success: false,
+                    error: 'L\'email de test a échoué. Vérifiez votre configuration.',
+                    details: testResult.error
+                });
+            }
+            
+            return res.json({
+                success: true,
+                test_sent: true,
+                message: `Email de test envoyé avec succès à ${test_email}. Vérifiez votre boîte de réception avant d\'envoyer à tous.`,
+                total_recipients: users.length
+            });
+        }
+        
+        // MODE RÉEL : création de la campagne (réponse immédiate)
+        console.log(`📧 Création campagne email : ${users.length} destinataires, template: ${template_type}`);
+        
+        const campaignId = generateTransactionId();
+        
+        // Sauvegarder la campagne avec les utilisateurs dans metadata
         await supabase
-            .from('servers')
-            .update({ 
-                status: 'suspended'
+            .from('mass_email_campaigns')
+            .insert([{
+                id: campaignId,
+                admin_id: req.user.id,
+                subject: subject,
+                template_type: template_type,
+                target_role: target_role || 'all',
+                total_recipients: users.length,
+                success_count: 0,
+                fail_count: 0,
+                status: 'pending',
+                metadata: {
+                    custom_message: custom_message,
+                    users: users.map(u => ({ id: u.id, email: u.email, username: u.username }))
+                },
+                started_at: new Date().toISOString()
+            }]);
+        
+        // Log admin
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'mass_email_start',
+                target_type: 'campaign',
+                target_id: campaignId,
+                description: `Campagne email "${subject}" démarrée pour ${users.length} utilisateurs`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        // Démarrer le traitement en arrière-plan (SANS AWAIT)
+        processMassEmailCampaign(campaignId);
+        
+        // Réponse immédiate (avant la fin des envois)
+        res.json({
+            success: true,
+            message: `Campagne lancée en arrière-plan pour ${users.length} utilisateurs. Les emails seront envoyés avec un délai de 60s entre chaque.`,
+            campaign_id: campaignId,
+            total_recipients: users.length,
+            status: 'in_progress'
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur envoi massif:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur lors de l\'envoi massif',
+            details: error.message 
+        });
+    }
+});
+
+// =============================================
+// TRAITEMENT ASYNCHRONE DE LA CAMPAGNE
+// =============================================
+async function processMassEmailCampaign(campaignId) {
+    try {
+        console.log(`📧 [BG] Début traitement campagne ${campaignId}`);
+        
+        // Récupérer la campagne
+        const { data: campaign, error } = await supabase
+            .from('mass_email_campaigns')
+            .select('*')
+            .eq('id', campaignId)
+            .single();
+        
+        if (error || !campaign) {
+            console.error(`❌ [BG] Campagne ${campaignId} non trouvée`);
+            return;
+        }
+        
+        if (campaign.status !== 'pending') {
+            console.log(`⚠️ [BG] Campagne ${campaignId} déjà traitée (status: ${campaign.status})`);
+            return;
+        }
+        
+        // Mettre à jour le statut
+        await supabase
+            .from('mass_email_campaigns')
+            .update({ status: 'in_progress' })
+            .eq('id', campaignId);
+        
+        const users = campaign.metadata?.users || [];
+        const template_type = campaign.template_type;
+        const subject = campaign.subject;
+        const custom_message = campaign.metadata?.custom_message;
+        
+        let successCount = 0;
+        let failCount = 0;
+        const errors = [];
+        
+        console.log(`📧 [BG] Envoi de ${users.length} emails pour la campagne ${campaignId}`);
+        
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            const htmlContent = getMassEmailTemplate(user.username, template_type, custom_message, subject);
+            
+            try {
+                const result = await sendEmail(user.email, subject, htmlContent);
+                
+                if (result.success) {
+                    successCount++;
+                    console.log(`✅ [BG] [${i+1}/${users.length}] Email envoyé à ${user.email}`);
+                } else {
+                    failCount++;
+                    errors.push({ email: user.email, error: result.error });
+                    console.log(`❌ [BG] [${i+1}/${users.length}] Échec pour ${user.email}: ${result.error}`);
+                }
+            } catch (err) {
+                failCount++;
+                errors.push({ email: user.email, error: err.message });
+                console.log(`❌ [BG] [${i+1}/${users.length}] Erreur pour ${user.email}: ${err.message}`);
+            }
+            
+            // Mise à jour progressive dans la base (pour le frontend polling)
+            await supabase
+                .from('mass_email_campaigns')
+                .update({
+                    success_count: successCount,
+                    fail_count: failCount,
+                    errors: errors.slice(0, 100)
+                })
+                .eq('id', campaignId);
+            
+            // Delay de 60 secondes entre chaque email (évite rate limiting)
+            if (i < users.length - 1) {
+                console.log(`⏳ [BG] Attente 60 secondes avant le prochain email...`);
+                await new Promise(resolve => setTimeout(resolve, 60000));
+            }
+        }
+        
+        // Terminer la campagne
+        await supabase
+            .from('mass_email_campaigns')
+            .update({
+                status: 'completed',
+                completed_at: new Date().toISOString(),
+                success_count: successCount,
+                fail_count: failCount,
+                errors: errors.slice(0, 100)
             })
-            .eq('id', server.id);
-
-        await sendEmail(
-            server.profiles.email,
-            '🔴 Votre serveur a été suspendu',
-            getServerSuspendedHtml(server.profiles.username, server)
-        );
-    }
-});
-
-cron.schedule('0 2 * * *', async () => {
-    console.log('🗑️ Suppression des serveurs suspendus depuis plus de 7 jours...');
-    
-    const septJoursAvant = new Date();
-    septJoursAvant.setDate(septJoursAvant.getDate() - 7);
-
-    const { data: serversToDelete } = await supabase
-        .from('servers')
-        .select('*, profiles(*)')
-        .eq('status', 'suspended')
-        .lt('expires_at', septJoursAvant.toISOString());
-
-    console.log(`📊 ${serversToDelete?.length || 0} serveurs à supprimer définitivement`);
-
-    for (const server of serversToDelete || []) {
-        console.log(`🗑️ Suppression définitive du serveur ${server.server_name}`);
+            .eq('id', campaignId);
         
-        await deletePterodactylServer(server.pterodactyl_id);
+        console.log(`✅ [BG] Campagne ${campaignId} terminée: ${successCount} succès, ${failCount} échecs`);
+        
+        // Log final
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: campaign.admin_id,
+                action_type: 'mass_email_completed',
+                target_type: 'campaign',
+                target_id: campaignId,
+                description: `Campagne email "${subject}" terminée: ${successCount}/${users.length} succès`,
+                metadata: {
+                    subject,
+                    template_type,
+                    total: users.length,
+                    success: successCount,
+                    failed: failCount
+                }
+            }]);
+        
+    } catch (error) {
+        console.error(`❌ [BG] Erreur traitement campagne ${campaignId}:`, error);
         
         await supabase
-            .from('servers')
-            .delete()
-            .eq('id', server.id);
+            .from('mass_email_campaigns')
+            .update({
+                status: 'failed',
+                completed_at: new Date().toISOString(),
+                errors: [{ error: error.message }]
+            })
+            .eq('id', campaignId);
+    }
+}
 
-        await sendEmail(
-            server.profiles.email,
-            '🗑️ Votre serveur a été définitivement supprimé',
-            getServerDeletedHtml(server.profiles.username, server)
-        );
+app.get('/api/admin/email-campaigns', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: campaigns, error } = await supabase
+            .from('mass_email_campaigns')
+            .select(`
+                *,
+                profiles:admin_id (username)
+            `)
+            .order('created_at', { ascending: false })
+            .limit(50);
+        
+        if (error) throw error;
+        
+        res.json({
+            success: true,
+            campaigns: campaigns || []
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération campagnes:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
-cron.schedule('0 * * * *', async () => {
-    const oneHourAgo = new Date();
-    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+// =============================================
+// ADMIN - RÉCUPÉRER UNE CAMPAGNE SPÉCIFIQUE
+// =============================================
+app.get('/api/admin/email-campaign/:campaignId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { campaignId } = req.params;
+        
+        console.log(`📊 Récupération campagne ${campaignId}`);
+        
+        const { data: campaign, error } = await supabase
+            .from('mass_email_campaigns')
+            .select('*')
+            .eq('id', campaignId)
+            .single();
+        
+        if (error || !campaign) {
+            console.error(`❌ Campagne ${campaignId} non trouvée:`, error);
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Campagne non trouvée' 
+            });
+        }
+        
+        res.json({
+            success: true,
+            campaign: {
+                id: campaign.id,
+                status: campaign.status,
+                total_recipients: campaign.total_recipients,
+                success_count: campaign.success_count || 0,
+                fail_count: campaign.fail_count || 0,
+                started_at: campaign.started_at,
+                completed_at: campaign.completed_at
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération campagne:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
 
-    await supabase
-        .from('transactions')
-        .update({ status: 'expired' })
-        .eq('status', 'pending')
-        .lt('created_at', oneHourAgo.toISOString());
+app.post('/api/admin/email-campaigns/:campaignId/cancel', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { campaignId } = req.params;
+        
+        const { data: campaign, error } = await supabase
+            .from('mass_email_campaigns')
+            .select('status')
+            .eq('id', campaignId)
+            .single();
+        
+        if (error || !campaign) {
+            return res.status(404).json({ success: false, error: 'Campagne non trouvée' });
+        }
+        
+        if (campaign.status !== 'in_progress') {
+            return res.status(400).json({ success: false, error: 'Seules les campagnes en cours peuvent être annulées' });
+        }
+        
+        await supabase
+            .from('mass_email_campaigns')
+            .update({
+                status: 'cancelled',
+                completed_at: new Date().toISOString()
+            })
+            .eq('id', campaignId);
+        
+        res.json({
+            success: true,
+            message: 'Campagne annulée avec succès'
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur annulation campagne:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
 });
 
 // =============================================
