@@ -191,6 +191,12 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-user:hover {
+            background: var(--bg-hover);
         }
 
         .user-avatar {
@@ -203,6 +209,13 @@
             justify-content: center;
             font-size: 2rem;
             color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -375,6 +388,8 @@
 
         .user-menu {
             cursor: pointer;
+            text-decoration: none;
+            display: block;
         }
 
         .user-avatar-small {
@@ -1600,7 +1615,7 @@
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar">
+                <div class="user-avatar" id="sidebarAvatar">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="user-info">
@@ -1611,11 +1626,11 @@
             </div>
             
             <nav class="sidebar-nav">
-                <ul id="sidebarNav">
-                    <li id="navHome" style="display: none;">
-                        <a href="/">
-                            <i class="fas fa-home"></i>
-                            <span>Accueil</span>
+                <ul>
+                    <li id="navDashboard">
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
                         </a>
                     </li>
                     <li class="active">
@@ -1630,18 +1645,12 @@
                             <span>Acheter des coins</span>
                         </a>
                     </li>
-                    <li id="navDashboard" style="display: none;">
-                        <a href="/dashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li id="navProfile" style="display: none;">
+                    <li id="navProfile">
                         <a href="/profile">
                             <i class="fas fa-user"></i>
                             <span>Profil</span>
                         </a>
-                   </li>
+                    </li>
                     <li>
                         <a href="/transactions">
                             <i class="fas fa-history"></i>
@@ -1649,31 +1658,36 @@
                         </a>
                     </li>
                     <li>
-                       <a href="/bot">
-                           <i class="fab fa-whatsapp"></i>
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
                             <span>KERM MD V1</span>
-                       </a>
-                     </li>
-                     <li>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
                         </a>
                     </li>
                     <li class="divider"></li>
+                    <li id="navHome">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
                     <li id="navLogin">
-                        <a href="#" id="loginLink">
+                        <a href="/login">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Connexion</span>
                         </a>
                     </li>
                     <li id="navRegister">
-                        <a href="#" id="registerLink">
+                        <a href="/register">
                             <i class="fas fa-user-plus"></i>
                             <span>Inscription</span>
                         </a>
                     </li>
-                    <li class="divider" id="logoutDivider" style="display: none;"></li>
                     <li id="navLogout" style="display: none;">
                         <a href="#" id="logoutLink">
                             <i class="fas fa-sign-out-alt"></i>
@@ -1686,12 +1700,12 @@
             <div class="sidebar-footer">
                 <div class="sidebar-stats">
                     <div class="stat">
-                        <span class="stat-value" id="statServers">500+</span>
-                        <span class="stat-label">Serveurs</span>
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-value" id="statUptime">99.9%</span>
-                        <span class="stat-label">Uptime</span>
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
                     </div>
                 </div>
             </div>
@@ -1709,9 +1723,9 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
-                    <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
-                    </div>
+                    </a>
                 </div>
             </header>
 
@@ -2134,7 +2148,6 @@
                     </select>
                 </div>
 
-                <!-- 🔧 CHAMPS SPÉCIFIQUES POUR LE SERVEUR -->
                 <div class="form-group" style="margin-bottom: 16px;">
                     <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Nom du serveur *</label>
                     <input type="text" class="phone-input" id="paypalServerName" placeholder="Mon Bot" maxlength="30" style="margin-bottom: 0;">
@@ -2260,6 +2273,61 @@
     </div>
 
     <script>
+        // ===== AVATAR MANAGER =====
+        const AvatarManager = {
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {}
+            },
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                if (username) localStorage.setItem('username', username);
+            }
+        };
+
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
+        }
+
         const token = localStorage.getItem('token');
 
         // ===== SIDEBAR FUNCTIONS =====
@@ -2307,18 +2375,12 @@
                 cpu: 300,
                 price_weekly: 0,
                 price_monthly: 0,
-                coins_needed: 0,
+                coins_needed_weekly: 0,
                 duration_days: 1,
-                features: [
-                    '2 GB RAM', 
-                    '4 GB SSD',
-                    '300% CPU', 
-                    '1 DB', 
-                    '1 backup',
-                    '⏰ 24h d\'essai'
-                ],
+                features: ['2 GB RAM', '4 GB SSD', '300% CPU', '1 DB', '1 backup', '⏰ 24h d\'essai'],
                 icon: 'fa-gift',
-                color: 'gray'
+                color: 'gray',
+                getCoinsNeeded: function(isYearly) { return 0; }
             },
             '1gb': {
                 name: 'Starter',
@@ -2327,20 +2389,13 @@
                 cpu: 100,
                 price_weekly: 500,
                 price_monthly: 1600,
-                coins_needed: 100,
+                coins_needed_weekly: 100,
                 duration_days: 7,
-                features: [
-                    '1 GB RAM', 
-                    '3 GB SSD',
-                    '100% CPU', 
-                    '3 DB', 
-                    '3 backups',
-                    '📅 7 jours',
-                    'Support standard'
-                ],
+                features: ['1 GB RAM', '3 GB SSD', '100% CPU', '3 DB', '3 backups', '📅 7 jours', 'Support standard'],
                 icon: 'fa-rocket',
                 color: 'blue',
-                popular: true
+                popular: true,
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
             },
             '2gb': {
                 name: 'Basic',
@@ -2349,19 +2404,12 @@
                 cpu: 200,
                 price_weekly: 800,
                 price_monthly: 2600,
-                coins_needed: 160,
+                coins_needed_weekly: 160,
                 duration_days: 7,
-                features: [
-                    '2 GB RAM', 
-                    '5 GB SSD',
-                    '200% CPU', 
-                    '5 DB', 
-                    '5 backups',
-                    '📅 7 jours',
-                    'Support prioritaire'
-                ],
+                features: ['2 GB RAM', '5 GB SSD', '200% CPU', '5 DB', '5 backups', '📅 7 jours', 'Support prioritaire'],
                 icon: 'fa-server',
-                color: 'green'
+                color: 'green',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
             },
             '4gb': {
                 name: 'Pro',
@@ -2370,20 +2418,12 @@
                 cpu: 400,
                 price_weekly: 1300,
                 price_monthly: 4200,
-                coins_needed: 260,
+                coins_needed_weekly: 260,
                 duration_days: 7,
-                features: [
-                    '4 GB RAM', 
-                    '10 GB SSD',
-                    '400% CPU', 
-                    '10 DB', 
-                    '10 backups',
-                    '📅 7 jours',
-                    'Support VIP 24/7',
-                    'Domaine gratuit'
-                ],
+                features: ['4 GB RAM', '10 GB SSD', '400% CPU', '10 DB', '10 backups', '📅 7 jours', 'Support VIP 24/7', 'Domaine gratuit'],
                 icon: 'fa-crown',
-                color: 'purple'
+                color: 'purple',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
             },
             '8gb': {
                 name: 'Business',
@@ -2392,71 +2432,29 @@
                 cpu: 800,
                 price_weekly: 1700,
                 price_monthly: 5500,
-                coins_needed: 340,
+                coins_needed_weekly: 340,
                 duration_days: 7,
-                features: [
-                    '8 GB RAM', 
-                    '20 GB SSD',
-                    '800% CPU', 
-                    '15 DB', 
-                    '15 backups',
-                    '📅 7 jours',
-                    'Support VIP 24/7',
-                    'Domaine gratuit',
-                    'SSL dédié'
-                ],
+                features: ['8 GB RAM', '20 GB SSD', '800% CPU', '15 DB', '15 backups', '📅 7 jours', 'Support VIP 24/7', 'Domaine gratuit', 'SSL dédié'],
                 icon: 'fa-star',
-                color: 'gold'
+                color: 'gold',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
             }
         };
 
         const COIN_PACKS = {
-            'small': {
-                name: 'Pack Découverte',
-                coins: 100,
-                price: 500,
-                bonus: 0,
-                icon: 'fa-seedling'
-            },
-            'medium': {
-                name: 'Pack Populaire',
-                coins: 300,
-                price: 1000,
-                bonus: 20,
-                icon: 'fa-fire',
-                popular: true
-            },
-            'large': {
-                name: 'Pack Performance',
-                coins: 700,
-                price: 2000,
-                bonus: 50,
-                icon: 'fa-bolt'
-            },
-            'xlarge': {
-                name: 'Pack Ultimate',
-                coins: 2000,
-                price: 5000,
-                bonus: 200,
-                icon: 'fa-gem'
-            }
+            'small': { name: 'Pack Découverte', coins: 100, price: 500, bonus: 0, icon: 'fa-seedling' },
+            'medium': { name: 'Pack Populaire', coins: 300, price: 1000, bonus: 20, icon: 'fa-fire', popular: true },
+            'large': { name: 'Pack Performance', coins: 700, price: 2000, bonus: 50, icon: 'fa-bolt' },
+            'xlarge': { name: 'Pack Ultimate', coins: 2000, price: 5000, bonus: 200, icon: 'fa-gem' }
         };
 
-        // ===== TAUX DE CONVERSION =====
-        const EXCHANGE_RATES = {
-            'EUR': 655.96,
-            'USD': 615.00,
-            'GBP': 780.00,
-            'CAD': 450.00,
-            'XAF': 1.00
-        };
+        const EXCHANGE_RATES = { 'EUR': 655.96, 'USD': 615.00, 'GBP': 780.00, 'CAD': 450.00, 'XAF': 1.00 };
 
         function getCurrencySymbol(code) {
             const symbols = { 'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 'XAF': 'FCFA' };
             return symbols[code] || code;
         }
 
-        // ===== VARIABLES GLOBALES =====
         let selectedPlan = null;
         let selectedMethod = 'MTN';
         let userCoins = 0;
@@ -2472,6 +2470,7 @@
             Object.entries(PLANS).forEach(([key, plan]) => {
                 const price = isYearly ? plan.price_monthly : plan.price_weekly;
                 const pricePeriod = isYearly ? '/mois' : '/7 jours';
+                const coinsNeeded = plan.getCoinsNeeded(isYearly);
                 
                 const popularClass = plan.popular ? 'popular' : '';
                 const btnClass = plan.popular ? 'popular-btn' : '';
@@ -2494,7 +2493,7 @@
                             </div>
                             <div class="price-coins">
                                 <i class="fas fa-coins"></i>
-                                ${plan.coins_needed} coins
+                                ${coinsNeeded} coins
                             </div>
                             ${durationBadge}
                         </div>
@@ -2544,29 +2543,19 @@
             displayPlans();
         }
 
-        // ===== TOAST NOTIFICATION =====
+        // ===== TOAST =====
         function showToast(type, message) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
-
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
         // ===== CHECK AUTH =====
         function checkAuth() {
             if (token) {
-                fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
+                fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -2576,19 +2565,20 @@
                         document.getElementById('sidebarUserName').textContent = data.user.username;
                         document.getElementById('sidebarUserEmail').textContent = data.user.email;
                         document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                        document.getElementById('sidebarCoins').textContent = data.user.coins;
+                        document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
                         
-                        document.getElementById('navHome').style.display = 'none';
                         document.getElementById('navDashboard').style.display = 'block';
                         document.getElementById('navProfile').style.display = 'block';
+                        document.getElementById('navHome').style.display = 'none';
                         document.getElementById('navLogin').style.display = 'none';
                         document.getElementById('navRegister').style.display = 'none';
-                        document.getElementById('logoutDivider').style.display = 'block';
                         document.getElementById('navLogout').style.display = 'block';
                         
                         document.getElementById('balanceCard').style.display = 'block';
                         document.getElementById('userBalance').textContent = userCoins;
                         
+                        AvatarManager.applyToPage(data.user.username);
                         setupUsernameValidation();
                         setupPaypalUsernameValidation();
                     }
@@ -2606,14 +2596,15 @@
             document.getElementById('sidebarUserName').textContent = 'Invité';
             document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
             document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+            document.getElementById('sidebarCoins').textContent = '0';
+            document.getElementById('sidebarServers').textContent = '0';
             document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
             
-            document.getElementById('navHome').style.display = 'block';
             document.getElementById('navDashboard').style.display = 'none';
             document.getElementById('navProfile').style.display = 'none';
+            document.getElementById('navHome').style.display = 'block';
             document.getElementById('navLogin').style.display = 'block';
             document.getElementById('navRegister').style.display = 'block';
-            document.getElementById('logoutDivider').style.display = 'none';
             document.getElementById('navLogout').style.display = 'none';
         }
 
@@ -2644,27 +2635,16 @@
             const input = event.target;
             const username = input.value;
             const warning = document.getElementById('usernameWarning');
-            
             if (!warning) return;
-            if (username.length < 3) {
-                warning.style.display = 'none';
-                input.setAttribute('data-valid', 'false');
-                return;
-            }
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid', 'false'); return; }
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                warning.style.display = 'flex';
-                warning.className = 'username-warning error';
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
                 warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
-                input.setAttribute('data-valid', 'false');
-                return;
+                input.setAttribute('data-valid', 'false'); return;
             }
-            
-            warning.style.display = 'flex';
-            warning.className = 'username-warning info';
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
             warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
-            
             const result = await checkPterodactylUsername(username);
-            
             if (result.available) {
                 warning.className = 'username-warning success';
                 warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
@@ -2680,27 +2660,16 @@
             const input = event.target;
             const username = input.value;
             const warning = document.getElementById('paypalUsernameWarning');
-            
             if (!warning) return;
-            if (username.length < 3) {
-                warning.style.display = 'none';
-                input.setAttribute('data-valid-paypal', 'false');
-                return;
-            }
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid-paypal', 'false'); return; }
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                warning.style.display = 'flex';
-                warning.className = 'username-warning error';
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
                 warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
-                input.setAttribute('data-valid-paypal', 'false');
-                return;
+                input.setAttribute('data-valid-paypal', 'false'); return;
             }
-            
-            warning.style.display = 'flex';
-            warning.className = 'username-warning info';
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
             warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
-            
             const result = await checkPterodactylUsername(username);
-            
             if (result.available) {
                 warning.className = 'username-warning success';
                 warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
@@ -2716,27 +2685,16 @@
             const input = event.target;
             const username = input.value;
             const warning = document.getElementById('mobileUsernameWarning');
-            
             if (!warning) return;
-            if (username.length < 3) {
-                warning.style.display = 'none';
-                input.setAttribute('data-valid', 'false');
-                return;
-            }
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid', 'false'); return; }
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                warning.style.display = 'flex';
-                warning.className = 'username-warning error';
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
                 warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
-                input.setAttribute('data-valid', 'false');
-                return;
+                input.setAttribute('data-valid', 'false'); return;
             }
-            
-            warning.style.display = 'flex';
-            warning.className = 'username-warning info';
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
             warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
-            
             const result = await checkPterodactylUsername(username);
-            
             if (result.available) {
                 warning.className = 'username-warning success';
                 warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
@@ -2751,21 +2709,13 @@
         function setupUsernameValidation() {
             const usernameInput = document.getElementById('serverUsernameInput');
             const mobileUsernameInput = document.getElementById('mobileServerUsername');
-            
-            if (usernameInput) {
-                usernameInput.addEventListener('input', debounce(validateUsernameField, 500));
-            }
-            if (mobileUsernameInput) {
-                mobileUsernameInput.addEventListener('input', debounce(validateMobileUsernameField, 500));
-            }
+            if (usernameInput) usernameInput.addEventListener('input', debounce(validateUsernameField, 500));
+            if (mobileUsernameInput) mobileUsernameInput.addEventListener('input', debounce(validateMobileUsernameField, 500));
         }
 
         function setupPaypalUsernameValidation() {
             const usernameInput = document.getElementById('paypalServerUsername');
-            
-            if (usernameInput) {
-                usernameInput.addEventListener('input', debounce(validatePaypalUsernameField, 500));
-            }
+            if (usernameInput) usernameInput.addEventListener('input', debounce(validatePaypalUsernameField, 500));
         }
 
         // ===== PLAN SELECTION =====
@@ -2775,28 +2725,25 @@
                 else window.location.href = '/dashboard?create=free';
                 return;
             }
-
-            if (!token) {
-                window.location.href = `/login?redirect=pricing&plan=${planKey}`;
-                return;
-            }
+            if (!token) { window.location.href = `/login?redirect=pricing&plan=${planKey}`; return; }
 
             selectedPlan = PLANS[planKey];
             selectedPlan.key = planKey;
             currentPriceFcfa = isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly;
+            const coinsNeeded = selectedPlan.getCoinsNeeded(isYearly);
             
             document.getElementById('choicePlanName').textContent = selectedPlan.name;
             document.getElementById('choicePlanPrice').textContent = currentPriceFcfa + ' FCFA';
-            document.getElementById('choicePlanCoins').textContent = selectedPlan.coins_needed + ' coins';
-            document.getElementById('choicePlanDuration').textContent = selectedPlan.duration_days + ' jours';
+            document.getElementById('choicePlanCoins').textContent = coinsNeeded + ' coins';
+            document.getElementById('choicePlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
             document.getElementById('choiceUserBalance').textContent = userCoins + ' coins';
             
             const difference = document.getElementById('choiceDifference');
             const missingCoins = document.getElementById('choiceMissingCoins');
             
-            if (userCoins < selectedPlan.coins_needed) {
+            if (userCoins < coinsNeeded) {
                 difference.style.display = 'flex';
-                missingCoins.textContent = (selectedPlan.coins_needed - userCoins) + ' coins';
+                missingCoins.textContent = (coinsNeeded - userCoins) + ' coins';
                 missingCoins.className = 'modal-info-value warning';
                 document.getElementById('payWithCoins').classList.remove('active');
                 paymentMethod = 'mobile';
@@ -2817,13 +2764,10 @@
         // ===== PAYMENT METHODS =====
         function selectPaymentMethod(method) {
             paymentMethod = method;
-            
             document.getElementById('payWithCoins').classList.toggle('active', method === 'coins');
             document.getElementById('payWithMobile').classList.toggle('active', method === 'mobile');
             document.getElementById('payWithPaypal').classList.toggle('active', method === 'paypal');
-            
-            const mobileInfo = document.getElementById('mobilePaymentInfo');
-            mobileInfo.style.display = method === 'mobile' ? 'block' : 'none';
+            document.getElementById('mobilePaymentInfo').style.display = method === 'mobile' ? 'block' : 'none';
         }
 
         function selectModalMethod(method) {
@@ -2839,30 +2783,29 @@
         }
 
         function proceedWithPayment() {
+            const coinsNeeded = selectedPlan.getCoinsNeeded(isYearly);
+            
             if (paymentMethod === 'coins') {
-                if (userCoins < selectedPlan.coins_needed) {
-                    showBuyCoinsModal(selectedPlan.coins_needed - userCoins);
+                if (userCoins < coinsNeeded) {
+                    showBuyCoinsModal(coinsNeeded - userCoins);
                     closeModal('paymentChoiceModal');
                 } else {
                     document.getElementById('confirmPlanName').textContent = selectedPlan.name;
-                    document.getElementById('confirmCoinsNeeded').textContent = selectedPlan.coins_needed + ' coins';
-                    document.getElementById('confirmDuration').textContent = selectedPlan.duration_days + ' jours';
+                    document.getElementById('confirmCoinsNeeded').textContent = coinsNeeded + ' coins';
+                    document.getElementById('confirmDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
                     document.getElementById('confirmUserBalance').textContent = userCoins + ' coins';
-                    document.getElementById('confirmNewBalance').textContent = (userCoins - selectedPlan.coins_needed) + ' coins';
+                    document.getElementById('confirmNewBalance').textContent = (userCoins - coinsNeeded) + ' coins';
                     
                     closeModal('paymentChoiceModal');
                     openModal('coinsConfirmModal');
                 }
             } else if (paymentMethod === 'mobile') {
                 const phone = document.getElementById('modalPhone').value;
-                if (!phone || phone.length !== 9) {
-                    showToast('error', 'Numéro de téléphone invalide');
-                    return;
-                }
+                if (!phone || phone.length !== 9) { showToast('error', 'Numéro de téléphone invalide'); return; }
                 
                 document.getElementById('mobilePlanName').textContent = selectedPlan.name;
                 document.getElementById('mobilePlanPrice').textContent = currentPriceFcfa + ' FCFA';
-                document.getElementById('mobilePlanDuration').textContent = selectedPlan.duration_days + ' jours';
+                document.getElementById('mobilePlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
                 document.getElementById('mobilePhone').value = phone;
                 
                 closeModal('paymentChoiceModal');
@@ -2870,12 +2813,11 @@
             } else if (paymentMethod === 'paypal') {
                 document.getElementById('paypalPlanName').textContent = selectedPlan.name;
                 document.getElementById('paypalPlanPrice').textContent = currentPriceFcfa + ' FCFA';
-                document.getElementById('paypalPlanDuration').textContent = selectedPlan.duration_days + ' jours';
+                document.getElementById('paypalPlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
                 
                 closeModal('paymentChoiceModal');
                 openModal('paypalPaymentModal');
                 
-                // Réinitialiser les champs
                 document.getElementById('paypalEmail').value = userData?.email || '';
                 document.getElementById('paypalName').value = '';
                 document.getElementById('paypalCurrency').value = 'EUR';
@@ -2884,7 +2826,6 @@
                 updateConvertedPrice();
                 checkPaypalFormValidity();
                 
-                // Ajouter les listeners
                 document.getElementById('paypalEmail').addEventListener('input', checkPaypalFormValidity);
                 document.getElementById('paypalName').addEventListener('input', checkPaypalFormValidity);
                 document.getElementById('paypalCurrency').addEventListener('change', updateConvertedPrice);
@@ -2928,26 +2869,10 @@
             const serverUsername = document.getElementById('paypalServerUsername').value;
             const usernameValid = document.getElementById('paypalServerUsername').getAttribute('data-valid-paypal') === 'true';
             
-            // 🔧 VALIDATIONS FINALES
-            if (!serverName || serverName.length < 3 || serverName.length > 30) {
-                showToast('error', 'Nom de serveur invalide (3-30 caractères)');
-                return;
-            }
-            
-            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
-                showToast('error', "Nom d'utilisateur invalide (3-20 caractères)");
-                return;
-            }
-            
-            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
-                showToast('error', "Lettres, chiffres et _ uniquement");
-                return;
-            }
-            
-            if (!usernameValid) {
-                showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur');
-                return;
-            }
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide (3-30 caractères)'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide (3-20 caractères)"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
             
             const payButton = document.getElementById('paypalPayButton');
             payButton.disabled = true;
@@ -2956,13 +2881,11 @@
             try {
                 const response = await fetch('/api/payment/paypal', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         type: 'server',
                         plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
                         server_name: serverName,
                         server_username: serverUsername,
                         paypal_email: email,
@@ -2974,18 +2897,12 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Ouvrir le lien PayPal dans un nouvel onglet
                     const paypalWindow = window.open(data.paypal_link, '_blank');
-                    if (paypalWindow) {
-                        showToast('success', 'Redirection vers PayPal en cours...');
-                    } else {
-                        showToast('info', `Cliquez ici si la redirection ne fonctionne pas: ${data.paypal_link}`);
-                        window.location.href = data.paypal_link;
-                    }
+                    if (paypalWindow) showToast('success', 'Redirection vers PayPal en cours...');
+                    else { showToast('info', `Cliquez ici si la redirection ne fonctionne pas: ${data.paypal_link}`); window.location.href = data.paypal_link; }
                     closeModal('paypalPaymentModal');
                     showToast('success', 'Demande PayPal créée ! Attendez la confirmation admin.');
                     
-                    // Réinitialiser les champs
                     document.getElementById('paypalEmail').value = '';
                     document.getElementById('paypalName').value = '';
                     document.getElementById('paypalServerName').value = '';
@@ -3002,17 +2919,8 @@
             }
         }
 
-        function switchToMobilePayment() {
-            closeModal('buyCoinsModal');
-            selectPaymentMethod('mobile');
-            openModal('paymentChoiceModal');
-        }
-
-        function switchToPaypalPayment() {
-            closeModal('buyCoinsModal');
-            selectPaymentMethod('paypal');
-            openModal('paymentChoiceModal');
-        }
+        function switchToMobilePayment() { closeModal('buyCoinsModal'); selectPaymentMethod('mobile'); openModal('paymentChoiceModal'); }
+        function switchToPaypalPayment() { closeModal('buyCoinsModal'); selectPaymentMethod('paypal'); openModal('paymentChoiceModal'); }
 
         function showBuyCoinsModal(missingCoins) {
             document.getElementById('missingCoinsAmount').textContent = missingCoins + ' coins';
@@ -3025,22 +2933,10 @@
             const serverUsername = document.getElementById('serverUsernameInput').value;
             const usernameValid = document.getElementById('serverUsernameInput').getAttribute('data-valid') === 'true';
             
-            if (!serverName || serverName.length < 3 || serverName.length > 30) {
-                showToast('error', 'Nom de serveur invalide');
-                return;
-            }
-            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
-                showToast('error', "Nom d'utilisateur invalide");
-                return;
-            }
-            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
-                showToast('error', "Lettres, chiffres et _ uniquement");
-                return;
-            }
-            if (!usernameValid) {
-                showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur');
-                return;
-            }
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
 
             const confirmBtn = document.getElementById('confirmCoinBtn');
             confirmBtn.disabled = true;
@@ -3049,12 +2945,10 @@
             try {
                 const response = await fetch('/api/create-server', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
                         server_name: serverName,
                         server_username: serverUsername,
                         payment_method: 'coins'
@@ -3092,26 +2986,11 @@
             const serverUsername = document.getElementById('mobileServerUsername').value;
             const usernameValid = document.getElementById('mobileServerUsername').getAttribute('data-valid') === 'true';
             
-            if (!phone || phone.length !== 9) {
-                showToast('error', 'Numéro invalide');
-                return;
-            }
-            if (!serverName || serverName.length < 3 || serverName.length > 30) {
-                showToast('error', 'Nom de serveur invalide');
-                return;
-            }
-            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) {
-                showToast('error', "Nom d'utilisateur invalide");
-                return;
-            }
-            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) {
-                showToast('error', "Lettres, chiffres et _ uniquement");
-                return;
-            }
-            if (!usernameValid) {
-                showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur');
-                return;
-            }
+            if (!phone || phone.length !== 9) { showToast('error', 'Numéro invalide'); return; }
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
 
             const payButton = document.getElementById('mobilePayButton');
             payButton.disabled = true;
@@ -3120,12 +2999,10 @@
             try {
                 const response = await fetch('/api/payment/direct-server', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
                         phone: phone,
                         medium: selectedMethod,
                         server_name: serverName,
@@ -3144,7 +3021,8 @@
                         transactionId: data.transaction_id,
                         serverName: serverName,
                         serverUsername: serverUsername,
-                        planKey: selectedPlan.key
+                        planKey: selectedPlan.key,
+                        isYearly: isYearly
                     }));
                     
                     setTimeout(() => checkPaymentStatus(data.transId), 5000);
@@ -3169,12 +3047,10 @@
                     if (pending) {
                         const createResponse = await fetch('/api/create-server', {
                             method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 plan_id: pending.planKey,
+                                is_monthly: pending.isYearly,
                                 server_name: pending.serverName,
                                 server_username: pending.serverUsername,
                                 transaction_id: pending.transactionId,
@@ -3209,86 +3085,43 @@
         function showSuccessModal(serverData) {
             const credentialsBox = document.getElementById('credentialsBox');
             credentialsBox.innerHTML = `
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-server"></i> Serveur</span>
-                    <span class="credential-value">${serverData.server_name}</span>
-                </div>
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-user"></i> Utilisateur</span>
-                    <span class="credential-value">${serverData.username}</span>
-                    <button class="copy-btn" onclick="copyToClipboard('${serverData.username}')"><i class="fas fa-copy"></i></button>
-                </div>
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-lock"></i> Mot de passe</span>
-                    <span class="credential-value">${serverData.password}</span>
-                    <button class="copy-btn" onclick="copyToClipboard('${serverData.password}')"><i class="fas fa-copy"></i></button>
-                </div>
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-globe"></i> Panel</span>
-                    <span class="credential-value">${serverData.panel_url}</span>
-                    <button class="copy-btn" onclick="copyToClipboard('${serverData.panel_url}')"><i class="fas fa-copy"></i></button>
-                </div>
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-id"></i> ID</span>
-                    <span class="credential-value">${serverData.identifier}</span>
-                </div>
-                <div class="credential-item">
-                    <span class="credential-label"><i class="fas fa-calendar"></i> Expire le</span>
-                    <span class="credential-value">${new Date(serverData.expires_at).toLocaleDateString('fr-FR')}</span>
-                </div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-server"></i> Serveur</span><span class="credential-value">${serverData.server_name}</span></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i> Utilisateur</span><span class="credential-value">${serverData.username}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.username}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i> Mot de passe</span><span class="credential-value">${serverData.password}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.password}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i> Panel</span><span class="credential-value">${serverData.panel_url}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.panel_url}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-id"></i> ID</span><span class="credential-value">${serverData.identifier}</span></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-calendar"></i> Expire le</span><span class="credential-value">${new Date(serverData.expires_at).toLocaleDateString('fr-FR')}</span></div>
             `;
             document.getElementById('successModal').classList.add('active');
         }
 
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.remove('active');
-        }
+        function closeSuccessModal() { document.getElementById('successModal').classList.remove('active'); }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            showToast('success', 'Copié !');
-        }
+        function copyToClipboard(text) { navigator.clipboard.writeText(text); showToast('success', 'Copié !'); }
 
         // ===== MODAL FUNCTIONS =====
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
         // ===== LOGOUT =====
         document.getElementById('logoutLink')?.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            AvatarManager.reset();
             window.location.reload();
-        });
-
-        document.getElementById('loginLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/login';
-        });
-
-        document.getElementById('registerLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/register';
         });
 
         // ===== INIT =====
         displayPlans();
         displayCoinPacks();
         checkAuth();
+        setupAvatarClickRedirect();
 
         const urlParams = new URLSearchParams(window.location.search);
         const planParam = urlParams.get('plan');
-        if (planParam && token) {
-            selectPlan(planParam);
-        }
+        if (planParam && token) selectPlan(planParam);
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) closeSidebarFunc();
-        });
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
 
         window.addEventListener('load', () => {
             document.querySelectorAll('.pricing-card, .coin-pack').forEach((el, index) => {
