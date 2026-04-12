@@ -7,7 +7,7 @@
     <meta name="description" content="Support et FAQ - KermHosting">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -105,7 +105,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR OPTIMISÉE ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -193,6 +193,12 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-user:hover {
+            background: var(--bg-hover);
         }
 
         .user-avatar {
@@ -205,6 +211,13 @@
             justify-content: center;
             font-size: 2rem;
             color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -324,7 +337,7 @@
             min-width: 0;
         }
 
-        /* ===== TOP BAR OPTIMISÉE ===== */
+        /* ===== TOP BAR ===== */
         .top-bar {
             position: sticky;
             top: 0;
@@ -414,6 +427,8 @@
 
         .user-menu {
             cursor: pointer;
+            text-decoration: none;
+            display: block;
         }
 
         .user-avatar-small {
@@ -424,7 +439,7 @@
             object-fit: cover;
         }
 
-        /* ===== PAGE CONTENT OPTIMISÉE ===== */
+        /* ===== PAGE CONTENT ===== */
         .page-content {
             padding: 16px;
             max-width: 1200px;
@@ -1160,7 +1175,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar (version adaptative) -->
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1173,7 +1188,7 @@
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar">
+                <div class="user-avatar" id="sidebarAvatar">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="user-info">
@@ -1184,12 +1199,11 @@
             </div>
             
             <nav class="sidebar-nav">
-                <ul id="sidebarMenu">
-                    <!-- Accueil visible seulement pour non-connectés (géré par JS) -->
-                    <li class="home-link">
-                        <a href="/">
-                            <i class="fas fa-home"></i>
-                            <span>Accueil</span>
+                <ul>
+                    <li id="navDashboard" style="display: none;">
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
                         </a>
                     </li>
                     <li>
@@ -1204,50 +1218,51 @@
                             <span>Acheter des coins</span>
                         </a>
                     </li>
-                    <li class="dashboard-link" style="display: none;">
-                        <a href="/dashboard" id="navDashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li class="profile-link" style="display: none;">
-                        <a href="/profile" id="navProfile">
+                    <li id="navProfile" style="display: none;">
+                        <a href="/profile">
                             <i class="fas fa-user"></i>
                             <span>Profil</span>
                         </a>
+                    </li>
+                    <li>
                         <a href="/transactions">
                             <i class="fas fa-history"></i>
                             <span>Transactions</span>
                         </a>
                     </li>
                     <li>
-                       <a href="/bot">
-                           <i class="fab fa-whatsapp"></i>
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
                             <span>KERM MD V1</span>
-                       </a>
-                     </li>
+                        </a>
+                    </li>
                     <li class="active">
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
                         </a>
                     </li>
+                    <li id="navHome" style="display: block;">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
                     <li class="divider"></li>
-                    <li class="login-link">
-                        <a href="#" id="navLogin">
+                    <li id="navLogin" style="display: block;">
+                        <a href="/login">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Connexion</span>
                         </a>
                     </li>
-                    <li class="register-link">
-                        <a href="#" id="navRegister">
+                    <li id="navRegister" style="display: block;">
+                        <a href="/register">
                             <i class="fas fa-user-plus"></i>
                             <span>Inscription</span>
                         </a>
                     </li>
-                    <li class="divider logout-divider" style="display: none;"></li>
-                    <li class="logout-link" style="display: none;">
-                        <a href="#" id="navLogout">
+                    <li id="navLogout" style="display: none;">
+                        <a href="#" id="logoutLink">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Déconnexion</span>
                         </a>
@@ -1258,12 +1273,12 @@
             <div class="sidebar-footer">
                 <div class="sidebar-stats">
                     <div class="stat">
-                        <span class="stat-value">24/7</span>
-                        <span class="stat-label">Support</span>
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-value">≤ 1h</span>
-                        <span class="stat-label">Réponse</span>
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
                     </div>
                 </div>
             </div>
@@ -1281,9 +1296,9 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
-                    <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
-                    </div>
+                    </a>
                 </div>
             </header>
 
@@ -1326,7 +1341,7 @@
                         <div class="contact-note">Réponse sous 24h</div>
                     </a>
 
-                    <a href="https://wa.me/237659535227?text=Salut+Kerm+j+'+ai+soucis+avec+mon+compte+KermHosting" class="contact-card" target="_blank">
+                    <a href="https://wa.me/237659535227?text=Salut+Kerm+j'+ai+soucis+avec+mon+compte+KermHosting" class="contact-card" target="_blank">
                         <div class="contact-icon">
                             <i class="fab fa-whatsapp"></i>
                         </div>
@@ -1354,7 +1369,7 @@
                     </a>
                 </div>
 
-                <!-- Ticket Section (NOUVEAU DESIGN) -->
+                <!-- Ticket Section -->
                 <div class="ticket-section">
                     <div class="ticket-header">
                         <div class="ticket-header-icon">
@@ -1470,7 +1485,6 @@
                     <h2 class="section-title">Questions <span class="gradient-text">fréquentes</span></h2>
                     
                     <div class="faq-grid" id="faqList">
-                        <!-- Général -->
                         <div class="faq-item" data-category="general">
                             <button class="faq-question">
                                 <span><i class="fas fa-question-circle" style="color: var(--primary); margin-right: 8px;"></i>Qu'est-ce que KermHosting ?</span>
@@ -1491,7 +1505,6 @@
                             </div>
                         </div>
 
-                        <!-- Paiements -->
                         <div class="faq-item" data-category="payment">
                             <button class="faq-question">
                                 <span><i class="fas fa-credit-card" style="color: var(--primary); margin-right: 8px;"></i>Comment payer en FCFA ?</span>
@@ -1502,7 +1515,6 @@
                             </div>
                         </div>
 
-                        <!-- Serveurs -->
                         <div class="faq-item" data-category="server">
                             <button class="faq-question">
                                 <span><i class="fas fa-server" style="color: var(--primary); margin-right: 8px;"></i>Comment créer un serveur ?</span>
@@ -1560,6 +1572,61 @@
     </div>
 
     <script>
+        // ===== AVATAR MANAGER =====
+        const AvatarManager = {
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {}
+            },
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                if (username) localStorage.setItem('username', username);
+            }
+        };
+
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
+        }
+
         const token = localStorage.getItem('token');
 
         // ===== SIDEBAR FUNCTIONS =====
@@ -1593,46 +1660,50 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // Mettre à jour la sidebar
                         document.getElementById('sidebarUserName').textContent = data.user.username;
                         document.getElementById('sidebarUserEmail').textContent = data.user.email;
                         document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                        document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
+                        document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
                         
-                        // Cacher les liens pour non-connectés
-                        document.querySelector('.home-link').style.display = 'none';
-                        document.querySelector('.login-link').style.display = 'none';
-                        document.querySelector('.register-link').style.display = 'none';
+                        document.getElementById('navDashboard').style.display = 'block';
+                        document.getElementById('navProfile').style.display = 'block';
+                        document.getElementById('navHome').style.display = 'none';
+                        document.getElementById('navLogin').style.display = 'none';
+                        document.getElementById('navRegister').style.display = 'none';
+                        document.getElementById('navLogout').style.display = 'block';
                         
-                        // Afficher les liens pour connectés
-                        document.querySelector('.dashboard-link').style.display = 'block';
-                        document.querySelector('.profile-link').style.display = 'block';
-                        document.querySelector('.logout-divider').style.display = 'block';
-                        document.querySelector('.logout-link').style.display = 'block';
-                        
-                        // Afficher admin si rôle admin
-                        if (data.user.role === 'admin' || data.user.role === 'superadmin') {
-                            document.querySelector('.admin-link').style.display = 'block';
-                        }
-
-                        // Charger les serveurs pour le ticket
+                        AvatarManager.applyToPage(data.user.username);
                         loadUserServers();
+                        
+                        // Pré-remplir le formulaire de ticket
+                        document.getElementById('ticketName').value = data.user.username || '';
+                        document.getElementById('ticketEmail').value = data.user.email || '';
                     }
                 })
                 .catch(() => {
                     localStorage.removeItem('token');
+                    showNotConnected();
                 });
             } else {
-                // Mode non-connecté
-                document.querySelector('.home-link').style.display = 'block';
-                document.querySelector('.login-link').style.display = 'block';
-                document.querySelector('.register-link').style.display = 'block';
-                document.querySelector('.dashboard-link').style.display = 'none';
-                document.querySelector('.profile-link').style.display = 'none';
-                document.querySelector('.admin-link').style.display = 'none';
-                document.querySelector('.logout-divider').style.display = 'none';
-                document.querySelector('.logout-link').style.display = 'none';
+                showNotConnected();
             }
+        }
+
+        function showNotConnected() {
+            document.getElementById('sidebarUserName').textContent = 'Invité';
+            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+            document.getElementById('sidebarCoins').textContent = '0';
+            document.getElementById('sidebarServers').textContent = '0';
+            document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+            
+            document.getElementById('navDashboard').style.display = 'none';
+            document.getElementById('navProfile').style.display = 'none';
+            document.getElementById('navHome').style.display = 'block';
+            document.getElementById('navLogin').style.display = 'block';
+            document.getElementById('navRegister').style.display = 'block';
+            document.getElementById('navLogout').style.display = 'none';
         }
 
         // ===== LOAD USER SERVERS FOR TICKET =====
@@ -1704,15 +1775,6 @@
             document.getElementById('searchInput').value = '';
         }
 
-        // ===== MODAL FUNCTIONS =====
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
         // ===== TICKET FUNCTIONS =====
         function openTicketModal() {
             openModal('ticketModal');
@@ -1729,15 +1791,19 @@
                 return;
             }
             
-            // Simulation d'envoi
             showToast('success', 'Ticket envoyé avec succès !');
-            closeModal('ticketModal');
             
-            // Réinitialiser
-            document.getElementById('ticketName').value = '';
-            document.getElementById('ticketEmail').value = '';
             document.getElementById('ticketSubject').value = '';
             document.getElementById('ticketDescription').value = '';
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
 
         // ===== TOAST =====
@@ -1748,9 +1814,7 @@
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                 <span>${message}</span>
             `;
-
             document.body.appendChild(toast);
-
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
@@ -1758,21 +1822,11 @@
         }
 
         // ===== LOGOUT =====
-        document.getElementById('navLogout')?.addEventListener('click', (e) => {
+        document.getElementById('logoutLink')?.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            AvatarManager.reset();
             window.location.reload();
-        });
-
-        // ===== NAVIGATION =====
-        document.getElementById('navLogin')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/login';
-        });
-
-        document.getElementById('navRegister')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/register';
         });
 
         // ===== RESPONSIVE =====
@@ -1784,6 +1838,7 @@
 
         // ===== INIT =====
         checkAuth();
+        setupAvatarClickRedirect();
 
         // Exposer les fonctions globalement
         window.searchFAQ = searchFAQ;
