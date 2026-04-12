@@ -4720,6 +4720,17 @@ app.get('/api/connection-history', authenticateToken, async (req, res) => {
     }
 });
 
+// POST /api/user/logout-all
+app.post('/api/user/logout-all', authenticateToken, async (req, res) => {
+    try {
+        const newApiKey = 'KERM_' + require('crypto').randomBytes(32).toString('hex');
+        await pool.query('UPDATE profiles SET api_key = $1 WHERE id = $2', [newApiKey, req.user.id]);
+        res.json({ success: true, message: 'Toutes les sessions déconnectées' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
 // ===== GET /api/user/export - Exporter toutes les données =====
 app.get('/api/user/export', authenticateToken, async (req, res) => {
     try {
