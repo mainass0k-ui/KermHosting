@@ -680,15 +680,109 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .api-key-text {
             word-break: break-all;
+            flex: 1;
         }
 
         .api-key-actions {
             display: flex;
             gap: 8px;
+        }
+
+        /* ===== SOCIAL SHARE BUTTONS ===== */
+        .social-share-section {
+            margin-top: 20px;
+        }
+
+        .social-share-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-share-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .social-btn.whatsapp { background: #25D366; }
+        .social-btn.facebook { background: #1877F2; }
+        .social-btn.telegram { background: #0088cc; }
+        .social-btn.twitter { background: #000000; }
+        .social-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .social-btn.discord { background: #5865F2; }
+
+        /* ===== PAGINATION ===== */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 8px;
+            border-radius: var(--radius-md);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .pagination-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-ellipsis {
+            color: var(--text-secondary);
+            padding: 0 4px;
         }
 
         /* ===== BUTTONS ===== */
@@ -1125,7 +1219,6 @@
             
             <nav class="sidebar-nav">
                 <ul>
-                    <!-- ACCUEIL SUPPRIMÉ - Uniquement pour les non-connectés -->
                     <li>
                         <a href="/dashboard">
                             <i class="fas fa-tachometer-alt"></i>
@@ -1353,10 +1446,10 @@
                                     <div class="api-key-display">
                                         <span class="api-key-text" id="apiKey">****************************</span>
                                         <div class="api-key-actions">
-                                            <button class="copy-btn" onclick="toggleApiKey()" title="Afficher/Masquer">
+                                            <button class="edit-btn" onclick="toggleApiKey()" title="Afficher/Masquer">
                                                 <i class="fas fa-eye" id="apiKeyIcon"></i>
                                             </button>
-                                            <button class="copy-btn" onclick="copyApiKey()" title="Copier">
+                                            <button class="edit-btn" onclick="copyApiKey()" title="Copier">
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
@@ -1399,14 +1492,26 @@
                                 </h3>
                                 <div class="api-key-section">
                                     <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
-                                        20 coins par filleul !
+                                        10 coins par filleul !
                                     </p>
                                     <div class="api-key-display">
                                         <span class="api-key-text" id="referralLink">chargement...</span>
-                                        <button class="copy-btn" onclick="copyReferralLink()">
+                                        <button class="edit-btn" onclick="copyReferralLink()" title="Copier">
                                             <i class="fas fa-copy"></i>
                                         </button>
                                     </div>
+                                    
+                                    <!-- NOUVEAU : Boutons de partage social -->
+                                    <div class="social-share-section">
+                                        <div class="social-share-title">
+                                            <i class="fas fa-share-alt"></i>
+                                            Partager mon lien
+                                        </div>
+                                        <div class="social-share-buttons" id="socialShareButtons">
+                                            <!-- Rempli dynamiquement -->
+                                        </div>
+                                    </div>
+                                    
                                     <div class="info-grid" style="margin-top: 16px;">
                                         <div class="info-item">
                                             <span class="info-label">Personnes parrainées</span>
@@ -1431,6 +1536,8 @@
                                         <p>Chargement...</p>
                                     </div>
                                 </div>
+                                <!-- NOUVEAU : Pagination -->
+                                <div class="pagination" id="referralsPagination"></div>
                             </div>
                         </div>
 
@@ -1633,19 +1740,35 @@
             
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Recharger les transactions si l'onglet transactions est ouvert
+            if (tabId === 'transactions') {
+                displayTransactions();
+            }
+            
+            // Recharger les filleuls si l'onglet parrainage est ouvert
+            if (tabId === 'referrals') {
+                currentReferralPage = 1;
+                displayReferralsWithPagination();
+            }
         }
 
         // ===== API KEY =====
         let apiKeyVisible = false;
         let userData = null;
+        let userServers = [];
+        let userTransactions = [];
         let pendingNewEmail = null;
+        let allReferrals = [];
+        let currentReferralPage = 1;
+        const itemsPerPage = 10;
 
         function toggleApiKey() {
             const apiKeyElement = document.getElementById('apiKey');
             const icon = document.getElementById('apiKeyIcon');
             
             if (apiKeyVisible) {
-                apiKeyElement.textContent = '**********************';
+                apiKeyElement.textContent = '****************************';
                 icon.className = 'fas fa-eye';
             } else {
                 apiKeyElement.textContent = userData?.apiKey || 'N/A';
@@ -1681,7 +1804,8 @@
                     showToast('success', 'Clé API régénérée');
                     userData.apiKey = data.new_api_key;
                     apiKeyVisible = false;
-                    toggleApiKey();
+                    document.getElementById('apiKey').textContent = '****************************';
+                    document.getElementById('apiKeyIcon').className = 'fas fa-eye';
                 } else {
                     showToast('error', data.error || 'Erreur');
                 }
@@ -1968,7 +2092,9 @@
             displayBadges(userData.badges || []);
 
             // API Key
-            document.getElementById('apiKey').textContent = '*******************';
+            document.getElementById('apiKey').textContent = '****************************';
+            document.getElementById('apiKeyIcon').className = 'fas fa-eye';
+            apiKeyVisible = false;
 
             // Transactions
             displayTransactions();
@@ -2021,7 +2147,7 @@
             }
 
             let html = '';
-            userTransactions.slice(0, 5).forEach(transaction => {
+            userTransactions.slice(0, 10).forEach(transaction => {
                 const date = new Date(transaction.created_at);
                 const statusClass = transaction.status === 'completed' ? 'status-success' : 
                                   transaction.status === 'pending' ? 'status-pending' : 'status-failed';
@@ -2050,6 +2176,63 @@
             container.innerHTML = html;
         }
 
+        // ===== SOCIAL SHARE =====
+        let currentReferralLink = '';
+
+        function renderSocialShareButtons(referralLink) {
+            const container = document.getElementById('socialShareButtons');
+            const message = encodeURIComponent('Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀');
+            const encodedLink = encodeURIComponent(referralLink);
+            
+            const shareUrls = {
+                whatsapp: `https://wa.me/?text=${message}%20${encodedLink}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${message}`,
+                telegram: `https://t.me/share/url?url=${encodedLink}&text=${message}`,
+                twitter: `https://twitter.com/intent/tweet?text=${message}&url=${encodedLink}`,
+                instagram: `https://www.instagram.com/`, // Instagram ne permet pas le partage direct de liens
+                discord: `https://discord.com/channels/@me`
+            };
+            
+            container.innerHTML = `
+                <a href="${shareUrls.whatsapp}" target="_blank" class="social-btn whatsapp" onclick="shareSocial('whatsapp', '${referralLink}')">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="${shareUrls.facebook}" target="_blank" class="social-btn facebook" onclick="shareSocial('facebook', '${referralLink}')">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="${shareUrls.telegram}" target="_blank" class="social-btn telegram" onclick="shareSocial('telegram', '${referralLink}')">
+                    <i class="fab fa-telegram-plane"></i>
+                </a>
+                <a href="${shareUrls.twitter}" target="_blank" class="social-btn twitter" onclick="shareSocial('twitter', '${referralLink}')">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-btn instagram" onclick="copyForInstagram('${referralLink}'); return false;">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-btn discord" onclick="copyForDiscord('${referralLink}'); return false;">
+                    <i class="fab fa-discord"></i>
+                </a>
+            `;
+        }
+
+        function shareSocial(platform, link) {
+            // Le partage se fait via les liens href, cette fonction est pour le tracking éventuel
+            console.log(`Partage sur ${platform}: ${link}`);
+        }
+
+        function copyForInstagram(link) {
+            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀\n' + link;
+            navigator.clipboard.writeText(message);
+            showToast('success', 'Message copié ! Collez-le sur Instagram');
+        }
+
+        function copyForDiscord(link) {
+            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀\n' + link;
+            navigator.clipboard.writeText(message);
+            showToast('success', 'Message copié ! Collez-le sur Discord');
+        }
+
+        // ===== REFERRAL WITH PAGINATION =====
         async function loadReferralInfo() {
             try {
                 const res = await fetch('/api/referral/info', {
@@ -2059,21 +2242,29 @@
 
                 if (data.success) {
                     const link = `${window.location.origin}/register?ref=${data.referral_code}`;
+                    currentReferralLink = link;
                     document.getElementById('referralLink').textContent = link;
                     document.getElementById('referralCount').textContent = data.referral_count;
                     document.getElementById('referralCoins').textContent = data.total_coins_earned || 0;
 
-                    displayReferrals(data.referrals);
+                    allReferrals = data.referrals || [];
+                    
+                    // Afficher les boutons sociaux
+                    renderSocialShareButtons(link);
+                    
+                    // Afficher les filleuls avec pagination
+                    displayReferralsWithPagination();
                 }
             } catch (error) {
                 console.error('Erreur chargement parrainage:', error);
             }
         }
 
-        function displayReferrals(referrals) {
+        function displayReferralsWithPagination() {
             const container = document.getElementById('referralsList');
+            const paginationContainer = document.getElementById('referralsPagination');
 
-            if (!referrals || referrals.length === 0) {
+            if (!allReferrals || allReferrals.length === 0) {
                 container.innerHTML = `
                     <div class="transaction-item">
                         <div class="transaction-icon">
@@ -2085,11 +2276,19 @@
                         </div>
                     </div>
                 `;
+                paginationContainer.innerHTML = '';
                 return;
             }
 
+            // Calculer la pagination
+            const totalPages = Math.ceil(allReferrals.length / itemsPerPage);
+            const startIndex = (currentReferralPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, allReferrals.length);
+            const pageReferrals = allReferrals.slice(startIndex, endIndex);
+
+            // Afficher les éléments de la page courante
             let html = '';
-            referrals.forEach(ref => {
+            pageReferrals.forEach(ref => {
                 const date = new Date(ref.created_at);
                 html += `
                     <div class="transaction-item">
@@ -2105,6 +2304,52 @@
                 `;
             });
             container.innerHTML = html;
+
+            // Générer la pagination
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('referralsPagination');
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            // Bouton précédent
+            html += `<button class="pagination-btn" onclick="goToPage(${currentReferralPage - 1})" ${currentReferralPage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+
+            // Pages
+            for (let i = 1; i <= totalPages; i++) {
+                if (
+                    i === 1 || 
+                    i === totalPages || 
+                    (i >= currentReferralPage - 2 && i <= currentReferralPage + 2)
+                ) {
+                    html += `<button class="pagination-btn ${i === currentReferralPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentReferralPage - 3 || i === currentReferralPage + 3) {
+                    html += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+
+            // Bouton suivant
+            html += `<button class="pagination-btn" onclick="goToPage(${currentReferralPage + 1})" ${currentReferralPage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+
+            container.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(allReferrals.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentReferralPage = page;
+            displayReferralsWithPagination();
         }
 
         // ===== LOGOUT =====
@@ -2148,6 +2393,10 @@
         window.closeModal = closeModal;
         window.closeConfirmModal = closeConfirmModal;
         window.openModal = openModal;
+        window.goToPage = goToPage;
+        window.shareSocial = shareSocial;
+        window.copyForInstagram = copyForInstagram;
+        window.copyForDiscord = copyForDiscord;
     </script>
 </body>
 </html>
