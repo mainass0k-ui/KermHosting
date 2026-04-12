@@ -1601,7 +1601,7 @@
                     useCORS: true
                 });
                 const link = document.createElement('a');
-                link.download = `recu-${transaction.id.substring(0, 8)}.png`;
+                link.download = `recu-kermhosting-${transaction.id.substring(0, 8)}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 showToast('success', 'Reçu téléchargé avec succès');
