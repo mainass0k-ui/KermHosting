@@ -7,7 +7,7 @@
     <meta name="description" content="Votre profil KermHosting - Gérez vos informations personnelles">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -21,6 +21,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     
     <title>Profil - KermHosting</title>
     
@@ -104,7 +107,7 @@
             padding-bottom: var(--safe-area-inset-bottom);
         }
 
-        /* ===== SIDEBAR OPTIMISÉE ===== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             top: 0;
@@ -204,6 +207,13 @@
             justify-content: center;
             font-size: 2rem;
             color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -323,7 +333,7 @@
             min-width: 0;
         }
 
-        /* ===== TOP BAR OPTIMISÉE ===== */
+        /* ===== TOP BAR ===== */
         .top-bar {
             position: sticky;
             top: 0;
@@ -423,7 +433,7 @@
             object-fit: cover;
         }
 
-        /* ===== PAGE CONTENT OPTIMISÉE ===== */
+        /* ===== PAGE CONTENT ===== */
         .page-content {
             padding: 16px;
             max-width: 1000px;
@@ -547,6 +557,37 @@
             font-size: 2.5rem;
             color: var(--primary);
             border: 4px solid rgba(255,255,255,0.3);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .avatar-large:hover {
+            transform: scale(1.05);
+            border-color: white;
+        }
+
+        .avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-edit-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            border: 2px solid white;
         }
 
         .avatar-info h2 {
@@ -638,7 +679,7 @@
             color: white;
         }
 
-        /* ===== BADGES ===== */
+        /* ===== BADGES ANIMÉS ===== */
         .badges-grid {
             display: flex;
             flex-wrap: wrap;
@@ -654,10 +695,45 @@
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
+            transition: all 0.3s;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary);
         }
 
         .badge-item i {
             color: var(--warning);
+            transition: all 0.3s;
+        }
+
+        .badge-item:hover i {
+            animation: badgeShine 1s ease-in-out;
+        }
+
+        @keyframes badgeShine {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #FFD700; }
+        }
+
+        .badge-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .badge-item:hover::before {
+            left: 100%;
         }
 
         /* ===== API KEY SECTION ===== */
@@ -738,6 +814,79 @@
         .social-btn.twitter { background: #000000; }
         .social-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
         .social-btn.discord { background: #5865F2; }
+
+        /* ===== QR CODE ===== */
+        .qr-code-section {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .qr-code-container {
+            display: inline-block;
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            margin: 12px 0;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-code-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        /* ===== CONNECTION HISTORY ===== */
+        .connection-history {
+            margin-top: 20px;
+        }
+
+        .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .connection-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary-glow), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .connection-info {
+            flex: 1;
+        }
+
+        .connection-device {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .connection-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .connection-current {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success);
+        }
 
         /* ===== PAGINATION ===== */
         .pagination {
@@ -834,17 +983,6 @@
         .btn-small {
             padding: 8px 16px;
             font-size: 0.85rem;
-        }
-
-        .btn-danger-outline {
-            background: transparent;
-            border: 2px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .btn-danger-outline:hover {
-            background: var(--danger);
-            color: white;
         }
 
         /* ===== TABS ===== */
@@ -1082,6 +1220,55 @@
             font-size: 1.2rem;
         }
 
+        /* Avatar Upload Modal */
+        .avatar-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-full);
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .avatar-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .avatar-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 16px;
+        }
+
+        .avatar-upload-area:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .avatar-upload-area i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed;
@@ -1194,7 +1381,7 @@
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar (version connectée - SANS Accueil) -->
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -1207,7 +1394,7 @@
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar">
+                <div class="user-avatar" id="sidebarAvatar">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="user-info">
@@ -1342,8 +1529,11 @@
                 <div class="profile-card">
                     <div class="profile-header">
                         <div class="profile-avatar">
-                            <div class="avatar-large" id="profileAvatar">
+                            <div class="avatar-large" id="profileAvatar" onclick="openAvatarModal()">
                                 <i class="fas fa-user"></i>
+                                <span class="avatar-edit-overlay">
+                                    <i class="fas fa-camera"></i>
+                                </span>
                             </div>
                             <div class="avatar-info">
                                 <h2 id="profileName">Utilisateur</h2>
@@ -1366,6 +1556,8 @@
                             <div class="tab" onclick="switchTab('security')">Sécurité</div>
                             <div class="tab" onclick="switchTab('transactions')">Transactions</div>
                             <div class="tab" onclick="switchTab('referrals')">Parrainage</div>
+                            <div class="tab" onclick="switchTab('connections')">Connexions</div>
+                            <div class="tab" onclick="switchTab('export')">Export</div>
                             <div class="tab" onclick="switchTab('danger')">Zone dangereuse</div>
                         </div>
 
@@ -1424,10 +1616,7 @@
                                     Badges
                                 </h3>
                                 <div class="badges-grid" id="badgesContainer">
-                                    <div class="badge-item">
-                                        <i class="fas fa-certificate"></i>
-                                        Nouvel Arrivant
-                                    </div>
+                                    <!-- Rempli dynamiquement -->
                                 </div>
                             </div>
                         </div>
@@ -1492,7 +1681,7 @@
                                 </h3>
                                 <div class="api-key-section">
                                     <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
-                                        10 coins par filleul !
+                                        20 coins par filleul !
                                     </p>
                                     <div class="api-key-display">
                                         <span class="api-key-text" id="referralLink">chargement...</span>
@@ -1501,7 +1690,24 @@
                                         </button>
                                     </div>
                                     
-                                    <!-- NOUVEAU : Boutons de partage social -->
+                                    <!-- QR Code -->
+                                    <div class="qr-code-section">
+                                        <div class="social-share-title">
+                                            <i class="fas fa-qrcode"></i>
+                                            Scanner pour rejoindre
+                                        </div>
+                                        <div class="qr-code-container">
+                                            <div id="qrcode"></div>
+                                        </div>
+                                        <div class="qr-code-actions">
+                                            <button class="btn btn-outline btn-small" onclick="downloadQRCode()">
+                                                <i class="fas fa-download"></i>
+                                                Télécharger
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Boutons de partage social -->
                                     <div class="social-share-section">
                                         <div class="social-share-title">
                                             <i class="fas fa-share-alt"></i>
@@ -1536,8 +1742,43 @@
                                         <p>Chargement...</p>
                                     </div>
                                 </div>
-                                <!-- NOUVEAU : Pagination -->
                                 <div class="pagination" id="referralsPagination"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Connexions (Historique) -->
+                        <div class="tab-pane" id="tab-connections">
+                            <div class="profile-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-history"></i>
+                                    Historique de connexion
+                                </h3>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+                                    Vos 10 dernières connexions
+                                </p>
+                                <div id="connectionHistoryContainer">
+                                    <!-- Rempli dynamiquement -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Export -->
+                        <div class="tab-pane" id="tab-export">
+                            <div class="profile-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-download"></i>
+                                    Export de vos données
+                                </h3>
+                                <div class="api-key-section">
+                                    <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                                        Téléchargez toutes vos données personnelles au format JSON.
+                                        Conforme RGPD.
+                                    </p>
+                                    <button class="btn btn-primary" onclick="exportUserData()">
+                                        <i class="fas fa-file-export"></i>
+                                        Exporter mes données (JSON)
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -1565,6 +1806,38 @@
         </main>
     </div>
 
+    <!-- MODAL: Avatar -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <h2 class="modal-title">Changer la photo de profil</h2>
+            <div class="modal-text">
+                <!-- Upload -->
+                <div class="avatar-upload-area" onclick="document.getElementById('avatarFileInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Cliquez pour uploader une image</p>
+                    <small style="color: var(--text-secondary);">JPG, PNG, GIF (max 2MB)</small>
+                </div>
+                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
+                
+                <!-- Avatars prédéfinis -->
+                <p style="margin: 16px 0 8px; font-weight: 600;">Ou choisissez un avatar :</p>
+                <div class="avatar-options" id="avatarOptions">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('avatarModal')">Annuler</button>
+                <button class="btn btn-danger btn-small" onclick="resetAvatar()" style="margin-left: auto;">
+                    <i class="fas fa-undo-alt"></i>
+                    Réinitialiser
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: Changer le nom d'utilisateur -->
     <div class="modal" id="editUsernameModal">
         <div class="modal-content">
@@ -1583,7 +1856,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Changer l'email (étape 1 - demande de code) -->
+    <!-- MODAL: Changer l'email (étape 1) -->
     <div class="modal" id="editEmailStep1Modal">
         <div class="modal-content">
             <div class="modal-icon">
@@ -1604,7 +1877,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Changer l'email (étape 2 - vérification) -->
+    <!-- MODAL: Changer l'email (étape 2) -->
     <div class="modal" id="editEmailStep2Modal">
         <div class="modal-content">
             <div class="modal-icon">
@@ -1660,22 +1933,90 @@
         </div>
     </div>
 
-    <!-- MODAL: Confirmation -->
-    <div class="modal" id="confirmModal">
-        <div class="modal-content">
-            <div class="modal-icon">
-                <i class="fas fa-question-circle"></i>
-            </div>
-            <h2 class="modal-title" id="confirmTitle">Confirmation</h2>
-            <div class="modal-text" id="confirmMessage">Êtes-vous sûr ?</div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeConfirmModal()">Non</button>
-                <button class="btn btn-danger" id="confirmActionBtn">Oui</button>
-            </div>
-        </div>
-    </div>
-
     <script>
+        // ===== SCRIPT UNIVERSEL AVATAR (À COPIER DANS TOUTES LES PAGES) =====
+        const AvatarManager = {
+            // Récupérer l'avatar (priorité: localStorage > sessionStorage > défaut)
+            getAvatar: function(username) {
+                // Essayer localStorage d'abord
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                
+                // Essayer sessionStorage
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                
+                // Avatar par défaut
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            
+            // Sauvegarder l'avatar
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            
+            // Synchroniser avec le serveur (si endpoint disponible)
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {
+                    console.log('Sync serveur différée');
+                }
+            },
+            
+            // Réinitialiser l'avatar
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            
+            // Appliquer l'avatar à tous les éléments de la page
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                
+                // Appliquer à tous les éléments avec l'attribut data-avatar
+                document.querySelectorAll('[data-avatar]').forEach(el => {
+                    if (el.tagName === 'IMG') {
+                        el.src = avatar;
+                    } else {
+                        el.style.backgroundImage = `url(${avatar})`;
+                        el.style.backgroundSize = 'cover';
+                        el.style.backgroundPosition = 'center';
+                    }
+                });
+                
+                // Appliquer aux éléments spécifiques
+                const smallAvatar = document.getElementById('userAvatarSmall');
+                if (smallAvatar) smallAvatar.src = avatar;
+                
+                const sidebarAvatar = document.querySelector('#sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+                
+                const profileAvatar = document.querySelector('#profileAvatar');
+                if (profileAvatar) {
+                    const icon = profileAvatar.querySelector('i');
+                    if (icon) icon.remove();
+                    profileAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;"><span class="avatar-edit-overlay"><i class="fas fa-camera"></i></span>`;
+                }
+            }
+        };
+
+        // ===== INITIALISATION =====
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.href = '/login';
@@ -1711,9 +2052,7 @@
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                 <span>${message}</span>
             `;
-
             document.body.appendChild(toast);
-
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
@@ -1729,10 +2068,6 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        function closeConfirmModal() {
-            closeModal('confirmModal');
-        }
-
         // ===== TABS =====
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -1741,16 +2076,115 @@
             event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
             
-            // Recharger les transactions si l'onglet transactions est ouvert
-            if (tabId === 'transactions') {
-                displayTransactions();
+            if (tabId === 'transactions') displayTransactions();
+            if (tabId === 'referrals') { currentReferralPage = 1; displayReferralsWithPagination(); }
+            if (tabId === 'connections') displayConnectionHistory();
+        }
+
+        // ===== AVATAR =====
+        function openAvatarModal() {
+            renderAvatarOptions();
+            openModal('avatarModal');
+        }
+
+        function renderAvatarOptions() {
+            const container = document.getElementById('avatarOptions');
+            const presets = [
+                { icon: 'fa-user', color: '#7C3AED' },
+                { icon: 'fa-user-astronaut', color: '#10B981' },
+                { icon: 'fa-user-ninja', color: '#F59E0B' },
+                { icon: 'fa-user-secret', color: '#EF4444' },
+                { icon: 'fa-user-tie', color: '#3B82F6' },
+                { icon: 'fa-user-graduate', color: '#8B5CF6' },
+                { icon: 'fa-user-cowboy', color: '#EC4899' },
+                { icon: 'fa-user-pilot', color: '#06B6D4' }
+            ];
+            
+            let html = '';
+            presets.forEach((preset, index) => {
+                html += `
+                    <div class="avatar-option" style="background: ${preset.color};" onclick="selectPresetAvatar('${preset.icon}', '${preset.color}')">
+                        <i class="fas ${preset.icon}"></i>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function selectPresetAvatar(icon, color) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 200, 200);
+            
+            ctx.font = '100px "Font Awesome 6 Free"';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const iconMap = {
+                'fa-user': '\uf007',
+                'fa-user-astronaut': '\uf4fb',
+                'fa-user-ninja': '\uf504',
+                'fa-user-secret': '\uf21b',
+                'fa-user-tie': '\uf508',
+                'fa-user-graduate': '\uf501',
+                'fa-user-cowboy': '\uf8c0',
+                'fa-user-pilot': '\uf5fb'
+            };
+            
+            ctx.fillText(iconMap[icon] || '\uf007', 100, 100);
+            
+            const avatarData = canvas.toDataURL('image/png');
+            AvatarManager.setAvatar(avatarData);
+            AvatarManager.applyToPage(userData?.username || 'User');
+            closeModal('avatarModal');
+            showToast('success', 'Avatar mis à jour !');
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('error', 'Image trop grande (max 2MB)');
+                return;
             }
             
-            // Recharger les filleuls si l'onglet parrainage est ouvert
-            if (tabId === 'referrals') {
-                currentReferralPage = 1;
-                displayReferralsWithPagination();
-            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 200;
+                    canvas.height = 200;
+                    const ctx = canvas.getContext('2d');
+                    
+                    const size = Math.min(img.width, img.height);
+                    const sx = (img.width - size) / 2;
+                    const sy = (img.height - size) / 2;
+                    
+                    ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+                    
+                    const avatarData = canvas.toDataURL('image/png');
+                    AvatarManager.setAvatar(avatarData);
+                    AvatarManager.applyToPage(userData?.username || 'User');
+                    closeModal('avatarModal');
+                    showToast('success', 'Avatar mis à jour !');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetAvatar() {
+            const defaultAvatar = AvatarManager.reset(userData?.username || 'User');
+            AvatarManager.applyToPage(userData?.username || 'User');
+            closeModal('avatarModal');
+            showToast('success', 'Avatar réinitialisé');
         }
 
         // ===== API KEY =====
@@ -1768,38 +2202,33 @@
             const icon = document.getElementById('apiKeyIcon');
             
             if (apiKeyVisible) {
-                apiKeyElement.textContent = '************';
+                apiKeyElement.textContent = '****************************';
                 icon.className = 'fas fa-eye';
             } else {
                 apiKeyElement.textContent = userData?.apiKey || 'N/A';
                 icon.className = 'fas fa-eye-slash';
             }
-            
             apiKeyVisible = !apiKeyVisible;
         }
 
         function copyApiKey() {
-            const apiKey = userData?.apiKey || '';
-            navigator.clipboard.writeText(apiKey);
+            navigator.clipboard.writeText(userData?.apiKey || '');
             showToast('success', 'Clé API copiée !');
         }
 
         function copyReferralLink() {
-            const link = document.getElementById('referralLink').textContent;
-            navigator.clipboard.writeText(link);
+            navigator.clipboard.writeText(document.getElementById('referralLink').textContent);
             showToast('success', 'Lien copié !');
         }
 
         async function regenerateApiKey() {
-            if (!confirm('Êtes-vous sûr de vouloir régénérer votre clé API ? L\'ancienne clé ne fonctionnera plus.')) return;
-
+            if (!confirm('Régénérer la clé API ? L\'ancienne ne fonctionnera plus.')) return;
             try {
                 const res = await fetch('/api/user/regenerate-api-key', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     showToast('success', 'Clé API régénérée');
                     userData.apiKey = data.new_api_key;
@@ -1815,35 +2244,25 @@
         }
 
         // ===== EDIT USERNAME =====
-        function showEditUsernameModal() {
-            openModal('editUsernameModal');
-        }
+        function showEditUsernameModal() { openModal('editUsernameModal'); }
 
         async function updateUsername() {
             const newUsername = document.getElementById('newUsername').value;
-
             if (!newUsername || newUsername.length < 3 || newUsername.length > 20) {
                 showToast('error', 'Nom d\'utilisateur invalide (3-20 caractères)');
                 return;
             }
-
             if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
                 showToast('error', 'Lettres, chiffres et _ uniquement');
                 return;
             }
-
             try {
                 const res = await fetch('/api/user/update-username', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: newUsername })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
                     showToast('success', 'Nom d\'utilisateur mis à jour');
                     closeModal('editUsernameModal');
@@ -1857,32 +2276,22 @@
         }
 
         // ===== EDIT EMAIL =====
-        function showEditEmailModal() {
-            openModal('editEmailStep1Modal');
-        }
+        function showEditEmailModal() { openModal('editEmailStep1Modal'); }
 
         async function requestEmailChange() {
             const newEmail = document.getElementById('newEmail').value;
-
             if (!newEmail || !newEmail.includes('@')) {
                 showToast('error', 'Email invalide');
                 return;
             }
-
             pendingNewEmail = newEmail;
-
             try {
                 const res = await fetch('/api/user/request-email-change', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ new_email: newEmail })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
                     closeModal('editEmailStep1Modal');
                     document.getElementById('pendingEmail').textContent = newEmail;
@@ -1897,29 +2306,19 @@
 
         async function confirmEmailChange() {
             const code = document.getElementById('emailVerificationCode').value;
-
             if (!code || code.length !== 6) {
                 showToast('error', 'Code invalide');
                 return;
             }
-
             try {
                 const res = await fetch('/api/user/confirm-email-change', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        new_email: pendingNewEmail,
-                        code: code 
-                    })
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_email: pendingNewEmail, code: code })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
-                    showToast('success', 'Email mis à jour avec succès');
+                    showToast('success', 'Email mis à jour');
                     closeModal('editEmailStep2Modal');
                     loadUserData();
                 } else {
@@ -1930,11 +2329,8 @@
             }
         }
 
-        // ===== PASSWORD MODAL =====
-        function showChangePasswordModal() {
-            openModal('passwordModal');
-        }
-
+        // ===== PASSWORD =====
+        function showChangePasswordModal() { openModal('passwordModal'); }
         function closePasswordModal() {
             closeModal('passwordModal');
             document.getElementById('currentPassword').value = '';
@@ -1946,37 +2342,16 @@
             const current = document.getElementById('currentPassword').value;
             const newPass = document.getElementById('newPassword').value;
             const confirm = document.getElementById('confirmPassword').value;
-
-            if (!current || !newPass || !confirm) {
-                showToast('error', 'Tous les champs requis');
-                return;
-            }
-
-            if (newPass !== confirm) {
-                showToast('error', 'Les mots de passe ne correspondent pas');
-                return;
-            }
-
-            if (newPass.length < 6) {
-                showToast('error', '6 caractères minimum');
-                return;
-            }
-
+            if (!current || !newPass || !confirm) { showToast('error', 'Tous les champs requis'); return; }
+            if (newPass !== confirm) { showToast('error', 'Les mots de passe ne correspondent pas'); return; }
+            if (newPass.length < 6) { showToast('error', '6 caractères minimum'); return; }
             try {
                 const res = await fetch('/api/change-password', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        current_password: current,
-                        new_password: newPass
-                    })
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: current, new_password: newPass })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
                     showToast('success', 'Mot de passe changé');
                     closePasswordModal();
@@ -1989,42 +2364,23 @@
         }
 
         // ===== DELETE ACCOUNT =====
-        function showDeleteAccountModal() {
-            openModal('deleteAccountModal');
-        }
+        function showDeleteAccountModal() { openModal('deleteAccountModal'); }
 
         async function deleteAccount() {
             const password = document.getElementById('deletePassword').value;
             const confirm = document.getElementById('deleteConfirm').value;
-
-            if (!password || !confirm) {
-                showToast('error', 'Tous les champs requis');
-                return;
-            }
-
-            if (confirm !== 'SUPPRIMER') {
-                showToast('error', 'Veuillez taper SUPPRIMER pour confirmer');
-                return;
-            }
-
+            if (!password || !confirm) { showToast('error', 'Tous les champs requis'); return; }
+            if (confirm !== 'SUPPRIMER') { showToast('error', 'Tapez SUPPRIMER pour confirmer'); return; }
             try {
                 const res = await fetch('/api/user/delete-account', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
                     showToast('success', 'Compte supprimé. Redirection...');
-                    setTimeout(() => {
-                        localStorage.removeItem('token');
-                        window.location.href = '/';
-                    }, 2000);
+                    setTimeout(() => { localStorage.removeItem('token'); window.location.href = '/'; }, 2000);
                 } else {
                     showToast('error', data.error || 'Erreur');
                 }
@@ -2040,308 +2396,188 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     userData = data.user;
                     userServers = data.servers || [];
                     userTransactions = data.transactions || [];
-
                     updateUI();
                     loadReferralInfo();
+                    AvatarManager.applyToPage(userData.username);
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
                 }
             } catch (error) {
-                console.error('Erreur chargement:', error);
                 showToast('error', 'Erreur de chargement');
             }
         }
 
         function updateUI() {
             if (!userData) return;
-
-            // Sidebar
+            
             document.getElementById('sidebarUserName').textContent = userData.username;
             document.getElementById('sidebarUserEmail').textContent = userData.email;
             document.getElementById('sidebarUserBadge').textContent = userData.role;
-            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
             document.getElementById('sidebarCoins').textContent = userData.coins;
             document.getElementById('sidebarServers').textContent = userServers.length;
-
-            // Stats
+            
             document.getElementById('profileCoins').textContent = userData.coins;
             document.getElementById('profileServers').textContent = userServers.length;
             document.getElementById('profileStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('profileLevel').textContent = userData.level || 1;
-
-            // Profile header
+            
             document.getElementById('profileName').textContent = userData.username;
             document.getElementById('profileEmail').innerHTML = `<i class="fas fa-envelope"></i> ${userData.email}`;
             
             const date = new Date(userData.account_created || userData.created_at);
             document.getElementById('profileDate').innerHTML = `<i class="fas fa-calendar"></i> Membre depuis ${date.toLocaleDateString('fr-FR')}`;
-
-            // Info tab
+            
             document.getElementById('infoUsername').textContent = userData.username;
             document.getElementById('infoEmail').textContent = userData.email;
             document.getElementById('infoRole').textContent = userData.role;
             document.getElementById('infoDate').textContent = date.toLocaleDateString('fr-FR');
-
-            // Badges
+            
             displayBadges(userData.badges || []);
-
-            // API Key
-            document.getElementById('apiKey').textContent = '*************';
+            displayTransactions();
+            
+            document.getElementById('apiKey').textContent = '****************************';
             document.getElementById('apiKeyIcon').className = 'fas fa-eye';
             apiKeyVisible = false;
-
-            // Transactions
-            displayTransactions();
-
-            // Avatar
-            document.getElementById('profileAvatar').innerHTML = `<i class="fas fa-user"></i>`;
         }
 
         function displayBadges(badges) {
             const container = document.getElementById('badgesContainer');
+            const defaultBadges = ['Nouvel Arrivant', 'Explorateur', 'Vétéran'];
+            const userBadges = badges.length ? badges : [defaultBadges[userData?.level > 5 ? 2 : userData?.level > 2 ? 1 : 0]];
             
-            if (!badges || badges.length === 0) {
-                container.innerHTML = `
-                    <div class="badge-item">
-                        <i class="fas fa-certificate"></i>
-                        Nouvel Arrivant
-                    </div>
-                `;
-                return;
-            }
-
             let html = '';
-            badges.forEach(badge => {
-                html += `
-                    <div class="badge-item">
-                        <i class="fas fa-certificate"></i>
-                        ${badge}
-                    </div>
-                `;
+            userBadges.forEach(badge => {
+                html += `<div class="badge-item"><i class="fas fa-certificate"></i>${badge}</div>`;
             });
             container.innerHTML = html;
         }
 
         function displayTransactions() {
             const container = document.getElementById('transactionsContainer');
-
             if (!userTransactions || userTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <div class="transaction-content">
-                            <div class="transaction-title">Aucune transaction</div>
-                            <div class="transaction-meta">Vos transactions apparaîtront ici</div>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML = `<div class="transaction-item"><div class="transaction-icon"><i class="fas fa-history"></i></div><div class="transaction-content"><div class="transaction-title">Aucune transaction</div><div class="transaction-meta">Vos transactions apparaîtront ici</div></div></div>`;
                 return;
             }
-
             let html = '';
-            userTransactions.slice(0, 10).forEach(transaction => {
-                const date = new Date(transaction.created_at);
-                const statusClass = transaction.status === 'completed' ? 'status-success' : 
-                                  transaction.status === 'pending' ? 'status-pending' : 'status-failed';
-                
-                const amountClass = transaction.type === 'coins_purchase' ? 'positive' : 'negative';
-                const amountPrefix = transaction.type === 'coins_purchase' ? '+' : '-';
-
-                html += `
-                    <div class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas ${transaction.type === 'coins_purchase' ? 'fa-coins' : 'fa-server'}"></i>
-                        </div>
-                        <div class="transaction-content">
-                            <div class="transaction-title">${transaction.description || 'Transaction'}</div>
-                            <div class="transaction-meta">${date.toLocaleDateString('fr-FR')}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="transaction-amount ${amountClass}">
-                                ${amountPrefix}${Math.abs(transaction.amount)} coins
-                            </div>
-                            <span class="transaction-status ${statusClass}">${transaction.status}</span>
-                        </div>
-                    </div>
-                `;
+            userTransactions.slice(0, 10).forEach(t => {
+                const date = new Date(t.created_at);
+                const statusClass = t.status === 'completed' ? 'status-success' : t.status === 'pending' ? 'status-pending' : 'status-failed';
+                const amountClass = t.type === 'coins_purchase' ? 'positive' : 'negative';
+                const amountPrefix = t.type === 'coins_purchase' ? '+' : '-';
+                html += `<div class="transaction-item"><div class="transaction-icon"><i class="fas ${t.type === 'coins_purchase' ? 'fa-coins' : 'fa-server'}"></i></div><div class="transaction-content"><div class="transaction-title">${t.description || 'Transaction'}</div><div class="transaction-meta">${date.toLocaleDateString('fr-FR')}</div></div><div style="text-align: right;"><div class="transaction-amount ${amountClass}">${amountPrefix}${Math.abs(t.amount)} coins</div><span class="transaction-status ${statusClass}">${t.status}</span></div></div>`;
             });
             container.innerHTML = html;
         }
 
-        // ===== SOCIAL SHARE =====
-        let currentReferralLink = '';
-
-        function renderSocialShareButtons(referralLink) {
-            const container = document.getElementById('socialShareButtons');
-            const message = encodeURIComponent('Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀');
-            const encodedLink = encodeURIComponent(referralLink);
-            
-            const shareUrls = {
-                whatsapp: `https://wa.me/?text=${message}%20${encodedLink}`,
-                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${message}`,
-                telegram: `https://t.me/share/url?url=${encodedLink}&text=${message}`,
-                twitter: `https://twitter.com/intent/tweet?text=${message}&url=${encodedLink}`,
-                instagram: `https://www.instagram.com/`, // Instagram ne permet pas le partage direct de liens
-                discord: `https://discord.com/channels/@me`
-            };
-            
-            container.innerHTML = `
-                <a href="${shareUrls.whatsapp}" target="_blank" class="social-btn whatsapp" onclick="shareSocial('whatsapp', '${referralLink}')">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
-                <a href="${shareUrls.facebook}" target="_blank" class="social-btn facebook" onclick="shareSocial('facebook', '${referralLink}')">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="${shareUrls.telegram}" target="_blank" class="social-btn telegram" onclick="shareSocial('telegram', '${referralLink}')">
-                    <i class="fab fa-telegram-plane"></i>
-                </a>
-                <a href="${shareUrls.twitter}" target="_blank" class="social-btn twitter" onclick="shareSocial('twitter', '${referralLink}')">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="social-btn instagram" onclick="copyForInstagram('${referralLink}'); return false;">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="social-btn discord" onclick="copyForDiscord('${referralLink}'); return false;">
-                    <i class="fab fa-discord"></i>
-                </a>
-            `;
-        }
-
-        function shareSocial(platform, link) {
-            // Le partage se fait via les liens href, cette fonction est pour le tracking éventuel
-            console.log(`Partage sur ${platform}: ${link}`);
-        }
-
-        function copyForInstagram(link) {
-            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀\n' + link;
-            navigator.clipboard.writeText(message);
-            showToast('success', 'Message copié ! Collez-le sur Instagram');
-        }
-
-        function copyForDiscord(link) {
-            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀\n' + link;
-            navigator.clipboard.writeText(message);
-            showToast('success', 'Message copié ! Collez-le sur Discord');
-        }
-
-        // ===== REFERRAL WITH PAGINATION =====
+        // ===== REFERRAL =====
         async function loadReferralInfo() {
             try {
                 const res = await fetch('/api/referral/info', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     const link = `${window.location.origin}/register?ref=${data.referral_code}`;
-                    currentReferralLink = link;
                     document.getElementById('referralLink').textContent = link;
                     document.getElementById('referralCount').textContent = data.referral_count;
                     document.getElementById('referralCoins').textContent = data.total_coins_earned || 0;
-
                     allReferrals = data.referrals || [];
                     
-                    // Afficher les boutons sociaux
+                    generateQRCode(link);
                     renderSocialShareButtons(link);
-                    
-                    // Afficher les filleuls avec pagination
                     displayReferralsWithPagination();
                 }
             } catch (error) {
-                console.error('Erreur chargement parrainage:', error);
+                console.error('Erreur parrainage:', error);
             }
+        }
+
+        function generateQRCode(link) {
+            document.getElementById('qrcode').innerHTML = '';
+            new QRCode(document.getElementById('qrcode'), {
+                text: link,
+                width: 180,
+                height: 180,
+                colorDark: '#7C3AED',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function downloadQRCode() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = 'kermhosting-qrcode.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                showToast('success', 'QR Code téléchargé !');
+            }
+        }
+
+        function renderSocialShareButtons(link) {
+            const container = document.getElementById('socialShareButtons');
+            const message = encodeURIComponent('Rejoins KermHosting avec mon lien de parrainage et gagne 20 coins ! 🚀');
+            const encodedLink = encodeURIComponent(link);
+            
+            container.innerHTML = `
+                <a href="https://wa.me/?text=${message}%20${encodedLink}" target="_blank" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${message}" target="_blank" class="social-btn facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://t.me/share/url?url=${encodedLink}&text=${message}" target="_blank" class="social-btn telegram"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://twitter.com/intent/tweet?text=${message}&url=${encodedLink}" target="_blank" class="social-btn twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-btn instagram" onclick="copyForSocial('${link}', 'Instagram')"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-btn discord" onclick="copyForSocial('${link}', 'Discord')"><i class="fab fa-discord"></i></a>
+            `;
+        }
+
+        function copyForSocial(link, platform) {
+            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 20 coins ! 🚀\n' + link;
+            navigator.clipboard.writeText(message);
+            showToast('success', `Message copié ! Collez-le sur ${platform}`);
         }
 
         function displayReferralsWithPagination() {
             const container = document.getElementById('referralsList');
             const paginationContainer = document.getElementById('referralsPagination');
-
+            
             if (!allReferrals || allReferrals.length === 0) {
-                container.innerHTML = `
-                    <div class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="transaction-content">
-                            <div class="transaction-title">Aucun filleul</div>
-                            <div class="transaction-meta">Partagez votre lien pour en obtenir</div>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML = `<div class="transaction-item"><div class="transaction-icon"><i class="fas fa-users"></i></div><div class="transaction-content"><div class="transaction-title">Aucun filleul</div><div class="transaction-meta">Partagez votre lien pour en obtenir</div></div></div>`;
                 paginationContainer.innerHTML = '';
                 return;
             }
-
-            // Calculer la pagination
+            
             const totalPages = Math.ceil(allReferrals.length / itemsPerPage);
             const startIndex = (currentReferralPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, allReferrals.length);
             const pageReferrals = allReferrals.slice(startIndex, endIndex);
-
-            // Afficher les éléments de la page courante
+            
             let html = '';
             pageReferrals.forEach(ref => {
                 const date = new Date(ref.created_at);
-                html += `
-                    <div class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="transaction-content">
-                            <div class="transaction-title">${ref.referred?.username || 'Utilisateur'}</div>
-                            <div class="transaction-meta">Inscrit le ${date.toLocaleDateString('fr-FR')}</div>
-                        </div>
-                        <div class="transaction-amount positive">+${ref.coins_rewarded}</div>
-                    </div>
-                `;
+                html += `<div class="transaction-item"><div class="transaction-icon"><i class="fas fa-user-plus"></i></div><div class="transaction-content"><div class="transaction-title">${ref.referred?.username || 'Utilisateur'}</div><div class="transaction-meta">Inscrit le ${date.toLocaleDateString('fr-FR')}</div></div><div class="transaction-amount positive">+${ref.coins_rewarded}</div></div>`;
             });
             container.innerHTML = html;
-
-            // Générer la pagination
             renderPagination(totalPages);
         }
 
         function renderPagination(totalPages) {
             const container = document.getElementById('referralsPagination');
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
             
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let html = '';
-            
-            // Bouton précédent
-            html += `<button class="pagination-btn" onclick="goToPage(${currentReferralPage - 1})" ${currentReferralPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>`;
-
-            // Pages
+            let html = `<button class="pagination-btn" onclick="goToPage(${currentReferralPage - 1})" ${currentReferralPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
             for (let i = 1; i <= totalPages; i++) {
-                if (
-                    i === 1 || 
-                    i === totalPages || 
-                    (i >= currentReferralPage - 2 && i <= currentReferralPage + 2)
-                ) {
+                if (i === 1 || i === totalPages || (i >= currentReferralPage - 2 && i <= currentReferralPage + 2)) {
                     html += `<button class="pagination-btn ${i === currentReferralPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
                 } else if (i === currentReferralPage - 3 || i === currentReferralPage + 3) {
                     html += `<span class="pagination-ellipsis">...</span>`;
                 }
             }
-
-            // Bouton suivant
-            html += `<button class="pagination-btn" onclick="goToPage(${currentReferralPage + 1})" ${currentReferralPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>`;
-
+            html += `<button class="pagination-btn" onclick="goToPage(${currentReferralPage + 1})" ${currentReferralPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
             container.innerHTML = html;
         }
 
@@ -2352,26 +2588,117 @@
             displayReferralsWithPagination();
         }
 
+        // ===== CONNECTION HISTORY =====
+        function displayConnectionHistory() {
+            const container = document.getElementById('connectionHistoryContainer');
+            const history = getConnectionHistory();
+            
+            if (history.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Aucun historique disponible</p>`;
+                return;
+            }
+            
+            let html = '';
+            history.forEach((conn, index) => {
+                const date = new Date(conn.timestamp);
+                html += `
+                    <div class="connection-item ${index === 0 ? 'connection-current' : ''}">
+                        <div class="connection-icon">
+                            <i class="fas ${conn.device === 'Mobile' ? 'fa-mobile-alt' : conn.device === 'Tablette' ? 'fa-tablet-alt' : 'fa-laptop'}"></i>
+                        </div>
+                        <div class="connection-info">
+                            <div class="connection-device">${conn.device} - ${conn.browser}</div>
+                            <div class="connection-meta">${conn.os} • IP: ${conn.ip} • ${date.toLocaleString('fr-FR')}</div>
+                        </div>
+                        ${index === 0 ? '<span style="background: var(--success); padding: 4px 8px; border-radius: var(--radius-full); font-size: 0.65rem;">Actuelle</span>' : ''}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function getConnectionHistory() {
+            let history = [];
+            try {
+                const stored = localStorage.getItem('connection_history');
+                if (stored) history = JSON.parse(stored);
+            } catch (e) {}
+            
+            // Ajouter la connexion actuelle si vide ou si dernière connexion > 1h
+            const now = Date.now();
+            if (history.length === 0 || now - history[0].timestamp > 3600000) {
+                const newConnection = {
+                    timestamp: now,
+                    device: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : /Tablet|iPad/i.test(navigator.userAgent) ? 'Tablette' : 'Desktop',
+                    browser: getBrowserName(),
+                    os: getOSName(),
+                    ip: '••••••••••••'
+                };
+                history.unshift(newConnection);
+                history = history.slice(0, 10);
+                localStorage.setItem('connection_history', JSON.stringify(history));
+            }
+            return history;
+        }
+
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Edg')) return 'Edge';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Safari')) return 'Safari';
+            return 'Navigateur';
+        }
+
+        function getOSName() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'macOS';
+            if (ua.includes('Linux')) return 'Linux';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+            return 'OS';
+        }
+
+        // ===== EXPORT DATA =====
+        function exportUserData() {
+            const exportData = {
+                user: userData,
+                servers: userServers,
+                transactions: userTransactions,
+                referrals: allReferrals,
+                connectionHistory: getConnectionHistory(),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kermhosting-export-${userData?.username || 'user'}-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('success', 'Données exportées avec succès !');
+        }
+
         // ===== LOGOUT =====
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            AvatarManager.reset();
             window.location.href = '/';
         });
 
-        // ===== NOTIFICATIONS =====
         document.getElementById('notificationBtn').addEventListener('click', () => {
             showToast('info', 'Pas de nouvelles notifications');
         });
 
         // ===== INIT =====
         loadUserData();
+        getConnectionHistory();
 
-        // Responsive
         window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                closeSidebarFunc();
-            }
+            if (window.innerWidth > 1024) closeSidebarFunc();
         });
 
         // Exposer les fonctions globalement
@@ -2391,12 +2718,15 @@
         window.showDeleteAccountModal = showDeleteAccountModal;
         window.deleteAccount = deleteAccount;
         window.closeModal = closeModal;
-        window.closeConfirmModal = closeConfirmModal;
         window.openModal = openModal;
+        window.openAvatarModal = openAvatarModal;
+        window.selectPresetAvatar = selectPresetAvatar;
+        window.handleAvatarUpload = handleAvatarUpload;
+        window.resetAvatar = resetAvatar;
         window.goToPage = goToPage;
-        window.shareSocial = shareSocial;
-        window.copyForInstagram = copyForInstagram;
-        window.copyForDiscord = copyForDiscord;
+        window.copyForSocial = copyForSocial;
+        window.downloadQRCode = downloadQRCode;
+        window.exportUserData = exportUserData;
     </script>
 </body>
 </html>
