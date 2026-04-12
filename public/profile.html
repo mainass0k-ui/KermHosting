@@ -681,6 +681,131 @@
             color: white;
         }
 
+        /* ===== 2FA SECTION ===== */
+        .twofa-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .twofa-status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .twofa-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .twofa-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .twofa-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .twofa-badge {
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .twofa-badge.enabled {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .twofa-badge.disabled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .twofa-qrcode {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            margin: 20px 0;
+        }
+
+        .twofa-qrcode img {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .twofa-secret {
+            background: var(--bg-input);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 4px;
+            margin: 16px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .backup-codes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .backup-code {
+            background: var(--bg-input);
+            padding: 10px;
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .code-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         /* ===== BADGES ANIMÉS ===== */
         .badges-grid {
             display: flex;
@@ -721,308 +846,6 @@
         @keyframes badgeShine {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.3); color: #FFD700; }
-        }
-
-        .badge-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .badge-item:hover::before {
-            left: 100%;
-        }
-
-        /* ===== API KEY SECTION ===== */
-        .api-key-section {
-            background: var(--bg-hover);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .api-key-display {
-            background: var(--bg-input);
-            border-radius: var(--radius-md);
-            padding: 14px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            border: 1px solid var(--border-color);
-            margin: 12px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .api-key-text {
-            word-break: break-all;
-            flex: 1;
-        }
-
-        .api-key-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* ===== SOCIAL SHARE BUTTONS ===== */
-        .social-share-section {
-            margin-top: 20px;
-        }
-
-        .social-share-title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .social-share-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .social-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 1.2rem;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .social-btn.whatsapp { background: #25D366; }
-        .social-btn.facebook { background: #1877F2; }
-        .social-btn.telegram { background: #0088cc; }
-        .social-btn.twitter { background: #000000; }
-        .social-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .social-btn.discord { background: #5865F2; }
-
-        /* ===== QR CODE ===== */
-        .qr-code-section {
-            margin-top: 16px;
-            text-align: center;
-        }
-
-        .qr-code-container {
-            display: inline-block;
-            background: white;
-            padding: 16px;
-            border-radius: var(--radius-lg);
-            margin: 12px 0;
-        }
-
-        #qrcode {
-            display: flex;
-            justify-content: center;
-        }
-
-        .qr-code-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 8px;
-        }
-
-        /* ===== CONNECTION HISTORY ===== */
-        .connection-history {
-            margin-top: 20px;
-        }
-
-        .connection-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .connection-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .connection-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .connection-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, var(--primary-glow), transparent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-
-        .connection-info {
-            flex: 1;
-        }
-
-        .connection-device {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 2px;
-        }
-
-        .connection-meta {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .connection-current {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 3px solid var(--success);
-        }
-
-        .connection-action {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s;
-        }
-
-        .connection-action:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .connection-action:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ===== PAGINATION ===== */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .pagination-btn {
-            min-width: 36px;
-            height: 36px;
-            padding: 0 8px;
-            border-radius: var(--radius-md);
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-        }
-
-        .pagination-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .pagination-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination-ellipsis {
-            color: var(--text-secondary);
-            padding: 0 4px;
-        }
-
-        .pagination-info {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn {
-            padding: 12px 20px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--primary);
-            background: var(--bg-hover);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.85rem;
         }
 
         /* ===== TABS ===== */
@@ -1079,88 +902,6 @@
             to { opacity: 1; }
         }
 
-        /* ===== TRANSACTIONS LIST ===== */
-        .transactions-list {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .transaction-item {
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-
-        .transaction-content {
-            flex: 1;
-        }
-
-        .transaction-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 0.9rem;
-        }
-
-        .transaction-meta {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .transaction-amount {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .transaction-amount.positive {
-            color: var(--success);
-        }
-
-        .transaction-amount.negative {
-            color: var(--danger);
-        }
-
-        .transaction-status {
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-
-        .status-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .status-failed {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
         /* ===== MODALS ===== */
         .modal {
             position: fixed;
@@ -1185,8 +926,10 @@
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px 20px;
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
             border: 1px solid var(--border-color);
             animation: modalSlideIn 0.3s ease-out;
         }
@@ -1196,24 +939,41 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .modal-icon {
-            font-size: 2.5rem;
-            color: var(--warning);
-            text-align: center;
-            margin-bottom: 16px;
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        .modal-title {
-            font-size: 1.2rem;
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            color: var(--primary);
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .modal-text {
             color: var(--text-secondary);
             text-align: center;
             margin-bottom: 20px;
-            font-size: 0.95rem;
         }
 
         .modal-input {
@@ -1227,81 +987,57 @@
             margin-bottom: 12px;
         }
 
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
         .modal-actions {
             display: flex;
             gap: 12px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
-        .verification-info {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            margin: 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--info);
-            font-size: 0.85rem;
-        }
-
-        .verification-info i {
-            font-size: 1.2rem;
-        }
-
-        /* Avatar Upload Modal */
-        .avatar-options {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .avatar-option {
-            width: 60px;
-            height: 60px;
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 12px 20px;
             border-radius: var(--radius-full);
-            background: var(--bg-input);
-            display: flex;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .avatar-option:hover {
-            border-color: var(--primary);
-            transform: scale(1.1);
-        }
-
-        .avatar-upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
+            gap: 8px;
+            text-decoration: none;
             transition: all 0.3s;
-            margin-bottom: 16px;
+            font-size: 0.9rem;
         }
 
-        .avatar-upload-area:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
             border-color: var(--primary);
             background: var(--bg-hover);
         }
 
-        .avatar-upload-area i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 12px;
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
         }
 
         /* ===== TOAST ===== */
@@ -1322,17 +1058,9 @@
             margin: 0 auto;
         }
 
-        .toast.success {
-            background: rgba(16, 185, 129, 0.95);
-        }
-
-        .toast.error {
-            background: rgba(239, 68, 68, 0.95);
-        }
-
-        .toast.info {
-            background: rgba(59, 130, 246, 0.95);
-        }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
 
         @keyframes slideIn {
             from { opacity: 0; transform: translateX(30px); }
@@ -1368,25 +1096,19 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>KermHosting</span>
                 </div>
-                <button class="close-sidebar" id="closeSidebar">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar" id="sidebarAvatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
+                <div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div>
                 <div class="user-info">
                     <div class="user-name" id="sidebarUserName">Chargement...</div>
                     <div class="user-email" id="sidebarUserEmail">...</div>
@@ -1416,9 +1138,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
                 <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                 <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
@@ -1430,14 +1150,12 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
                 <div class="page-header">
                     <h1 class="page-title"><span class="gradient-text">Mon profil</span></h1>
-                    <p class="page-subtitle">Gérez vos informations personnelles et vos préférences</p>
+                    <p class="page-subtitle">Gérez vos informations personnelles et votre sécurité</p>
                 </div>
 
-                <!-- Stats Mini Cards -->
                 <div class="stats-mini-grid">
                     <div class="stat-mini-card"><div class="stat-mini-value" id="profileCoins">0</div><div class="stat-mini-label">Coins</div></div>
                     <div class="stat-mini-card"><div class="stat-mini-value" id="profileServers">0</div><div class="stat-mini-label">Serveurs</div></div>
@@ -1445,7 +1163,6 @@
                     <div class="stat-mini-card"><div class="stat-mini-value" id="profileLevel">1</div><div class="stat-mini-label">Niveau</div></div>
                 </div>
 
-                <!-- Profile Card -->
                 <div class="profile-card">
                     <div class="profile-header">
                         <div class="profile-avatar">
@@ -1462,10 +1179,10 @@
                     </div>
 
                     <div class="profile-body">
-                        <!-- Tabs -->
                         <div class="tabs">
                             <div class="tab active" onclick="switchTab('info')">Informations</div>
                             <div class="tab" onclick="switchTab('security')">Sécurité</div>
+                            <div class="tab" onclick="switchTab('twofa')">2FA</div>
                             <div class="tab" onclick="switchTab('transactions')">Transactions</div>
                             <div class="tab" onclick="switchTab('referrals')">Parrainage</div>
                             <div class="tab" onclick="switchTab('connections')">Connexions</div>
@@ -1512,6 +1229,49 @@
                             </div>
                         </div>
 
+                        <!-- Tab: 2FA (NOUVEAU) -->
+                        <div class="tab-pane" id="tab-twofa">
+                            <div class="profile-section">
+                                <h3 class="section-title"><i class="fas fa-shield-alt"></i>Authentification à deux facteurs</h3>
+                                
+                                <div class="twofa-status" id="twofaStatusContainer">
+                                    <div class="twofa-status-left">
+                                        <div class="twofa-icon"><i class="fas fa-google"></i></div>
+                                        <div class="twofa-info">
+                                            <h4>Google Authenticator</h4>
+                                            <p id="twofaStatusText">Chargement...</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="twofa-badge disabled" id="twofaBadge">Non activée</span>
+                                    </div>
+                                </div>
+
+                                <div id="twofaDisabledActions" style="display: none;">
+                                    <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                                        L'authentification à deux facteurs ajoute une couche de sécurité supplémentaire à votre compte. 
+                                        Une fois activée, vous devrez entrer un code depuis votre application Google Authenticator à chaque connexion.
+                                    </p>
+                                    <button class="btn btn-primary" onclick="start2FASetup()">
+                                        <i class="fas fa-shield-alt"></i> Activer l'authentification à deux facteurs
+                                    </button>
+                                </div>
+
+                                <div id="twofaEnabledActions" style="display: none;">
+                                    <div class="warning-message" style="margin-bottom: 16px;">
+                                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                        <span>2FA activée - Votre compte est sécurisé</span>
+                                    </div>
+                                    <button class="btn btn-danger-outline" onclick="showDisable2FAModal()">
+                                        <i class="fas fa-times"></i> Désactiver la 2FA
+                                    </button>
+                                    <button class="btn btn-outline" onclick="showBackupCodes()" style="margin-left: 8px;">
+                                        <i class="fas fa-key"></i> Voir les codes de secours
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Tab: Transactions -->
                         <div class="tab-pane" id="tab-transactions">
                             <div class="transactions-list" id="transactionsContainer"></div>
@@ -1550,7 +1310,7 @@
                             </div>
                         </div>
 
-                        <!-- Tab: Connexions (Historique) -->
+                        <!-- Tab: Connexions -->
                         <div class="tab-pane" id="tab-connections">
                             <div class="profile-section">
                                 <div class="connection-header">
@@ -1601,26 +1361,99 @@
     <div class="modal" id="passwordModal"><div class="modal-content"><div class="modal-icon"><i class="fas fa-lock"></i></div><h2 class="modal-title">Changer le mot de passe</h2><div class="modal-text"><input type="password" class="modal-input" id="currentPassword" placeholder="Mot de passe actuel"><input type="password" class="modal-input" id="newPassword" placeholder="Nouveau mot de passe"><input type="password" class="modal-input" id="confirmPassword" placeholder="Confirmer le mot de passe"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closePasswordModal()">Annuler</button><button class="btn btn-primary" onclick="changePassword()">Changer</button></div></div></div>
     <div class="modal" id="deleteAccountModal"><div class="modal-content"><div class="modal-icon" style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i></div><h2 class="modal-title">Supprimer le compte</h2><div class="modal-text"><p style="margin-bottom: 16px;">Cette action est irréversible. Veuillez confirmer en entrant votre mot de passe.</p><input type="password" class="modal-input" id="deletePassword" placeholder="Votre mot de passe"><input type="text" class="modal-input" id="deleteConfirm" placeholder="Tapez 'SUPPRIMER' pour confirmer"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('deleteAccountModal')">Annuler</button><button class="btn btn-danger" onclick="deleteAccount()">Supprimer définitivement</button></div></div></div>
 
+    <!-- MODAL 2FA Setup -->
+    <div class="modal" id="twofaSetupModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Configurer Google Authenticator</h2>
+                <button class="modal-close" onclick="closeModal('twofaSetupModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="twofaStep1">
+                    <p class="modal-text">1. Scannez ce QR code avec Google Authenticator</p>
+                    <div class="twofa-qrcode" id="qrcodeContainer"></div>
+                    <p class="modal-text">Ou entrez ce code manuellement :</p>
+                    <div class="twofa-secret" id="manualSecret"></div>
+                    <div class="modal-actions">
+                        <button class="btn btn-primary" onclick="showTwofaStep2()">J'ai scanné le QR code</button>
+                    </div>
+                </div>
+                <div id="twofaStep2" style="display: none;">
+                    <p class="modal-text">2. Entrez le code à 6 chiffres de votre application</p>
+                    <div class="code-input-group">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 'code2')" id="code1">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 'code3')" id="code2">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 'code4')" id="code3">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 'code5')" id="code4">
+                        <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 'code6')" id="code5">
+                        <input type="text" class="code-input" maxlength="1" id="code6">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" onclick="closeModal('twofaSetupModal')">Annuler</button>
+                        <button class="btn btn-primary" onclick="verify2FACode()">Vérifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL Backup Codes -->
+    <div class="modal" id="backupCodesModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Codes de secours</h2>
+                <button class="modal-close" onclick="closeModal('backupCodesModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Conservez ces codes dans un endroit sûr. Ils vous permettront de vous connecter si vous perdez l'accès à votre application.</span>
+                </div>
+                <div class="backup-codes" id="backupCodesList"></div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="downloadBackupCodes()"><i class="fas fa-download"></i> Télécharger</button>
+                    <button class="btn btn-primary" onclick="closeModal('backupCodesModal')">J'ai noté mes codes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL Disable 2FA -->
+    <div class="modal" id="disable2FAModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Désactiver la 2FA</h2>
+                <button class="modal-close" onclick="closeModal('disable2FAModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-text">Entrez le code de votre application pour confirmer la désactivation</p>
+                <input type="text" class="modal-input" id="disable2FACode" placeholder="Code à 6 chiffres" maxlength="6">
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal('disable2FAModal')">Annuler</button>
+                    <button class="btn btn-danger" onclick="disable2FA()">Désactiver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ===== AVATAR MANAGER CORRIGÉ (SERVEUR + LOCALSTORAGE) =====
+        // ===== AVATAR MANAGER =====
         const AvatarManager = {
             getAvatar: async function(username) {
                 const serverAvatar = await this.fetchFromServer();
                 if (serverAvatar) { localStorage.setItem('user_avatar', serverAvatar); return serverAvatar; }
                 const localAvatar = localStorage.getItem('user_avatar');
                 if (localAvatar) return localAvatar;
-                const sessionAvatar = sessionStorage.getItem('user_avatar');
-                if (sessionAvatar) return sessionAvatar;
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             fetchFromServer: async function() {
                 try {
                     const token = localStorage.getItem('token');
                     if (!token) return null;
-                    const response = await fetch('/api/user/avatar', { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (response.ok) { const data = await response.json(); return data.avatar || null; }
+                    const res = await fetch('/api/user/avatar', { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (res.ok) { const data = await res.json(); return data.avatar || null; }
                     return null;
-                } catch (error) { return null; }
+                } catch (e) { return null; }
             },
             getAvatarSync: function(username) {
                 const localAvatar = localStorage.getItem('user_avatar');
@@ -1629,22 +1462,18 @@
             },
             setAvatar: async function(avatarData) {
                 localStorage.setItem('user_avatar', avatarData);
-                sessionStorage.setItem('user_avatar', avatarData);
                 await this.syncToServer(avatarData);
             },
             syncToServer: async function(avatarData) {
                 try {
                     const token = localStorage.getItem('token');
-                    if (!token) return false;
-                    const response = await fetch('/api/user/avatar', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ avatar: avatarData }) });
-                    const data = await response.json();
-                    return data.success;
-                } catch (error) { return false; }
+                    if (!token) return;
+                    await fetch('/api/user/avatar', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ avatar: avatarData }) });
+                } catch (e) {}
             },
             reset: async function(username) {
                 localStorage.removeItem('user_avatar');
-                sessionStorage.removeItem('user_avatar');
-                try { const token = localStorage.getItem('token'); if (token) { await fetch('/api/user/avatar', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } } catch (error) {}
+                try { const token = localStorage.getItem('token'); if (token) await fetch('/api/user/avatar', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } catch (e) {}
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             applyToPage: async function(username) {
@@ -1655,8 +1484,8 @@
                 if (username) localStorage.setItem('username', username);
             },
             updateAvatarElements: function(avatar) {
-                const userAvatarSmall = document.getElementById('userAvatarSmall');
-                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const small = document.getElementById('userAvatarSmall');
+                if (small) { small.src = avatar; small.style.objectFit = 'cover'; }
                 const sidebarAvatar = document.getElementById('sidebarAvatar');
                 if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
                 const profileAvatar = document.getElementById('profileAvatar');
@@ -1665,7 +1494,6 @@
                     if (icon) icon.remove();
                     profileAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;"><span class="avatar-edit-overlay"><i class="fas fa-camera"></i></span>`;
                 }
-                document.querySelectorAll('[data-avatar]').forEach(el => { if (el.tagName === 'IMG') el.src = avatar; else { el.style.backgroundImage = `url(${avatar})`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; } });
             }
         };
 
@@ -1679,13 +1507,15 @@
         const token = localStorage.getItem('token');
         if (!token) window.location.href = '/login';
 
-        // ===== VARIABLES GLOBALES =====
-        const ITEMS_PER_PAGE = 5;
+        // ===== VARIABLES =====
         let userData = null, userServers = [], userTransactions = [], pendingNewEmail = null, allReferrals = [];
         let currentReferralPage = 1, currentTransactionPage = 1, apiKeyVisible = false;
+        let twofaSecret = '', twofaEnabled = false, backupCodes = [];
+        const ITEMS_PER_PAGE = 5;
 
         // ===== SIDEBAR =====
-        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay'), menuToggle = document.getElementById('menuToggle'), closeSidebar = document.getElementById('closeSidebar');
+        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle'), closeSidebar = document.getElementById('closeSidebar');
         function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
         menuToggle.addEventListener('click', openSidebar);
@@ -1713,15 +1543,143 @@
             if (tabId === 'transactions') { currentTransactionPage = 1; displayTransactionsWithPagination(); }
             if (tabId === 'referrals') { currentReferralPage = 1; displayReferralsWithPagination(); }
             if (tabId === 'connections') displayConnectionHistory();
+            if (tabId === 'twofa') load2FAStatus();
+        }
+
+        // ===== 2FA FUNCTIONS =====
+        async function load2FAStatus() {
+            try {
+                const res = await fetch('/api/user/2fa/status', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                twofaEnabled = data.enabled || false;
+                update2FAUI();
+            } catch (e) { console.error('Erreur 2FA status:', e); }
+        }
+
+        function update2FAUI() {
+            const badge = document.getElementById('twofaBadge');
+            const statusText = document.getElementById('twofaStatusText');
+            const disabledActions = document.getElementById('twofaDisabledActions');
+            const enabledActions = document.getElementById('twofaEnabledActions');
+            
+            if (twofaEnabled) {
+                badge.className = 'twofa-badge enabled';
+                badge.textContent = 'Activée';
+                statusText.textContent = 'Votre compte est protégé par 2FA';
+                disabledActions.style.display = 'none';
+                enabledActions.style.display = 'block';
+            } else {
+                badge.className = 'twofa-badge disabled';
+                badge.textContent = 'Non activée';
+                statusText.textContent = 'Ajoutez une couche de sécurité supplémentaire';
+                disabledActions.style.display = 'block';
+                enabledActions.style.display = 'none';
+            }
+        }
+
+        async function start2FASetup() {
+            try {
+                showToast('info', 'Initialisation...');
+                const res = await fetch('/api/user/2fa/enable', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                if (data.success) {
+                    twofaSecret = data.secret;
+                    document.getElementById('manualSecret').textContent = data.secret;
+                    
+                    // Générer QR code
+                    const qrContainer = document.getElementById('qrcodeContainer');
+                    qrContainer.innerHTML = '';
+                    new QRCode(qrContainer, { text: data.qrCode, width: 200, height: 200 });
+                    
+                    document.getElementById('twofaStep1').style.display = 'block';
+                    document.getElementById('twofaStep2').style.display = 'none';
+                    openModal('twofaSetupModal');
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (e) { showToast('error', 'Erreur réseau'); }
+        }
+
+        function showTwofaStep2() {
+            document.getElementById('twofaStep1').style.display = 'none';
+            document.getElementById('twofaStep2').style.display = 'block';
+        }
+
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1) document.getElementById(nextId)?.focus();
+        }
+
+        async function verify2FACode() {
+            const code = ['code1','code2','code3','code4','code5','code6'].map(id => document.getElementById(id).value).join('');
+            if (code.length !== 6) { showToast('error', 'Veuillez entrer les 6 chiffres'); return; }
+            
+            try {
+                const res = await fetch('/api/user/2fa/verify', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('twofaSetupModal');
+                    backupCodes = data.backupCodes;
+                    showBackupCodes();
+                    twofaEnabled = true;
+                    update2FAUI();
+                    showToast('success', '2FA activée avec succès !');
+                } else {
+                    showToast('error', data.error || 'Code invalide');
+                }
+            } catch (e) { showToast('error', 'Erreur réseau'); }
+        }
+
+        function showBackupCodes() {
+            const container = document.getElementById('backupCodesList');
+            container.innerHTML = backupCodes.map(c => `<div class="backup-code">${c}</div>`).join('');
+            openModal('backupCodesModal');
+        }
+
+        function downloadBackupCodes() {
+            const content = backupCodes.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'kermhosting-backup-codes.txt';
+            a.click();
+            showToast('success', 'Codes téléchargés');
+        }
+
+        function showDisable2FAModal() {
+            openModal('disable2FAModal');
+        }
+
+        async function disable2FA() {
+            const code = document.getElementById('disable2FACode').value;
+            if (code.length !== 6) { showToast('error', 'Code invalide'); return; }
+            
+            try {
+                const res = await fetch('/api/user/2fa/disable', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('disable2FAModal');
+                    twofaEnabled = false;
+                    update2FAUI();
+                    showToast('success', '2FA désactivée');
+                } else {
+                    showToast('error', data.error || 'Code invalide');
+                }
+            } catch (e) { showToast('error', 'Erreur réseau'); }
         }
 
         // ===== AVATAR =====
         function openAvatarModal() { renderAvatarOptions(); openModal('avatarModal'); }
         function renderAvatarOptions() {
             const presets = [{ icon: 'fa-user', color: '#7C3AED' },{ icon: 'fa-user-astronaut', color: '#10B981' },{ icon: 'fa-user-ninja', color: '#F59E0B' },{ icon: 'fa-user-secret', color: '#EF4444' },{ icon: 'fa-user-tie', color: '#3B82F6' },{ icon: 'fa-user-graduate', color: '#8B5CF6' },{ icon: 'fa-user-cowboy', color: '#EC4899' },{ icon: 'fa-user-pilot', color: '#06B6D4' }];
-            let html = '';
-            presets.forEach(p => { html += `<div class="avatar-option" style="background: ${p.color};" onclick="selectPresetAvatar('${p.icon}', '${p.color}')"><i class="fas ${p.icon}"></i></div>`; });
-            document.getElementById('avatarOptions').innerHTML = html;
+            document.getElementById('avatarOptions').innerHTML = presets.map(p => `<div class="avatar-option" style="background: ${p.color};" onclick="selectPresetAvatar('${p.icon}', '${p.color}')"><i class="fas ${p.icon}"></i></div>`).join('');
         }
         function selectPresetAvatar(icon, color) {
             const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 200; const ctx = canvas.getContext('2d');
@@ -1729,14 +1687,13 @@
             ctx.font = '100px "Font Awesome 6 Free"'; ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             const iconMap = { 'fa-user': '\uf007', 'fa-user-astronaut': '\uf4fb', 'fa-user-ninja': '\uf504', 'fa-user-secret': '\uf21b', 'fa-user-tie': '\uf508', 'fa-user-graduate': '\uf501', 'fa-user-cowboy': '\uf8c0', 'fa-user-pilot': '\uf5fb' };
             ctx.fillText(iconMap[icon] || '\uf007', 100, 100);
-            const avatarData = canvas.toDataURL('image/png');
-            AvatarManager.setAvatar(avatarData);
+            AvatarManager.setAvatar(canvas.toDataURL('image/png'));
             AvatarManager.applyToPage(userData?.username || 'User');
             closeModal('avatarModal'); showToast('success', 'Avatar mis à jour !');
         }
         function handleAvatarUpload(event) {
             const file = event.target.files[0]; if (!file) return;
-            if (file.size > 2 * 1024 * 1024) { showToast('error', 'Image trop grande (max 2MB)'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('error', 'Image trop grande'); return; }
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
@@ -1744,8 +1701,7 @@
                     const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 200; const ctx = canvas.getContext('2d');
                     const size = Math.min(img.width, img.height), sx = (img.width - size) / 2, sy = (img.height - size) / 2;
                     ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
-                    const avatarData = canvas.toDataURL('image/png');
-                    AvatarManager.setAvatar(avatarData);
+                    AvatarManager.setAvatar(canvas.toDataURL('image/png'));
                     AvatarManager.applyToPage(userData?.username || 'User');
                     closeModal('avatarModal'); showToast('success', 'Avatar mis à jour !');
                 };
@@ -1854,11 +1810,8 @@
             try {
                 const res = await fetch('/api/user/logout-all', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Toutes les sessions ont été déconnectées');
-                    localStorage.removeItem('token');
-                    setTimeout(() => window.location.href = '/login', 1500);
-                } else showToast('error', data.error || 'Erreur');
+                if (data.success) { showToast('success', 'Toutes les sessions ont été déconnectées'); localStorage.removeItem('token'); setTimeout(() => window.location.href = '/login', 1500); }
+                else showToast('error', data.error || 'Erreur');
             } catch (e) { showToast('error', 'Erreur réseau'); }
             finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Déconnecter partout'; }
         }
@@ -1871,6 +1824,7 @@
                 if (data.success) {
                     userData = data.user; userServers = data.servers || []; userTransactions = data.transactions || [];
                     updateUI(); loadReferralInfo(); AvatarManager.applyToPage(userData.username);
+                    load2FAStatus();
                 } else { localStorage.removeItem('token'); window.location.href = '/login'; }
             } catch (e) { showToast('error', 'Erreur de chargement'); }
         }
@@ -1907,7 +1861,7 @@
             document.getElementById('badgesContainer').innerHTML = userBadges.map(b => `<div class="badge-item"><i class="fas fa-certificate"></i>${b}</div>`).join('');
         }
 
-        // ===== TRANSACTIONS AVEC PAGINATION =====
+        // ===== TRANSACTIONS =====
         function displayTransactionsWithPagination() {
             const container = document.getElementById('transactionsContainer');
             const paginationContainer = document.getElementById('transactionsPagination');
@@ -2031,6 +1985,11 @@
         window.resetAvatar=resetAvatar; window.goToReferralPage=goToReferralPage; window.goToTransactionPage=goToTransactionPage;
         window.copyForSocial=copyForSocial; window.downloadQRCode=downloadQRCode; window.exportUserData=exportUserData;
         window.logoutAllSessions=logoutAllSessions;
+        
+        // 2FA exports
+        window.start2FASetup=start2FASetup; window.showTwofaStep2=showTwofaStep2; window.moveToNext=moveToNext;
+        window.verify2FACode=verify2FACode; window.showBackupCodes=showBackupCodes; window.downloadBackupCodes=downloadBackupCodes;
+        window.showDisable2FAModal=showDisable2FAModal; window.disable2FA=disable2FA;
     </script>
 </body>
 </html>
