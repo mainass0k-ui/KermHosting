@@ -3164,7 +3164,7 @@
 
         function prepareFreeServer() {
             if (userData?.free_panel_created) { showToast('error', 'Serveur gratuit déjà utilisé'); return; }
-            document.getElementById('planSelect').innerHTML = `<option value="free">Free - Gratuit (256 MB RAM, 24h)</option>`;
+            document.getElementById('planSelect').innerHTML = `<option value="free">Free - Gratuit (2 GB RAM, 24h)</option>`;
             document.getElementById('serverName').value = ''; document.getElementById('serverUsername').value = '';
             openModal('serverModal');
         }
