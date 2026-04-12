@@ -69,7 +69,16 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* Thèmes */
+        /* Thèmes - 13 thèmes */
+        [data-theme="default"] {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+        }
+
         [data-theme="cyberpunk"] {
             --primary: #FF007F;
             --primary-light: #FF3399;
@@ -122,6 +131,60 @@
             --secondary: #3498DB;
             --secondary-light: #5DADE2;
             --accent: #E74C3C;
+        }
+
+        [data-theme="candy"] {
+            --primary: #FF69B4;
+            --primary-light: #FFB6C1;
+            --primary-dark: #DB7093;
+            --secondary: #98FB98;
+            --secondary-light: #C1FFC1;
+            --accent: #FFD700;
+        }
+
+        [data-theme="midnight"] {
+            --primary: #1a1a2e;
+            --primary-light: #16213e;
+            --primary-dark: #0f3460;
+            --secondary: #e94560;
+            --secondary-light: #ff6b6b;
+            --accent: #c0c0c0;
+        }
+
+        [data-theme="fire"] {
+            --primary: #FF4500;
+            --primary-light: #FF6347;
+            --primary-dark: #DC143C;
+            --secondary: #FF8C00;
+            --secondary-light: #FFA500;
+            --accent: #FFD700;
+        }
+
+        [data-theme="neon"] {
+            --primary: #39FF14;
+            --primary-light: #7FFF00;
+            --primary-dark: #32CD32;
+            --secondary: #FFFF00;
+            --secondary-light: #FFD700;
+            --accent: #FF00FF;
+        }
+
+        [data-theme="lavender"] {
+            --primary: #8A2BE2;
+            --primary-light: #BA55D3;
+            --primary-dark: #6A0DAD;
+            --secondary: #DA70D6;
+            --secondary-light: #EE82EE;
+            --accent: #FFB6C1;
+        }
+
+        [data-theme="coffee"] {
+            --primary: #6F4E37;
+            --primary-light: #8B6914;
+            --primary-dark: #3E2723;
+            --secondary: #D2B48C;
+            --secondary-light: #DEB887;
+            --accent: #FFE4B5;
         }
 
         * {
@@ -249,6 +312,12 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-user:hover {
+            background: var(--bg-hover);
         }
 
         .user-avatar {
@@ -261,6 +330,13 @@
             justify-content: center;
             font-size: 2rem;
             color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -468,6 +544,8 @@
 
         .user-menu {
             cursor: pointer;
+            text-decoration: none;
+            display: block;
         }
 
         .user-avatar-small {
@@ -626,7 +704,7 @@
             margin-top: 4px;
         }
 
-        /* NOUVEAU : Météo des serveurs */
+        /* Météo des serveurs */
         .server-weather-widget {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
             border-radius: var(--radius-xl);
@@ -702,7 +780,7 @@
             color: var(--text-secondary);
         }
 
-        /* NOUVEAU : Objectifs personnalisés */
+        /* Objectifs personnalisés */
         .goals-widget {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
             border-radius: var(--radius-xl);
@@ -815,7 +893,7 @@
             color: var(--text-secondary);
         }
 
-        /* NOUVEAU : Smart Search */
+        /* Smart Search */
         .search-overlay {
             position: fixed;
             top: 0;
@@ -946,10 +1024,11 @@
             padding: 12px;
             margin-top: 8px;
             display: none;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             z-index: 100;
             box-shadow: var(--shadow-lg);
+            max-width: 220px;
         }
 
         .theme-dropdown.active {
@@ -1118,37 +1197,17 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
-            }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
         }
 
-        .quick-action.reward-ready i {
-            color: white;
-        }
+        .quick-action.reward-ready i,
+        .quick-action.reward-ready h3,
+        .quick-action.reward-ready p { color: white; }
 
-        .quick-action.reward-ready h3 {
-            color: white;
-        }
-
-        .quick-action.reward-ready p {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .quick-action.reward-claimed {
-            opacity: 0.7;
-        }
-
-        .quick-action.reward-claimed i {
-            color: var(--text-muted);
-        }
-
-        .quick-action.reward-claimed p {
-            color: var(--text-muted);
-        }
+        .quick-action.reward-claimed { opacity: 0.7; }
+        .quick-action.reward-claimed i,
+        .quick-action.reward-claimed p { color: var(--text-muted); }
 
         .quick-action.reward-loading {
             opacity: 0.8;
@@ -1187,15 +1246,8 @@
             box-shadow: var(--shadow-glow);
         }
 
-        .server-card.expiring {
-            border-left: 4px solid var(--warning);
-        }
-
-        .server-card.expired {
-            border-left: 4px solid var(--danger);
-            opacity: 0.7;
-        }
-
+        .server-card.expiring { border-left: 4px solid var(--warning); }
+        .server-card.expired { border-left: 4px solid var(--danger); opacity: 0.7; }
         .server-card.suspended {
             border-left: 4px solid var(--danger);
             opacity: 0.8;
@@ -1219,9 +1271,7 @@
             font-size: 0.95rem;
         }
 
-        .server-name i {
-            color: var(--primary);
-        }
+        .server-name i { color: var(--primary); }
 
         .server-status {
             display: flex;
@@ -1241,22 +1291,13 @@
             box-shadow: 0 0 10px var(--success);
         }
 
-        .status-stopped {
-            background: var(--text-muted);
-        }
-
+        .status-stopped { background: var(--text-muted); }
         .status-suspended {
             background: var(--danger);
             box-shadow: 0 0 10px var(--danger);
         }
 
-        .status-error {
-            background: var(--danger);
-        }
-
-        .server-body {
-            padding: 14px;
-        }
+        .server-body { padding: 14px; }
 
         .server-info {
             display: grid;
@@ -1294,13 +1335,8 @@
             gap: 4px;
         }
 
-        .server-expiry.warning {
-            color: var(--warning);
-        }
-
-        .server-expiry.danger {
-            color: var(--danger);
-        }
+        .server-expiry.warning { color: var(--warning); }
+        .server-expiry.danger { color: var(--danger); }
 
         .server-actions {
             display: flex;
@@ -1328,13 +1364,8 @@
             border-color: var(--primary);
         }
 
-        .server-action-btn.stop:hover {
-            background: var(--danger);
-        }
-
-        .server-action-btn.start:hover {
-            background: var(--success);
-        }
+        .server-action-btn.stop:hover { background: var(--danger); }
+        .server-action-btn.start:hover { background: var(--success); }
 
         .server-action-btn:disabled {
             opacity: 0.5;
@@ -1361,9 +1392,7 @@
             color: var(--text-primary);
         }
 
-        .console-line:last-child {
-            border-bottom: none;
-        }
+        .console-line:last-child { border-bottom: none; }
 
         .activity-list {
             background: var(--bg-card);
@@ -1381,13 +1410,8 @@
             transition: background 0.2s;
         }
 
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-item:hover {
-            background: var(--bg-hover);
-        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item:hover { background: var(--bg-hover); }
 
         .activity-icon {
             width: 36px;
@@ -1400,9 +1424,7 @@
             color: var(--primary);
         }
 
-        .activity-content {
-            flex: 1;
-        }
+        .activity-content { flex: 1; }
 
         .activity-title {
             font-weight: 600;
@@ -1420,13 +1442,8 @@
             font-size: 0.85rem;
         }
 
-        .activity-coins.positive {
-            color: var(--success);
-        }
-
-        .activity-coins.negative {
-            color: var(--danger);
-        }
+        .activity-coins.positive { color: var(--success); }
+        .activity-coins.negative { color: var(--danger); }
 
         .loading-state {
             text-align: center;
@@ -1487,9 +1504,7 @@
             padding: 16px;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: var(--bg-card);
@@ -1505,14 +1520,8 @@
         }
 
         @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -1540,9 +1549,7 @@
             justify-content: center;
         }
 
-        .modal-body {
-            margin-bottom: 20px;
-        }
+        .modal-body { margin-bottom: 20px; }
 
         .modal-info {
             background: var(--bg-hover);
@@ -1618,9 +1625,7 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .credential-item:last-child {
-            border-bottom: none;
-        }
+        .credential-item:last-child { border-bottom: none; }
 
         .credential-label {
             color: var(--text-secondary);
@@ -1631,9 +1636,7 @@
             min-width: 120px;
         }
 
-        .credential-label i {
-            color: var(--primary);
-        }
+        .credential-label i { color: var(--primary); }
 
         .credential-value {
             font-family: 'Courier New', monospace;
@@ -1685,9 +1688,7 @@
             gap: 8px;
         }
 
-        .auto-renew-title i {
-            color: var(--primary);
-        }
+        .auto-renew-title i { color: var(--primary); }
 
         .toggle-switch {
             position: relative;
@@ -1726,13 +1727,8 @@
             border-radius: 50%;
         }
 
-        input:checked + .toggle-slider {
-            background-color: var(--success);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
+        input:checked + .toggle-slider { background-color: var(--success); }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
 
         .auto-renew-info {
             font-size: 0.8rem;
@@ -1754,9 +1750,7 @@
             display: none;
         }
 
-        .auto-renew-error.show {
-            display: block;
-        }
+        .auto-renew-error.show { display: block; }
 
         .warning-message {
             background: rgba(245, 158, 11, 0.1);
@@ -1771,9 +1765,7 @@
             font-size: 0.85rem;
         }
 
-        .warning-message i {
-            font-size: 1.2rem;
-        }
+        .warning-message i { font-size: 1.2rem; }
 
         .notifications-panel {
             position: fixed;
@@ -1790,9 +1782,7 @@
             flex-direction: column;
         }
 
-        .notifications-panel.active {
-            transform: translateX(0);
-        }
+        .notifications-panel.active { transform: translateX(0); }
 
         .notifications-header {
             padding: 16px;
@@ -1802,9 +1792,7 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .notifications-header h3 {
-            font-size: 1.1rem;
-        }
+        .notifications-header h3 { font-size: 1.1rem; }
 
         .notifications-list {
             flex: 1;
@@ -1839,9 +1827,7 @@
             color: var(--primary);
         }
 
-        .notification-content {
-            flex: 1;
-        }
+        .notification-content { flex: 1; }
 
         .notification-title {
             font-weight: 600;
@@ -1877,42 +1863,19 @@
             margin: 0 auto;
         }
 
-        .toast.success {
-            background: rgba(16, 185, 129, 0.95);
-        }
-
-        .toast.error {
-            background: rgba(239, 68, 68, 0.95);
-        }
-
-        .toast.info {
-            background: rgba(59, 130, 246, 0.95);
-        }
-
-        .toast.warning {
-            background: rgba(245, 158, 11, 0.95);
-        }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
+        .toast.warning { background: rgba(245, 158, 11, 0.95); }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes slideOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(30px);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
         }
 
         .whatsapp-modal {
@@ -1930,9 +1893,7 @@
             padding: 20px;
         }
 
-        .whatsapp-modal.hidden {
-            display: none;
-        }
+        .whatsapp-modal.hidden { display: none; }
 
         .whatsapp-modal-content {
             background: var(--bg-card);
@@ -1957,10 +1918,7 @@
             margin: 0 auto 20px;
         }
 
-        .whatsapp-icon i {
-            font-size: 40px;
-            color: white;
-        }
+        .whatsapp-icon i { font-size: 40px; color: white; }
 
         .whatsapp-modal-content h2 {
             font-size: 1.5rem;
@@ -2026,70 +1984,29 @@
         }
 
         @media (min-width: 640px) {
-            .welcome-stats {
-                flex-direction: row;
-            }
-            
-            .quick-actions {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .servers-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .toast {
-                left: auto;
-                right: 20px;
-            }
+            .welcome-stats { flex-direction: row; }
+            .quick-actions { grid-template-columns: repeat(4, 1fr); }
+            .servers-grid { grid-template-columns: repeat(2, 1fr); }
+            .toast { left: auto; right: 20px; }
         }
 
         @media (min-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-            }
-            
-            .servers-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .weather-forecast {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+            .servers-grid { grid-template-columns: repeat(2, 1fr); }
+            .weather-forecast { grid-template-columns: repeat(4, 1fr); }
         }
 
         @media (min-width: 1024px) {
-            .page-content {
-                padding: 24px;
-            }
-            
-            .servers-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
-
-            .sidebar {
-                transform: translateX(0);
-                position: sticky;
-            }
-
-            .sidebar-overlay {
-                display: none;
-            }
-
-            .top-bar-logo {
-                display: none;
-            }
+            .page-content { padding: 24px; }
+            .servers-grid { grid-template-columns: repeat(3, 1fr); }
+            .menu-toggle { display: none; }
+            .sidebar { transform: translateX(0); position: sticky; }
+            .sidebar-overlay { display: none; }
+            .top-bar-logo { display: none; }
         }
 
         @media (min-width: 1280px) {
-            .servers-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .servers-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
@@ -2109,7 +2026,7 @@
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar">
+                <div class="user-avatar" id="sidebarAvatar">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="user-info">
@@ -2152,12 +2069,12 @@
                         </a>
                     </li>
                     <li>
-                       <a href="/bot">
-                           <i class="fab fa-whatsapp"></i>
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
                             <span>KERM MD V1</span>
-                       </a>
-                     </li>
-                     <li>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
                             <span>Support</span>
@@ -2209,11 +2126,17 @@
                             <div class="theme-option" data-theme="forest" style="background: linear-gradient(135deg, #2D8B57, #8B7355);"></div>
                             <div class="theme-option" data-theme="mint" style="background: linear-gradient(135deg, #00B894, #74B9FF);"></div>
                             <div class="theme-option" data-theme="galaxy" style="background: linear-gradient(135deg, #9B59B6, #3498DB);"></div>
+                            <div class="theme-option" data-theme="candy" style="background: linear-gradient(135deg, #FF69B4, #98FB98);"></div>
+                            <div class="theme-option" data-theme="midnight" style="background: linear-gradient(135deg, #1a1a2e, #e94560);"></div>
+                            <div class="theme-option" data-theme="fire" style="background: linear-gradient(135deg, #FF4500, #FF8C00);"></div>
+                            <div class="theme-option" data-theme="neon" style="background: linear-gradient(135deg, #39FF14, #FFFF00);"></div>
+                            <div class="theme-option" data-theme="lavender" style="background: linear-gradient(135deg, #8A2BE2, #DA70D6);"></div>
+                            <div class="theme-option" data-theme="coffee" style="background: linear-gradient(135deg, #6F4E37, #D2B48C);"></div>
                         </div>
                     </div>
                     <button class="notification-btn" id="notificationBtn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notificationBadge">0</span>
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                     </button>
                     <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=User&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
@@ -2227,9 +2150,9 @@
                     <button id="closeNotifications"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="notifications-list" id="notificationsList">
-                    <div class="loading-state">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Chargement...</p>
+                    <div class="empty-state" style="padding: 20px;">
+                        <i class="fas fa-bell-slash"></i>
+                        <p style="font-size: 0.9rem;">Aucune notification</p>
                     </div>
                 </div>
             </div>
@@ -2359,7 +2282,7 @@
                     </div>
                 </div>
 
-                <!-- NOUVEAU : Widget Météo des Serveurs -->
+                <!-- Widget Météo des Serveurs -->
                 <div class="server-weather-widget">
                     <div class="weather-header">
                         <div class="weather-title">
@@ -2371,12 +2294,10 @@
                             En direct
                         </span>
                     </div>
-                    <div class="weather-forecast" id="weatherForecast">
-                        <!-- Rempli dynamiquement -->
-                    </div>
+                    <div class="weather-forecast" id="weatherForecast"></div>
                 </div>
 
-                <!-- NOUVEAU : Objectifs personnalisés -->
+                <!-- Objectifs personnalisés -->
                 <div class="goals-widget">
                     <div class="goals-header">
                         <div class="goals-title">
@@ -2387,9 +2308,7 @@
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
-                    <div class="goals-list" id="goalsList">
-                        <!-- Rempli dynamiquement -->
-                    </div>
+                    <div class="goals-list" id="goalsList"></div>
                 </div>
 
                 <div class="quick-actions">
@@ -2417,10 +2336,7 @@
                 </div>
 
                 <div class="section-header">
-                    <h2>
-                        <i class="fas fa-server"></i>
-                        Mes serveurs
-                    </h2>
+                    <h2><i class="fas fa-server"></i>Mes serveurs</h2>
                     <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981); box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); border: 1px solid rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-plus-circle"></i>
                         Nouveau serveur
@@ -2435,10 +2351,7 @@
                 </div>
 
                 <div class="section-header">
-                    <h2>
-                        <i class="fas fa-history"></i>
-                        Activité récente
-                    </h2>
+                    <h2><i class="fas fa-history"></i>Activité récente</h2>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-outline btn-small" id="refreshActivitiesBtn" title="Actualiser">
                             <i class="fas fa-sync-alt"></i>
@@ -2460,7 +2373,7 @@
         </main>
     </div>
 
-    <!-- Modals existants... -->
+    <!-- Modals -->
     <div class="modal" id="serverModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2597,7 +2510,6 @@
                         <span class="modal-info-value" id="renewBalance">- coins</span>
                     </div>
                 </div>
-
                 <p style="color: var(--text-secondary); margin: 16px 0; font-size: 0.9rem;">
                     <i class="fas fa-info-circle"></i>
                     Le renouvellement prolonge la durée de 30 jours.
@@ -2640,10 +2552,67 @@
     </div>
 
     <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/login';
+        // ===== AVATAR MANAGER =====
+        const AvatarManager = {
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {}
+            },
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                document.querySelectorAll('[data-avatar]').forEach(el => {
+                    if (el.tagName === 'IMG') el.src = avatar;
+                    else { el.style.backgroundImage = `url(${avatar})`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; }
+                });
+                if (username) localStorage.setItem('username', username);
+            }
+        };
+
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
         }
+
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; }
 
         const PLANS = {
             'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300, price: 0, coins: 0, duration: 1 },
@@ -2663,13 +2632,10 @@
         let isClaimingReward = false;
         let userGoals = [];
 
-        // Charger les objectifs depuis localStorage
         function loadGoals() {
             const saved = localStorage.getItem('kermhosting_goals');
-            if (saved) {
-                userGoals = JSON.parse(saved);
-            } else {
-                // Objectifs par défaut
+            if (saved) { userGoals = JSON.parse(saved); }
+            else {
                 userGoals = [
                     { id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500, current: 0 },
                     { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3, current: 0 }
@@ -2679,23 +2645,14 @@
             updateGoalsDisplay();
         }
 
-        function saveGoals() {
-            localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals));
-        }
+        function saveGoals() { localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals)); }
 
         function updateGoalsDisplay() {
             const container = document.getElementById('goalsList');
             if (!userGoals.length) {
-                container.innerHTML = `
-                    <div class="empty-goals">
-                        <i class="fas fa-bullseye" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px;"></i>
-                        <p>Aucun objectif défini</p>
-                        <p style="font-size: 0.8rem;">Cliquez sur + pour en créer un</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-goals"><i class="fas fa-bullseye" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px;"></i><p>Aucun objectif défini</p><p style="font-size: 0.8rem;">Cliquez sur + pour en créer un</p></div>`;
                 return;
             }
-
             let html = '';
             userGoals.forEach(goal => {
                 let current = 0;
@@ -2703,119 +2660,62 @@
                 else if (goal.type === 'servers') current = userServers.length;
                 else if (goal.type === 'streak' && userData) current = userData.daily_login_streak || 0;
                 else current = goal.current || 0;
-
                 const progress = Math.min((current / goal.target) * 100, 100);
                 const isComplete = progress >= 100;
-
-                if (isComplete && !goal.completed) {
-                    goal.completed = true;
-                    saveGoals();
-                    celebrateConfetti();
-                }
-
-                html += `
-                    <div class="goal-item" data-goal-id="${goal.id}">
-                        <div class="goal-info">
-                            <div class="goal-name">
-                                <span>${goal.name}</span>
-                                <span class="goal-progress">${current}/${goal.target}</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill ${!isComplete ? 'animated' : ''}" style="width: ${progress}%;"></div>
-                            </div>
-                        </div>
-                        <button class="btn-icon" onclick="deleteGoal('${goal.id}')" style="width: 28px; height: 28px;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
+                if (isComplete && !goal.completed) { goal.completed = true; saveGoals(); celebrateConfetti(); }
+                html += `<div class="goal-item" data-goal-id="${goal.id}"><div class="goal-info"><div class="goal-name"><span>${goal.name}</span><span class="goal-progress">${current}/${goal.target}</span></div><div class="progress-bar"><div class="progress-fill ${!isComplete ? 'animated' : ''}" style="width: ${progress}%;"></div></div></div><button class="btn-icon" onclick="deleteGoal('${goal.id}')" style="width: 28px; height: 28px;"><i class="fas fa-times"></i></button></div>`;
             });
             container.innerHTML = html;
         }
 
-        function deleteGoal(goalId) {
-            userGoals = userGoals.filter(g => g.id !== goalId);
-            saveGoals();
-            updateGoalsDisplay();
-            showToast('info', 'Objectif supprimé');
-        }
+        function deleteGoal(goalId) { userGoals = userGoals.filter(g => g.id !== goalId); saveGoals(); updateGoalsDisplay(); showToast('info', 'Objectif supprimé'); }
 
         function saveGoal() {
             const type = document.getElementById('goalType').value;
             const target = parseInt(document.getElementById('goalTarget').value);
             let name = document.getElementById('goalName').value.trim();
-
-            if (!target || target < 1) {
-                showToast('error', 'Veuillez entrer un objectif valide');
-                return;
-            }
-
-            if (!name) {
-                const typeNames = { coins: 'coins', servers: 'serveurs', streak: 'jours de série', custom: 'objectif' };
-                name = `Atteindre ${target} ${typeNames[type]}`;
-            }
-
-            const newGoal = {
-                id: Date.now().toString(),
-                name: name,
-                type: type,
-                target: target,
-                current: 0,
-                completed: false
-            };
-
+            if (!target || target < 1) { showToast('error', 'Veuillez entrer un objectif valide'); return; }
+            if (!name) { const typeNames = { coins: 'coins', servers: 'serveurs', streak: 'jours de série', custom: 'objectif' }; name = `Atteindre ${target} ${typeNames[type]}`; }
+            const newGoal = { id: Date.now().toString(), name: name, type: type, target: target, current: 0, completed: false };
             userGoals.push(newGoal);
             saveGoals();
             updateGoalsDisplay();
             closeModal('goalModal');
             showToast('success', 'Objectif créé !');
-
             document.getElementById('goalTarget').value = '';
             document.getElementById('goalName').value = '';
         }
 
-        // Système de thèmes
         function initTheme() {
             const savedTheme = localStorage.getItem('kermhosting_theme') || 'default';
             document.body.setAttribute('data-theme', savedTheme);
-            
             document.querySelectorAll('.theme-option').forEach(opt => {
                 opt.classList.remove('active');
-                if (opt.dataset.theme === savedTheme) {
-                    opt.classList.add('active');
-                }
+                if (opt.dataset.theme === savedTheme) opt.classList.add('active');
             });
         }
 
         function setTheme(theme) {
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('kermhosting_theme', theme);
-            
             document.querySelectorAll('.theme-option').forEach(opt => {
                 opt.classList.remove('active');
-                if (opt.dataset.theme === theme) {
-                    opt.classList.add('active');
-                }
+                if (opt.dataset.theme === theme) opt.classList.add('active');
             });
-            
             showToast('success', `Thème ${theme} activé !`);
         }
 
-        // Confettis de célébration
         function celebrateConfetti() {
             const canvas = document.createElement('canvas');
             canvas.className = 'confetti-canvas';
             document.body.appendChild(canvas);
-            
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
             const particles = [];
             for (let i = 0; i < 50; i++) {
                 particles.push({
-                    x: canvas.width / 2,
-                    y: canvas.height / 2,
+                    x: canvas.width / 2, y: canvas.height / 2,
                     size: Math.random() * 8 + 4,
                     speedX: (Math.random() - 0.5) * 12,
                     speedY: (Math.random() - 0.5) * 12 - 2,
@@ -2823,107 +2723,54 @@
                     life: 100
                 });
             }
-            
             function animateConfetti() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
                 let alive = false;
                 particles.forEach(p => {
                     if (p.life > 0) {
                         alive = true;
-                        p.x += p.speedX;
-                        p.y += p.speedY;
-                        p.speedY += 0.15;
-                        p.life--;
-                        
+                        p.x += p.speedX; p.y += p.speedY; p.speedY += 0.15; p.life--;
                         ctx.globalAlpha = p.life / 100;
                         ctx.fillStyle = p.color;
                         ctx.fillRect(p.x, p.y, p.size, p.size);
                     }
                 });
-                
-                if (alive) {
-                    requestAnimationFrame(animateConfetti);
-                } else {
-                    canvas.remove();
-                }
+                if (alive) requestAnimationFrame(animateConfetti);
+                else canvas.remove();
             }
-            
             animateConfetti();
             showToast('success', '🎉 Objectif atteint ! Félicitations !');
         }
 
-        // Widget Météo des serveurs
         function updateWeatherWidget() {
             const container = document.getElementById('weatherForecast');
-            
             const running = userServers.filter(s => s.status === 'active').length;
             const stopped = userServers.filter(s => s.status === 'stopped').length;
             const suspended = userServers.filter(s => s.status === 'suspended').length;
-            const expiring = userServers.filter(s => {
-                if (!s.expires_at) return false;
-                const daysLeft = calculateDaysLeft(s.expires_at);
-                return daysLeft > 0 && daysLeft <= 3;
-            }).length;
-
+            const expiring = userServers.filter(s => { if (!s.expires_at) return false; const daysLeft = calculateDaysLeft(s.expires_at); return daysLeft > 0 && daysLeft <= 3; }).length;
             const weatherData = [
                 { icon: 'sun', class: 'sunny', status: 'En ligne', count: running, label: 'Actifs' },
                 { icon: 'cloud', class: 'cloudy', status: 'Arrêtés', count: stopped, label: 'Inactifs' },
                 { icon: 'cloud-rain', class: 'rainy', status: 'Expirent', count: expiring, label: 'Bientôt' },
                 { icon: 'cloud-lightning', class: 'stormy', status: 'Suspendus', count: suspended, label: 'Alertes' }
             ];
-
             let html = '';
-            weatherData.forEach(w => {
-                html += `
-                    <div class="weather-card">
-                        <div class="weather-icon ${w.class}">
-                            <i class="fas fa-${w.icon}"></i>
-                        </div>
-                        <div class="weather-status">${w.status}</div>
-                        <div class="weather-count">${w.count}</div>
-                        <div class="weather-label">${w.label}</div>
-                    </div>
-                `;
-            });
+            weatherData.forEach(w => { html += `<div class="weather-card"><div class="weather-icon ${w.class}"><i class="fas fa-${w.icon}"></i></div><div class="weather-status">${w.status}</div><div class="weather-count">${w.count}</div><div class="weather-label">${w.label}</div></div>`; });
             container.innerHTML = html;
         }
 
-        // Smart Search
         function initSmartSearch() {
             const overlay = document.getElementById('searchOverlay');
             const input = document.getElementById('smartSearchInput');
             const results = document.getElementById('searchResults');
-
             document.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                    e.preventDefault();
-                    overlay.classList.add('active');
-                    input.focus();
-                }
-                if (e.key === 'Escape' && overlay.classList.contains('active')) {
-                    overlay.classList.remove('active');
-                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); overlay.classList.add('active'); input.focus(); }
+                if (e.key === 'Escape' && overlay.classList.contains('active')) overlay.classList.remove('active');
             });
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
-                }
-            });
-
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
             input.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
-                if (!query) {
-                    results.innerHTML = `
-                        <div class="search-empty">
-                            <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i>
-                            <p>Tapez pour rechercher...</p>
-                        </div>
-                    `;
-                    return;
-                }
-
+                if (!query) { results.innerHTML = `<div class="search-empty"><i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i><p>Tapez pour rechercher...</p></div>`; return; }
                 const searchableItems = [
                     ...userServers.map(s => ({ type: 'server', title: s.server_name, subtitle: `${PLANS[s.server_type]?.name || 'Serveur'} - ${s.status}`, url: '#', action: () => showServerDetails(s.id) })),
                     { type: 'page', title: 'Tableau de bord', subtitle: 'Vue d\'ensemble', url: '/dashboard' },
@@ -2932,36 +2779,12 @@
                     { type: 'page', title: 'Mon profil', subtitle: 'Paramètres', url: '/profile' },
                     { type: 'page', title: 'Support', subtitle: 'Aide et assistance', url: '/support' }
                 ];
-
-                const filtered = searchableItems.filter(item => 
-                    item.title.toLowerCase().includes(query) || 
-                    (item.subtitle && item.subtitle.toLowerCase().includes(query))
-                );
-
-                if (filtered.length === 0) {
-                    results.innerHTML = `
-                        <div class="search-empty">
-                            <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i>
-                            <p>Aucun résultat pour "${query}"</p>
-                        </div>
-                    `;
-                    return;
-                }
-
+                const filtered = searchableItems.filter(item => item.title.toLowerCase().includes(query) || (item.subtitle && item.subtitle.toLowerCase().includes(query)));
+                if (filtered.length === 0) { results.innerHTML = `<div class="search-empty"><i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i><p>Aucun résultat pour "${query}"</p></div>`; return; }
                 let html = '';
                 filtered.slice(0, 8).forEach(item => {
                     const icon = item.type === 'server' ? 'fa-server' : 'fa-file';
-                    html += `
-                        <div class="search-result-item" onclick="handleSearchResult(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                            <div class="search-result-icon">
-                                <i class="fas ${icon}"></i>
-                            </div>
-                            <div class="search-result-content">
-                                <div class="search-result-title">${item.title}</div>
-                                <div class="search-result-subtitle">${item.subtitle || ''}</div>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="search-result-item" onclick="handleSearchResult(${JSON.stringify(item).replace(/"/g, '&quot;')})"><div class="search-result-icon"><i class="fas ${icon}"></i></div><div class="search-result-content"><div class="search-result-title">${item.title}</div><div class="search-result-subtitle">${item.subtitle || ''}</div></div></div>`;
                 });
                 results.innerHTML = html;
             });
@@ -2970,25 +2793,16 @@
         function handleSearchResult(item) {
             document.getElementById('searchOverlay').classList.remove('active');
             document.getElementById('smartSearchInput').value = '';
-            
-            if (item.action) {
-                item.action();
-            } else if (item.url) {
-                window.location.href = item.url;
-            }
+            if (item.action) item.action();
+            else if (item.url) window.location.href = item.url;
         }
 
-        // ========== FONCTIONS EXISTANTES ==========
         function formatTimeAgo(date) {
             if (!date) return 'Date inconnue';
-            const now = new Date();
-            const past = new Date(date);
-            const diffMs = now - past;
-            const diffSec = Math.floor(diffMs / 1000);
-            const diffMin = Math.floor(diffSec / 60);
-            const diffHour = Math.floor(diffMin / 60);
+            const now = new Date(); const past = new Date(date);
+            const diffMs = now - past; const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60); const diffHour = Math.floor(diffMin / 60);
             const diffDay = Math.floor(diffHour / 24);
-
             if (diffSec < 60) return 'à l\'instant';
             if (diffMin < 60) return `il y a ${diffMin} min${diffMin > 1 ? 's' : ''}`;
             if (diffHour < 24) return `il y a ${diffHour} h${diffHour > 1 ? 's' : ''}`;
@@ -2998,51 +2812,36 @@
 
         function getTimeRemaining(lastLoginDate) {
             if (!lastLoginDate) return null;
-            
-            const now = new Date();
-            const lastLogin = new Date(lastLoginDate);
+            const now = new Date(); const lastLogin = new Date(lastLoginDate);
             if (isNaN(lastLogin.getTime())) return null;
-            
             const nextAvailable = new Date(lastLogin.getTime() + 24 * 60 * 60 * 1000);
             const diffMs = nextAvailable - now;
-            
             if (diffMs <= 0) return null;
-            
             const hours = Math.floor(diffMs / (1000 * 60 * 60));
             const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-            
             return { hours, minutes, seconds, diffMs };
         }
 
         function startCountdown(lastLoginDate) {
             if (countdownInterval) clearInterval(countdownInterval);
-            
             const countdownDiv = document.getElementById('rewardCountdown');
             const rewardBtn = document.getElementById('dailyRewardBtn');
             const rewardStatus = document.getElementById('rewardStatus');
-            
             function updateCountdown() {
                 const remaining = getTimeRemaining(lastLoginDate);
-                
                 if (!remaining) {
                     countdownDiv.style.display = 'none';
-                    rewardBtn.classList.add('reward-ready');
-                    rewardBtn.classList.remove('reward-claimed');
-                    rewardStatus.textContent = 'Prête !';
-                    rewardStatus.style.color = '#fff';
+                    rewardBtn.classList.add('reward-ready'); rewardBtn.classList.remove('reward-claimed');
+                    rewardStatus.textContent = 'Prête !'; rewardStatus.style.color = '#fff';
                     if (countdownInterval) clearInterval(countdownInterval);
                     return;
                 }
-                
                 countdownDiv.style.display = 'block';
                 countdownDiv.textContent = `Disponible dans ${remaining.hours}h ${remaining.minutes}m ${remaining.seconds}s`;
-                rewardBtn.classList.remove('reward-ready');
-                rewardBtn.classList.add('reward-claimed');
-                rewardStatus.textContent = 'Réclamée';
-                rewardStatus.style.color = 'var(--text-secondary)';
+                rewardBtn.classList.remove('reward-ready'); rewardBtn.classList.add('reward-claimed');
+                rewardStatus.textContent = 'Réclamée'; rewardStatus.style.color = 'var(--text-secondary)';
             }
-            
             updateCountdown();
             countdownInterval = setInterval(updateCountdown, 1000);
         }
@@ -3053,32 +2852,24 @@
                 const rewardBtn = document.getElementById('dailyRewardBtn');
                 const rewardStatus = document.getElementById('rewardStatus');
                 const countdownDiv = document.getElementById('rewardCountdown');
-                
                 if (remaining === null) {
-                    rewardBtn.classList.add('reward-ready');
-                    rewardBtn.classList.remove('reward-claimed');
-                    rewardStatus.textContent = 'Prête !';
-                    rewardStatus.style.color = '#fff';
+                    rewardBtn.classList.add('reward-ready'); rewardBtn.classList.remove('reward-claimed');
+                    rewardStatus.textContent = 'Prête !'; rewardStatus.style.color = '#fff';
                     countdownDiv.style.display = 'none';
                     if (countdownInterval) clearInterval(countdownInterval);
                 } else {
                     countdownDiv.style.display = 'block';
                     countdownDiv.textContent = `Disponible dans ${remaining.hours}h ${remaining.minutes}m ${remaining.seconds}s`;
-                    rewardBtn.classList.remove('reward-ready');
-                    rewardBtn.classList.add('reward-claimed');
-                    rewardStatus.textContent = 'Réclamée';
-                    rewardStatus.style.color = 'var(--text-secondary)';
+                    rewardBtn.classList.remove('reward-ready'); rewardBtn.classList.add('reward-claimed');
+                    rewardStatus.textContent = 'Réclamée'; rewardStatus.style.color = 'var(--text-secondary)';
                     startCountdown(userData.last_daily_login);
                 }
             } else {
                 const rewardBtn = document.getElementById('dailyRewardBtn');
                 const rewardStatus = document.getElementById('rewardStatus');
                 const countdownDiv = document.getElementById('rewardCountdown');
-                
-                rewardBtn.classList.add('reward-ready');
-                rewardBtn.classList.remove('reward-claimed');
-                rewardStatus.textContent = 'Prête !';
-                rewardStatus.style.color = '#fff';
+                rewardBtn.classList.add('reward-ready'); rewardBtn.classList.remove('reward-claimed');
+                rewardStatus.textContent = 'Prête !'; rewardStatus.style.color = '#fff';
                 countdownDiv.style.display = 'none';
                 if (countdownInterval) clearInterval(countdownInterval);
             }
@@ -3086,34 +2877,21 @@
 
         function showWhatsAppModal() {
             if (!whatsappShownThisSession) {
-                const modal = document.getElementById('whatsappModal');
-                modal.classList.remove('hidden');
+                document.getElementById('whatsappModal').classList.remove('hidden');
                 whatsappShownThisSession = true;
                 sessionStorage.setItem('whatsapp_shown', 'true');
             }
         }
 
-        function closeWhatsAppModal() {
-            const modal = document.getElementById('whatsappModal');
-            modal.classList.add('hidden');
-        }
+        function closeWhatsAppModal() { document.getElementById('whatsappModal').classList.add('hidden'); }
 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const menuToggle = document.getElementById('menuToggle');
         const closeSidebar = document.getElementById('closeSidebar');
 
-        function openSidebar() {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebarFunc() {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
+        function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
 
         menuToggle.addEventListener('click', openSidebar);
         closeSidebar.addEventListener('click', closeSidebarFunc);
@@ -3123,245 +2901,107 @@
         const notificationsPanel = document.getElementById('notificationsPanel');
         const closeNotifications = document.getElementById('closeNotifications');
 
-        notificationBtn.addEventListener('click', () => {
-            notificationsPanel.classList.toggle('active');
-            if (userServers.length > 0) loadNotifications();
-        });
+        notificationBtn.addEventListener('click', () => { notificationsPanel.classList.toggle('active'); if (userServers.length > 0) loadNotifications(); });
+        closeNotifications.addEventListener('click', () => notificationsPanel.classList.remove('active'));
+        document.addEventListener('click', (e) => { if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) notificationsPanel.classList.remove('active'); });
 
-        closeNotifications.addEventListener('click', () => {
-            notificationsPanel.classList.remove('active');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
-                notificationsPanel.classList.remove('active');
-            }
-        });
-
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
         function showToast(type, message) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            showToast('success', 'Copié !');
-        }
+        function copyToClipboard(text) { navigator.clipboard.writeText(text); showToast('success', 'Copié !'); }
 
         async function loadUserData() {
             try {
-                const res = await fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
-
                 if (data.success) {
                     userData = data.user;
                     userServers = data.servers || [];
-
                     updateUI();
-                    
                     const urlParams = new URLSearchParams(window.location.search);
-                    const createPlan = urlParams.get('create');
-                    
-                    if (createPlan === 'free') {
-                        prepareFreeServer();
-                    }
-                    
-                    const whatsappShown = sessionStorage.getItem('whatsapp_shown');
-                    if (!whatsappShown) {
-                        setTimeout(() => {
-                            showWhatsAppModal();
-                        }, 100);
-                    }
-                } else {
-                    localStorage.removeItem('token');
-                    window.location.href = '/login';
-                }
-            } catch (error) {
-                console.error('Erreur chargement:', error);
-                showToast('error', 'Erreur de chargement');
-            }
+                    if (urlParams.get('create') === 'free') prepareFreeServer();
+                    if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(() => showWhatsAppModal(), 100);
+                } else { localStorage.removeItem('token'); window.location.href = '/login'; }
+            } catch (error) { showToast('error', 'Erreur de chargement'); }
         }
 
         function updateUI() {
             if (!userData) return;
-
             document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
             document.getElementById('sidebarUserEmail').textContent = userData.email || 'email@example.com';
             document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
-            document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username || 'User'}&background=7C3AED&color=fff&size=40`;
             document.getElementById('sidebarCoins').textContent = userData.coins || 0;
             document.getElementById('sidebarServers').textContent = userServers.length;
-
             document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
             document.getElementById('welcomeCoins').textContent = userData.coins || 0;
             document.getElementById('welcomeServers').textContent = userServers.length;
             document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
-
             document.getElementById('statCoins').textContent = userData.coins || 0;
             document.getElementById('statServers').textContent = userServers.length;
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
-
-            const expiringCount = userServers.filter(s => {
-                if (!s.expires_at) return false;
-                const daysLeft = calculateDaysLeft(s.expires_at);
-                return daysLeft > 0 && daysLeft <= 3;
-            }).length;
-            
+            const expiringCount = userServers.filter(s => { if (!s.expires_at) return false; const daysLeft = calculateDaysLeft(s.expires_at); return daysLeft > 0 && daysLeft <= 3; }).length;
             document.getElementById('serversExpiring').textContent = expiringCount + ' bientôt expirés';
-            document.getElementById('notificationBadge').textContent = expiringCount;
-
+            const badge = document.getElementById('notificationBadge');
+            if (expiringCount > 0) { badge.textContent = expiringCount; badge.style.display = 'flex'; }
+            else { badge.style.display = 'none'; }
             updateRewardButton();
             displayServers();
             loadActivities();
             updateWeatherWidget();
             updateGoalsDisplay();
+            AvatarManager.applyToPage(userData.username);
         }
 
         function calculateDaysLeft(expiresAt) {
             if (!expiresAt) return 0;
-            try {
-                const now = new Date();
-                const expiry = new Date(expiresAt);
-                if (isNaN(expiry.getTime())) return 0;
-                const diffTime = expiry - now;
-                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            } catch (e) {
-                return 0;
-            }
+            try { const now = new Date(); const expiry = new Date(expiresAt); if (isNaN(expiry.getTime())) return 0; return Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)); }
+            catch (e) { return 0; }
         }
 
         function formatTimeLeft(expiresAt) {
             if (!expiresAt) return 'Inconnu';
-            try {
-                const now = new Date();
-                const expiry = new Date(expiresAt);
-                if (isNaN(expiry.getTime())) return 'Invalide';
-                const diffTime = expiry - now;
-                if (diffTime < 0) return 'Expiré';
-                const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                if (days > 0) return `${days}j ${hours}h`;
-                return `${hours}h`;
-            } catch (e) {
-                return 'Erreur';
-            }
+            try { const now = new Date(); const expiry = new Date(expiresAt); if (isNaN(expiry.getTime())) return 'Invalide'; const diffTime = expiry - now; if (diffTime < 0) return 'Expiré'; const days = Math.floor(diffTime / (1000 * 60 * 60 * 24)); const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); if (days > 0) return `${days}j ${hours}h`; return `${hours}h`; }
+            catch (e) { return 'Erreur'; }
         }
 
         function displayServers() {
             const container = document.getElementById('serversContainer');
             if (!userServers || userServers.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-server"></i>
-                        <h3>Aucun serveur</h3>
-                        <p>Vous n'avez pas encore créé de serveur.</p>
-                        <a href="/pricing" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Créer un serveur
-                        </a>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-server"></i><h3>Aucun serveur</h3><p>Vous n'avez pas encore créé de serveur.</p><a href="/pricing" class="btn btn-primary"><i class="fas fa-plus"></i>Créer un serveur</a></div>`;
                 return;
             }
-
             let html = '<div class="servers-grid">';
             userServers.forEach(server => {
                 const daysLeft = calculateDaysLeft(server.expires_at);
                 const timeLeft = formatTimeLeft(server.expires_at);
-                let statusText = '';
-                let cardClass = '';
-                let isSuspended = false;
-                let isExpired = daysLeft < 0;
-                
+                let statusText = '', cardClass = '', isSuspended = false, isExpired = daysLeft < 0;
                 switch(server.status) {
-                    case 'suspended':
-                        statusText = 'Suspendu';
-                        cardClass = 'suspended';
-                        isSuspended = true;
-                        break;
-                    case 'stopped':
-                        statusText = 'Arrêté';
-                        break;
-                    case 'active':
-                        if (isExpired) {
-                            statusText = 'Expiré';
-                            cardClass = 'expired';
-                        } else {
-                            statusText = 'En ligne';
-                        }
-                        break;
-                    default:
-                        statusText = 'Inconnu';
+                    case 'suspended': statusText = 'Suspendu'; cardClass = 'suspended'; isSuspended = true; break;
+                    case 'stopped': statusText = 'Arrêté'; break;
+                    case 'active': if (isExpired) { statusText = 'Expiré'; cardClass = 'expired'; } else statusText = 'En ligne'; break;
+                    default: statusText = 'Inconnu';
                 }
-
-                if (daysLeft <= 3 && daysLeft > 0 && server.status === 'active' && !isExpired) {
-                    cardClass = 'expiring';
-                }
-
+                if (daysLeft <= 3 && daysLeft > 0 && server.status === 'active' && !isExpired) cardClass = 'expiring';
                 const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu', memory: 0, disk: 0, cpu: 0 };
-
-                html += `
-                    <div class="server-card ${cardClass}" id="server-${server.id}">
-                        <div class="server-header">
-                            <div class="server-name">
-                                <i class="fas fa-cloud"></i>
-                                ${server.server_name || 'Sans nom'}
-                            </div>
-                            <div class="server-status">
-                                <span class="status-dot ${server.status === 'active' && !isExpired ? 'status-running' : server.status === 'suspended' ? 'status-suspended' : 'status-stopped'}"></span>
-                                <span>${statusText}</span>
-                            </div>
-                        </div>
-                        <div class="server-body">
-                            <div class="server-info">
-                                <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
-                                <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk / 1024} GB</span></div>
-                                <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
-                                <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
-                            </div>
-                            <div class="server-info-item"><i class="fas fa-calendar-alt"></i><span>Exp: ${server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'N/A'} (${timeLeft})</span></div>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}">
-                                <i class="fas fa-clock"></i> ${isExpired ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}
-                            </div>
-                            <div class="server-actions">
-                                <button class="server-action-btn" onclick="showServerDetails('${server.id}')"><i class="fas fa-info-circle"></i></button>
-                                <button class="server-action-btn" onclick="toggleConsole('${server.id}')"><i class="fas fa-terminal"></i></button>
-                                ${!isSuspended && !isExpired ? `
-                                    <button class="server-action-btn" onclick="powerAction('${server.id}', 'restart')"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')">
-                                        <i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i>
-                                    </button>
-                                ` : `<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>`}
-                            </div>
-                        </div>
-                        <div class="server-console" id="console-${server.id}" style="display: none;">
-                            <div class="console-line">> Console du serveur ${server.server_name}</div>
-                            <div class="console-line">> Connecté le ${new Date().toLocaleString()}</div>
-                        </div>
-                    </div>
-                `;
+                html += `<div class="server-card ${cardClass}" id="server-${server.id}">
+                    <div class="server-header"><div class="server-name"><i class="fas fa-cloud"></i>${server.server_name || 'Sans nom'}</div><div class="server-status"><span class="status-dot ${server.status === 'active' && !isExpired ? 'status-running' : server.status === 'suspended' ? 'status-suspended' : 'status-stopped'}"></span><span>${statusText}</span></div></div>
+                    <div class="server-body"><div class="server-info"><div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div><div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk / 1024} GB</span></div><div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div><div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div></div><div class="server-info-item"><i class="fas fa-calendar-alt"></i><span>Exp: ${server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'N/A'} (${timeLeft})</span></div></div>
+                    <div class="server-footer"><div class="server-expiry ${daysLeft <= 3 && daysLeft > 0 ? 'warning' : ''} ${daysLeft < 0 ? 'danger' : ''}"><i class="fas fa-clock"></i> ${isExpired ? 'Expiré' : daysLeft === 0 ? 'Aujourd\'hui' : daysLeft > 0 ? daysLeft + 'j' : '-'}</div><div class="server-actions">
+                        <button class="server-action-btn" onclick="showServerDetails('${server.id}')"><i class="fas fa-info-circle"></i></button>
+                        <button class="server-action-btn" onclick="toggleConsole('${server.id}')"><i class="fas fa-terminal"></i></button>
+                        ${!isSuspended && !isExpired ? `<button class="server-action-btn" onclick="powerAction('${server.id}', 'restart')"><i class="fas fa-sync-alt"></i></button><button class="server-action-btn ${statusText === 'En ligne' ? 'stop' : 'start'}" onclick="powerAction('${server.id}', '${statusText === 'En ligne' ? 'stop' : 'start'}')"><i class="fas ${statusText === 'En ligne' ? 'fa-stop' : 'fa-play'}"></i></button>` : `<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>`}
+                    </div></div>
+                    <div class="server-console" id="console-${server.id}" style="display: none;"><div class="console-line">> Console du serveur ${server.server_name}</div><div class="console-line">> Connecté le ${new Date().toLocaleString()}</div></div>
+                </div>`;
             });
             html += '</div>';
             container.innerHTML = html;
@@ -3374,56 +3014,29 @@
             const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu' };
             const daysLeft = calculateDaysLeft(server.expires_at);
             let statusDisplay = server.status === 'suspended' ? 'Suspendu' : server.status === 'stopped' ? 'Arrêté' : daysLeft < 0 ? 'Expiré' : 'Actif';
-            
             document.getElementById('detailsServerName').textContent = server.server_name || 'Sans nom';
             document.getElementById('detailsPlan').textContent = plan.name;
             document.getElementById('detailsStatus').textContent = statusDisplay;
             document.getElementById('detailsExpiry').textContent = server.expires_at ? new Date(server.expires_at).toLocaleDateString('fr-FR') : 'Non définie';
             document.getElementById('detailsTimeLeft').textContent = formatTimeLeft(server.expires_at);
-
             try {
-                const res = await fetch(`/api/servers/${serverId}/credentials`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch(`/api/servers/${serverId}/credentials`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success) {
                     const creds = data.credentials;
-                    document.getElementById('detailsCredentials').innerHTML = `
-                        <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${creds.username || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.username || ''}')"><i class="fas fa-copy"></i></button></div>
-                        <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${creds.password || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.password || ''}')"><i class="fas fa-copy"></i></button></div>
-                        <div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i>Panel</span><span class="credential-value">${creds.panel_url || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.panel_url || ''}')"><i class="fas fa-copy"></i></button></div>
-                    `;
-                } else {
-                    document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--text-secondary);">Identifiants non disponibles</p>';
-                }
-            } catch (error) {
-                document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--warning);">Erreur de chargement</p>';
-            }
-
+                    document.getElementById('detailsCredentials').innerHTML = `<div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${creds.username || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.username || ''}')"><i class="fas fa-copy"></i></button></div><div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${creds.password || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.password || ''}')"><i class="fas fa-copy"></i></button></div><div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i>Panel</span><span class="credential-value">${creds.panel_url || 'Non disponible'}</span><button class="copy-btn" onclick="copyToClipboard('${creds.panel_url || ''}')"><i class="fas fa-copy"></i></button></div>`;
+                } else document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--text-secondary);">Identifiants non disponibles</p>';
+            } catch (error) { document.getElementById('detailsCredentials').innerHTML = '<p style="color: var(--warning);">Erreur de chargement</p>'; }
             await loadAutoRenewStatus(server.id);
             const renewBtn = document.getElementById('renewBtn');
-            if (server.status === 'suspended' || daysLeft < 0) {
-                renewBtn.textContent = 'Réactiver';
-                renewBtn.className = 'btn btn-warning';
-            } else {
-                renewBtn.textContent = 'Renouveler';
-                renewBtn.className = 'btn btn-success';
-            }
+            if (server.status === 'suspended' || daysLeft < 0) { renewBtn.textContent = 'Réactiver'; renewBtn.className = 'btn btn-warning'; }
+            else { renewBtn.textContent = 'Renouveler'; renewBtn.className = 'btn btn-success'; }
             openModal('serverDetailsModal');
         }
 
         async function loadAutoRenewStatus(serverId) {
-            try {
-                const res = await fetch(`/api/servers/${serverId}/auto-renew`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('autoRenewToggle').checked = data.auto_renew || false;
-                }
-            } catch (error) {
-                console.error('Erreur auto-renew:', error);
-            }
+            try { const res = await fetch(`/api/servers/${serverId}/auto-renew`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); if (data.success) document.getElementById('autoRenewToggle').checked = data.auto_renew || false; }
+            catch (error) {}
         }
 
         async function toggleAutoRenew() {
@@ -3432,24 +3045,12 @@
             const enabled = toggle.checked;
             toggle.disabled = true;
             try {
-                const res = await fetch(`/api/servers/${currentServer.id}/auto-renew`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ enabled: enabled })
-                });
+                const res = await fetch(`/api/servers/${currentServer.id}/auto-renew`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled }) });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`);
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                    toggle.checked = !enabled;
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-                toggle.checked = !enabled;
-            } finally {
-                toggle.disabled = false;
-            }
+                if (data.success) showToast('success', `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`);
+                else { showToast('error', data.error || 'Erreur'); toggle.checked = !enabled; }
+            } catch (error) { showToast('error', 'Erreur réseau'); toggle.checked = !enabled; }
+            finally { toggle.disabled = false; }
         }
 
         function renewServer() {
@@ -3466,44 +3067,22 @@
         async function confirmRenew() {
             if (!currentServer) return;
             const plan = PLANS[currentServer.server_type] || { coins: 0 };
-            if ((userData?.coins || 0) < (plan.coins || 0)) {
-                showToast('error', 'Coins insuffisants');
-                closeModal('renewModal');
-                return;
-            }
+            if ((userData?.coins || 0) < (plan.coins || 0)) { showToast('error', 'Coins insuffisants'); closeModal('renewModal'); return; }
             const renewBtn = document.getElementById('renewConfirmBtn');
-            renewBtn.disabled = true;
-            renewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+            renewBtn.disabled = true; renewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
             try {
-                const res = await fetch(`/api/servers/${currentServer.id}/renew`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ coins: plan.coins })
-                });
+                const res = await fetch(`/api/servers/${currentServer.id}/renew`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ coins: plan.coins }) });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Serveur renouvelé !');
-                    closeModal('renewModal');
-                    loadUserData();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            } finally {
-                renewBtn.disabled = false;
-                renewBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler';
-            }
+                if (data.success) { showToast('success', 'Serveur renouvelé !'); closeModal('renewModal'); loadUserData(); }
+                else showToast('error', data.error || 'Erreur');
+            } catch (error) { showToast('error', 'Erreur réseau'); }
+            finally { renewBtn.disabled = false; renewBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler'; }
         }
 
         function powerAction(serverId, action) {
             const server = userServers.find(s => s.id === serverId);
-            if (server && server.status === 'suspended') {
-                showToast('error', 'Serveur suspendu, action impossible');
-                return;
-            }
-            currentServerId = serverId;
-            currentAction = action;
+            if (server && server.status === 'suspended') { showToast('error', 'Serveur suspendu, action impossible'); return; }
+            currentServerId = serverId; currentAction = action;
             const actionTitles = { 'start': 'Démarrer', 'stop': 'Arrêter', 'restart': 'Redémarrer' };
             document.getElementById('actionTitle').textContent = actionTitles[action] || 'Action';
             document.getElementById('actionMessage').textContent = `Confirmer ${(actionTitles[action] || 'action').toLowerCase()} le serveur ?`;
@@ -3512,95 +3091,44 @@
 
         async function confirmAction() {
             if (!currentServerId || !currentAction) return;
-            closeModal('actionModal');
-            showToast('info', 'En cours...');
+            closeModal('actionModal'); showToast('info', 'En cours...');
             try {
-                const res = await fetch(`/api/servers/${currentServerId}/power`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: currentAction })
-                });
+                const res = await fetch(`/api/servers/${currentServerId}/power`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: currentAction }) });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Action effectuée');
-                    setTimeout(() => loadUserData(), 2000);
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
-            currentServerId = null;
-            currentAction = null;
+                if (data.success) { showToast('success', 'Action effectuée'); setTimeout(() => loadUserData(), 2000); }
+                else showToast('error', data.error || 'Erreur');
+            } catch (error) { showToast('error', 'Erreur réseau'); }
+            currentServerId = null; currentAction = null;
         }
 
-        function toggleConsole(serverId) {
-            const console = document.getElementById(`console-${serverId}`);
-            if (console) console.style.display = console.style.display === 'none' ? 'block' : 'none';
-        }
+        function toggleConsole(serverId) { const console = document.getElementById(`console-${serverId}`); if (console) console.style.display = console.style.display === 'none' ? 'block' : 'none'; }
 
         document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
             e.preventDefault();
-            
             if (isClaimingReward) return;
-            
             const rewardBtn = document.getElementById('dailyRewardBtn');
             const rewardIcon = rewardBtn.querySelector('i');
             const rewardStatus = document.getElementById('rewardStatus');
             const originalIcon = rewardIcon.className;
             const originalText = rewardStatus.textContent;
-            
-            if (userData && userData.last_daily_login) {
-                const remaining = getTimeRemaining(userData.last_daily_login);
-                if (remaining !== null) {
-                    showToast('warning', `Récompense disponible dans ${remaining.hours}h ${remaining.minutes}m`);
-                    return;
-                }
-            }
-            
+            if (userData && userData.last_daily_login) { const remaining = getTimeRemaining(userData.last_daily_login); if (remaining !== null) { showToast('warning', `Récompense disponible dans ${remaining.hours}h ${remaining.minutes}m`); return; } }
             isClaimingReward = true;
-            rewardBtn.classList.add('reward-loading');
-            rewardIcon.className = 'fas fa-spinner fa-spin';
-            rewardStatus.textContent = 'Chargement...';
-            
+            rewardBtn.classList.add('reward-loading'); rewardIcon.className = 'fas fa-spinner fa-spin'; rewardStatus.textContent = 'Chargement...';
             try {
-                const res = await fetch('/api/daily-reward', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch('/api/daily-reward', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', `+${data.coins} coins (série ${data.streak})`);
-                    await loadUserData();
-                    celebrateConfetti();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                    rewardBtn.classList.remove('reward-loading');
-                    rewardIcon.className = originalIcon;
-                    rewardStatus.textContent = originalText;
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-                rewardBtn.classList.remove('reward-loading');
-                rewardIcon.className = originalIcon;
-                rewardStatus.textContent = originalText;
-            } finally {
-                isClaimingReward = false;
-            }
+                if (data.success) { showToast('success', `+${data.coins} coins (série ${data.streak})`); await loadUserData(); celebrateConfetti(); }
+                else { showToast('error', data.error || 'Erreur'); rewardBtn.classList.remove('reward-loading'); rewardIcon.className = originalIcon; rewardStatus.textContent = originalText; }
+            } catch (error) { showToast('error', 'Erreur réseau'); rewardBtn.classList.remove('reward-loading'); rewardIcon.className = originalIcon; rewardStatus.textContent = originalText; }
+            finally { isClaimingReward = false; }
         });
 
         async function loadNotifications() {
             const notificationsList = document.getElementById('notificationsList');
-            const expiringServers = userServers.filter(s => {
-                if (!s.expires_at) return false;
-                const daysLeft = calculateDaysLeft(s.expires_at);
-                return daysLeft > 0 && daysLeft <= 3;
-            });
+            const expiringServers = userServers.filter(s => { if (!s.expires_at) return false; const daysLeft = calculateDaysLeft(s.expires_at); return daysLeft > 0 && daysLeft <= 3; });
             let html = '';
-            if (expiringServers.length > 0) {
-                html += `<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${expiringServers.length} serveur(s) expirent bientôt</div><div class="notification-time">Maintenant</div></div></div>`;
-            }
-            html += `<div class="notification-item"><div class="notification-icon"><i class="fas fa-bell"></i></div><div class="notification-content"><div class="notification-title">Bienvenue</div><div class="notification-message">N'oubliez pas la récompense quotidienne</div><div class="notification-time">Il y a 2h</div></div></div>`;
+            if (expiringServers.length > 0) html += `<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${expiringServers.length} serveur(s) expirent bientôt</div><div class="notification-time">Maintenant</div></div></div>`;
+            else html += `<div class="empty-state" style="padding: 20px;"><i class="fas fa-bell-slash"></i><p style="font-size: 0.9rem;">Aucune notification</p></div>`;
             notificationsList.innerHTML = html;
         }
 
@@ -3608,56 +3136,36 @@
             const container = document.getElementById('activityContainer');
             container.innerHTML = `<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement des activités...</p></div>`;
             try {
-                const res = await fetch('/api/user/activities', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch('/api/user/activities', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
-                if (!data.success || !data.activities || data.activities.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>`;
-                    return;
-                }
+                if (!data.success || !data.activities || data.activities.length === 0) { container.innerHTML = `<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>`; return; }
                 let html = '';
                 data.activities.forEach(activity => {
                     let icon = 'fa-history';
-                    if (activity.activity_type) {
-                        if (activity.activity_type.includes('creation')) icon = 'fa-plus-circle';
-                        else if (activity.activity_type.includes('start')) icon = 'fa-play';
-                        else if (activity.activity_type.includes('stop')) icon = 'fa-stop';
-                        else if (activity.activity_type.includes('daily')) icon = 'fa-calendar-check';
-                        else if (activity.activity_type.includes('coins')) icon = 'fa-coins';
-                    }
-                    
+                    if (activity.activity_type.includes('creation')) icon = 'fa-plus-circle';
+                    else if (activity.activity_type.includes('start')) icon = 'fa-play';
+                    else if (activity.activity_type.includes('stop')) icon = 'fa-stop';
+                    else if (activity.activity_type.includes('daily')) icon = 'fa-calendar-check';
+                    else if (activity.activity_type.includes('coins')) icon = 'fa-coins';
                     const timeAgo = formatTimeAgo(activity.created_at);
-                    
                     html += `<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${activity.description || 'Action'}</div><div class="activity-time">${timeAgo}</div></div>${activity.coins_earned !== 0 ? `<div class="activity-coins ${activity.coins_earned > 0 ? 'positive' : 'negative'}">${activity.coins_earned > 0 ? '+' : ''}${activity.coins_earned}</div>` : ''}</div>`;
                 });
                 container.innerHTML = html;
-            } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
-            }
+            } catch (error) { container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`; }
         }
 
         document.getElementById('clearActivitiesBtn').addEventListener('click', async () => {
             if (!confirm('Supprimer tout l\'historique ?')) return;
-            try {
-                await fetch('/api/user/activities', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-                showToast('success', 'Historique effacé');
-                loadActivities();
-            } catch (error) {
-                showToast('error', 'Erreur');
-            }
+            try { await fetch('/api/user/activities', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); showToast('success', 'Historique effacé'); loadActivities(); }
+            catch (error) { showToast('error', 'Erreur'); }
         });
 
         document.getElementById('refreshActivitiesBtn').addEventListener('click', () => loadActivities());
 
         function prepareFreeServer() {
-            if (userData?.free_panel_created) {
-                showToast('error', 'Serveur gratuit déjà utilisé');
-                return;
-            }
+            if (userData?.free_panel_created) { showToast('error', 'Serveur gratuit déjà utilisé'); return; }
             document.getElementById('planSelect').innerHTML = `<option value="free">Free - Gratuit (256 MB RAM, 24h)</option>`;
-            document.getElementById('serverName').value = '';
-            document.getElementById('serverUsername').value = '';
+            document.getElementById('serverName').value = ''; document.getElementById('serverUsername').value = '';
             openModal('serverModal');
         }
 
@@ -3666,82 +3174,40 @@
             const name = document.getElementById('serverName').value?.trim();
             const username = document.getElementById('serverUsername').value?.trim();
             if (!plan || !name || !username) { showToast('error', 'Tous les champs requis'); return; }
-            closeModal('serverModal');
-            showToast('info', 'Création...');
+            closeModal('serverModal'); showToast('info', 'Création...');
             try {
-                const res = await fetch('/api/create-server', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ plan_id: plan, server_name: name, server_username: username, payment_method: plan === 'free' ? 'free' : 'coins' })
-                });
+                const res = await fetch('/api/create-server', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ plan_id: plan, server_name: name, server_username: username, payment_method: plan === 'free' ? 'free' : 'coins' }) });
                 const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Serveur créé !');
-                    loadUserData();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
+                if (data.success) { showToast('success', 'Serveur créé !'); loadUserData(); }
+                else showToast('error', data.error || 'Erreur');
+            } catch (error) { showToast('error', 'Erreur réseau'); }
         }
 
-        // Theme toggle
-        document.getElementById('themeToggleBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('themeDropdown').classList.toggle('active');
-        });
-
-        document.querySelectorAll('.theme-option').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                const theme = e.target.dataset.theme;
-                setTheme(theme);
-                document.getElementById('themeDropdown').classList.remove('active');
-            });
-        });
-
-        document.addEventListener('click', () => {
-            document.getElementById('themeDropdown').classList.remove('active');
-        });
-
-        // Goal modal
-        document.getElementById('addGoalBtn').addEventListener('click', () => {
-            openModal('goalModal');
-        });
+        document.getElementById('themeToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('themeDropdown').classList.toggle('active'); });
+        document.querySelectorAll('.theme-option').forEach(opt => { opt.addEventListener('click', (e) => { setTheme(e.target.dataset.theme); document.getElementById('themeDropdown').classList.remove('active'); }); });
+        document.addEventListener('click', () => { document.getElementById('themeDropdown').classList.remove('active'); });
+        document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
 
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
-            localStorage.removeItem('token');
-            localStorage.removeItem('kermhosting_theme');
-            sessionStorage.removeItem('whatsapp_shown');
+            localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown');
+            AvatarManager.reset();
             window.location.href = '/';
         });
 
-        document.getElementById('whatsappJoinBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09', '_blank');
-            closeWhatsAppModal();
-        });
-
+        document.getElementById('whatsappJoinBtn').addEventListener('click', (e) => { e.preventDefault(); window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09', '_blank'); closeWhatsAppModal(); });
         document.getElementById('whatsappLaterBtn').addEventListener('click', () => closeWhatsAppModal());
 
-        // Initialisation
         loadGoals();
         initTheme();
         initSmartSearch();
         loadUserData();
+        setupAvatarClickRedirect();
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) {
             planSelect.innerHTML = '<option value="">Choisissez un plan</option>';
-            Object.entries(PLANS).forEach(([key, plan]) => {
-                if (key !== 'free') {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = `${plan.name} - ${plan.price} FCFA (${plan.coins} coins)`;
-                    planSelect.appendChild(option);
-                }
-            });
+            Object.entries(PLANS).forEach(([key, plan]) => { if (key !== 'free') { const option = document.createElement('option'); option.value = key; option.textContent = `${plan.name} - ${plan.price} FCFA (${plan.coins} coins)`; planSelect.appendChild(option); } });
         }
 
         window.closeModal = closeModal;
@@ -3758,9 +3224,7 @@
         window.saveGoal = saveGoal;
         window.handleSearchResult = handleSearchResult;
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) closeSidebarFunc();
-        });
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
     </script>
 </body>
 </html>
