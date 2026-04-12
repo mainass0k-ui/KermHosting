@@ -69,6 +69,61 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
+        /* Thèmes */
+        [data-theme="cyberpunk"] {
+            --primary: #FF007F;
+            --primary-light: #FF3399;
+            --primary-dark: #CC0066;
+            --secondary: #00FFFF;
+            --secondary-light: #66FFFF;
+            --accent: #FFD700;
+        }
+
+        [data-theme="ocean"] {
+            --primary: #0066FF;
+            --primary-light: #3399FF;
+            --primary-dark: #0044CC;
+            --secondary: #00CCAA;
+            --secondary-light: #33FFDD;
+            --accent: #FFAA00;
+        }
+
+        [data-theme="sunset"] {
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #CC4A1A;
+            --secondary: #FFD700;
+            --secondary-light: #FFE44D;
+            --accent: #8B4513;
+        }
+
+        [data-theme="forest"] {
+            --primary: #2D8B57;
+            --primary-light: #3CB371;
+            --primary-dark: #1B5E3A;
+            --secondary: #8B7355;
+            --secondary-light: #A0896C;
+            --accent: #DAA520;
+        }
+
+        [data-theme="mint"] {
+            --primary: #00B894;
+            --primary-light: #55EFC4;
+            --primary-dark: #00996E;
+            --secondary: #74B9FF;
+            --secondary-light: #A4D0FF;
+            --accent: #FFEAA7;
+        }
+
+        [data-theme="galaxy"] {
+            --primary: #9B59B6;
+            --primary-light: #C39BD3;
+            --primary-dark: #7D3C98;
+            --secondary: #3498DB;
+            --secondary-light: #5DADE2;
+            --accent: #E74C3C;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -82,6 +137,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background 0.3s ease;
         }
 
         body::before {
@@ -570,6 +626,354 @@
             margin-top: 4px;
         }
 
+        /* NOUVEAU : Météo des serveurs */
+        .server-weather-widget {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .weather-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .weather-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .weather-title i {
+            color: var(--accent);
+        }
+
+        .weather-forecast {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .weather-card {
+            background: var(--bg-input);
+            border-radius: var(--radius-lg);
+            padding: 16px 8px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .weather-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .weather-icon.sunny { color: #FFD700; }
+        .weather-icon.cloudy { color: #A0A0A0; }
+        .weather-icon.rainy { color: #4A90E2; }
+        .weather-icon.stormy { color: #8B4513; }
+        .weather-icon.error { color: var(--danger); }
+
+        .weather-status {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .weather-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .weather-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* NOUVEAU : Objectifs personnalisés */
+        .goals-widget {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .goals-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .goals-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .goals-title i {
+            color: var(--warning);
+        }
+
+        .btn-icon {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .goal-info {
+            flex: 1;
+        }
+
+        .goal-name {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .goal-progress {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill.animated::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .empty-goals {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* NOUVEAU : Smart Search */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 80px;
+        }
+
+        .search-overlay.active {
+            display: flex;
+        }
+
+        .search-container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            animation: modalSlideIn 0.2s ease-out;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input-wrapper i {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-right: 12px;
+        }
+
+        #smartSearchInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        #smartSearchInput::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-shortcut {
+            background: var(--bg-input);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .search-result-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary-glow), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .search-result-content {
+            flex: 1;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .search-result-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .search-empty {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Thème Selector */
+        .theme-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            margin-top: 8px;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .theme-dropdown.active {
+            display: grid;
+        }
+
+        .theme-option {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-option.active {
+            border-color: white;
+            box-shadow: 0 0 15px currentColor;
+        }
+
         .section-header {
             display: flex;
             align-items: center;
@@ -664,12 +1068,6 @@
             background: #dc2626;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
-        }
-
-        .btn-danger:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .quick-actions {
@@ -1360,14 +1758,6 @@
             display: block;
         }
 
-        .auto-renew-stats {
-            display: flex;
-            gap: 16px;
-            margin-top: 8px;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-        }
-
         .warning-message {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid var(--warning);
@@ -1525,25 +1915,6 @@
             }
         }
 
-        .renewal-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            font-size: 0.65rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .renewal-badge.warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-
-        .renewal-badge.danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-
         .whatsapp-modal {
             position: fixed;
             top: 0;
@@ -1644,6 +2015,16 @@
             background: var(--bg-hover);
         }
 
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99999;
+        }
+
         @media (min-width: 640px) {
             .welcome-stats {
                 flex-direction: row;
@@ -1671,6 +2052,10 @@
             
             .servers-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .weather-forecast {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
@@ -1812,6 +2197,20 @@
                     <span>KermHosting</span>
                 </div>
                 <div class="top-bar-actions">
+                    <div class="theme-selector">
+                        <button class="notification-btn" id="themeToggleBtn" title="Changer de thème">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                        <div class="theme-dropdown" id="themeDropdown">
+                            <div class="theme-option" data-theme="default" style="background: linear-gradient(135deg, #7C3AED, #10B981);"></div>
+                            <div class="theme-option" data-theme="cyberpunk" style="background: linear-gradient(135deg, #FF007F, #00FFFF);"></div>
+                            <div class="theme-option" data-theme="ocean" style="background: linear-gradient(135deg, #0066FF, #00CCAA);"></div>
+                            <div class="theme-option" data-theme="sunset" style="background: linear-gradient(135deg, #FF6B35, #FFD700);"></div>
+                            <div class="theme-option" data-theme="forest" style="background: linear-gradient(135deg, #2D8B57, #8B7355);"></div>
+                            <div class="theme-option" data-theme="mint" style="background: linear-gradient(135deg, #00B894, #74B9FF);"></div>
+                            <div class="theme-option" data-theme="galaxy" style="background: linear-gradient(135deg, #9B59B6, #3498DB);"></div>
+                        </div>
+                    </div>
                     <button class="notification-btn" id="notificationBtn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">0</span>
@@ -1831,6 +2230,23 @@
                     <div class="loading-state">
                         <i class="fas fa-circle-notch fa-spin"></i>
                         <p>Chargement...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Search Overlay -->
+            <div class="search-overlay" id="searchOverlay">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="smartSearchInput" placeholder="Rechercher un serveur, une page..." autocomplete="off">
+                        <span class="search-shortcut">ESC</span>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <div class="search-empty">
+                            <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i>
+                            <p>Tapez pour rechercher...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1924,7 +2340,7 @@
                         <div class="stat-label">Série de connexion</div>
                         <div class="stat-change">
                             <i class="fas fa-gift"></i>
-                            <span id="nextReward">1 coin demain🎁</span>
+                            <span id="nextReward">5 coins demain</span>
                         </div>
                     </div>
 
@@ -1940,6 +2356,39 @@
                             <i class="fas fa-star"></i>
                             <span id="xpProgress">0/100 XP</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- NOUVEAU : Widget Météo des Serveurs -->
+                <div class="server-weather-widget">
+                    <div class="weather-header">
+                        <div class="weather-title">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>Météo des serveurs</span>
+                        </div>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                            <i class="fas fa-sync-alt fa-spin" style="margin-right: 4px;"></i>
+                            En direct
+                        </span>
+                    </div>
+                    <div class="weather-forecast" id="weatherForecast">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- NOUVEAU : Objectifs personnalisés -->
+                <div class="goals-widget">
+                    <div class="goals-header">
+                        <div class="goals-title">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Mes objectifs</span>
+                        </div>
+                        <button class="btn-icon" id="addGoalBtn" title="Ajouter un objectif">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="goals-list" id="goalsList">
+                        <!-- Rempli dynamiquement -->
                     </div>
                 </div>
 
@@ -2011,6 +2460,7 @@
         </main>
     </div>
 
+    <!-- Modals existants... -->
     <div class="modal" id="serverModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2080,10 +2530,6 @@
                         <i class="fas fa-info-circle"></i>
                         <span>Renouvellement automatique tous les 7 jours si solde suffisant</span>
                     </div>
-                    <div class="auto-renew-stats" id="autoRenewStats" style="display: none;">
-                        <span><i class="fas fa-history"></i> Tentatives: <span id="autoRenewAttempts">0</span></span>
-                        <span><i class="fas fa-clock"></i> Dernière: <span id="autoRenewLastAttempt">Jamais</span></span>
-                    </div>
                     <div class="auto-renew-error" id="autoRenewError">
                         <i class="fas fa-exclamation-triangle"></i>
                         <span id="autoRenewErrorMessage"></span>
@@ -2094,8 +2540,6 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Conservez ces identifiants précieusement.</span>
                 </div>
-
-                <div id="actionErrorContainer" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button>
@@ -2114,7 +2558,6 @@
             </div>
             <div class="modal-body">
                 <p id="actionMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
-                <div id="actionErrorInModal" style="display: none;"></div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button>
@@ -2170,6 +2613,32 @@
         </div>
     </div>
 
+    <!-- Modal pour ajouter un objectif -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouvel objectif</h2>
+                <button class="modal-close" onclick="closeModal('goalModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <select id="goalType" class="modal-select">
+                    <option value="coins">🎯 Atteindre X coins</option>
+                    <option value="servers">🖥️ Avoir X serveurs actifs</option>
+                    <option value="streak">🔥 Série de X jours</option>
+                    <option value="custom">✨ Objectif personnalisé</option>
+                </select>
+                <input type="number" id="goalTarget" class="modal-input" placeholder="Objectif (ex: 500)" min="1">
+                <input type="text" id="goalName" class="modal-input" placeholder="Nom de l'objectif" maxlength="30">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('goalModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="saveGoal()">Créer</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -2192,8 +2661,324 @@
         let whatsappShownThisSession = false;
         let countdownInterval = null;
         let isClaimingReward = false;
+        let userGoals = [];
 
-        // ========== FONCTIONS DE TEMPS ==========
+        // Charger les objectifs depuis localStorage
+        function loadGoals() {
+            const saved = localStorage.getItem('kermhosting_goals');
+            if (saved) {
+                userGoals = JSON.parse(saved);
+            } else {
+                // Objectifs par défaut
+                userGoals = [
+                    { id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500, current: 0 },
+                    { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3, current: 0 }
+                ];
+                saveGoals();
+            }
+            updateGoalsDisplay();
+        }
+
+        function saveGoals() {
+            localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals));
+        }
+
+        function updateGoalsDisplay() {
+            const container = document.getElementById('goalsList');
+            if (!userGoals.length) {
+                container.innerHTML = `
+                    <div class="empty-goals">
+                        <i class="fas fa-bullseye" style="font-size: 2rem; opacity: 0.5; margin-bottom: 8px;"></i>
+                        <p>Aucun objectif défini</p>
+                        <p style="font-size: 0.8rem;">Cliquez sur + pour en créer un</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            userGoals.forEach(goal => {
+                let current = 0;
+                if (goal.type === 'coins' && userData) current = userData.coins || 0;
+                else if (goal.type === 'servers') current = userServers.length;
+                else if (goal.type === 'streak' && userData) current = userData.daily_login_streak || 0;
+                else current = goal.current || 0;
+
+                const progress = Math.min((current / goal.target) * 100, 100);
+                const isComplete = progress >= 100;
+
+                if (isComplete && !goal.completed) {
+                    goal.completed = true;
+                    saveGoals();
+                    celebrateConfetti();
+                }
+
+                html += `
+                    <div class="goal-item" data-goal-id="${goal.id}">
+                        <div class="goal-info">
+                            <div class="goal-name">
+                                <span>${goal.name}</span>
+                                <span class="goal-progress">${current}/${goal.target}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ${!isComplete ? 'animated' : ''}" style="width: ${progress}%;"></div>
+                            </div>
+                        </div>
+                        <button class="btn-icon" onclick="deleteGoal('${goal.id}')" style="width: 28px; height: 28px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteGoal(goalId) {
+            userGoals = userGoals.filter(g => g.id !== goalId);
+            saveGoals();
+            updateGoalsDisplay();
+            showToast('info', 'Objectif supprimé');
+        }
+
+        function saveGoal() {
+            const type = document.getElementById('goalType').value;
+            const target = parseInt(document.getElementById('goalTarget').value);
+            let name = document.getElementById('goalName').value.trim();
+
+            if (!target || target < 1) {
+                showToast('error', 'Veuillez entrer un objectif valide');
+                return;
+            }
+
+            if (!name) {
+                const typeNames = { coins: 'coins', servers: 'serveurs', streak: 'jours de série', custom: 'objectif' };
+                name = `Atteindre ${target} ${typeNames[type]}`;
+            }
+
+            const newGoal = {
+                id: Date.now().toString(),
+                name: name,
+                type: type,
+                target: target,
+                current: 0,
+                completed: false
+            };
+
+            userGoals.push(newGoal);
+            saveGoals();
+            updateGoalsDisplay();
+            closeModal('goalModal');
+            showToast('success', 'Objectif créé !');
+
+            document.getElementById('goalTarget').value = '';
+            document.getElementById('goalName').value = '';
+        }
+
+        // Système de thèmes
+        function initTheme() {
+            const savedTheme = localStorage.getItem('kermhosting_theme') || 'default';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.dataset.theme === savedTheme) {
+                    opt.classList.add('active');
+                }
+            });
+        }
+
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('kermhosting_theme', theme);
+            
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.dataset.theme === theme) {
+                    opt.classList.add('active');
+                }
+            });
+            
+            showToast('success', `Thème ${theme} activé !`);
+        }
+
+        // Confettis de célébration
+        function celebrateConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'confetti-canvas';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particles = [];
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    size: Math.random() * 8 + 4,
+                    speedX: (Math.random() - 0.5) * 12,
+                    speedY: (Math.random() - 0.5) * 12 - 2,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                    life: 100
+                });
+            }
+            
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let alive = false;
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        alive = true;
+                        p.x += p.speedX;
+                        p.y += p.speedY;
+                        p.speedY += 0.15;
+                        p.life--;
+                        
+                        ctx.globalAlpha = p.life / 100;
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(p.x, p.y, p.size, p.size);
+                    }
+                });
+                
+                if (alive) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    canvas.remove();
+                }
+            }
+            
+            animateConfetti();
+            showToast('success', '🎉 Objectif atteint ! Félicitations !');
+        }
+
+        // Widget Météo des serveurs
+        function updateWeatherWidget() {
+            const container = document.getElementById('weatherForecast');
+            
+            const running = userServers.filter(s => s.status === 'active').length;
+            const stopped = userServers.filter(s => s.status === 'stopped').length;
+            const suspended = userServers.filter(s => s.status === 'suspended').length;
+            const expiring = userServers.filter(s => {
+                if (!s.expires_at) return false;
+                const daysLeft = calculateDaysLeft(s.expires_at);
+                return daysLeft > 0 && daysLeft <= 3;
+            }).length;
+
+            const weatherData = [
+                { icon: 'sun', class: 'sunny', status: 'En ligne', count: running, label: 'Actifs' },
+                { icon: 'cloud', class: 'cloudy', status: 'Arrêtés', count: stopped, label: 'Inactifs' },
+                { icon: 'cloud-rain', class: 'rainy', status: 'Expirent', count: expiring, label: 'Bientôt' },
+                { icon: 'cloud-lightning', class: 'stormy', status: 'Suspendus', count: suspended, label: 'Alertes' }
+            ];
+
+            let html = '';
+            weatherData.forEach(w => {
+                html += `
+                    <div class="weather-card">
+                        <div class="weather-icon ${w.class}">
+                            <i class="fas fa-${w.icon}"></i>
+                        </div>
+                        <div class="weather-status">${w.status}</div>
+                        <div class="weather-count">${w.count}</div>
+                        <div class="weather-label">${w.label}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Smart Search
+        function initSmartSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            const input = document.getElementById('smartSearchInput');
+            const results = document.getElementById('searchResults');
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    overlay.classList.add('active');
+                    input.focus();
+                }
+                if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                    overlay.classList.remove('active');
+                }
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+
+            input.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                if (!query) {
+                    results.innerHTML = `
+                        <div class="search-empty">
+                            <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i>
+                            <p>Tapez pour rechercher...</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const searchableItems = [
+                    ...userServers.map(s => ({ type: 'server', title: s.server_name, subtitle: `${PLANS[s.server_type]?.name || 'Serveur'} - ${s.status}`, url: '#', action: () => showServerDetails(s.id) })),
+                    { type: 'page', title: 'Tableau de bord', subtitle: 'Vue d\'ensemble', url: '/dashboard' },
+                    { type: 'page', title: 'Tarifs', subtitle: 'Voir les offres', url: '/pricing' },
+                    { type: 'page', title: 'Acheter des coins', subtitle: 'Recharger', url: '/buy-coins' },
+                    { type: 'page', title: 'Mon profil', subtitle: 'Paramètres', url: '/profile' },
+                    { type: 'page', title: 'Support', subtitle: 'Aide et assistance', url: '/support' }
+                ];
+
+                const filtered = searchableItems.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    (item.subtitle && item.subtitle.toLowerCase().includes(query))
+                );
+
+                if (filtered.length === 0) {
+                    results.innerHTML = `
+                        <div class="search-empty">
+                            <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 12px;"></i>
+                            <p>Aucun résultat pour "${query}"</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                filtered.slice(0, 8).forEach(item => {
+                    const icon = item.type === 'server' ? 'fa-server' : 'fa-file';
+                    html += `
+                        <div class="search-result-item" onclick="handleSearchResult(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                            <div class="search-result-icon">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div class="search-result-content">
+                                <div class="search-result-title">${item.title}</div>
+                                <div class="search-result-subtitle">${item.subtitle || ''}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                results.innerHTML = html;
+            });
+        }
+
+        function handleSearchResult(item) {
+            document.getElementById('searchOverlay').classList.remove('active');
+            document.getElementById('smartSearchInput').value = '';
+            
+            if (item.action) {
+                item.action();
+            } else if (item.url) {
+                window.location.href = item.url;
+            }
+        }
+
+        // ========== FONCTIONS EXISTANTES ==========
         function formatTimeAgo(date) {
             if (!date) return 'Date inconnue';
             const now = new Date();
@@ -2448,6 +3233,8 @@
             updateRewardButton();
             displayServers();
             loadActivities();
+            updateWeatherWidget();
+            updateGoalsDisplay();
         }
 
         function calculateDaysLeft(expiresAt) {
@@ -2752,11 +3539,9 @@
             if (console) console.style.display = console.style.display === 'none' ? 'block' : 'none';
         }
 
-        // MODIFICATION: Gestion du clic sur le bouton de récompense avec loader
         document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             
-            // Empêcher les clics multiples
             if (isClaimingReward) return;
             
             const rewardBtn = document.getElementById('dailyRewardBtn');
@@ -2765,7 +3550,6 @@
             const originalIcon = rewardIcon.className;
             const originalText = rewardStatus.textContent;
             
-            // Vérifier si la récompense est disponible
             if (userData && userData.last_daily_login) {
                 const remaining = getTimeRemaining(userData.last_daily_login);
                 if (remaining !== null) {
@@ -2774,7 +3558,6 @@
                 }
             }
             
-            // Activer le loader
             isClaimingReward = true;
             rewardBtn.classList.add('reward-loading');
             rewardIcon.className = 'fas fa-spinner fa-spin';
@@ -2789,22 +3572,20 @@
                 if (data.success) {
                     showToast('success', `+${data.coins} coins (série ${data.streak})`);
                     await loadUserData();
+                    celebrateConfetti();
                 } else {
                     showToast('error', data.error || 'Erreur');
-                    // Restaurer l'état précédent en cas d'erreur
                     rewardBtn.classList.remove('reward-loading');
                     rewardIcon.className = originalIcon;
                     rewardStatus.textContent = originalText;
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
-                // Restaurer l'état précédent en cas d'erreur
                 rewardBtn.classList.remove('reward-loading');
                 rewardIcon.className = originalIcon;
                 rewardStatus.textContent = originalText;
             } finally {
                 isClaimingReward = false;
-                // Le loader sera enlevé par updateUI() si le succès
             }
         });
 
@@ -2905,9 +3686,33 @@
             }
         }
 
+        // Theme toggle
+        document.getElementById('themeToggleBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('themeDropdown').classList.toggle('active');
+        });
+
+        document.querySelectorAll('.theme-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                const theme = e.target.dataset.theme;
+                setTheme(theme);
+                document.getElementById('themeDropdown').classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.getElementById('themeDropdown').classList.remove('active');
+        });
+
+        // Goal modal
+        document.getElementById('addGoalBtn').addEventListener('click', () => {
+            openModal('goalModal');
+        });
+
         document.getElementById('navLogout').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            localStorage.removeItem('kermhosting_theme');
             sessionStorage.removeItem('whatsapp_shown');
             window.location.href = '/';
         });
@@ -2920,6 +3725,10 @@
 
         document.getElementById('whatsappLaterBtn').addEventListener('click', () => closeWhatsAppModal());
 
+        // Initialisation
+        loadGoals();
+        initTheme();
+        initSmartSearch();
         loadUserData();
 
         const planSelect = document.getElementById('planSelect');
@@ -2945,6 +3754,9 @@
         window.copyToClipboard = copyToClipboard;
         window.createServer = createServer;
         window.toggleAutoRenew = toggleAutoRenew;
+        window.deleteGoal = deleteGoal;
+        window.saveGoal = saveGoal;
+        window.handleSearchResult = handleSearchResult;
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) closeSidebarFunc();
