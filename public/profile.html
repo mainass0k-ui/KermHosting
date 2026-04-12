@@ -1681,7 +1681,7 @@
                                 </h3>
                                 <div class="api-key-section">
                                     <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
-                                        20 coins par filleul !
+                                        10 coins par filleul !
                                     </p>
                                     <div class="api-key-display">
                                         <span class="api-key-text" id="referralLink">chargement...</span>
@@ -2202,7 +2202,7 @@
             const icon = document.getElementById('apiKeyIcon');
             
             if (apiKeyVisible) {
-                apiKeyElement.textContent = '****************************';
+                apiKeyElement.textContent = '••••••••••••';
                 icon.className = 'fas fa-eye';
             } else {
                 apiKeyElement.textContent = userData?.apiKey || 'N/A';
@@ -2440,7 +2440,7 @@
             displayBadges(userData.badges || []);
             displayTransactions();
             
-            document.getElementById('apiKey').textContent = '****************************';
+            document.getElementById('apiKey').textContent = '••••••••••••';
             document.getElementById('apiKeyIcon').className = 'fas fa-eye';
             apiKeyVisible = false;
         }
@@ -2522,7 +2522,7 @@
 
         function renderSocialShareButtons(link) {
             const container = document.getElementById('socialShareButtons');
-            const message = encodeURIComponent('Rejoins KermHosting avec mon lien de parrainage et gagne 20 coins ! 🚀');
+            const message = encodeURIComponent('Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀');
             const encodedLink = encodeURIComponent(link);
             
             container.innerHTML = `
@@ -2536,7 +2536,7 @@
         }
 
         function copyForSocial(link, platform) {
-            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 20 coins ! 🚀\n' + link;
+            const message = 'Rejoins KermHosting avec mon lien de parrainage et gagne 5 coins ! 🚀\n' + link;
             navigator.clipboard.writeText(message);
             showToast('success', `Message copié ! Collez-le sur ${platform}`);
         }
