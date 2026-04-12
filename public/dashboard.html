@@ -752,6 +752,15 @@
             color: var(--text-muted);
         }
 
+        .quick-action.reward-loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .quick-action.reward-loading i {
+            animation: spin 1s linear infinite;
+        }
+
         .countdown-timer {
             font-size: 0.7rem;
             color: var(--warning);
@@ -1807,9 +1816,9 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">0</span>
                     </button>
-                    <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=User&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
-                    </div>
+                    </a>
                 </div>
             </header>
 
@@ -2182,6 +2191,7 @@
         let currentServer = null;
         let whatsappShownThisSession = false;
         let countdownInterval = null;
+        let isClaimingReward = false;
 
         // ========== FONCTIONS DE TEMPS ==========
         function formatTimeAgo(date) {
@@ -2742,8 +2752,18 @@
             if (console) console.style.display = console.style.display === 'none' ? 'block' : 'none';
         }
 
+        // MODIFICATION: Gestion du clic sur le bouton de récompense avec loader
         document.getElementById('dailyRewardBtn').addEventListener('click', async (e) => {
             e.preventDefault();
+            
+            // Empêcher les clics multiples
+            if (isClaimingReward) return;
+            
+            const rewardBtn = document.getElementById('dailyRewardBtn');
+            const rewardIcon = rewardBtn.querySelector('i');
+            const rewardStatus = document.getElementById('rewardStatus');
+            const originalIcon = rewardIcon.className;
+            const originalText = rewardStatus.textContent;
             
             // Vérifier si la récompense est disponible
             if (userData && userData.last_daily_login) {
@@ -2754,6 +2774,12 @@
                 }
             }
             
+            // Activer le loader
+            isClaimingReward = true;
+            rewardBtn.classList.add('reward-loading');
+            rewardIcon.className = 'fas fa-spinner fa-spin';
+            rewardStatus.textContent = 'Chargement...';
+            
             try {
                 const res = await fetch('/api/daily-reward', {
                     method: 'POST',
@@ -2762,12 +2788,23 @@
                 const data = await res.json();
                 if (data.success) {
                     showToast('success', `+${data.coins} coins (série ${data.streak})`);
-                    loadUserData();
+                    await loadUserData();
                 } else {
                     showToast('error', data.error || 'Erreur');
+                    // Restaurer l'état précédent en cas d'erreur
+                    rewardBtn.classList.remove('reward-loading');
+                    rewardIcon.className = originalIcon;
+                    rewardStatus.textContent = originalText;
                 }
             } catch (error) {
                 showToast('error', 'Erreur réseau');
+                // Restaurer l'état précédent en cas d'erreur
+                rewardBtn.classList.remove('reward-loading');
+                rewardIcon.className = originalIcon;
+                rewardStatus.textContent = originalText;
+            } finally {
+                isClaimingReward = false;
+                // Le loader sera enlevé par updateUI() si le succès
             }
         });
 
