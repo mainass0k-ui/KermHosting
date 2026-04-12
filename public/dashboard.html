@@ -114,7 +114,6 @@
             z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: var(--shadow-lg);
         }
         .sidebar.active { transform: translateX(0); }
-        .sidebar.focus-hidden { display: none; }
         body.focus-mode .sidebar { display: none; }
 
         .sidebar-overlay {
@@ -269,46 +268,6 @@
         .real-weather-detail i { font-size: 1.2rem; color: var(--primary); margin-bottom: 4px; }
         .real-weather-detail span { display: block; font-size: 0.85rem; color: var(--text-secondary); }
         .real-weather-detail .value { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-
-        /* ===== TO-DO LIST ===== */
-        .todo-widget {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
-            border-radius: var(--radius-xl); padding: 20px; margin-bottom: 24px;
-            border: 1px solid var(--border-color);
-        }
-        .todo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .todo-title { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 600; }
-        .todo-title i { color: var(--primary); }
-        .todo-input-wrapper { display: flex; gap: 8px; margin-bottom: 16px; }
-        .todo-input {
-            flex: 1; padding: 12px 16px; background: var(--bg-input);
-            border: 2px solid var(--border-color); border-radius: var(--radius-full);
-            color: var(--text-primary); font-size: 0.9rem;
-        }
-        .todo-input:focus { outline: none; border-color: var(--primary); }
-        .todo-add-btn {
-            width: 48px; height: 48px; border-radius: var(--radius-full);
-            background: var(--primary); border: none; color: white; font-size: 1.2rem;
-            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-        }
-        .todo-add-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
-        .todo-list { list-style: none; max-height: 250px; overflow-y: auto; }
-        .todo-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            background: var(--bg-hover); border-radius: var(--radius-md); margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-        .todo-checkbox {
-            width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary);
-        }
-        .todo-text { flex: 1; font-size: 0.9rem; }
-        .todo-text.completed { text-decoration: line-through; color: var(--text-muted); }
-        .todo-delete {
-            background: none; border: none; color: var(--danger); cursor: pointer;
-            padding: 4px 8px; border-radius: var(--radius-sm); transition: all 0.2s;
-        }
-        .todo-delete:hover { background: rgba(239, 68, 68, 0.1); }
-        .todo-empty { text-align: center; color: var(--text-secondary); padding: 20px; font-size: 0.9rem; }
 
         /* ===== OBJECTIFS ===== */
         .goals-widget {
@@ -589,9 +548,7 @@
                 <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                 <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
                 <div class="top-bar-actions">
-                    <!-- Mode Focus -->
                     <button class="focus-btn" id="focusModeBtn" title="Mode Focus"><i class="fas fa-eye"></i></button>
-                    <!-- Thèmes -->
                     <div class="theme-selector">
                         <button class="notification-btn" id="themeToggleBtn" title="Changer de thème"><i class="fas fa-palette"></i></button>
                         <div class="theme-dropdown" id="themeDropdown">
@@ -675,19 +632,6 @@
                     </div>
                 </div>
 
-                <!-- To-Do List -->
-                <div class="todo-widget focus-hide">
-                    <div class="todo-header">
-                        <div class="todo-title"><i class="fas fa-check-circle"></i><span>Notes rapides</span></div>
-                        <span style="font-size: 0.8rem; color: var(--text-secondary);" id="todoCount">0 tâche(s)</span>
-                    </div>
-                    <div class="todo-input-wrapper">
-                        <input type="text" class="todo-input" id="todoInput" placeholder="Ajouter une note...">
-                        <button class="todo-add-btn" onclick="addTodo()"><i class="fas fa-plus"></i></button>
-                    </div>
-                    <ul class="todo-list" id="todoList"></ul>
-                </div>
-
                 <!-- Objectifs -->
                 <div class="goals-widget focus-hide">
                     <div class="goals-header">
@@ -727,7 +671,7 @@
     <div class="modal" id="goalModal"><div class="modal-content"><div class="modal-header"><h2>Nouvel objectif</h2><button class="modal-close" onclick="closeModal('goalModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="goalType" class="modal-select"><option value="coins">🎯 Atteindre X coins</option><option value="servers">🖥️ Avoir X serveurs</option><option value="streak">🔥 Série de X jours</option><option value="custom">✨ Objectif personnalisé</option></select><input type="number" id="goalTarget" class="modal-input" placeholder="Objectif" min="1"><input type="text" id="goalName" class="modal-input" placeholder="Nom" maxlength="30"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('goalModal')">Annuler</button><button class="btn btn-primary" onclick="saveGoal()">Créer</button></div></div></div>
 
     <script>
-        // ===== AVATAR MANAGER CORRIGÉ (SERVEUR + LOCALSTORAGE) =====
+        // ===== AVATAR MANAGER CORRIGÉ =====
         const AvatarManager = {
             getAvatar: async function(username) {
                 const serverAvatar = await this.fetchFromServer();
@@ -797,23 +741,7 @@
             localStorage.setItem('dashboard_focus', isFocus);
         });
 
-        // ===== TO-DO LIST =====
-        let todos = [];
-        function loadTodos() { const s = localStorage.getItem('kerm_todos'); if (s) todos = JSON.parse(s); else todos = []; renderTodos(); }
-        function saveTodos() { localStorage.setItem('kerm_todos', JSON.stringify(todos)); renderTodos(); }
-        function renderTodos() {
-            const list = document.getElementById('todoList'), cnt = document.getElementById('todoCount');
-            if (!todos.length) { list.innerHTML = '<li class="todo-empty"><i class="far fa-smile"></i> Aucune note</li>'; cnt.textContent = '0 tâche'; return; }
-            let html = '', active = todos.filter(t => !t.completed).length;
-            todos.forEach((t, i) => { html += `<li class="todo-item"><input type="checkbox" class="todo-checkbox" ${t.completed?'checked':''} onchange="toggleTodo(${i})"><span class="todo-text ${t.completed?'completed':''}">${t.text}</span><button class="todo-delete" onclick="deleteTodo(${i})"><i class="fas fa-trash"></i></button></li>`; });
-            list.innerHTML = html; cnt.textContent = active + ' tâche' + (active>1?'s':'');
-        }
-        function addTodo() { const inp = document.getElementById('todoInput'); const txt = inp.value.trim(); if (txt) { todos.push({ text: txt, completed: false }); inp.value = ''; saveTodos(); } }
-        function toggleTodo(i) { todos[i].completed = !todos[i].completed; saveTodos(); }
-        function deleteTodo(i) { todos.splice(i, 1); saveTodos(); }
-        document.getElementById('todoInput').addEventListener('keypress', e => { if (e.key === 'Enter') addTodo(); });
-
-        // ===== MÉTÉO RÉELLE (Open-Meteo) =====
+        // ===== MÉTÉO RÉELLE =====
         async function fetchWeather(lat, lon) {
             try {
                 const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`);
@@ -879,19 +807,46 @@
             if (!target || target<1) { showToast('error', 'Objectif invalide'); return; }
             if (!name) { const names = { coins: 'coins', servers: 'serveurs', streak: 'jours', custom: 'objectif' }; name = `Atteindre ${target} ${names[type]}`; }
             userGoals.push({ id: Date.now().toString(), name, type, target, current:0, completed:false }); saveGoals(); updateGoalsDisplay(); closeModal('goalModal'); showToast('success', 'Objectif créé !');
+            document.getElementById('goalTarget').value = ''; document.getElementById('goalName').value = '';
         }
 
         function initTheme() { const t = localStorage.getItem('kermhosting_theme') || 'default'; document.body.setAttribute('data-theme', t); document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme===t)); }
         function setTheme(t) { document.body.setAttribute('data-theme', t); localStorage.setItem('kermhosting_theme', t); document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme===t)); showToast('success', `Thème ${t} activé`); }
-        function celebrateConfetti() { /* ... identique ... */ showToast('success', '🎉 Objectif atteint !'); }
+        function celebrateConfetti() { showToast('success', '🎉 Objectif atteint !'); }
 
-        function initSmartSearch() { /* ... identique ... */ }
-        function handleSearchResult(item) { document.getElementById('searchOverlay').classList.remove('active'); if (item.action) item.action(); else if (item.url) location.href = item.url; }
+        function initSmartSearch() {
+            const overlay = document.getElementById('searchOverlay'), input = document.getElementById('smartSearchInput'), results = document.getElementById('searchResults');
+            document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey)&&e.key==='k') { e.preventDefault(); overlay.classList.add('active'); input.focus(); } if (e.key==='Escape'&&overlay.classList.contains('active')) overlay.classList.remove('active'); });
+            overlay.addEventListener('click', e => { if (e.target===overlay) overlay.classList.remove('active'); });
+            input.addEventListener('input', e => {
+                const q = e.target.value.toLowerCase();
+                if (!q) { results.innerHTML = '<div class="search-empty"><i class="fas fa-search"></i><p>Tapez pour rechercher...</p></div>'; return; }
+                const items = [...userServers.map(s => ({ type:'server', title:s.server_name, subtitle:`${PLANS[s.server_type]?.name||'Serveur'} - ${s.status}`, action:()=>showServerDetails(s.id) })),
+                    { type:'page', title:'Tableau de bord', url:'/dashboard' }, { type:'page', title:'Tarifs', url:'/pricing' }, { type:'page', title:'Acheter des coins', url:'/buy-coins' }, { type:'page', title:'Profil', url:'/profile' }, { type:'page', title:'Support', url:'/support' }];
+                const filtered = items.filter(i => i.title.toLowerCase().includes(q) || (i.subtitle&&i.subtitle.toLowerCase().includes(q)));
+                if (!filtered.length) { results.innerHTML = `<div class="search-empty"><i class="fas fa-search"></i><p>Aucun résultat pour "${q}"</p></div>`; return; }
+                let h = ''; filtered.slice(0,8).forEach(i => { h += `<div class="search-result-item" onclick="handleSearchResult(${JSON.stringify(i).replace(/"/g,'&quot;')})"><div class="search-result-icon"><i class="fas ${i.type==='server'?'fa-server':'fa-file'}"></i></div><div class="search-result-content"><div class="search-result-title">${i.title}</div><div class="search-result-subtitle">${i.subtitle||''}</div></div></div>`; });
+                results.innerHTML = h;
+            });
+        }
+        function handleSearchResult(item) { document.getElementById('searchOverlay').classList.remove('active'); document.getElementById('smartSearchInput').value = ''; if (item.action) item.action(); else if (item.url) location.href = item.url; }
 
         function formatTimeAgo(d) { if(!d) return ''; const n=new Date(), p=new Date(d), s=Math.floor((n-p)/1000); if(s<60) return 'à l\'instant'; if(s<3600) return `il y a ${Math.floor(s/60)} min`; if(s<86400) return `il y a ${Math.floor(s/3600)} h`; return p.toLocaleDateString('fr-FR'); }
         function getTimeRemaining(last) { if(!last) return null; const n=new Date(), l=new Date(last); if(isNaN(l)) return null; const next=new Date(l.getTime()+86400000), diff=next-n; if(diff<=0) return null; return { hours: Math.floor(diff/3600000), minutes: Math.floor((diff%3600000)/60000), seconds: Math.floor((diff%60000)/1000) }; }
-        function startCountdown(last) { /* ... identique ... */ }
-        function updateRewardButton() { /* ... identique ... */ }
+        function startCountdown(last) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            const cd = document.getElementById('rewardCountdown'), rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus');
+            function update() { const r = getTimeRemaining(last); if (!r) { cd.style.display='none'; rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; if(countdownInterval) clearInterval(countdownInterval); return; }
+                cd.style.display='block'; cd.textContent=`Disponible dans ${r.hours}h ${r.minutes}m ${r.seconds}s`; rb.classList.remove('reward-ready'); rb.classList.add('reward-claimed'); rs.textContent='Réclamée'; rs.style.color='var(--text-secondary)'; }
+            update(); countdownInterval = setInterval(update, 1000);
+        }
+        function updateRewardButton() {
+            if (userData && userData.last_daily_login) {
+                const r = getTimeRemaining(userData.last_daily_login), rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus'), cd = document.getElementById('rewardCountdown');
+                if (r===null) { rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; cd.style.display='none'; if(countdownInterval) clearInterval(countdownInterval); }
+                else { cd.style.display='block'; cd.textContent=`Disponible dans ${r.hours}h ${r.minutes}m ${r.seconds}s`; rb.classList.remove('reward-ready'); rb.classList.add('reward-claimed'); rs.textContent='Réclamée'; rs.style.color='var(--text-secondary)'; startCountdown(userData.last_daily_login); }
+            } else { const rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus'), cd = document.getElementById('rewardCountdown'); rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; cd.style.display='none'; if(countdownInterval) clearInterval(countdownInterval); }
+        }
 
         function showWhatsAppModal() { if(!whatsappShown) { document.getElementById('whatsappModal').classList.remove('hidden'); whatsappShown=true; sessionStorage.setItem('whatsapp_shown','true'); } }
         function closeWhatsAppModal() { document.getElementById('whatsappModal').classList.add('hidden'); }
@@ -962,25 +917,82 @@
             c.innerHTML = h + '</div>';
         }
 
-        async function showServerDetails(id) { /* ... identique ... */ }
-        async function loadAutoRenewStatus(id) { /* ... identique ... */ }
-        async function toggleAutoRenew() { /* ... identique ... */ }
-        function renewServer() { /* ... identique ... */ }
-        async function confirmRenew() { /* ... identique ... */ }
-        function powerAction(id, act) { /* ... identique ... */ }
-        async function confirmAction() { /* ... identique ... */ }
+        async function showServerDetails(id) {
+            const s = userServers.find(s => s.id===id); if(!s) return; currentServer = s;
+            const plan = PLANS[s.server_type]||{name:s.server_type||'Inconnu'}, days=calculateDaysLeft(s.expires_at);
+            let status = s.status==='suspended'?'Suspendu':s.status==='stopped'?'Arrêté':days<0?'Expiré':'Actif';
+            document.getElementById('detailsServerName').textContent = s.server_name||'Sans nom';
+            document.getElementById('detailsPlan').textContent = plan.name;
+            document.getElementById('detailsStatus').textContent = status;
+            document.getElementById('detailsExpiry').textContent = s.expires_at?new Date(s.expires_at).toLocaleDateString('fr-FR'):'Non définie';
+            document.getElementById('detailsTimeLeft').textContent = days<0?'Expiré':days+' jours';
+            try {
+                const r = await fetch(`/api/servers/${id}/credentials`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const d = await r.json();
+                if (d.success) { const cred=d.credentials; document.getElementById('detailsCredentials').innerHTML = `<div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${cred.username||'N/A'}</span><button class="copy-btn" onclick="copyToClipboard('${cred.username||''}')"><i class="fas fa-copy"></i></button></div><div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${cred.password||'N/A'}</span><button class="copy-btn" onclick="copyToClipboard('${cred.password||''}')"><i class="fas fa-copy"></i></button></div><div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i>Panel</span><span class="credential-value">${cred.panel_url||'N/A'}</span><button class="copy-btn" onclick="copyToClipboard('${cred.panel_url||''}')"><i class="fas fa-copy"></i></button></div>`; }
+                else document.getElementById('detailsCredentials').innerHTML = '<p>Identifiants non disponibles</p>';
+            } catch(e) { document.getElementById('detailsCredentials').innerHTML = '<p>Erreur de chargement</p>'; }
+            await loadAutoRenewStatus(id);
+            const btn = document.getElementById('renewBtn');
+            if (s.status==='suspended'||days<0) { btn.textContent='Réactiver'; btn.className='btn btn-warning'; }
+            else { btn.textContent='Renouveler'; btn.className='btn btn-success'; }
+            openModal('serverDetailsModal');
+        }
+        async function loadAutoRenewStatus(id) { try { const r=await fetch(`/api/servers/${id}/auto-renew`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(d.success) document.getElementById('autoRenewToggle').checked=d.auto_renew||false; } catch(e){} }
+        async function toggleAutoRenew() { if(!currentServer) return; const t=document.getElementById('autoRenewToggle'), en=t.checked; t.disabled=true; try { const r=await fetch(`/api/servers/${currentServer.id}/auto-renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({enabled:en})}); const d=await r.json(); if(d.success) showToast('success',`Auto-renouvellement ${en?'activé':'désactivé'}`); else { showToast('error',d.error||'Erreur'); t.checked=!en; } } catch(e) { showToast('error','Erreur réseau'); t.checked=!en; } finally { t.disabled=false; } }
+        function renewServer() { closeModal('serverDetailsModal'); const p=PLANS[currentServer.server_type]||{name:'Inconnu',price:0,coins:0}; document.getElementById('renewServerName').textContent=currentServer.server_name||'Sans nom'; document.getElementById('renewPlan').textContent=p.name; document.getElementById('renewPrice').textContent=(p.price||0)+' FCFA'; document.getElementById('renewCoins').textContent=(p.coins||0)+' coins'; document.getElementById('renewBalance').textContent=(userData?.coins||0)+' coins'; openModal('renewModal'); }
+        async function confirmRenew() { if(!currentServer) return; const p=PLANS[currentServer.server_type]||{coins:0}; if((userData?.coins||0)<(p.coins||0)) { showToast('error','Coins insuffisants'); closeModal('renewModal'); return; } const btn=document.getElementById('renewConfirmBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>...'; try { const r=await fetch(`/api/servers/${currentServer.id}/renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({coins:p.coins})}); const d=await r.json(); if(d.success) { showToast('success','Serveur renouvelé !'); closeModal('renewModal'); loadUserData(); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-sync-alt"></i> Renouveler'; } }
+        function powerAction(id, act) { const s=userServers.find(s=>s.id===id); if(s&&s.status==='suspended') { showToast('error','Serveur suspendu'); return; } currentServerId=id; currentAction=act; const titles={start:'Démarrer',stop:'Arrêter',restart:'Redémarrer'}; document.getElementById('actionTitle').textContent=titles[act]||'Action'; document.getElementById('actionMessage').textContent=`Confirmer ${(titles[act]||'action').toLowerCase()} ?`; openModal('actionModal'); }
+        async function confirmAction() { if(!currentServerId||!currentAction) return; closeModal('actionModal'); showToast('info','En cours...'); try { const r=await fetch(`/api/servers/${currentServerId}/power`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({action:currentAction})}); const d=await r.json(); if(d.success) { showToast('success','Action effectuée'); setTimeout(loadUserData,2000); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } currentServerId=null; currentAction=null; }
         function toggleConsole(id) { const c=document.getElementById(`console-${id}`); if(c) c.style.display=c.style.display==='none'?'block':'none'; }
 
-        document.getElementById('dailyRewardBtn').addEventListener('click', async e => { e.preventDefault(); if(isClaimingReward) return; /* ... identique ... */ });
+        document.getElementById('dailyRewardBtn').addEventListener('click', async e => {
+            e.preventDefault(); if(isClaimingReward) return;
+            const rb=document.getElementById('dailyRewardBtn'), ri=rb.querySelector('i'), rs=document.getElementById('rewardStatus');
+            const origIcon=ri.className, origText=rs.textContent;
+            if(userData?.last_daily_login) { const r=getTimeRemaining(userData.last_daily_login); if(r!==null) { showToast('warning',`Disponible dans ${r.hours}h ${r.minutes}m`); return; } }
+            isClaimingReward=true; rb.classList.add('reward-loading'); ri.className='fas fa-spinner fa-spin'; rs.textContent='Chargement...';
+            try {
+                const r=await fetch('/api/daily-reward', { method:'POST', headers:{ 'Authorization':`Bearer ${token}` } });
+                const d=await r.json();
+                if(d.success) { showToast('success',`+${d.coins} coins (série ${d.streak})`); await loadUserData(); celebrateConfetti(); }
+                else { showToast('error',d.error||'Erreur'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            } catch(e) { showToast('error','Erreur réseau'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            finally { isClaimingReward=false; }
+        });
 
-        async function loadNotifications() { /* ... identique ... */ }
-        async function loadActivities() { /* ... identique ... */ }
+        async function loadNotifications() { const c=document.getElementById('notificationsList'), exp=userServers.filter(s=>{const d=calculateDaysLeft(s.expires_at); return d>0&&d<=3;}); let h=''; if(exp.length) h+=`<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${exp.length} serveur(s) expirent bientôt</div></div></div>`; else h='<div class="empty-state"><i class="fas fa-bell-slash"></i><p>Aucune notification</p></div>'; c.innerHTML=h; }
+
+        async function loadActivities() {
+            const c=document.getElementById('activityContainer');
+            c.innerHTML='<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div>';
+            try {
+                const r=await fetch('/api/user/activities', { headers:{ 'Authorization':`Bearer ${token}` } });
+                const d=await r.json();
+                if(!d.success||!d.activities||!d.activities.length) { c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>'; return; }
+                let h=''; d.activities.forEach(a=>{
+                    let icon='fa-history'; if(a.activity_type?.includes('creation')) icon='fa-plus-circle'; else if(a.activity_type?.includes('start')) icon='fa-play'; else if(a.activity_type?.includes('stop')) icon='fa-stop'; else if(a.activity_type?.includes('daily')) icon='fa-calendar-check'; else if(a.activity_type?.includes('coins')) icon='fa-coins';
+                    h+=`<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${a.description||'Action'}</div><div class="activity-time">${formatTimeAgo(a.created_at)}</div></div>${a.coins_earned!==0?`<div class="activity-coins ${a.coins_earned>0?'positive':'negative'}">${a.coins_earned>0?'+':''}${a.coins_earned}</div>`:''}</div>`;
+                });
+                c.innerHTML=h;
+            } catch(e) { c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
+        }
 
         document.getElementById('clearActivitiesBtn').addEventListener('click', async () => { if(!confirm('Supprimer?')) return; try { await fetch('/api/user/activities', { method:'DELETE', headers:{ 'Authorization':`Bearer ${token}` } }); showToast('success','Historique effacé'); loadActivities(); } catch { showToast('error','Erreur'); } });
         document.getElementById('refreshActivitiesBtn').addEventListener('click', loadActivities);
 
         function prepareFreeServer() { if(userData?.free_panel_created) { showToast('error','Serveur gratuit déjà utilisé'); return; } document.getElementById('planSelect').innerHTML = '<option value="free">Free - Gratuit</option>'; openModal('serverModal'); }
-        async function createServer() { /* ... identique ... */ }
+        async function createServer() {
+            const plan=document.getElementById('planSelect').value, name=document.getElementById('serverName').value?.trim(), user=document.getElementById('serverUsername').value?.trim();
+            if(!plan||!name||!user) { showToast('error','Tous les champs requis'); return; }
+            closeModal('serverModal'); showToast('info','Création...');
+            try {
+                const r=await fetch('/api/create-server', { method:'POST', headers:{ 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' }, body:JSON.stringify({ plan_id:plan, server_name:name, server_username:user, payment_method:plan==='free'?'free':'coins' }) });
+                const d=await r.json();
+                if(d.success) { showToast('success','Serveur créé !'); loadUserData(); }
+                else showToast('error',d.error||'Erreur');
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
 
         document.getElementById('themeToggleBtn').addEventListener('click', e => { e.stopPropagation(); document.getElementById('themeDropdown').classList.toggle('active'); });
         document.querySelectorAll('.theme-option').forEach(o => o.addEventListener('click', e => { setTheme(e.target.dataset.theme); document.getElementById('themeDropdown').classList.remove('active'); }));
@@ -992,7 +1004,7 @@
         document.getElementById('whatsappLaterBtn').addEventListener('click', closeWhatsAppModal);
 
         // Init
-        loadGoals(); initTheme(); initSmartSearch(); loadUserData(); setupAvatarClickRedirect(); loadWeather(); loadTodos(); initFocusMode();
+        loadGoals(); initTheme(); initSmartSearch(); loadUserData(); setupAvatarClickRedirect(); loadWeather(); initFocusMode();
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) { planSelect.innerHTML = '<option value="">Choisir un plan</option>'; Object.entries(PLANS).forEach(([k,p]) => { if(k!=='free') { const o=document.createElement('option'); o.value=k; o.textContent=`${p.name} - ${p.price} FCFA (${p.coins} coins)`; planSelect.appendChild(o); } }); }
@@ -1000,7 +1012,7 @@
         window.closeModal=closeModal; window.showServerDetails=showServerDetails; window.powerAction=powerAction; window.confirmAction=confirmAction;
         window.toggleConsole=toggleConsole; window.renewServer=renewServer; window.confirmRenew=confirmRenew; window.copyToClipboard=copyToClipboard;
         window.createServer=createServer; window.toggleAutoRenew=toggleAutoRenew; window.deleteGoal=deleteGoal; window.saveGoal=saveGoal;
-        window.handleSearchResult=handleSearchResult; window.refreshWeather=refreshWeather; window.addTodo=addTodo; window.toggleTodo=toggleTodo; window.deleteTodo=deleteTodo;
+        window.handleSearchResult=handleSearchResult; window.refreshWeather=refreshWeather;
         window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
     </script>
 </body>
