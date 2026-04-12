@@ -7,7 +7,7 @@
     <meta name="description" content="KERM MD V1 - Bot WhatsApp puissant avec plus de 200 commandes. Développé par Kerm avant la naissance de KermHosting.">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes (ajoutées) -->
+    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -25,7 +25,7 @@
     <title>KERM MD V1 - Bot WhatsApp</title>
     
     <style>
-        /* ===== VARIABLES (identiques au site) ===== */
+        /* ===== VARIABLES ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -52,9 +52,9 @@
             --border-color: #2D3748;
             --border-light: #374151;
             
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             --shadow-glow: 0 0 15px var(--primary-glow);
             
             --radius-sm: 8px;
@@ -195,6 +195,12 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-user:hover {
+            background: var(--bg-hover);
         }
 
         .user-avatar {
@@ -207,6 +213,13 @@
             justify-content: center;
             font-size: 1.5rem;
             color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -430,6 +443,8 @@
 
         .user-menu {
             cursor: pointer;
+            text-decoration: none;
+            display: block;
         }
 
         .user-avatar-small {
@@ -540,14 +555,8 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .bot-badge {
@@ -1317,96 +1326,35 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes slideOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(30px);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
-
-            .top-bar-logo {
-                display: flex;
-            }
-
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .specs-grid,
-            .commands-grid,
-            .features-grid,
-            .screenshots-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
+            .menu-toggle { display: block; }
+            .top-bar-logo { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .specs-grid, .commands-grid, .features-grid, .screenshots-grid { grid-template-columns: repeat(2, 1fr); }
+            .faq-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
-            .page-content {
-                padding: 16px;
-            }
-
-            .bot-title {
-                font-size: 2.2rem;
-            }
-
-            .bot-name {
-                font-size: 2rem;
-            }
-
-            .specs-grid,
-            .commands-grid,
-            .features-grid,
-            .screenshots-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .download-buttons {
-                flex-direction: column;
-            }
-
-            .step {
-                flex-direction: column;
-            }
-
-            .step-number {
-                align-self: flex-start;
-            }
-
-            .cta-title {
-                font-size: 1.8rem;
-            }
-
-            .footer-content {
-                flex-direction: column;
-            }
+            .page-content { padding: 16px; }
+            .bot-title { font-size: 2.2rem; }
+            .bot-name { font-size: 2rem; }
+            .specs-grid, .commands-grid, .features-grid, .screenshots-grid { grid-template-columns: 1fr; }
+            .download-buttons { flex-direction: column; }
+            .step { flex-direction: column; }
+            .step-number { align-self: flex-start; }
+            .cta-title { font-size: 1.8rem; }
+            .footer-content { flex-direction: column; }
         }
     </style>
 </head>
@@ -1428,7 +1376,7 @@
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar">
+                <div class="user-avatar" id="sidebarAvatar">
                     <i class="fas fa-user-circle"></i>
                 </div>
                 <div class="user-info">
@@ -1440,8 +1388,8 @@
             
             <nav class="sidebar-nav">
                 <ul>
-                    <li>
-                        <a href="/dashboard" id="navDashboard">
+                    <li id="navDashboard" style="display: none;">
+                        <a href="/dashboard">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Tableau de bord</span>
                         </a>
@@ -1457,17 +1405,17 @@
                             <i class="fas fa-coins"></i>
                             <span>Acheter des coins</span>
                         </a>
-                    </li
+                    </li>
+                    <li id="navProfile" style="display: none;">
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="/transactions">
                             <i class="fas fa-history"></i>
                             <span>Transactions</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/profile" id="navProfile">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
                         </a>
                     </li>
                     <li class="active">
@@ -1483,21 +1431,26 @@
                         </a>
                     </li>
                     <li class="divider"></li>
-                    <li>
-                        <a href="#" id="navLogin">
+                    <li id="navHome" style="display: block;">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li id="navLogin" style="display: block;">
+                        <a href="/login">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Connexion</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#" id="navRegister">
+                    <li id="navRegister" style="display: block;">
+                        <a href="/register">
                             <i class="fas fa-user-plus"></i>
                             <span>Inscription</span>
                         </a>
                     </li>
-                    <li class="divider" id="logoutDivider" style="display: none;"></li>
                     <li id="navLogout" style="display: none;">
-                        <a href="#">
+                        <a href="#" id="logoutLink">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Déconnexion</span>
                         </a>
@@ -1508,12 +1461,12 @@
             <div class="sidebar-footer">
                 <div class="sidebar-stats">
                     <div class="stat">
-                        <span class="stat-value">10K+</span>
-                        <span class="stat-label">Utilisateurs</span>
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-value">200+</span>
-                        <span class="stat-label">Commandes</span>
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
                     </div>
                 </div>
             </div>
@@ -1535,9 +1488,9 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge" id="notificationBadge">2</span>
                     </button>
-                    <div class="user-menu" id="userMenu">
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
-                    </div>
+                    </a>
                 </div>
             </header>
 
@@ -1549,7 +1502,7 @@
                 </div>
                 <div class="notifications-list">
                     <div class="notification-item unread">
-                        <i class="fab fa-whatsapp notification-icon"></i>
+                        <div class="notification-icon"><i class="fab fa-whatsapp"></i></div>
                         <div class="notification-content">
                             <div class="notification-title">KERM MD V1 - Nouvelle version</div>
                             <div class="notification-message">Mise à jour disponible avec 20 nouvelles commandes !</div>
@@ -1557,7 +1510,7 @@
                         </div>
                     </div>
                     <div class="notification-item">
-                        <i class="fas fa-download notification-icon"></i>
+                        <div class="notification-icon"><i class="fas fa-download"></i></div>
                         <div class="notification-content">
                             <div class="notification-title">Tutoriel disponible</div>
                             <div class="notification-message">Guide d'installation vidéo maintenant disponible</div>
@@ -1650,27 +1603,21 @@
                     
                     <div class="specs-grid">
                         <div class="spec-card">
-                            <div class="spec-icon">
-                                <i class="fab fa-node-js"></i>
-                            </div>
+                            <div class="spec-icon"><i class="fab fa-node-js"></i></div>
                             <div class="spec-value">20.x</div>
                             <div class="spec-label">Node.js</div>
                             <div class="spec-note">Version 20 ou supérieure requise</div>
                         </div>
                         
                         <div class="spec-card">
-                            <div class="spec-icon">
-                                <i class="fas fa-microchip"></i>
-                            </div>
+                            <div class="spec-icon"><i class="fas fa-microchip"></i></div>
                             <div class="spec-value">1 GB</div>
                             <div class="spec-label">RAM Minimum</div>
                             <div class="spec-note">2 GB recommandé pour performances optimales</div>
                         </div>
                         
                         <div class="spec-card">
-                            <div class="spec-icon">
-                                <i class="fas fa-hdd"></i>
-                            </div>
+                            <div class="spec-icon"><i class="fas fa-hdd"></i></div>
                             <div class="spec-value">4 GB</div>
                             <div class="spec-label">Stockage</div>
                             <div class="spec-note">Pour les médias et la base de données</div>
@@ -1686,9 +1633,7 @@
                     <div class="commands-grid">
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-download"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-download"></i></div>
                                 <div class="category-title">Téléchargement</div>
                             </div>
                             <ul class="category-commands">
@@ -1703,9 +1648,7 @@
                         
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-edit"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-edit"></i></div>
                                 <div class="category-title">Édition</div>
                             </div>
                             <ul class="category-commands">
@@ -1720,9 +1663,7 @@
                         
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-gamepad"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-gamepad"></i></div>
                                 <div class="category-title">Jeux</div>
                             </div>
                             <ul class="category-commands">
@@ -1737,9 +1678,7 @@
                         
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-cloud-sun"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-cloud-sun"></i></div>
                                 <div class="category-title">Utilitaires</div>
                             </div>
                             <ul class="category-commands">
@@ -1754,9 +1693,7 @@
                         
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-film"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-film"></i></div>
                                 <div class="category-title">Divertissement</div>
                             </div>
                             <ul class="category-commands">
@@ -1771,9 +1708,7 @@
                         
                         <div class="command-category">
                             <div class="category-header">
-                                <div class="category-icon">
-                                    <i class="fas fa-cog"></i>
-                                </div>
+                                <div class="category-icon"><i class="fas fa-cog"></i></div>
                                 <div class="category-title">Administration</div>
                             </div>
                             <ul class="category-commands">
@@ -1795,44 +1730,32 @@
                 <h2 class="specs-title">Fonctionnalités <span class="gradient-text">principales</span></h2>
                 <div class="features-grid">
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                         <h3>Ultra rapide</h3>
                         <p>Réponses instantanées grâce à une architecture optimisée et légère.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                         <h3>Sécurisé</h3>
                         <p>Connexion sécurisée, pas de stockage de données sensibles.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
                         <h3>Multi-Device</h3>
                         <p>Fonctionne sur tous vos appareils simultanément.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-database"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-database"></i></div>
                         <h3>Base de données</h3>
                         <p>Sauvegarde automatique des paramètres et préférences.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-plug"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-plug"></i></div>
                         <h3>Extensible</h3>
                         <p>Ajoutez facilement vos propres commandes et plugins.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-headset"></i>
-                        </div>
+                        <div class="feature-icon"><i class="fas fa-headset"></i></div>
                         <h3>Support 24/7</h3>
                         <p>Communauté active et support technique réactif.</p>
                     </div>
@@ -1849,9 +1772,7 @@
                                 <h3>Installer Node.js 20+</h3>
                                 <p>Téléchargez et installez Node.js version 20 ou supérieure depuis nodejs.org</p>
                                 <code class="step-code">node --version</code>
-                                <button class="copy-btn" onclick="copyToClipboard('node --version')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+                                <button class="copy-btn" onclick="copyToClipboard('node --version')"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
                         <div class="step">
@@ -1860,9 +1781,7 @@
                                 <h3>Télécharger le bot</h3>
                                 <p>Téléchargez le fichier ZIP du bot et extrayez-le</p>
                                 <code class="step-code">unzip KERM-MD-V1.zip -d ~/kerm-md</code>
-                                <button class="copy-btn" onclick="copyToClipboard('unzip KERM-MD-V1.zip -d ~/kerm-md')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+                                <button class="copy-btn" onclick="copyToClipboard('unzip KERM-MD-V1.zip -d ~/kerm-md')"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
                         <div class="step">
@@ -1871,9 +1790,7 @@
                                 <h3>Installer les dépendances</h3>
                                 <p>Installez toutes les dépendances nécessaires</p>
                                 <code class="step-code">cd ~/kerm-md && npm install</code>
-                                <button class="copy-btn" onclick="copyToClipboard('cd ~/kerm-md && npm install')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+                                <button class="copy-btn" onclick="copyToClipboard('cd ~/kerm-md && npm install')"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
                         <div class="step">
@@ -1882,9 +1799,7 @@
                                 <h3>Lancer le bot</h3>
                                 <p>Démarrez le bot et scannez le QR code avec WhatsApp</p>
                                 <code class="step-code">npm start</code>
-                                <button class="copy-btn" onclick="copyToClipboard('npm start')">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+                                <button class="copy-btn" onclick="copyToClipboard('npm start')"><i class="fas fa-copy"></i></button>
                             </div>
                         </div>
                     </div>
@@ -1896,40 +1811,20 @@
                     
                     <div class="faq-grid">
                         <div class="faq-item">
-                            <div class="faq-question">
-                                <i class="fas fa-question-circle"></i>
-                                Le bot est-il gratuit ?
-                            </div>
-                            <div class="faq-answer">
-                                Oui, KERM MD V1 est complètement gratuit et open-source. Vous pouvez l'utiliser sans aucune limite.
-                            </div>
+                            <div class="faq-question"><i class="fas fa-question-circle"></i>Le bot est-il gratuit ?</div>
+                            <div class="faq-answer">Oui, KERM MD V1 est complètement gratuit et open-source.</div>
                         </div>
                         <div class="faq-item">
-                            <div class="faq-question">
-                                <i class="fas fa-question-circle"></i>
-                                Puis-je l'héberger sur KermHosting ?
-                            </div>
-                            <div class="faq-answer">
-                                Absolument ! Nos plans 1GB (500 FCFA/semaine) sont parfaits pour héberger le bot avec Node.js 20.
-                            </div>
+                            <div class="faq-question"><i class="fas fa-question-circle"></i>Puis-je l'héberger sur KermHosting ?</div>
+                            <div class="faq-answer">Absolument ! Nos plans 1GB (500 FCFA/semaine) sont parfaits.</div>
                         </div>
                         <div class="faq-item">
-                            <div class="faq-question">
-                                <i class="fas fa-question-circle"></i>
-                                Comment mettre à jour le bot ?
-                            </div>
-                            <div class="faq-answer">
-                                Téléchargez simplement la nouvelle version et remplacez les fichiers. Vos données sont sauvegardées.
-                            </div>
+                            <div class="faq-question"><i class="fas fa-question-circle"></i>Comment mettre à jour le bot ?</div>
+                            <div class="faq-answer">Téléchargez la nouvelle version et remplacez les fichiers.</div>
                         </div>
                         <div class="faq-item">
-                            <div class="faq-question">
-                                <i class="fas fa-question-circle"></i>
-                                Le bot fonctionne-t-il 24/7 ?
-                            </div>
-                            <div class="faq-answer">
-                                Oui, si hébergé sur un serveur comme KermHosting, le bot tourne 24h/24 sans interruption.
-                            </div>
+                            <div class="faq-question"><i class="fas fa-question-circle"></i>Le bot fonctionne-t-il 24/7 ?</div>
+                            <div class="faq-answer">Oui, si hébergé sur un serveur comme KermHosting.</div>
                         </div>
                     </div>
                 </div>
@@ -1937,9 +1832,7 @@
                 <!-- CTA Section -->
                 <div class="cta-section">
                     <h2 class="cta-title">Prêt à utiliser KERM MD V1 ?</h2>
-                    <p class="cta-subtitle">
-                        Rejoignez des milliers d'utilisateurs qui utilisent déjà le bot au quotidien
-                    </p>
+                    <p class="cta-subtitle">Rejoignez des milliers d'utilisateurs qui utilisent déjà le bot au quotidien</p>
                     <div class="cta-buttons">
                         <a href="https://github.com/hostt11/KermHosting/raw/refs/heads/main/bot/KERM-MD-V1.zip" class="cta-btn primary" id="finalDownloadBtn">
                             <i class="fas fa-download"></i>
@@ -2010,6 +1903,61 @@
     </div>
 
     <script>
+        // ===== AVATAR MANAGER =====
+        const AvatarManager = {
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {}
+            },
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                if (username) localStorage.setItem('username', username);
+            }
+        };
+
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
+        }
+
         const token = localStorage.getItem('token');
 
         // ===== SIDEBAR FUNCTIONS =====
@@ -2070,9 +2018,7 @@
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                 <span>${message}</span>
             `;
-
             document.body.appendChild(toast);
-
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
@@ -2091,38 +2037,50 @@
                         document.getElementById('sidebarUserName').textContent = data.user.username;
                         document.getElementById('sidebarUserEmail').textContent = data.user.email;
                         document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                        document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                        document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
+                        document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
                         
-                        document.getElementById('navLogin').style.display = 'none';
-                        document.getElementById('navRegister').style.display = 'none';
-                        document.getElementById('logoutDivider').style.display = 'block';
-                        document.getElementById('navLogout').style.display = 'block';
                         document.getElementById('navDashboard').style.display = 'block';
                         document.getElementById('navProfile').style.display = 'block';
+                        document.getElementById('navHome').style.display = 'none';
+                        document.getElementById('navLogin').style.display = 'none';
+                        document.getElementById('navRegister').style.display = 'none';
+                        document.getElementById('navLogout').style.display = 'block';
+                        
+                        AvatarManager.applyToPage(data.user.username);
                     }
                 })
                 .catch(() => {
                     localStorage.removeItem('token');
+                    showNotConnected();
                 });
+            } else {
+                showNotConnected();
             }
         }
 
+        function showNotConnected() {
+            document.getElementById('sidebarUserName').textContent = 'Invité';
+            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+            document.getElementById('sidebarCoins').textContent = '0';
+            document.getElementById('sidebarServers').textContent = '0';
+            document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+            
+            document.getElementById('navDashboard').style.display = 'none';
+            document.getElementById('navProfile').style.display = 'none';
+            document.getElementById('navHome').style.display = 'block';
+            document.getElementById('navLogin').style.display = 'block';
+            document.getElementById('navRegister').style.display = 'block';
+            document.getElementById('navLogout').style.display = 'none';
+        }
+
         // ===== LOGOUT =====
-        document.getElementById('navLogout')?.addEventListener('click', (e) => {
+        document.getElementById('logoutLink')?.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('token');
+            AvatarManager.reset();
             window.location.reload();
-        });
-
-        // ===== NAVIGATION =====
-        document.getElementById('navLogin')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/login';
-        });
-
-        document.getElementById('navRegister')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = '/register';
         });
 
         // ===== DOWNLOAD BUTTON =====
@@ -2136,6 +2094,7 @@
 
         // ===== INIT =====
         checkAuth();
+        setupAvatarClickRedirect();
 
         // Responsive
         window.addEventListener('resize', () => {
