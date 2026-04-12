@@ -22,8 +22,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- html2canvas pour la génération d'images -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- jsPDF pour l'export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <title>Mes transactions - KermHosting</title>
     
@@ -411,7 +414,7 @@
         /* ===== PAGE CONTENT ===== */
         .page-content {
             padding: 20px 16px;
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -469,24 +472,156 @@
             text-transform: uppercase;
         }
 
-        /* ===== FILTERS ===== */
-        .filters {
+        /* ===== GRAPHIQUE STATISTIQUES ===== */
+        .chart-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .chart-header {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-title i {
+            color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* ===== RECHERCHE ===== */
+        .search-section {
             margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            display: none;
+        }
+
+        .search-clear.visible {
+            display: block;
+        }
+
+        /* ===== FILTERS AVANCÉS ===== */
+        .filters-section {
+            margin-bottom: 20px;
+        }
+
+        .filters-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filters-toggle i {
+            transition: transform 0.3s;
+        }
+
+        .filters-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .filters-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-top: 12px;
+            display: none;
+        }
+
+        .filters-panel.active {
+            display: block;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .filter-chip {
-            background: var(--bg-card);
+            background: var(--bg-hover);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-full);
             padding: 8px 16px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -498,6 +633,134 @@
         }
 
         .filter-chip i {
+            margin-right: 6px;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .amount-range {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .amount-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .active-filter-tag {
+            background: var(--primary-glow);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-full);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .active-filter-tag i {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .active-filter-tag i:hover {
+            opacity: 1;
+        }
+
+        /* ===== STATUS FILTERS (simple) ===== */
+        .status-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .status-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .status-chip i {
             margin-right: 6px;
         }
 
@@ -673,46 +936,6 @@
             font-size: 0.85rem;
         }
 
-        .detail-value.warning {
-            color: var(--warning);
-            background: rgba(245, 158, 11, 0.1);
-            border-color: var(--warning);
-        }
-
-        .detail-value.danger {
-            color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
-            border-color: var(--danger);
-        }
-
-        .detail-value.success {
-            color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--success);
-        }
-
-        .detail-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-row .label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .detail-row .value {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
         /* ===== ACTION BUTTONS ===== */
         .action-buttons {
             display: flex;
@@ -742,10 +965,6 @@
             background: var(--primary);
             color: white;
             border-color: var(--primary);
-        }
-
-        .action-btn i {
-            font-size: 1rem;
         }
 
         /* ===== PAGINATION ===== */
@@ -804,203 +1023,6 @@
             margin-bottom: 12px;
         }
 
-        /* ===== ERROR MESSAGE ===== */
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .error-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--danger);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .error-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            background: var(--bg-input);
-            padding: 12px;
-            border-radius: var(--radius-md);
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        /* ===== FAPSHI INFO ===== */
-        .fapshi-info {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
-            border: 1px solid var(--primary);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .fapshi-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .fapshi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .fapshi-item {
-            background: var(--bg-input);
-            padding: 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-        }
-
-        .fapshi-label {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        .fapshi-value {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary);
-            word-break: break-all;
-            font-family: monospace;
-        }
-
-        /* ===== RECEIPT CONTAINER (invisible) ===== */
-        .receipt-container {
-            position: absolute;
-            left: -9999px;
-            top: -9999px;
-            width: 600px;
-            background: #1A2332;
-            border-radius: 24px;
-            padding: 32px;
-            border: 1px solid #2D3748;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
-        }
-
-        .receipt-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .receipt-logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #7C3AED;
-            font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: 8px;
-        }
-
-        .receipt-title {
-            font-size: 20px;
-            color: #F3F4F6;
-            margin-bottom: 4px;
-        }
-
-        .receipt-date {
-            font-size: 14px;
-            color: #9CA3AF;
-        }
-
-        .receipt-status {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 14px;
-            margin: 16px 0;
-        }
-
-        .receipt-status.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10B981;
-            border: 1px solid #10B981;
-        }
-
-        .receipt-status.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #F59E0B;
-            border: 1px solid #F59E0B;
-        }
-
-        .receipt-status.failed {
-            background: rgba(239, 68, 68, 0.1);
-            color: #EF4444;
-            border: 1px solid #EF4444;
-        }
-
-        .receipt-amount {
-            font-size: 32px;
-            font-weight: 700;
-            color: #7C3AED;
-            font-family: 'Space Grotesk', sans-serif;
-            margin: 24px 0;
-            text-align: center;
-        }
-
-        .receipt-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 24px 0;
-            padding: 24px 0;
-            border-top: 1px solid #2D3748;
-            border-bottom: 1px solid #2D3748;
-        }
-
-        .receipt-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .receipt-label {
-            font-size: 12px;
-            color: #9CA3AF;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .receipt-value {
-            font-size: 16px;
-            color: #F3F4F6;
-            font-weight: 500;
-            word-break: break-all;
-        }
-
-        .receipt-monospace {
-            font-family: monospace;
-            font-size: 14px;
-            background: #111827;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #2D3748;
-        }
-
-        .receipt-footer {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #2D3748;
-            text-align: center;
-            color: #6B7280;
-            font-size: 12px;
-        }
-
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
@@ -1046,7 +1068,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             top: 20px;
@@ -1064,97 +1086,50 @@
             margin: 0 auto;
         }
 
-        .toast.success {
-            background: rgba(16, 185, 129, 0.95);
-        }
-
-        .toast.error {
-            background: rgba(239, 68, 68, 0.95);
-        }
-
-        .toast.info {
-            background: rgba(59, 130, 246, 0.95);
-        }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes slideOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(30px);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
         }
 
         /* ===== RESPONSIVE ===== */
         @media (min-width: 640px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .toast {
-                left: auto;
-                right: 20px;
-            }
-            
-            .action-buttons {
-                flex-wrap: nowrap;
-            }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .toast { left: auto; right: 20px; }
+            .action-buttons { flex-wrap: nowrap; }
         }
 
         @media (min-width: 1024px) {
-            .menu-toggle {
-                display: none;
-            }
-
-            .sidebar {
-                transform: translateX(0);
-                position: sticky;
-            }
-
-            .sidebar-overlay {
-                display: none;
-            }
-
-            .top-bar-logo {
-                display: none;
-            }
+            .menu-toggle { display: none; }
+            .sidebar { transform: translateX(0); position: sticky; }
+            .sidebar-overlay { display: none; }
+            .top-bar-logo { display: none; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>KermHosting</span>
                 </div>
-                <button class="close-sidebar" id="closeSidebar">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
             </div>
             
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar" id="sidebarAvatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
+                <div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div>
                 <div class="user-info">
                     <div class="user-name" id="sidebarUserName">Chargement...</div>
                     <div class="user-email" id="sidebarUserEmail">...</div>
@@ -1164,171 +1139,142 @@
             
             <nav class="sidebar-nav">
                 <ul>
-                    <li id="navDashboard">
-                        <a href="/dashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/pricing">
-                            <i class="fas fa-tags"></i>
-                            <span>Tarifs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/buy-coins">
-                            <i class="fas fa-coins"></i>
-                            <span>Acheter des coins</span>
-                        </a>
-                    </li>
-                    <li id="navProfile">
-                        <a href="/profile">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
-                        </a>
-                    </li>
-                    <li class="active">
-                        <a href="/transactions">
-                            <i class="fas fa-history"></i>
-                            <span>Transactions</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/bot">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>KERM MD V1</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/support">
-                            <i class="fas fa-headset"></i>
-                            <span>Support</span>
-                        </a>
-                    </li>
-                    <li class="admin-link" style="display: none;">
-                        <a href="/admin" id="navAdmin">
-                            <i class="fas fa-crown"></i>
-                            <span>Administration</span>
-                        </a>
-                    </li>
+                    <li id="navDashboard"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
+                    <li><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
+                    <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
+                    <li id="navProfile"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
+                    <li class="active"><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
+                    <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>KERM MD V1</span></a></li>
+                    <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
                     <li class="divider"></li>
-                    <li id="navHome" style="display: none;">
-                        <a href="/">
-                            <i class="fas fa-home"></i>
-                            <span>Accueil</span>
-                        </a>
-                    </li>
-                    <li id="navLogin" style="display: none;">
-                        <a href="/login">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Connexion</span>
-                        </a>
-                    </li>
-                    <li id="navRegister" style="display: none;">
-                        <a href="/register">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Inscription</span>
-                        </a>
-                    </li>
-                    <li id="navLogout">
-                        <a href="#" id="logoutLink">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Déconnexion</span>
-                        </a>
-                    </li>
+                    <li id="navHome" style="display: none;"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+                    <li id="navLogin" style="display: none;"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
+                    <li id="navRegister" style="display: none;"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
+                    <li id="navLogout"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
                 </ul>
             </nav>
 
             <div class="sidebar-footer">
                 <div class="sidebar-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="sidebarCoins">0</span>
-                        <span class="stat-label">Coins</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="sidebarServers">0</span>
-                        <span class="stat-label">Serveurs</span>
-                    </div>
+                    <div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div>
+                    <div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="top-bar-logo">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
-                </div>
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
                 <div class="top-bar-actions">
-                    <button class="refresh-btn" id="refreshBtn" onclick="loadTransactions()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                    <button class="refresh-btn" id="refreshBtn" onclick="loadTransactions()"><i class="fas fa-sync-alt"></i></button>
                     <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
                         <img src="https://ui-avatars.com/api/?name=User&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
                     </a>
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
-                <!-- Page Header -->
                 <div class="page-header">
-                    <h1>
-                        <span class="gradient-text">Mes transactions</span>
-                    </h1>
-                    <p class="page-subtitle">
-                        Historique complet de vos paiements et achats
-                    </p>
+                    <h1><span class="gradient-text">Mes transactions</span></h1>
+                    <p class="page-subtitle">Historique complet de vos paiements et achats</p>
                 </div>
 
-                <!-- Stats Cards -->
                 <div class="stats-grid" id="statsContainer">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalTransactions">0</div>
-                        <div class="stat-label">Total</div>
+                    <div class="stat-card"><div class="stat-value" id="totalTransactions">0</div><div class="stat-label">Total</div></div>
+                    <div class="stat-card"><div class="stat-value" id="successfulTransactions">0</div><div class="stat-label">Réussies</div></div>
+                    <div class="stat-card"><div class="stat-value" id="pendingTransactions">0</div><div class="stat-label">En attente</div></div>
+                    <div class="stat-card"><div class="stat-value" id="failedTransactions">0</div><div class="stat-label">Échouées</div></div>
+                </div>
+
+                <!-- Graphique des dépenses -->
+                <div class="chart-section" id="chartSection" style="display: none;">
+                    <div class="chart-header">
+                        <div class="chart-title"><i class="fas fa-chart-bar"></i>Dépenses par mois (12 derniers mois)</div>
+                        <button class="action-btn" onclick="toggleChart()" style="padding: 6px 12px;"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="successfulTransactions">0</div>
-                        <div class="stat-label">Réussies</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="pendingTransactions">0</div>
-                        <div class="stat-label">En attente</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="failedTransactions">0</div>
-                        <div class="stat-label">Échouées</div>
+                    <div class="chart-container">
+                        <canvas id="expensesChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Filters -->
-                <div class="filters">
-                    <div class="filter-chip active" onclick="filterTransactions('all')" id="filterAll">
-                        <i class="fas fa-list"></i> Toutes
-                    </div>
-                    <div class="filter-chip" onclick="filterTransactions('successful')" id="filterSuccessful">
-                        <i class="fas fa-check-circle"></i> Réussies
-                    </div>
-                    <div class="filter-chip" onclick="filterTransactions('pending')" id="filterPending">
-                        <i class="fas fa-clock"></i> En attente
-                    </div>
-                    <div class="filter-chip" onclick="filterTransactions('failed')" id="filterFailed">
-                        <i class="fas fa-exclamation-circle"></i> Échouées
+                <!-- Recherche instantanée -->
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher une transaction...">
+                        <button class="search-clear" id="searchClear" onclick="clearSearch()"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
 
-                <!-- Transactions List -->
+                <!-- Filtres avancés (toggle) -->
+                <div class="filters-section">
+                    <div class="filters-toggle" onclick="toggleFiltersPanel()">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Filtres avancés</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    
+                    <div class="filters-panel" id="filtersPanel">
+                        <div class="filter-group">
+                            <label>Période</label>
+                            <div class="filter-chips">
+                                <div class="filter-chip active" data-period="all" onclick="setPeriod('all')">Tout</div>
+                                <div class="filter-chip" data-period="7days" onclick="setPeriod('7days')">7 jours</div>
+                                <div class="filter-chip" data-period="30days" onclick="setPeriod('30days')">30 jours</div>
+                                <div class="filter-chip" data-period="90days" onclick="setPeriod('90days')">90 jours</div>
+                                <div class="filter-chip" data-period="custom" onclick="setPeriod('custom')">Personnalisé</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group" id="customDateRange" style="display: none;">
+                            <label>Dates personnalisées</label>
+                            <div class="date-range">
+                                <input type="date" class="date-input" id="dateStart">
+                                <input type="date" class="date-input" id="dateEnd">
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Type de transaction</label>
+                            <div class="filter-chips">
+                                <div class="filter-chip active" data-type="all" onclick="setType('all')">Tous</div>
+                                <div class="filter-chip" data-type="coins_purchase" onclick="setType('coins_purchase')">Achat coins</div>
+                                <div class="filter-chip" data-type="server_purchase" onclick="setType('server_purchase')">Achat serveur</div>
+                                <div class="filter-chip" data-type="server_renewal" onclick="setType('server_renewal')">Renouvellement</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Montant</label>
+                            <div class="amount-range">
+                                <input type="number" class="amount-input" id="amountMin" placeholder="Min">
+                                <span>-</span>
+                                <input type="number" class="amount-input" id="amountMax" placeholder="Max">
+                            </div>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button class="filter-btn filter-btn-primary" onclick="applyAdvancedFilters()">Appliquer</button>
+                            <button class="filter-btn filter-btn-secondary" onclick="resetAdvancedFilters()">Réinitialiser</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtres actifs -->
+                <div class="active-filters" id="activeFilters"></div>
+
+                <!-- Filtres rapides par statut -->
+                <div class="status-filters">
+                    <div class="status-chip active" data-status="all" onclick="filterByStatus('all')"><i class="fas fa-list"></i> Toutes</div>
+                    <div class="status-chip" data-status="successful" onclick="filterByStatus('successful')"><i class="fas fa-check-circle"></i> Réussies</div>
+                    <div class="status-chip" data-status="pending" onclick="filterByStatus('pending')"><i class="fas fa-clock"></i> En attente</div>
+                    <div class="status-chip" data-status="failed" onclick="filterByStatus('failed')"><i class="fas fa-exclamation-circle"></i> Échouées</div>
+                </div>
+
+                <!-- Liste des transactions -->
                 <div id="transactionsContainer">
-                    <div class="loading-state">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Chargement de vos transactions...</p>
-                    </div>
+                    <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div>
                 </div>
 
                 <!-- Pagination -->
@@ -1337,727 +1283,495 @@
         </main>
     </div>
 
-    <!-- Hidden Receipt Container -->
-    <div id="receiptContainer" class="receipt-container"></div>
-
     <script>
-        // ===== AVATAR MANAGER =====
+        // ===== AVATAR MANAGER CORRIGÉ =====
         const AvatarManager = {
-            getAvatar: function(username) {
+            getAvatar: async function(username) {
+                const serverAvatar = await this.fetchFromServer();
+                if (serverAvatar) { localStorage.setItem('user_avatar', serverAvatar); return serverAvatar; }
                 const localAvatar = localStorage.getItem('user_avatar');
                 if (localAvatar) return localAvatar;
-                const sessionAvatar = sessionStorage.getItem('user_avatar');
-                if (sessionAvatar) return sessionAvatar;
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
-            setAvatar: function(avatarData) {
+            fetchFromServer: async function() {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return null;
+                    const response = await fetch('/api/user/avatar', { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (response.ok) { const data = await response.json(); return data.avatar || null; }
+                    return null;
+                } catch (error) { return null; }
+            },
+            getAvatarSync: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: async function(avatarData) {
                 localStorage.setItem('user_avatar', avatarData);
                 sessionStorage.setItem('user_avatar', avatarData);
-                this.syncToServer(avatarData);
+                await this.syncToServer(avatarData);
             },
             syncToServer: async function(avatarData) {
                 try {
                     const token = localStorage.getItem('token');
                     if (!token) return;
-                    await fetch('/api/user/avatar', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ avatar: avatarData })
-                    });
+                    await fetch('/api/user/avatar', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ avatar: avatarData }) });
                 } catch (error) {}
             },
-            reset: function(username) {
+            reset: async function(username) {
                 localStorage.removeItem('user_avatar');
                 sessionStorage.removeItem('user_avatar');
+                try { const token = localStorage.getItem('token'); if (token) await fetch('/api/user/avatar', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } catch (error) {}
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
-            applyToPage: function(username) {
-                const avatar = this.getAvatar(username);
+            applyToPage: async function(username) {
+                const quickAvatar = this.getAvatarSync(username);
+                this.updateAvatarElements(quickAvatar);
+                const serverAvatar = await this.getAvatar(username);
+                if (serverAvatar !== quickAvatar) this.updateAvatarElements(serverAvatar);
+                if (username) localStorage.setItem('username', username);
+            },
+            updateAvatarElements: function(avatar) {
                 const userAvatarSmall = document.getElementById('userAvatarSmall');
                 if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
                 const sidebarAvatar = document.getElementById('sidebarAvatar');
-                if (sidebarAvatar) {
-                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-                }
-                if (username) localStorage.setItem('username', username);
+                if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
             }
         };
 
         function setupAvatarClickRedirect() {
             const userMenu = document.getElementById('userMenu');
-            if (userMenu) {
-                userMenu.style.cursor = 'pointer';
-                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
-            }
+            if (userMenu) { userMenu.style.cursor = 'pointer'; userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; }); }
             const sidebarUser = document.getElementById('sidebarUser');
-            if (sidebarUser) {
-                sidebarUser.style.cursor = 'pointer';
-                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
-            }
+            if (sidebarUser) { sidebarUser.style.cursor = 'pointer'; sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; }); }
         }
 
         const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/login';
-        }
+        if (!token) window.location.href = '/login';
 
-        // ===== SIDEBAR FUNCTIONS =====
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const menuToggle = document.getElementById('menuToggle');
-        const closeSidebar = document.getElementById('closeSidebar');
+        // ===== VARIABLES =====
+        const ITEMS_PER_PAGE = 5;
+        let currentPage = 1, allTransactions = [], filteredTransactions = [];
+        let currentStatusFilter = 'all', searchQuery = '';
+        let advancedFilters = { period: 'all', type: 'all', amountMin: null, amountMax: null, dateStart: null, dateEnd: null };
+        let expensesChart = null;
+        let userData = null;
 
-        function openSidebar() {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebarFunc() {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
+        // ===== SIDEBAR =====
+        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle'), closeSidebar = document.getElementById('closeSidebar');
+        function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
         menuToggle.addEventListener('click', openSidebar);
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
 
-        // ===== TOAST NOTIFICATION =====
+        // ===== TOAST =====
         function showToast(type, message) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            const toast = document.createElement('div'); toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
-
-        // ===== PAGINATION =====
-        const ITEMS_PER_PAGE = 5;
-        let currentPage = 1;
-        let allTransactions = [];
-        let filteredTransactions = [];
-        let currentFilter = 'all';
 
         // ===== FORMATTERS =====
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function formatDateLong(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
         function formatAmount(amount, currency) {
-            if (currency === 'FCFA') {
-                return amount.toLocaleString() + ' FCFA';
-            } else {
-                return amount + ' coins';
-            }
+            return currency === 'FCFA' ? amount.toLocaleString() + ' FCFA' : amount + ' coins';
         }
 
         function getTransactionIcon(type, status) {
-            if (status === 'successful') {
-                return type === 'coins_purchase' ? 'fa-coins' : 'fa-server';
-            } else if (status === 'pending') {
-                return 'fa-clock';
-            } else {
-                return 'fa-exclamation-triangle';
-            }
+            if (status === 'successful') return type === 'coins_purchase' ? 'fa-coins' : 'fa-server';
+            else if (status === 'pending') return 'fa-clock';
+            else return 'fa-exclamation-triangle';
         }
 
-        function getTransactionTitle(transaction) {
-            if (transaction.type === 'coins_purchase') {
-                const packName = transaction.metadata?.pack?.name || 'Pack de coins';
-                return `Achat: ${packName}`;
-            } else if (transaction.type === 'server_purchase') {
-                return `Achat serveur: ${transaction.metadata?.server_name || transaction.plan_key || 'Serveur'}`;
-            } else if (transaction.type === 'server_renewal') {
-                return `Renouvellement: ${transaction.metadata?.server_name || 'Serveur'}`;
-            } else {
-                return `Transaction ${transaction.id.substring(0, 8)}...`;
-            }
+        function getTransactionTitle(t) {
+            if (t.type === 'coins_purchase') return `Achat: ${t.metadata?.pack?.name || 'Pack de coins'}`;
+            else if (t.type === 'server_purchase') return `Achat serveur: ${t.metadata?.server_name || t.plan_key || 'Serveur'}`;
+            else if (t.type === 'server_renewal') return `Renouvellement: ${t.metadata?.server_name || 'Serveur'}`;
+            else return `Transaction ${t.id.substring(0, 8)}...`;
         }
 
-        // ===== GENERATE RECEIPT HTML =====
-        function generateReceiptHTML(transaction) {
-            const formattedDate = formatDateLong(transaction.created_at);
-            const amount = transaction.amount || 0;
-            const currency = transaction.currency || 'FCFA';
-            const formattedAmount = currency === 'FCFA' ? amount.toLocaleString() + ' FCFA' : amount + ' coins';
-            
-            const typeText = {
-                'coins_purchase': 'Achat de coins',
-                'server_purchase': 'Achat de serveur',
-                'server_renewal': 'Renouvellement de serveur'
-            }[transaction.type] || 'Transaction';
-            
-            const status = transaction.status || 'pending';
-            const statusText = status === 'successful' ? 'RÉUSSIE' : 
-                              status === 'pending' ? 'EN ATTENTE' : 'ÉCHOUÉE';
-            
-            const statusClass = status === 'successful' ? 'success' : 
-                               status === 'pending' ? 'pending' : 'failed';
-            
-            const packName = transaction.metadata?.pack?.name || '';
-            const serverName = transaction.metadata?.server_name || '';
-            const phone = transaction.metadata?.phone || transaction.phone_number || '';
-            const medium = transaction.metadata?.medium || '';
-            const fapshiId = transaction.fapshi_transaction_id || 'N/A';
-            const planKey = transaction.plan_key || '';
-            const completedAt = transaction.completed_at ? formatDateLong(transaction.completed_at) : '';
-            
-            const userName = userData?.username || '';
-            const userEmail = userData?.email || '';
+        // ===== RECHERCHE (debounce) =====
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            document.getElementById('searchClear').classList.toggle('visible', searchQuery.length > 0);
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { currentPage = 1; applyAllFilters(); }, 300);
+        });
 
-            return `
-                <div class="receipt-header">
-                    <div class="receipt-logo">KERMHOSTING</div>
-                    <div class="receipt-title">Reçu de transaction</div>
-                    <div class="receipt-date">${formattedDate}</div>
-                    <div class="receipt-status ${statusClass}">${statusText}</div>
-                </div>
-                
-                <div class="receipt-amount">${formattedAmount}</div>
-                
-                <div class="receipt-grid">
-                    <div class="receipt-item">
-                        <div class="receipt-label">ID Transaction</div>
-                        <div class="receipt-value receipt-monospace">${transaction.id}</div>
-                    </div>
-                    <div class="receipt-item">
-                        <div class="receipt-label">Type</div>
-                        <div class="receipt-value">${typeText}</div>
-                    </div>
-                    <div class="receipt-item">
-                        <div class="receipt-label">Client</div>
-                        <div class="receipt-value">${userName}</div>
-                    </div>
-                    <div class="receipt-item">
-                        <div class="receipt-label">Email</div>
-                        <div class="receipt-value">${userEmail}</div>
-                    </div>
-                    ${packName ? `<div class="receipt-item"><div class="receipt-label">Pack</div><div class="receipt-value">${packName}</div></div>` : ''}
-                    ${serverName ? `<div class="receipt-item"><div class="receipt-label">Serveur</div><div class="receipt-value">${serverName}</div></div>` : ''}
-                    ${planKey ? `<div class="receipt-item"><div class="receipt-label">Plan</div><div class="receipt-value">${planKey}</div></div>` : ''}
-                    ${phone ? `<div class="receipt-item"><div class="receipt-label">Téléphone</div><div class="receipt-value">+237 ${phone}</div></div>` : ''}
-                    ${medium ? `<div class="receipt-item"><div class="receipt-label">Opérateur</div><div class="receipt-value">${medium}</div></div>` : ''}
-                    <div class="receipt-item">
-                        <div class="receipt-label">ID Fapshi</div>
-                        <div class="receipt-value receipt-monospace">${fapshiId}</div>
-                    </div>
-                    ${completedAt ? `<div class="receipt-item"><div class="receipt-label">Complété le</div><div class="receipt-value">${completedAt}</div></div>` : ''}
-                </div>
-                
-                <div class="receipt-footer">
-                    <p>Ce reçu est généré automatiquement par KermHosting</p>
-                    <p>Pour toute question, contactez notre support</p>
-                    <p style="margin-top: 16px;">© ${new Date().getFullYear()} KermHosting. Tous droits réservés.</p>
-                </div>
-            `;
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('searchClear').classList.remove('visible');
+            currentPage = 1; applyAllFilters();
         }
 
-        // ===== DOWNLOAD RECEIPT AS IMAGE =====
-        async function downloadReceipt(transactionId) {
-            const transaction = allTransactions.find(t => t.id === transactionId);
-            if (!transaction) {
-                showToast('error', 'Transaction introuvable');
+        // ===== FILTRES =====
+        function filterByStatus(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.status-chip[data-status="${status}"]`).classList.add('active');
+            currentPage = 1; applyAllFilters();
+        }
+
+        function toggleFiltersPanel() {
+            const panel = document.getElementById('filtersPanel');
+            const toggle = document.querySelector('.filters-toggle');
+            panel.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        function setPeriod(period) {
+            advancedFilters.period = period;
+            document.querySelectorAll('[data-period]').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-period="${period}"]`).classList.add('active');
+            document.getElementById('customDateRange').style.display = period === 'custom' ? 'block' : 'none';
+        }
+
+        function setType(type) {
+            advancedFilters.type = type;
+            document.querySelectorAll('[data-type]').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+        }
+
+        function applyAdvancedFilters() {
+            advancedFilters.amountMin = document.getElementById('amountMin').value ? parseFloat(document.getElementById('amountMin').value) : null;
+            advancedFilters.amountMax = document.getElementById('amountMax').value ? parseFloat(document.getElementById('amountMax').value) : null;
+            advancedFilters.dateStart = document.getElementById('dateStart').value;
+            advancedFilters.dateEnd = document.getElementById('dateEnd').value;
+            currentPage = 1; applyAllFilters();
+            document.getElementById('filtersPanel').classList.remove('active');
+            document.querySelector('.filters-toggle').classList.remove('active');
+            updateActiveFiltersDisplay();
+        }
+
+        function resetAdvancedFilters() {
+            advancedFilters = { period: 'all', type: 'all', amountMin: null, amountMax: null, dateStart: null, dateEnd: null };
+            setPeriod('all'); setType('all');
+            document.getElementById('amountMin').value = ''; document.getElementById('amountMax').value = '';
+            document.getElementById('dateStart').value = ''; document.getElementById('dateEnd').value = '';
+            currentPage = 1; applyAllFilters();
+            document.getElementById('filtersPanel').classList.remove('active');
+            document.querySelector('.filters-toggle').classList.remove('active');
+            updateActiveFiltersDisplay();
+        }
+
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('activeFilters');
+            let html = '';
+            if (advancedFilters.period !== 'all') html += `<span class="active-filter-tag">Période: ${advancedFilters.period} <i class="fas fa-times" onclick="resetPeriod()"></i></span>`;
+            if (advancedFilters.type !== 'all') html += `<span class="active-filter-tag">Type: ${advancedFilters.type} <i class="fas fa-times" onclick="resetType()"></i></span>`;
+            if (advancedFilters.amountMin || advancedFilters.amountMax) html += `<span class="active-filter-tag">Montant: ${advancedFilters.amountMin||'0'}-${advancedFilters.amountMax||'∞'} FCFA <i class="fas fa-times" onclick="resetAmount()"></i></span>`;
+            container.innerHTML = html;
+        }
+
+        function resetPeriod() { advancedFilters.period = 'all'; setPeriod('all'); applyAllFilters(); updateActiveFiltersDisplay(); }
+        function resetType() { advancedFilters.type = 'all'; setType('all'); applyAllFilters(); updateActiveFiltersDisplay(); }
+        function resetAmount() { advancedFilters.amountMin = null; advancedFilters.amountMax = null; document.getElementById('amountMin').value = ''; document.getElementById('amountMax').value = ''; applyAllFilters(); updateActiveFiltersDisplay(); }
+
+        function applyAllFilters() {
+            filteredTransactions = allTransactions.filter(t => {
+                // Filtre statut
+                if (currentStatusFilter === 'successful' && t.status !== 'successful') return false;
+                if (currentStatusFilter === 'pending' && t.status !== 'pending') return false;
+                if (currentStatusFilter === 'failed' && t.status !== 'failed' && t.status !== 'expired') return false;
+                
+                // Filtre recherche
+                if (searchQuery) {
+                    const searchable = `${t.id} ${getTransactionTitle(t)} ${t.amount || 0}`.toLowerCase();
+                    if (!searchable.includes(searchQuery.toLowerCase())) return false;
+                }
+                
+                // Filtre période
+                if (advancedFilters.period !== 'all') {
+                    const date = new Date(t.created_at);
+                    const now = new Date();
+                    if (advancedFilters.period === '7days' && date < new Date(now - 7*24*60*60*1000)) return false;
+                    if (advancedFilters.period === '30days' && date < new Date(now - 30*24*60*60*1000)) return false;
+                    if (advancedFilters.period === '90days' && date < new Date(now - 90*24*60*60*1000)) return false;
+                    if (advancedFilters.period === 'custom' && advancedFilters.dateStart && advancedFilters.dateEnd) {
+                        const start = new Date(advancedFilters.dateStart); start.setHours(0,0,0);
+                        const end = new Date(advancedFilters.dateEnd); end.setHours(23,59,59);
+                        if (date < start || date > end) return false;
+                    }
+                }
+                
+                // Filtre type
+                if (advancedFilters.type !== 'all' && t.type !== advancedFilters.type) return false;
+                
+                // Filtre montant
+                const amount = t.amount || 0;
+                if (advancedFilters.amountMin !== null && amount < advancedFilters.amountMin) return false;
+                if (advancedFilters.amountMax !== null && amount > advancedFilters.amountMax) return false;
+                
+                return true;
+            });
+            
+            updateStats();
+            displayTransactions();
+            renderPagination();
+            updateChart();
+        }
+
+        // ===== STATS =====
+        function updateStats() {
+            document.getElementById('totalTransactions').textContent = allTransactions.length;
+            document.getElementById('successfulTransactions').textContent = allTransactions.filter(t => t.status === 'successful').length;
+            document.getElementById('pendingTransactions').textContent = allTransactions.filter(t => t.status === 'pending').length;
+            document.getElementById('failedTransactions').textContent = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired').length;
+        }
+
+        // ===== GRAPHIQUE =====
+        function updateChart() {
+            const chartSection = document.getElementById('chartSection');
+            const successfulTransactions = allTransactions.filter(t => t.status === 'successful' && t.currency === 'FCFA');
+            
+            if (successfulTransactions.length === 0) {
+                chartSection.style.display = 'none';
                 return;
             }
-
-            const container = document.getElementById('receiptContainer');
-            container.innerHTML = generateReceiptHTML(transaction);
+            chartSection.style.display = 'block';
             
-            showToast('info', 'Génération du reçu en cours...');
+            const monthlyData = {};
+            const now = new Date();
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                monthlyData[key] = 0;
+            }
+            
+            successfulTransactions.forEach(t => {
+                const d = new Date(t.created_at);
+                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                if (monthlyData.hasOwnProperty(key)) monthlyData[key] += t.amount || 0;
+            });
+            
+            const labels = Object.keys(monthlyData).map(k => {
+                const [y, m] = k.split('-');
+                return new Date(parseInt(y), parseInt(m)-1).toLocaleDateString('fr-FR', { month: 'short' });
+            });
+            const data = Object.values(monthlyData);
+            
+            const ctx = document.getElementById('expensesChart').getContext('2d');
+            if (expensesChart) expensesChart.destroy();
+            
+            expensesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Dépenses (FCFA)',
+                        data: data,
+                        backgroundColor: 'rgba(124, 58, 237, 0.6)',
+                        borderColor: '#7C3AED',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString()} FCFA` } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#2D3748' }, ticks: { color: '#9CA3AF' } },
+                        x: { grid: { display: false }, ticks: { color: '#9CA3AF' } }
+                    }
+                }
+            });
+        }
+
+        function toggleChart() { document.getElementById('chartSection').style.display = 'none'; }
+
+        // ===== EXPORT PDF =====
+        async function downloadReceiptPDF(transactionId) {
+            const transaction = allTransactions.find(t => t.id === transactionId);
+            if (!transaction) { showToast('error', 'Transaction introuvable'); return; }
+            
+            showToast('info', 'Génération du PDF...');
             
             try {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                const canvas = await html2canvas(container, {
-                    scale: 2,
-                    backgroundColor: '#1A2332',
-                    logging: false,
-                    allowTaint: true,
-                    useCORS: true
-                });
-                const link = document.createElement('a');
-                link.download = `recu-kermhosting-${transaction.id.substring(0, 8)}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showToast('success', 'Reçu téléchargé avec succès');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                
+                // En-tête
+                doc.setFillColor(124, 58, 237);
+                doc.rect(0, 0, pageWidth, 40, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.text('KERMHOSTING', pageWidth/2, 25, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text('Reçu de transaction', pageWidth/2, 35, { align: 'center' });
+                
+                // Statut
+                const status = transaction.status || 'pending';
+                const statusText = status === 'successful' ? 'RÉUSSIE' : status === 'pending' ? 'EN ATTENTE' : 'ÉCHOUÉE';
+                const statusColor = status === 'successful' ? [16, 185, 129] : status === 'pending' ? [245, 158, 11] : [239, 68, 68];
+                doc.setFillColor(...statusColor);
+                doc.roundedRect(pageWidth/2 - 40, 50, 80, 12, 6, 6, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.text(statusText, pageWidth/2, 58, { align: 'center' });
+                
+                // Montant
+                doc.setTextColor(124, 58, 237);
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                const amount = transaction.amount || 0;
+                const currency = transaction.currency || 'FCFA';
+                const formattedAmount = currency === 'FCFA' ? amount.toLocaleString() + ' FCFA' : amount + ' coins';
+                doc.text(formattedAmount, pageWidth/2, 85, { align: 'center' });
+                
+                // Infos
+                doc.setTextColor(100, 100, 100);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                let y = 105;
+                const addRow = (label, value) => {
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(label, 20, y);
+                    doc.setTextColor(50, 50, 50);
+                    doc.text(value || 'N/A', pageWidth - 20, y, { align: 'right' });
+                    y += 8;
+                };
+                
+                addRow('ID Transaction', transaction.id.substring(0, 16) + '...');
+                addRow('Type', transaction.type === 'coins_purchase' ? 'Achat de coins' : transaction.type === 'server_purchase' ? 'Achat serveur' : 'Renouvellement');
+                addRow('Date', new Date(transaction.created_at).toLocaleDateString('fr-FR'));
+                addRow('Client', userData?.username || '');
+                addRow('Email', userData?.email || '');
+                if (transaction.metadata?.pack?.name) addRow('Pack', transaction.metadata.pack.name);
+                if (transaction.metadata?.server_name) addRow('Serveur', transaction.metadata.server_name);
+                addRow('ID Fapshi', transaction.fapshi_transaction_id || 'N/A');
+                
+                // Pied de page
+                doc.setTextColor(150, 150, 150);
+                doc.setFontSize(8);
+                doc.text('Ce reçu est généré automatiquement par KermHosting', pageWidth/2, 270, { align: 'center' });
+                doc.text(`© ${new Date().getFullYear()} KermHosting. Tous droits réservés.`, pageWidth/2, 280, { align: 'center' });
+                
+                doc.save(`recu-kermhosting-${transaction.id.substring(0, 8)}.pdf`);
+                showToast('success', 'PDF téléchargé avec succès');
             } catch (error) {
-                console.error('Erreur génération image:', error);
-                showToast('error', 'Erreur lors de la génération du reçu');
-            } finally {
-                container.innerHTML = '';
+                console.error('Erreur PDF:', error);
+                showToast('error', 'Erreur lors de la génération du PDF');
             }
-        }
-
-        // ===== PRINT RECEIPT =====
-        function printReceipt(transactionId) {
-            const transaction = allTransactions.find(t => t.id === transactionId);
-            if (!transaction) {
-                showToast('error', 'Transaction introuvable');
-                return;
-            }
-
-            const receiptHTML = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Reçu de transaction - KermHosting</title>
-                    <style>
-                        body { font-family: 'Inter', Arial, sans-serif; background: #0B1120; color: #F3F4F6; margin: 0; padding: 20px; }
-                        .receipt { max-width: 600px; margin: 0 auto; background: #1A2332; border-radius: 24px; padding: 32px; border: 1px solid #2D3748; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-                        .receipt-header { text-align: center; margin-bottom: 32px; }
-                        .receipt-logo { font-size: 28px; font-weight: 700; color: #7C3AED; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
-                        .receipt-title { font-size: 20px; color: #F3F4F6; margin-bottom: 4px; }
-                        .receipt-date { font-size: 14px; color: #9CA3AF; }
-                        .receipt-status { display: inline-block; padding: 8px 16px; border-radius: 9999px; font-weight: 600; font-size: 14px; margin: 16px 0; }
-                        .receipt-status.success { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid #10B981; }
-                        .receipt-status.pending { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid #F59E0B; }
-                        .receipt-status.failed { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid #EF4444; }
-                        .receipt-amount { font-size: 32px; font-weight: 700; color: #7C3AED; font-family: 'Space Grotesk', sans-serif; margin: 24px 0; text-align: center; }
-                        .receipt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; padding: 24px 0; border-top: 1px solid #2D3748; border-bottom: 1px solid #2D3748; }
-                        .receipt-item { display: flex; flex-direction: column; gap: 4px; }
-                        .receipt-label { font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.5px; }
-                        .receipt-value { font-size: 16px; color: #F3F4F6; font-weight: 500; word-break: break-all; }
-                        .receipt-monospace { font-family: monospace; font-size: 14px; background: #111827; padding: 8px 12px; border-radius: 8px; border: 1px solid #2D3748; }
-                        .receipt-footer { margin-top: 32px; padding-top: 24px; border-top: 1px solid #2D3748; text-align: center; color: #6B7280; font-size: 12px; }
-                        @media print { body { background: white; } .receipt { box-shadow: none; border: 1px solid #ccc; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="receipt">
-                        ${generateReceiptHTML(transaction)}
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(receiptHTML);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => { printWindow.print(); }, 500);
         }
 
         // ===== LOAD USER DATA =====
-        let userData = null;
-
         async function loadUserData() {
             try {
-                const res = await fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
-
                 if (data.success) {
                     userData = data.user;
-                    
                     document.getElementById('sidebarUserName').textContent = userData.username;
                     document.getElementById('sidebarUserEmail').textContent = userData.email;
                     document.getElementById('sidebarUserBadge').textContent = userData.role;
                     document.getElementById('sidebarCoins').textContent = userData.coins;
                     document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
-                    
                     document.getElementById('navDashboard').style.display = 'block';
                     document.getElementById('navProfile').style.display = 'block';
                     document.getElementById('navHome').style.display = 'none';
                     document.getElementById('navLogin').style.display = 'none';
                     document.getElementById('navRegister').style.display = 'none';
                     document.getElementById('navLogout').style.display = 'block';
-
-                    if (userData.role === 'admin' || userData.role === 'superadmin') {
-                        document.querySelector('.admin-link').style.display = 'block';
-                    }
-
                     AvatarManager.applyToPage(userData.username);
-
-                    if (data.transactions) {
-                        allTransactions = data.transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                        applyFilter();
-                    } else {
-                        loadTransactions();
-                    }
-                } else {
-                    localStorage.removeItem('token');
-                    window.location.href = '/login';
-                }
-            } catch (error) {
-                console.error('Erreur chargement:', error);
-                showToast('error', 'Erreur de chargement');
-            }
+                    if (data.transactions) { allTransactions = data.transactions.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)); applyAllFilters(); }
+                    else loadTransactions();
+                } else { localStorage.removeItem('token'); window.location.href = '/login'; }
+            } catch (error) { showToast('error', 'Erreur de chargement'); }
         }
 
-        // ===== LOAD TRANSACTIONS =====
         async function loadTransactions() {
             try {
-                document.getElementById('transactionsContainer').innerHTML = `
-                    <div class="loading-state">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Chargement de vos transactions...</p>
-                    </div>
-                `;
-
-                const res = await fetch('/api/user/transactions', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (res.status === 404) {
-                    if (userData?.transactions) {
-                        allTransactions = userData.transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                        applyFilter();
-                    }
-                    return;
-                }
-
+                document.getElementById('transactionsContainer').innerHTML = '<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div>';
+                const res = await fetch('/api/user/transactions', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.status === 404) { if (userData?.transactions) { allTransactions = userData.transactions.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)); applyAllFilters(); } return; }
                 const data = await res.json();
-
-                if (data.success) {
-                    allTransactions = (data.transactions || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    applyFilter();
-                } else {
-                    showToast('error', 'Erreur chargement transactions');
-                }
-            } catch (error) {
-                console.error('Erreur chargement transactions:', error);
-                document.getElementById('transactionsContainer').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de charger vos transactions</p>
-                        <button class="action-btn" onclick="loadTransactions()">Réessayer</button>
-                    </div>
-                `;
-            }
+                if (data.success) { allTransactions = (data.transactions || []).sort((a,b) => new Date(b.created_at) - new Date(a.created_at)); applyAllFilters(); }
+                else showToast('error', 'Erreur chargement transactions');
+            } catch (error) { document.getElementById('transactionsContainer').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>Erreur</h3><button class="action-btn" onclick="loadTransactions()">Réessayer</button></div>'; }
         }
 
-        // ===== UPDATE STATS =====
-        function updateStats() {
-            const total = allTransactions.length;
-            const successful = allTransactions.filter(t => t.status === 'successful').length;
-            const pending = allTransactions.filter(t => t.status === 'pending').length;
-            const failed = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired').length;
-
-            document.getElementById('totalTransactions').textContent = total;
-            document.getElementById('successfulTransactions').textContent = successful;
-            document.getElementById('pendingTransactions').textContent = pending;
-            document.getElementById('failedTransactions').textContent = failed;
-        }
-
-        // ===== FILTER TRANSACTIONS =====
-        function filterTransactions(filter) {
-            currentFilter = filter;
-            currentPage = 1;
-            
-            document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.classList.remove('active');
-            });
-            document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`).classList.add('active');
-
-            applyFilter();
-        }
-
-        function applyFilter() {
-            if (currentFilter === 'all') {
-                filteredTransactions = [...allTransactions];
-            } else if (currentFilter === 'successful') {
-                filteredTransactions = allTransactions.filter(t => t.status === 'successful');
-            } else if (currentFilter === 'pending') {
-                filteredTransactions = allTransactions.filter(t => t.status === 'pending');
-            } else if (currentFilter === 'failed') {
-                filteredTransactions = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired');
-            }
-
-            updateStats();
-            displayTransactions();
-            renderPagination();
-        }
-
-        // ===== DISPLAY TRANSACTIONS =====
         function displayTransactions() {
             const container = document.getElementById('transactionsContainer');
-
-            if (!filteredTransactions || filteredTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <h3>Aucune transaction</h3>
-                        <p>Vous n'avez pas encore effectué de transaction</p>
-                        <a href="/buy-coins" class="action-btn" style="text-decoration: none;">Acheter des coins</a>
-                    </div>
-                `;
+            if (!filteredTransactions.length) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune transaction</h3><p>Aucune transaction ne correspond à vos critères</p></div>';
                 return;
             }
-
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredTransactions.length);
-            const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
-
+            const start = (currentPage-1)*ITEMS_PER_PAGE, end = Math.min(start+ITEMS_PER_PAGE, filteredTransactions.length);
+            const pageTransactions = filteredTransactions.slice(start, end);
             let html = '<div class="transactions-list">';
-
-            pageTransactions.forEach(transaction => {
-                const status = transaction.status || 'pending';
-                const statusClass = status === 'successful' ? 'success' : (status === 'pending' ? 'pending' : 'failed');
-                const icon = getTransactionIcon(transaction.type, status);
-                const title = getTransactionTitle(transaction);
-                const date = formatDate(transaction.created_at);
-                const amount = transaction.amount || 0;
-                const currency = transaction.currency || 'FCFA';
-                const formattedAmount = formatAmount(amount, currency);
-                const amountClass = transaction.type === 'coins_purchase' ? 'positive' : 'negative';
-                
-                const fapshiId = transaction.fapshi_transaction_id || 'N/A';
-                const errorMessage = transaction.metadata?.error_message || transaction.error_message;
-                const fapshiResponse = transaction.metadata?.fapshi_response || transaction.fapshi_response;
-
-                html += `
-                    <div class="transaction-item" onclick="toggleTransaction('${transaction.id}')">
-                        <div class="transaction-header">
-                            <div class="transaction-icon ${statusClass}">
-                                <i class="fas ${icon}"></i>
-                            </div>
-                            <div class="transaction-main">
-                                <div class="transaction-title">${title}</div>
-                                <div class="transaction-meta">
-                                    <span>${date}</span>
-                                    <span class="transaction-badge ${statusClass}">${status}</span>
-                                </div>
-                            </div>
-                            <div class="transaction-amount ${amountClass}">
-                                ${formattedAmount}
-                            </div>
+            pageTransactions.forEach(t => {
+                const status = t.status || 'pending', statusClass = status === 'successful' ? 'success' : (status === 'pending' ? 'pending' : 'failed');
+                const icon = getTransactionIcon(t.type, status), title = getTransactionTitle(t);
+                const date = formatDate(t.created_at), formattedAmount = formatAmount(t.amount||0, t.currency||'FCFA');
+                const amountClass = t.type === 'coins_purchase' ? 'positive' : 'negative';
+                html += `<div class="transaction-item" onclick="toggleTransaction('${t.id}')">
+                    <div class="transaction-header">
+                        <div class="transaction-icon ${statusClass}"><i class="fas ${icon}"></i></div>
+                        <div class="transaction-main"><div class="transaction-title">${title}</div><div class="transaction-meta"><span>${date}</span><span class="transaction-badge ${statusClass}">${status}</span></div></div>
+                        <div class="transaction-amount ${amountClass}">${formattedAmount}</div>
+                    </div>
+                    <div class="transaction-details" id="details-${t.id}">
+                        <div class="detail-grid">
+                            <div class="detail-item"><span class="detail-label">ID Transaction</span><span class="detail-value monospace">${t.id}</span></div>
+                            <div class="detail-item"><span class="detail-label">Type</span><span class="detail-value">${t.type==='coins_purchase'?'Achat coins':t.type==='server_purchase'?'Achat serveur':'Renouvellement'}</span></div>
+                            <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value">${date}</span></div>
+                            <div class="detail-item"><span class="detail-label">Montant</span><span class="detail-value ${amountClass}">${formattedAmount}</span></div>
                         </div>
-                        
-                        <div class="transaction-details" id="details-${transaction.id}">
-                            <div class="detail-grid">
-                                <div class="detail-item">
-                                    <span class="detail-label">ID Transaction</span>
-                                    <span class="detail-value monospace">${transaction.id}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Type</span>
-                                    <span class="detail-value">
-                                        ${transaction.type === 'coins_purchase' ? 'Achat de coins' : 
-                                          transaction.type === 'server_purchase' ? 'Achat de serveur' : 
-                                          transaction.type === 'server_renewal' ? 'Renouvellement' : 'Transaction'}
-                                    </span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Date</span>
-                                    <span class="detail-value">${date}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Montant</span>
-                                    <span class="detail-value ${amountClass}">${formattedAmount}</span>
-                                </div>
-                            </div>
-
-                            <div class="fapshi-info">
-                                <div class="fapshi-title">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span>Informations Fapshi</span>
-                                </div>
-                                <div class="fapshi-grid">
-                                    <div class="fapshi-item">
-                                        <div class="fapshi-label">Transaction ID</div>
-                                        <div class="fapshi-value">${fapshiId}</div>
-                                    </div>
-                                    <div class="fapshi-item">
-                                        <div class="fapshi-label">Statut</div>
-                                        <div class="fapshi-value ${statusClass}">${status}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            ${transaction.metadata?.phone ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Téléphone</span>
-                                    <span class="detail-value">${transaction.metadata.phone}</span>
-                                </div>
-                            ` : ''}
-
-                            ${transaction.metadata?.medium || transaction.metadata?.original_medium ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Opérateur</span>
-                                    <span class="detail-value">${transaction.metadata.original_medium || transaction.metadata.medium || 'N/A'}</span>
-                                </div>
-                            ` : ''}
-
-                            ${transaction.metadata?.server_name ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Serveur</span>
-                                    <span class="detail-value">${transaction.metadata.server_name}</span>
-                                </div>
-                            ` : ''}
-
-                            ${transaction.metadata?.pack?.name ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Pack</span>
-                                    <span class="detail-value">${transaction.metadata.pack.name}</span>
-                                </div>
-                            ` : ''}
-
-                            ${transaction.plan_key ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Plan</span>
-                                    <span class="detail-value">${transaction.plan_key}</span>
-                                </div>
-                            ` : ''}
-
-                            ${transaction.completed_at ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Complété le</span>
-                                    <span class="detail-value">${formatDate(transaction.completed_at)}</span>
-                                </div>
-                            ` : ''}
-
-                            <div class="action-buttons">
-                                <button class="action-btn" onclick="event.stopPropagation(); downloadReceipt('${transaction.id}')">
-                                    <i class="fas fa-download"></i> Télécharger le reçu
-                                </button>
-                                <button class="action-btn" onclick="event.stopPropagation(); printReceipt('${transaction.id}')">
-                                    <i class="fas fa-print"></i> Imprimer
-                                </button>
-                            </div>
-
-                            ${errorMessage ? `
-                                <div class="error-message">
-                                    <div class="error-title">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        <span>Erreur de paiement</span>
-                                    </div>
-                                    <div class="error-text">${errorMessage}</div>
-                                </div>
-                            ` : ''}
-
-                            ${fapshiResponse ? `
-                                <div class="error-message">
-                                    <div class="error-title">
-                                        <i class="fas fa-robot"></i>
-                                        <span>Réponse Fapshi</span>
-                                    </div>
-                                    <div class="error-text">${JSON.stringify(fapshiResponse, null, 2)}</div>
-                                </div>
-                            ` : ''}
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="event.stopPropagation(); downloadReceiptPDF('${t.id}')"><i class="fas fa-download"></i> Télécharger PDF</button>
                         </div>
                     </div>
-                `;
+                </div>`;
             });
-
-            html += '</div>';
-            container.innerHTML = html;
+            html += '</div>'; container.innerHTML = html;
         }
 
-        // ===== RENDER PAGINATION =====
         function renderPagination() {
             const container = document.getElementById('paginationContainer');
             const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
-            
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
+            let html = `<div class="pagination-info">${(currentPage-1)*ITEMS_PER_PAGE+1}-${Math.min(currentPage*ITEMS_PER_PAGE, filteredTransactions.length)} sur ${filteredTransactions.length}</div><div class="pagination">`;
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+            for (let i=1; i<=totalPages; i++) {
+                if (i===1||i===totalPages||(i>=currentPage-2&&i<=currentPage+2)) html += `<button class="pagination-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+                else if (i===currentPage-3||i===currentPage+3) html += `<span class="pagination-ellipsis">...</span>`;
             }
-
-            let html = '<div class="pagination">';
-            
-            // Bouton précédent
-            html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>`;
-
-            // Pages
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-                } else if (i === currentPage - 3 || i === currentPage + 3) {
-                    html += `<span class="pagination-ellipsis">...</span>`;
-                }
-            }
-
-            // Bouton suivant
-            html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>`;
-
-            html += '</div>';
-            
-            // Info page
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-            const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, filteredTransactions.length);
-            html = `<div class="pagination-info">${startIndex}-${endIndex} sur ${filteredTransactions.length} transactions</div>` + html;
-            
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
             container.innerHTML = html;
         }
 
-        function goToPage(page) {
-            const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
-            if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            displayTransactions();
-            renderPagination();
-            
-            // Scroll en haut de la liste
-            document.querySelector('.page-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        function goToPage(page) { const total = Math.ceil(filteredTransactions.length/ITEMS_PER_PAGE); if (page<1||page>total) return; currentPage=page; displayTransactions(); renderPagination(); }
 
-        // ===== TOGGLE TRANSACTION DETAILS =====
-        function toggleTransaction(transactionId) {
-            const details = document.getElementById(`details-${transactionId}`);
-            if (details) {
-                const item = details.closest('.transaction-item');
-                item.classList.toggle('expanded');
-            }
-        }
+        function toggleTransaction(id) { document.getElementById(`details-${id}`)?.closest('.transaction-item').classList.toggle('expanded'); }
 
-        // ===== LOGOUT =====
-        document.getElementById('logoutLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            AvatarManager.reset();
-            window.location.href = '/';
-        });
+        document.getElementById('logoutLink').addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('token'); AvatarManager.reset(); window.location.href = '/'; });
 
         // ===== INIT =====
-        loadUserData();
-        setupAvatarClickRedirect();
+        loadUserData(); setupAvatarClickRedirect();
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
 
-        // Exposer les fonctions globalement
-        window.filterTransactions = filterTransactions;
-        window.toggleTransaction = toggleTransaction;
-        window.loadTransactions = loadTransactions;
-        window.downloadReceipt = downloadReceipt;
-        window.printReceipt = printReceipt;
-        window.goToPage = goToPage;
-
-        // Responsive
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                closeSidebarFunc();
-            }
-        });
+        // Exports
+        window.filterByStatus = filterByStatus; window.toggleFiltersPanel = toggleFiltersPanel;
+        window.setPeriod = setPeriod; window.setType = setType; window.applyAdvancedFilters = applyAdvancedFilters;
+        window.resetAdvancedFilters = resetAdvancedFilters; window.resetPeriod = resetPeriod; window.resetType = resetType; window.resetAmount = resetAmount;
+        window.clearSearch = clearSearch; window.toggleChart = toggleChart; window.downloadReceiptPDF = downloadReceiptPDF;
+        window.toggleTransaction = toggleTransaction; window.goToPage = goToPage; window.loadTransactions = loadTransactions;
     </script>
 </body>
 </html>
