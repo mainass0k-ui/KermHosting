@@ -37,22 +37,22 @@
             --success: #10B981;
             
             --bg-dark: #0B1120;
-            --bg-card: #1A2332;
+            --bg-card: rgba(26, 35, 50, 0.85);
             --bg-sidebar: #111827;
             --bg-hover: #1F2937;
-            --bg-input: #1E293B;
+            --bg-input: rgba(30, 41, 59, 0.7);
             
             --text-primary: #F3F4F6;
             --text-secondary: #9CA3AF;
             --text-muted: #6B7280;
             
-            --border-color: #2D3748;
+            --border-color: rgba(45, 55, 72, 0.6);
             --border-light: #374151;
             
             --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --shadow-glow: 0 0 15px var(--primary-glow);
+            --shadow-glow: 0 0 25px var(--primary-glow);
             
             --radius-sm: 8px;
             --radius-md: 12px;
@@ -77,8 +77,10 @@
             justify-content: center;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
         }
 
+        /* Fond animé avec particules */
         body::before {
             content: '';
             position: fixed;
@@ -88,26 +90,54 @@
             bottom: 0;
             background: 
                 radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -2;
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: -1;
         }
 
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-30px) translateX(15px); }
+            50% { transform: translateY(-50px) translateX(-15px); }
+            75% { transform: translateY(-20px) translateX(25px); }
+        }
+
         .auth-container {
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
             animation: fadeInUp 0.6s ease-out;
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .auth-card {
@@ -115,8 +145,9 @@
             border-radius: var(--radius-xl);
             padding: 40px 32px;
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(124, 58, 237, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -128,7 +159,14 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            background-size: 200% 100%;
+            animation: gradientMove 3s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
         }
 
         .auth-header {
@@ -153,7 +191,13 @@
         .auth-logo i {
             color: var(--primary);
             font-size: 2.5rem;
-            filter: drop-shadow(0 0 10px var(--primary-glow));
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 10px var(--primary-glow)); }
+            100% { filter: drop-shadow(0 0 25px var(--primary-glow)); }
         }
 
         .auth-title {
@@ -207,6 +251,7 @@
             font-size: 1rem;
             transition: all 0.3s;
             width: 100%;
+            backdrop-filter: blur(5px);
         }
 
         .form-input:focus {
@@ -245,6 +290,95 @@
             color: var(--text-secondary);
             font-size: 0.9rem;
             cursor: pointer;
+        }
+
+        /* OAuth Buttons */
+        .oauth-section {
+            margin: 24px 0 16px;
+            text-align: center;
+        }
+
+        .oauth-divider {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .oauth-divider::before,
+        .oauth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .oauth-divider span {
+            padding: 0 16px;
+        }
+
+        .oauth-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            min-width: 110px;
+        }
+
+        .oauth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .oauth-btn.google {
+            border-color: #DB4437;
+        }
+        .oauth-btn.google:hover {
+            background: rgba(219, 68, 55, 0.15);
+            border-color: #DB4437;
+        }
+        .oauth-btn.google i {
+            color: #DB4437;
+        }
+
+        .oauth-btn.discord {
+            border-color: #5865F2;
+        }
+        .oauth-btn.discord:hover {
+            background: rgba(88, 101, 242, 0.15);
+            border-color: #5865F2;
+        }
+        .oauth-btn.discord i {
+            color: #5865F2;
+        }
+
+        .oauth-btn.github {
+            border-color: #6e5494;
+        }
+        .oauth-btn.github:hover {
+            background: rgba(110, 84, 148, 0.15);
+            border-color: #6e5494;
+        }
+        .oauth-btn.github i {
+            color: #6e5494;
         }
 
         .auth-btn {
@@ -348,17 +482,12 @@
             align-items: center;
             gap: 12px;
             animation: slideIn 0.3s ease-out;
+            backdrop-filter: blur(10px);
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .message i {
@@ -432,17 +561,12 @@
             gap: 8px;
             box-shadow: var(--shadow-md);
             animation: slideInRight 0.5s ease-out;
+            backdrop-filter: blur(10px);
         }
 
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .captcha-waiting-badge {
@@ -456,29 +580,7 @@
             align-items: center;
             gap: 8px;
             box-shadow: var(--shadow-sm);
-        }
-
-        .floating-shape {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: var(--primary);
-            filter: blur(100px);
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        .shape-1 {
-            top: -100px;
-            left: -100px;
-            background: var(--primary);
-        }
-
-        .shape-2 {
-            bottom: -100px;
-            right: -100px;
-            background: var(--secondary);
+            backdrop-filter: blur(10px);
         }
 
         @media (max-width: 480px) {
@@ -494,6 +596,13 @@
             .auth-btn {
                 padding: 14px;
             }
+            .oauth-buttons {
+                gap: 10px;
+            }
+            .oauth-btn {
+                padding: 10px 16px;
+                min-width: 95px;
+            }
             .captcha-badge-status {
                 bottom: 10px;
                 right: 10px;
@@ -502,8 +611,8 @@
     </style>
 </head>
 <body>
-    <div class="floating-shape shape-1"></div>
-    <div class="floating-shape shape-2"></div>
+    <!-- Particules flottantes -->
+    <div class="particles" id="particles"></div>
 
     <div class="auth-container">
         <div class="auth-card">
@@ -517,6 +626,30 @@
             </div>
 
             <div id="messageContainer"></div>
+
+            <!-- OAuth Section -->
+            <div class="oauth-section">
+                <div class="oauth-divider">
+                    <span>Connexion rapide</span>
+                </div>
+                <div class="oauth-buttons">
+                    <a href="/api/oauth/google" class="oauth-btn google">
+                        <i class="fab fa-google"></i>
+                        Google
+                    </a>
+                    <a href="/api/oauth/discord" class="oauth-btn discord">
+                        <i class="fab fa-discord"></i>
+                        Discord
+                    </a>
+                    <a href="/api/oauth/github" class="oauth-btn github">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </div>
+                <div class="oauth-divider" style="margin-top: 20px;">
+                    <span>ou avec email</span>
+                </div>
+            </div>
 
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
@@ -546,7 +679,7 @@
                     </div>
                 </div>
 
-                <!-- Cloudflare Turnstile - REMPLACEZ VOTRE SITE KEY ICI -->
+                <!-- Cloudflare Turnstile -->
                 <div class="form-group">
                     <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
                 </div>
@@ -589,6 +722,40 @@
     </div>
 
     <script>
+        // ===== DÉTECTION MAINTENANCE =====
+        async function checkMaintenance() {
+            try {
+                const response = await fetch('/api/maintenance/status');
+                const data = await response.json();
+                
+                if (data.maintenance === true) {
+                    window.location.href = '/maintenance';
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Erreur vérification maintenance:', error);
+                return false;
+            }
+        }
+
+        // ===== GÉNÉRATION PARTICULES =====
+        function generateParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+                particle.style.width = (2 + Math.random() * 6) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.opacity = 0.1 + Math.random() * 0.3;
+                container.appendChild(particle);
+            }
+        }
+
         let turnstileVerified = false;
         let turnstileToken = null;
 
@@ -766,14 +933,24 @@
             }
         });
 
-        document.querySelector('.auth-card').style.opacity = '0';
+        // ===== INITIALISATION =====
         window.addEventListener('load', async () => {
+            // Vérifier la maintenance d'abord
+            const isMaintenance = await checkMaintenance();
+            if (isMaintenance) return;
+            
+            // Vérifier si déjà connecté
             const isLoggedIn = await checkAlreadyLoggedIn();
             if (!isLoggedIn) {
                 loadSavedCredentials();
             }
+            
+            // Animation de la carte
             document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
             document.querySelector('.auth-card').style.opacity = '1';
+            
+            // Générer les particules
+            generateParticles();
         });
     </script>
 </body>
