@@ -4490,6 +4490,427 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
 });
 
 // =============================================
+// ENDPOINTS AVATAR (POSTGRESQL)
+// =============================================
+
+// ===== GET /api/user/avatar - Récupérer l'avatar =====
+app.get('/api/user/avatar', authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT avatar FROM profiles WHERE id = $1',
+            [req.user.id]
+        );
+        
+        const user = result.rows[0];
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Utilisateur non trouvé' 
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            avatar: user.avatar || null 
+        });
+    } catch (error) {
+        console.error('Erreur GET avatar:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// ===== POST /api/user/avatar - Mettre à jour l'avatar =====
+app.post('/api/user/avatar', authenticateToken, async (req, res) => {
+    try {
+        const { avatar } = req.body;
+        
+        // Vérifier si l'avatar est fourni
+        if (!avatar) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Aucune image fournie' 
+            });
+        }
+        
+        // Vérifier que c'est bien une image base64
+        if (!avatar.startsWith('data:image/')) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Format d\'image invalide. Utilisez data:image/...' 
+            });
+        }
+        
+        // Vérifier le type MIME
+        const mimeMatch = avatar.match(/^data:(image\/\w+);base64,/);
+        if (!mimeMatch) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Format base64 invalide' 
+            });
+        }
+        
+        const mimeType = mimeMatch[1];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        
+        if (!allowedTypes.includes(mimeType)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Format non supporté. Utilisez JPG, PNG, GIF ou WEBP' 
+            });
+        }
+        
+        // Calculer la taille approximative en base64 (caractères * 0.75 = octets)
+        const base64Data = avatar.split(',')[1];
+        const sizeInBytes = Math.ceil((base64Data.length * 3) / 4);
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+        
+        // Limite à 5 Mo
+        const MAX_SIZE_MB = 5;
+        if (sizeInMB > MAX_SIZE_MB) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Image trop volumineuse (${sizeInMB.toFixed(2)} Mo). Maximum ${MAX_SIZE_MB} Mo` 
+            });
+        }
+        
+        // Optionnel : Redimensionner l'image si elle est trop grande
+        let finalAvatar = avatar;
+        if (sizeInMB > 2) {
+            // Pour les images > 2 Mo, on pourrait les redimensionner côté serveur
+            // avec sharp ou jimp, mais pour l'instant on accepte jusqu'à 5 Mo
+            console.log(`Avatar de ${sizeInMB.toFixed(2)} Mo accepté pour l'utilisateur ${req.user.id}`);
+        }
+        
+        // Mettre à jour la base de données
+        await pool.query(
+            'UPDATE profiles SET avatar = $1, updated_at = NOW() WHERE id = $2',
+            [avatar, req.user.id]
+        );
+        
+        // Enregistrer l'activité
+        await pool.query(
+            `INSERT INTO user_activities (user_id, activity_type, description, metadata) 
+             VALUES ($1, $2, $3, $4)`,
+            [
+                req.user.id,
+                'avatar_update',
+                'Photo de profil mise à jour',
+                JSON.stringify({ size_mb: sizeInMB.toFixed(2), mime_type: mimeType })
+            ]
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'Avatar mis à jour avec succès',
+            size_mb: sizeInMB.toFixed(2),
+            mime_type: mimeType
+        });
+        
+    } catch (error) {
+        console.error('Erreur POST avatar:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur lors de la mise à jour' 
+        });
+    }
+});
+
+// ===== DELETE /api/user/avatar - Supprimer l'avatar =====
+app.delete('/api/user/avatar', authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'UPDATE profiles SET avatar = NULL, updated_at = NOW() WHERE id = $1 RETURNING avatar',
+            [req.user.id]
+        );
+        
+        const oldAvatar = result.rows[0]?.avatar;
+        
+        // Enregistrer l'activité
+        await pool.query(
+            `INSERT INTO user_activities (user_id, activity_type, description) 
+             VALUES ($1, $2, $3)`,
+            [req.user.id, 'avatar_delete', 'Photo de profil supprimée']
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'Avatar supprimé avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur DELETE avatar:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur lors de la suppression' 
+        });
+    }
+});
+
+// ===== POST /api/connection-history - Enregistrer une connexion =====
+app.post('/api/connection-history', authenticateToken, async (req, res) => {
+    try {
+        const { device, browser, os } = req.body;
+        const ip = req.headers['x-forwarded-for']?.split(',')[0] || 
+                   req.socket.remoteAddress || 
+                   req.connection.remoteAddress;
+        
+        await pool.query(
+            `INSERT INTO connection_history (user_id, ip_address, user_agent, device_type, browser, os) 
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [req.user.id, ip, req.headers['user-agent'], device, browser, os]
+        );
+        
+        // Garder seulement les 20 dernières connexions
+        await pool.query(`
+            DELETE FROM connection_history 
+            WHERE user_id = $1 AND id NOT IN (
+                SELECT id FROM connection_history 
+                WHERE user_id = $1 
+                ORDER BY created_at DESC 
+                LIMIT 20
+            )
+        `, [req.user.id]);
+        
+        res.json({ success: true });
+        
+    } catch (error) {
+        console.error('Erreur historique connexion:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// ===== GET /api/connection-history - Récupérer l'historique =====
+app.get('/api/connection-history', authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT ip_address, user_agent, device_type, browser, os, created_at 
+             FROM connection_history 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC 
+             LIMIT 10`,
+            [req.user.id]
+        );
+        
+        // Masquer partiellement les IP pour la sécurité
+        const history = result.rows.map(conn => ({
+            ...conn,
+            ip_address: conn.ip_address ? 
+                conn.ip_address.split('.').slice(0, 2).join('.') + '.***.***' : 
+                'Inconnue'
+        }));
+        
+        res.json({ 
+            success: true, 
+            history 
+        });
+        
+    } catch (error) {
+        console.error('Erreur GET historique:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// ===== GET /api/user/export - Exporter toutes les données =====
+app.get('/api/user/export', authenticateToken, async (req, res) => {
+    try {
+        // Récupérer l'utilisateur
+        const userResult = await pool.query(
+            `SELECT id, username, email, role, coins, level, daily_login_streak, 
+                    account_created, created_at, avatar, free_panel_created, badges,
+                    experience, total_login_days, last_login, email_verified
+             FROM profiles WHERE id = $1`,
+            [req.user.id]
+        );
+        const user = userResult.rows[0];
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Utilisateur non trouvé' 
+            });
+        }
+        
+        // Récupérer les serveurs
+        const serversResult = await pool.query(
+            `SELECT id, server_type, server_name, status, expires_at, 
+                    created_at, updated_at, limits, feature_limits
+             FROM servers WHERE user_id = $1`,
+            [req.user.id]
+        );
+        
+        // Récupérer les transactions
+        const transactionsResult = await pool.query(
+            `SELECT id, type, plan_key, amount, currency, coins_amount, status, 
+                    completed_at, created_at
+             FROM transactions WHERE user_id = $1`,
+            [req.user.id]
+        );
+        
+        // Récupérer les filleuls (parrainage)
+        const referralsResult = await pool.query(
+            `SELECT u.username, r.created_at, r.coins_rewarded 
+             FROM referrals r 
+             JOIN profiles u ON r.referred_id = u.id 
+             WHERE r.referrer_id = $1`,
+            [req.user.id]
+        );
+        
+        // Récupérer l'historique des connexions
+        const connectionsResult = await pool.query(
+            `SELECT device_type, browser, os, created_at 
+             FROM connection_history 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC`,
+            [req.user.id]
+        );
+        
+        // Récupérer les activités
+        const activitiesResult = await pool.query(
+            `SELECT activity_type, description, coins_earned, created_at 
+             FROM user_activities 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC`,
+            [req.user.id]
+        );
+        
+        // Récupérer les récompenses quotidiennes
+        const rewardsResult = await pool.query(
+            `SELECT reward_date, coins_earned, streak_count 
+             FROM daily_rewards 
+             WHERE user_id = $1 
+             ORDER BY reward_date DESC`,
+            [req.user.id]
+        );
+        
+        const exportData = {
+            export_date: new Date().toISOString(),
+            user: {
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                coins: user.coins,
+                level: user.level,
+                experience: user.experience,
+                daily_login_streak: user.daily_login_streak,
+                total_login_days: user.total_login_days,
+                account_created: user.account_created,
+                last_login: user.last_login,
+                email_verified: user.email_verified,
+                badges: user.badges,
+                free_panel_created: user.free_panel_created,
+                has_avatar: !!user.avatar
+            },
+            servers: serversResult.rows,
+            transactions: transactionsResult.rows,
+            referrals: referralsResult.rows,
+            connection_history: connectionsResult.rows,
+            activities: activitiesResult.rows,
+            daily_rewards: rewardsResult.rows
+        };
+        
+        // Enregistrer l'activité d'export
+        await pool.query(
+            `INSERT INTO user_activities (user_id, activity_type, description) 
+             VALUES ($1, $2, $3)`,
+            [req.user.id, 'data_export', 'Export des données personnelles']
+        );
+        
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', 
+            `attachment; filename=kermhosting-export-${user.username}-${new Date().toISOString().split('T')[0]}.json`
+        );
+        res.json(exportData);
+        
+    } catch (error) {
+        console.error('Erreur export:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur lors de l\'export' 
+        });
+    }
+});
+
+// ===== MODIFICATION DE L'ENDPOINT /api/user/me =====
+// Ajouter l'avatar dans la réponse
+app.get('/api/user/me', authenticateToken, async (req, res) => {
+    try {
+        const userResult = await pool.query(
+            `SELECT id, username, email, role, coins, level, daily_login_streak, 
+                    account_created, created_at, api_key, avatar, free_panel_created,
+                    experience, total_login_days, badges, email_verified,
+                    last_daily_login, banned
+             FROM profiles WHERE id = $1`,
+            [req.user.id]
+        );
+        const user = userResult.rows[0];
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Utilisateur non trouvé' 
+            });
+        }
+        
+        // Récupérer les serveurs
+        const serversResult = await pool.query(
+            `SELECT id, server_type, server_name, pterodactyl_id, server_identifier,
+                    username, email, expires_at, status, limits, feature_limits,
+                    auto_backup, last_backup, created_at, updated_at
+             FROM servers 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC`,
+            [req.user.id]
+        );
+        
+        // Récupérer les dernières transactions
+        const transactionsResult = await pool.query(
+            `SELECT id, type, plan_key, amount, currency, coins_amount, status, 
+                    completed_at, created_at
+             FROM transactions 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC 
+             LIMIT 20`,
+            [req.user.id]
+        );
+        
+        // Calculer les badges à partir du JSONB
+        let badges = [];
+        try {
+            badges = user.badges || [];
+        } catch (e) {
+            badges = [];
+        }
+        
+        res.json({ 
+            success: true, 
+            user: {
+                ...user,
+                badges: badges
+            }, 
+            servers: serversResult.rows,
+            transactions: transactionsResult.rows
+        });
+        
+    } catch (error) {
+        console.error('Erreur /me:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur serveur' 
+        });
+    }
+});
+
+// =============================================
 // ROUTES SERVEURS
 // =============================================
 
