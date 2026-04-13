@@ -627,6 +627,7 @@
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .filter-chip.active {
@@ -955,28 +956,6 @@
             color: var(--success);
             background: rgba(16, 185, 129, 0.1);
             border-color: var(--success);
-        }
-
-        .detail-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-row .label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .detail-row .value {
-            font-weight: 600;
-            font-size: 0.95rem;
         }
 
         /* ===== ACTION BUTTONS ===== */
@@ -1625,10 +1604,32 @@
             return currency === 'FCFA' ? amount.toLocaleString() + ' FCFA' : amount + ' coins';
         }
 
+        // ===== CORRECTION : Icônes et statuts =====
         function getTransactionIcon(type, status) {
-            if (status === 'successful') return type === 'coins_purchase' ? 'fa-coins' : 'fa-server';
-            else if (status === 'pending') return 'fa-clock';
-            else return 'fa-exclamation-triangle';
+            // CORRECTION : 'completed' = 'successful'
+            const actualStatus = (status === 'completed') ? 'successful' : status;
+            if (actualStatus === 'successful') {
+                return type === 'coins_purchase' ? 'fa-coins' : 'fa-server';
+            } else if (actualStatus === 'pending') {
+                return 'fa-clock';
+            } else {
+                return 'fa-exclamation-triangle';
+            }
+        }
+
+        function getStatusClass(status) {
+            // CORRECTION : 'completed' = 'successful'
+            const actualStatus = (status === 'completed') ? 'successful' : status;
+            if (actualStatus === 'successful') return 'success';
+            if (actualStatus === 'pending') return 'pending';
+            return 'failed';
+        }
+
+        function getStatusText(status) {
+            const actualStatus = (status === 'completed') ? 'successful' : status;
+            if (actualStatus === 'successful') return 'Réussie';
+            if (actualStatus === 'pending') return 'En attente';
+            return 'Échouée';
         }
 
         function getTransactionTitle(t) {
@@ -1638,7 +1639,7 @@
             else return `Transaction ${t.id.substring(0, 8)}...`;
         }
 
-        // ===== GENERATE RECEIPT HTML (DESIGN ORIGINAL) =====
+        // ===== GENERATE RECEIPT HTML =====
         function generateReceiptHTML(transaction) {
             const formattedDate = formatDateLong(transaction.created_at);
             const amount = transaction.amount || 0;
@@ -1651,9 +1652,9 @@
                 'server_renewal': 'Renouvellement de serveur'
             }[transaction.type] || 'Transaction';
             
-            const status = transaction.status || 'pending';
-            const statusText = status === 'successful' ? 'RÉUSSIE' : status === 'pending' ? 'EN ATTENTE' : 'ÉCHOUÉE';
-            const statusClass = status === 'successful' ? 'success' : status === 'pending' ? 'pending' : 'failed';
+            const actualStatus = (transaction.status === 'completed') ? 'successful' : (transaction.status || 'pending');
+            const statusText = actualStatus === 'successful' ? 'RÉUSSIE' : actualStatus === 'pending' ? 'EN ATTENTE' : 'ÉCHOUÉE';
+            const statusClass = actualStatus === 'successful' ? 'success' : actualStatus === 'pending' ? 'pending' : 'failed';
             
             const packName = transaction.metadata?.pack?.name || '';
             const serverName = transaction.metadata?.server_name || '';
@@ -1695,7 +1696,7 @@
             `;
         }
 
-        // ===== DOWNLOAD RECEIPT AS PNG (DESIGN ORIGINAL CONSERVÉ) =====
+        // ===== DOWNLOAD RECEIPT AS PNG =====
         async function downloadReceipt(transactionId) {
             const transaction = allTransactions.find(t => t.id === transactionId);
             if (!transaction) { showToast('error', 'Transaction introuvable'); return; }
@@ -1714,7 +1715,7 @@
             finally { container.innerHTML = ''; }
         }
 
-        // ===== DOWNLOAD RECEIPT AS PDF (MÊME DESIGN QUE LE PNG) =====
+        // ===== DOWNLOAD RECEIPT AS PDF =====
         async function downloadReceiptPDF(transactionId) {
             const transaction = allTransactions.find(t => t.id === transactionId);
             if (!transaction) { showToast('error', 'Transaction introuvable'); return; }
@@ -1736,7 +1737,7 @@
             finally { container.innerHTML = ''; }
         }
 
-        // ===== PRINT RECEIPT (DESIGN ORIGINAL) =====
+        // ===== PRINT RECEIPT =====
         function printReceipt(transactionId) {
             const transaction = allTransactions.find(t => t.id === transactionId);
             if (!transaction) { showToast('error', 'Transaction introuvable'); return; }
@@ -1748,7 +1749,7 @@
             setTimeout(() => { printWindow.print(); }, 500);
         }
 
-        // ===== RECHERCHE (debounce) =====
+        // ===== RECHERCHE =====
         let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value;
@@ -1827,9 +1828,10 @@
 
         function applyAllFilters() {
             filteredTransactions = allTransactions.filter(t => {
-                if (currentStatusFilter === 'successful' && t.status !== 'successful') return false;
-                if (currentStatusFilter === 'pending' && t.status !== 'pending') return false;
-                if (currentStatusFilter === 'failed' && t.status !== 'failed' && t.status !== 'expired') return false;
+                const actualStatus = (t.status === 'completed') ? 'successful' : (t.status || 'pending');
+                if (currentStatusFilter === 'successful' && actualStatus !== 'successful') return false;
+                if (currentStatusFilter === 'pending' && actualStatus !== 'pending') return false;
+                if (currentStatusFilter === 'failed' && actualStatus !== 'failed' && actualStatus !== 'expired') return false;
                 if (searchQuery) { if (!`${t.id} ${getTransactionTitle(t)} ${t.amount||0}`.toLowerCase().includes(searchQuery.toLowerCase())) return false; }
                 if (advancedFilters.period !== 'all') {
                     const date = new Date(t.created_at), now = new Date();
@@ -1854,7 +1856,7 @@
         // ===== STATS =====
         function updateStats() {
             document.getElementById('totalTransactions').textContent = allTransactions.length;
-            document.getElementById('successfulTransactions').textContent = allTransactions.filter(t => t.status === 'successful').length;
+            document.getElementById('successfulTransactions').textContent = allTransactions.filter(t => t.status === 'successful' || t.status === 'completed').length;
             document.getElementById('pendingTransactions').textContent = allTransactions.filter(t => t.status === 'pending').length;
             document.getElementById('failedTransactions').textContent = allTransactions.filter(t => t.status === 'failed' || t.status === 'expired').length;
         }
@@ -1862,7 +1864,7 @@
         // ===== GRAPHIQUE =====
         function updateChart() {
             const chartSection = document.getElementById('chartSection');
-            const successfulTransactions = allTransactions.filter(t => t.status === 'successful' && t.currency === 'FCFA');
+            const successfulTransactions = allTransactions.filter(t => (t.status === 'successful' || t.status === 'completed') && t.currency === 'FCFA');
             if (successfulTransactions.length === 0) { chartSection.style.display = 'none'; return; }
             chartSection.style.display = 'block';
             const monthlyData = {}, now = new Date();
@@ -1920,17 +1922,21 @@
             const pageTransactions = filteredTransactions.slice(start, end);
             let html = '<div class="transactions-list">';
             pageTransactions.forEach(t => {
-                const status = t.status || 'pending', statusClass = status === 'successful' ? 'success' : (status === 'pending' ? 'pending' : 'failed');
-                const icon = getTransactionIcon(t.type, status), title = getTransactionTitle(t);
-                const date = formatDate(t.created_at), formattedAmount = formatAmount(t.amount||0, t.currency||'FCFA');
-                const amountClass = t.type === 'coins_purchase' ? 'positive' : 'negative';
+                const actualStatus = (t.status === 'completed') ? 'successful' : (t.status || 'pending');
+                const statusClass = getStatusClass(t.status);
+                const icon = getTransactionIcon(t.type, t.status);
+                const title = getTransactionTitle(t);
+                const date = formatDate(t.created_at);
+                const formattedAmount = formatAmount(t.amount||0, t.currency||'FCFA');
+                const amountClass = (t.type === 'coins_purchase') ? 'positive' : 'negative';
+                const statusText = getStatusText(t.status);
                 const fapshiId = t.fapshi_transaction_id || 'N/A';
                 const errorMessage = t.metadata?.error_message || t.error_message;
                 const fapshiResponse = t.metadata?.fapshi_response || t.fapshi_response;
                 html += `<div class="transaction-item" onclick="toggleTransaction('${t.id}')">
                     <div class="transaction-header">
                         <div class="transaction-icon ${statusClass}"><i class="fas ${icon}"></i></div>
-                        <div class="transaction-main"><div class="transaction-title">${title}</div><div class="transaction-meta"><span>${date}</span><span class="transaction-badge ${statusClass}">${status}</span></div></div>
+                        <div class="transaction-main"><div class="transaction-title">${title}</div><div class="transaction-meta"><span>${date}</span><span class="transaction-badge ${statusClass}">${statusText}</span></div></div>
                         <div class="transaction-amount ${amountClass}">${formattedAmount}</div>
                     </div>
                     <div class="transaction-details" id="details-${t.id}">
@@ -1940,7 +1946,7 @@
                             <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value">${date}</span></div>
                             <div class="detail-item"><span class="detail-label">Montant</span><span class="detail-value ${amountClass}">${formattedAmount}</span></div>
                         </div>
-                        <div class="fapshi-info"><div class="fapshi-title"><i class="fas fa-credit-card"></i><span>Informations Fapshi</span></div><div class="fapshi-grid"><div class="fapshi-item"><div class="fapshi-label">Transaction ID</div><div class="fapshi-value">${fapshiId}</div></div><div class="fapshi-item"><div class="fapshi-label">Statut</div><div class="fapshi-value ${statusClass}">${status}</div></div></div></div>
+                        <div class="fapshi-info"><div class="fapshi-title"><i class="fas fa-credit-card"></i><span>Informations Fapshi</span></div><div class="fapshi-grid"><div class="fapshi-item"><div class="fapshi-label">Transaction ID</div><div class="fapshi-value">${fapshiId}</div></div><div class="fapshi-item"><div class="fapshi-label">Statut</div><div class="fapshi-value ${statusClass}">${statusText}</div></div></div></div>
                         ${t.metadata?.phone ? `<div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value">${t.metadata.phone}</span></div>` : ''}
                         ${t.metadata?.medium ? `<div class="detail-item"><span class="detail-label">Opérateur</span><span class="detail-value">${t.metadata.original_medium || t.metadata.medium || 'N/A'}</span></div>` : ''}
                         ${t.metadata?.server_name ? `<div class="detail-item"><span class="detail-label">Serveur</span><span class="detail-value">${t.metadata.server_name}</span></div>` : ''}
