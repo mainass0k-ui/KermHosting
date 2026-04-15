@@ -65,7 +65,12 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -78,330 +83,3070 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 40% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
-            pointer-events: none; z-index: -1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .app-container { display: flex; min-height: 100vh; position: relative; padding-top: var(--safe-area-inset-top); padding-bottom: var(--safe-area-inset-bottom); }
-
-        /* ===== SKELETON ===== */
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .skeleton { background: linear-gradient(90deg, #1A2332 25%, #2D3748 50%, #1A2332 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
-        .skeleton-card { background: var(--bg-card); border-radius: var(--radius-xl); padding: 24px 20px; border: 1px solid var(--border-color); height: 100%; }
-        .skeleton-icon { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 12px; }
-        .skeleton-title { height: 24px; width: 100px; margin: 0 auto 8px; }
-        .skeleton-price { height: 36px; width: 120px; margin: 0 auto 12px; }
-        .skeleton-coins { height: 24px; width: 80px; margin: 0 auto 8px; border-radius: 20px; }
-        .skeleton-feature { height: 20px; margin-bottom: 12px; }
-        .skeleton-btn { height: 46px; border-radius: 30px; margin-top: 20px; }
-        .skeleton-coin-pack { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border-color); text-align: center; }
-        .skeleton-coin-icon { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 12px; }
-        .skeleton-coin-amount { height: 32px; width: 120px; margin: 0 auto 6px; }
-        .skeleton-coin-price { height: 24px; width: 100px; margin: 0 auto 10px; }
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+        }
 
         /* ===== SIDEBAR ===== */
-        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: var(--shadow-lg); }
-        .sidebar.active { transform: translateX(0); }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
-        .sidebar-overlay.active { opacity: 1; visibility: visible; }
-        .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .logo i { color: var(--primary); font-size: 1.5rem; }
-        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
-        .close-sidebar:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
-        .sidebar-user:hover { background: var(--bg-hover); }
-        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; overflow: hidden; }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; -webkit-overflow-scrolling: touch; }
-        .sidebar-nav ul { list-style: none; }
-        .sidebar-nav li { margin: 4px 8px; }
-        .sidebar-nav li.active { background: linear-gradient(90deg, var(--primary), transparent); border-radius: var(--radius-md); }
-        .sidebar-nav li.active a { color: white; }
-        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius-md); transition: all 0.2s; }
-        .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .sidebar-nav i { width: 20px; font-size: 1.1rem; }
-        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
-        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
-        .sidebar-stats { display: flex; justify-content: space-between; }
-        .stat { text-align: center; }
-        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
-        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+        }
+
+        .close-sidebar:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-user:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 4px 8px;
+        }
+
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav li.active a {
+            color: white;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
 
         /* ===== MAIN CONTENT ===== */
-        .main-content { flex: 1; width: 100%; min-width: 0; }
-        .top-bar { position: sticky; top: 0; z-index: 100; background: var(--bg-sidebar); backdrop-filter: blur(10px); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-        .menu-toggle:hover { background: var(--bg-hover); }
-        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .top-bar-logo i { color: var(--primary); font-size: 1.25rem; }
-        .top-bar-actions { display: flex; align-items: center; gap: 8px; }
-        .user-menu { cursor: pointer; text-decoration: none; display: block; }
-        .user-avatar-small { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-
-        .page-content { padding: 16px; max-width: 1200px; margin: 0 auto; }
-
-        .balance-card { background: linear-gradient(135deg, var(--primary-dark), var(--secondary)); border-radius: var(--radius-xl); padding: 20px; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; color: white; position: relative; overflow: hidden; }
-        .balance-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: rotate 20s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .balance-info { position: relative; z-index: 1; }
-        .balance-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 4px; }
-        .balance-amount { font-size: 2.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .balance-action { position: relative; z-index: 1; }
-        .balance-btn { background: white; color: var(--primary); padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
-
-        .pricing-header { text-align: center; margin-bottom: 32px; animation: fadeInUp 0.6s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .pricing-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: 30px; margin-bottom: 16px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
-        .pricing-title { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 12px; line-height: 1.2; }
-        .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .pricing-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; padding: 0 16px; }
-
-        .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 32px; background: var(--bg-card); padding: 12px 20px; border-radius: 30px; border: 1px solid var(--border-color); width: fit-content; margin-left: auto; margin-right: auto; }
-        .toggle-label { color: var(--text-secondary); font-weight: 500; cursor: pointer; font-size: 0.9rem; }
-        .toggle-label.active { color: var(--primary); }
-        .toggle-switch { width: 50px; height: 26px; background: var(--bg-input); border-radius: 30px; position: relative; cursor: pointer; border: 2px solid var(--border-color); }
-        .toggle-slider { width: 22px; height: 22px; background: var(--primary); border-radius: 50%; position: absolute; top: 0; left: 0; transition: transform 0.3s; }
-        .toggle-switch.monthly .toggle-slider { transform: translateX(0); }
-        .toggle-switch.yearly .toggle-slider { transform: translateX(24px); }
-        .discount-badge { background: var(--success); color: white; padding: 4px 8px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; margin-left: 6px; }
-
-        .pricing-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
-        .pricing-card { background: var(--bg-card); border-radius: var(--radius-xl); padding: 24px 20px; border: 1px solid var(--border-color); position: relative; transition: all 0.3s; }
-        .pricing-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: var(--shadow-glow); }
-        .pricing-card.popular { border: 2px solid var(--primary); background: linear-gradient(135deg, var(--bg-card), var(--bg-hover)); }
-        .popular-badge { position: absolute; top: -12px; left: 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; box-shadow: var(--shadow-glow); }
-        .card-header { text-align: center; margin-bottom: 20px; }
-        .card-icon { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(16,185,129,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.8rem; color: var(--primary); }
-        .card-name { font-size: 1.3rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
-        .card-price { margin-bottom: 12px; }
-        .price { font-size: 2.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--primary); }
-        .price-period { color: var(--text-secondary); font-size: 0.85rem; }
-        .price-coins { background: var(--bg-hover); padding: 4px 10px; border-radius: 30px; display: inline-block; font-size: 0.75rem; color: var(--warning); }
-        .duration-badge { display: inline-block; background: var(--bg-hover); padding: 4px 10px; border-radius: 30px; font-size: 0.75rem; color: var(--info); margin-top: 8px; }
-        .duration-badge.free { color: var(--warning); }
-        .card-features { list-style: none; margin: 20px 0 24px; }
-        .card-features li { padding: 8px 0; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.9rem; }
-        .card-features .fa-check { color: var(--success); }
-        .card-btn { width: 100%; padding: 14px; border-radius: 30px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); text-decoration: none; font-size: 0.95rem; }
-        .card-btn.popular-btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; }
-
-        .coins-section { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--border-color); }
-        .coins-title { text-align: center; font-size: 1.8rem; font-family: 'Space Grotesk', sans-serif; margin-bottom: 12px; }
-        .coins-subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 32px; font-size: 0.95rem; }
-        .coins-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        .coin-pack { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border-color); text-align: center; position: relative; transition: all 0.3s; cursor: pointer; }
-        .coin-pack.popular { border: 2px solid var(--accent); }
-        .coin-icon { font-size: 2.2rem; color: var(--warning); margin-bottom: 12px; }
-        .coin-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
-        .coin-amount { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--warning); margin-bottom: 6px; }
-        .coin-price { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; }
-        .coin-bonus { background: var(--success); color: white; padding: 4px 10px; border-radius: 30px; display: inline-block; font-size: 0.75rem; margin-bottom: 12px; }
-        .coin-btn { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
-
-        .features-comparison { margin-top: 40px; background: var(--bg-card); border-radius: var(--radius-xl); padding: 24px 16px; border: 1px solid var(--border-color); overflow-x: auto; }
-        .comparison-title { text-align: center; font-size: 1.5rem; font-family: 'Space Grotesk', sans-serif; margin-bottom: 24px; }
-        .comparison-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; text-align: center; min-width: 600px; }
-
-        .faq-section { margin-top: 40px; }
-        .faq-title { text-align: center; font-size: 1.8rem; font-family: 'Space Grotesk', sans-serif; margin-bottom: 32px; }
-        .faq-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        .faq-item { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border-color); }
-
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
-        .modal.active { display: flex; }
-        .toast { position: fixed; top: 20px; right: 20px; left: 20px; padding: 14px 20px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 12px; z-index: 9999; animation: slideIn 0.3s; max-width: 350px; margin: 0 auto; }
-        .toast.success { background: rgba(16,185,129,0.95); }
-        .toast.error { background: rgba(239,68,68,0.95); }
-
-        @media (min-width: 640px) {
-            .balance-card { flex-direction: row; justify-content: space-between; text-align: left; }
-            .pricing-grid { grid-template-columns: repeat(2, 1fr); }
-            .coins-grid { grid-template-columns: repeat(2, 1fr); }
-            .faq-grid { grid-template-columns: repeat(2, 1fr); }
-            .toast { left: auto; right: 20px; }
+        .main-content {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
         }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-hover);
+        }
+
+        .top-bar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-menu {
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== USER BALANCE CARD ===== */
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .balance-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .balance-amount {
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .balance-amount small {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .balance-action {
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-btn {
+            background: white;
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .balance-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pricing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            margin-bottom: 16px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .pricing-badge i {
+            font-size: 0.9rem;
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .pricing-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== TOGGLE SWITCH ===== */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .toggle-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .toggle-label.active {
+            color: var(--primary);
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: var(--bg-input);
+            border-radius: var(--radius-full);
+            position: relative;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        .toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.monthly .toggle-slider {
+            transform: translateX(0);
+        }
+
+        .toggle-switch.yearly .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .discount-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* ===== PRICING GRID ===== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .pricing-card.popular {
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .card-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .card-price {
+            margin-bottom: 12px;
+        }
+
+        .price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--primary);
+        }
+
+        .price-period {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .price-coins {
+            background: var(--bg-hover);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--warning);
+        }
+
+        .duration-badge {
+            display: inline-block;
+            background: var(--bg-hover);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--info);
+            margin-top: 8px;
+        }
+
+        .duration-badge i {
+            margin-right: 4px;
+        }
+
+        .duration-badge.free {
+            color: var(--warning);
+        }
+
+        .card-features {
+            list-style: none;
+            margin: 20px 0 24px;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .card-features i {
+            width: 18px;
+        }
+
+        .card-features .fa-check {
+            color: var(--success);
+        }
+
+        .card-features .fa-times {
+            color: var(--danger);
+        }
+
+        .card-features .fa-clock {
+            color: var(--warning);
+        }
+
+        .card-features .fa-calendar {
+            color: var(--info);
+        }
+
+        .card-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .card-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .card-btn.popular-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+
+        .card-btn.popular-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* ===== COINS PACKS SECTION ===== */
+        .coins-section {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .coins-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 12px;
+        }
+
+        .coins-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
+        .coins-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .coin-pack {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .coin-pack:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .coin-pack.popular {
+            border: 2px solid var(--accent);
+        }
+
+        .coin-icon {
+            font-size: 2.2rem;
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+
+        .coin-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .coin-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--warning);
+            margin-bottom: 6px;
+        }
+
+        .coin-price {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .coin-bonus {
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+        }
+
+        .coin-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .coin-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ===== FEATURES COMPARISON ===== */
+        .features-comparison {
+            margin-top: 40px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px 16px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .comparison-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 24px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            text-align: center;
+            min-width: 600px;
+        }
+
+        .comparison-header {
+            font-weight: 600;
+            padding: 12px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .comparison-cell {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .comparison-cell i {
+            font-size: 1rem;
+        }
+
+        .comparison-cell .fa-check {
+            color: var(--success);
+        }
+
+        .comparison-cell .fa-times {
+            color: var(--danger);
+        }
+
+        /* ===== FAQ SECTION ===== */
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 32px;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .faq-question {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-question i {
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        /* ===== DURATION HIGHLIGHT ===== */
+        .duration-highlight {
+            display: inline-block;
+            background: var(--bg-hover);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+
+        .duration-highlight.free {
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .duration-highlight.paid {
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .duration-highlight i {
+            margin-right: 4px;
+        }
+
+        /* ===== USERNAME VALIDATION ===== */
+        .username-warning {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .username-warning i {
+            font-size: 0.9rem;
+        }
+
+        .username-warning.success {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .username-warning.error {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .username-warning.info {
+            color: var(--info);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .username-warning.warning {
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        /* ===== MODALS ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.3s ease-out;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-info {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .modal-info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .modal-info-label {
+            color: var(--text-secondary);
+        }
+
+        .modal-info-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .modal-info-value.warning {
+            color: var(--warning);
+        }
+
+        .phone-input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .phone-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .payment-option {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+        }
+
+        .payment-option img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 6px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .payment-option i {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+            color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* ===== CURRENCY SELECT ===== */
+        .currency-select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .currency-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .converted-price {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+
+        .converted-price span {
+            font-weight: 700;
+            color: var(--success);
+            font-size: 1.3rem;
+        }
+
+        /* ===== SUCCESS MODAL ===== */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 16px;
+        }
+
+        .success-modal.active {
+            display: flex;
+        }
+
+        .success-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 28px 20px;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid var(--success);
+            animation: modalSlideIn 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-icon {
+            text-align: center;
+            font-size: 3.5rem;
+            color: var(--success);
+            margin-bottom: 16px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .success-title {
+            text-align: center;
+            font-size: 1.6rem;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
+            color: var(--success);
+        }
+
+        .success-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .credentials-box {
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .credential-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 100px;
+        }
+
+        .credential-label i {
+            color: var(--primary);
+        }
+
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--bg-input);
+            padding: 6px 10px;
+            border-radius: var(--radius-md);
+            letter-spacing: 0.5px;
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .warning-message {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--warning);
+            font-size: 0.85rem;
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .success-btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .success-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .success-btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .toast.success {
+            background: rgba(16, 185, 129, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.95);
+        }
+
+        .toast.info {
+            background: rgba(59, 130, 246, 0.95);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .loading-state i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 640px) {
+            .balance-card {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .coins-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .faq-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .toast {
+                left: auto;
+                right: 20px;
+            }
+        }
+
         @media (min-width: 1024px) {
-            .page-content { padding: 24px; }
-            .pricing-title { font-size: 3rem; }
-            .pricing-grid { grid-template-columns: repeat(4, 1fr); }
-            .coins-grid { grid-template-columns: repeat(4, 1fr); }
-            .menu-toggle { display: none; }
-            .sidebar { transform: translateX(0); position: sticky; }
-            .sidebar-overlay { display: none; }
-            .top-bar-logo { display: none; }
-            .features-comparison { padding: 32px; }
+            .page-content {
+                padding: 24px;
+            }
+
+            .pricing-title {
+                font-size: 3rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .coins-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                position: sticky;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .top-bar-logo {
+                display: none;
+            }
+
+            .features-comparison {
+                padding: 32px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header"><div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div><button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button></div>
-            <div class="sidebar-user" id="sidebarUser"><div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div><div class="user-info"><div class="user-name" id="sidebarUserName">Chargement...</div><div class="user-email" id="sidebarUserEmail">...</div></div><div class="user-badge" id="sidebarUserBadge">...</div></div>
-            <nav class="sidebar-nav"><ul>
-                <li id="navDashboard"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
-                <li class="active"><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
-                <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
-                <li id="navProfile"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
-                <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
-                <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>KERM MD V1</span></a></li>
-                <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
-                <li class="divider"></li>
-                <li id="navHome"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
-                <li id="navLogin"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
-                <li id="navRegister"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
-                <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
-            </ul></nav>
-            <div class="sidebar-footer"><div class="sidebar-stats"><div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div><div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div></div></div>
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar" id="sidebarAvatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Chargement...</div>
+                    <div class="user-email" id="sidebarUserEmail">...</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">...</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li id="navDashboard">
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>Tarifs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li id="navProfile">
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/transactions">
+                            <i class="fas fa-history"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>KERM MD V1</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li id="navHome">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li id="navLogin">
+                        <a href="/login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    </li>
+                    <li id="navRegister">
+                        <a href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Inscription</span>
+                        </a>
+                    </li>
+                    <li id="navLogout" style="display: none;">
+                        <a href="#" id="logoutLink">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
+                    </div>
+                </div>
+            </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Top Bar -->
             <header class="top-bar">
-                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
                 <div class="top-bar-actions">
-                    <a href="/profile" class="user-menu" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a>
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </a>
                 </div>
             </header>
 
+            <!-- Page Content -->
             <div class="page-content">
-                <div id="balanceCard" style="display:none;"><div class="balance-card"><div class="balance-info"><div class="balance-label">Votre solde de coins</div><div class="balance-amount" id="userBalance">0 <small>coins</small></div></div><div class="balance-action"><a href="/buy-coins" class="balance-btn"><i class="fas fa-plus-circle"></i>Acheter des coins</a></div></div></div>
-
-                <div class="pricing-header">
-                    <div class="pricing-badge"><i class="fas fa-mobile-alt"></i><span>Paiement Mobile Money & PayPal</span></div>
-                    <h1 class="pricing-title">Des tarifs <span class="gradient-text">adaptés</span></h1>
-                    <p class="pricing-subtitle">Choisissez le plan qui correspond à vos besoins. Payez en FCFA par Mobile Money ou par PayPal.</p>
-                </div>
-
-                <div class="billing-toggle">
-                    <span class="toggle-label active" id="monthlyLabel">7 jours</span>
-                    <div class="toggle-switch monthly" id="billingToggle"><div class="toggle-slider"></div></div>
-                    <span class="toggle-label" id="yearlyLabel">Mensuel<span class="discount-badge">-20%</span></span>
-                </div>
-
-                <!-- SKELETON PRICING GRID -->
-                <div class="pricing-grid" id="pricingGrid">
-                    <div class="skeleton-card"><div class="skeleton skeleton-icon"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-coins"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton skeleton-icon"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-coins"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton skeleton-icon"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-coins"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton skeleton-icon"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-coins"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-feature"></div><div class="skeleton skeleton-btn"></div></div>
-                </div>
-
-                <div class="coins-section">
-                    <h2 class="coins-title"><i class="fas fa-coins" style="color:var(--warning);"></i> Packs de coins</h2>
-                    <p class="coins-subtitle">1 coin = 5 FCFA - Économisez jusqu'à 20%</p>
-                    <!-- SKELETON COINS GRID -->
-                    <div class="coins-grid" id="coinsGrid">
-                        <div class="skeleton-coin-pack"><div class="skeleton skeleton-coin-icon"></div><div class="skeleton skeleton-title" style="width:120px;"></div><div class="skeleton skeleton-coin-amount"></div><div class="skeleton skeleton-coin-price"></div><div class="skeleton skeleton-btn" style="height:42px;"></div></div>
-                        <div class="skeleton-coin-pack"><div class="skeleton skeleton-coin-icon"></div><div class="skeleton skeleton-title" style="width:120px;"></div><div class="skeleton skeleton-coin-amount"></div><div class="skeleton skeleton-coin-price"></div><div class="skeleton skeleton-btn" style="height:42px;"></div></div>
-                        <div class="skeleton-coin-pack"><div class="skeleton skeleton-coin-icon"></div><div class="skeleton skeleton-title" style="width:120px;"></div><div class="skeleton skeleton-coin-amount"></div><div class="skeleton skeleton-coin-price"></div><div class="skeleton skeleton-btn" style="height:42px;"></div></div>
-                        <div class="skeleton-coin-pack"><div class="skeleton skeleton-coin-icon"></div><div class="skeleton skeleton-title" style="width:120px;"></div><div class="skeleton skeleton-coin-amount"></div><div class="skeleton skeleton-coin-price"></div><div class="skeleton skeleton-btn" style="height:42px;"></div></div>
+                <!-- Balance Card (visible seulement si connecté) -->
+                <div id="balanceCard" style="display: none;">
+                    <div class="balance-card">
+                        <div class="balance-info">
+                            <div class="balance-label">Votre solde de coins</div>
+                            <div class="balance-amount" id="userBalance">0 <small>coins</small></div>
+                        </div>
+                        <div class="balance-action">
+                            <a href="/buy-coins" class="balance-btn">
+                                <i class="fas fa-plus-circle"></i>
+                                Acheter des coins
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="features-comparison"><h2 class="comparison-title">Comparaison détaillée</h2><div class="comparison-grid"><div class="comparison-header">Fonctionnalités</div><div class="comparison-header">Free</div><div class="comparison-header">Starter</div><div class="comparison-header">Basic</div><div class="comparison-header">Pro</div><div class="comparison-cell">RAM</div><div class="comparison-cell">256 MB</div><div class="comparison-cell">1 GB</div><div class="comparison-cell">2 GB</div><div class="comparison-cell">4 GB</div><div class="comparison-cell">Stockage SSD</div><div class="comparison-cell">1 GB</div><div class="comparison-cell">3 GB</div><div class="comparison-cell">5 GB</div><div class="comparison-cell">10 GB</div><div class="comparison-cell">CPU</div><div class="comparison-cell">50%</div><div class="comparison-cell">100%</div><div class="comparison-cell">200%</div><div class="comparison-cell">400%</div><div class="comparison-cell">Durée</div><div class="comparison-cell"><i class="fas fa-clock" style="color:var(--warning);"></i> 24h</div><div class="comparison-cell"><i class="fas fa-calendar" style="color:var(--info);"></i> 7j</div><div class="comparison-cell"><i class="fas fa-calendar" style="color:var(--info);"></i> 7j</div><div class="comparison-cell"><i class="fas fa-calendar" style="color:var(--info);"></i> 7j</div><div class="comparison-cell">Bases de données</div><div class="comparison-cell">1</div><div class="comparison-cell">3</div><div class="comparison-cell">5</div><div class="comparison-cell">10</div><div class="comparison-cell">Backups</div><div class="comparison-cell">1</div><div class="comparison-cell">3</div><div class="comparison-cell">5</div><div class="comparison-cell">10</div><div class="comparison-cell">Support</div><div class="comparison-cell"><i class="fas fa-times" style="color:var(--danger);"></i></div><div class="comparison-cell"><i class="fas fa-check" style="color:var(--success);"></i> Standard</div><div class="comparison-cell"><i class="fas fa-check" style="color:var(--success);"></i> Prioritaire</div><div class="comparison-cell"><i class="fas fa-check" style="color:var(--success);"></i> VIP</div></div></div>
+                <!-- Header -->
+                <div class="pricing-header">
+                    <div class="pricing-badge">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Paiement Mobile Money & PayPal</span>
+                    </div>
+                    <h1 class="pricing-title">
+                        Des tarifs <span class="gradient-text">adaptés</span>
+                    </h1>
+                    <p class="pricing-subtitle">
+                        Choisissez le plan qui correspond à vos besoins. Payez en FCFA par Mobile Money ou par PayPal.
+                    </p>
+                </div>
 
-                <div class="faq-section"><h2 class="faq-title">Questions fréquentes</h2><div class="faq-grid"><div class="faq-item"><div class="faq-question"><i class="fas fa-question-circle"></i>Combien de temps dure un serveur ?</div><div class="faq-answer">Le plan Free dure 24h. Les plans payants durent 7 jours, renouvelables.</div></div><div class="faq-item"><div class="faq-question"><i class="fas fa-question-circle"></i>Comment payer en FCFA ?</div><div class="faq-answer">Orange Money, MTN Money via Fapshi, et PayPal.</div></div><div class="faq-item"><div class="faq-question"><i class="fas fa-question-circle"></i>Puis-je payer avec des coins ?</div><div class="faq-answer">Oui ! 1 coin = 5 FCFA.</div></div><div class="faq-item"><div class="faq-question"><i class="fas fa-question-circle"></i>Que sont les coins ?</div><div class="faq-answer">Notre monnaie virtuelle. Économisez jusqu'à 20%.</div></div></div></div>
+                <!-- Billing Toggle -->
+                <div class="billing-toggle">
+                    <span class="toggle-label active" id="monthlyLabel">7 jours</span>
+                    <div class="toggle-switch monthly" id="billingToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label" id="yearlyLabel">
+                        Mensuel
+                        <span class="discount-badge">-20%</span>
+                    </span>
+                </div>
+
+                <!-- Pricing Grid -->
+                <div class="pricing-grid" id="pricingGrid">
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Chargement des plans...</p>
+                    </div>
+                </div>
+
+                <!-- Coins Packs Section -->
+                <div class="coins-section">
+                    <h2 class="coins-title">
+                        <i class="fas fa-coins" style="color: var(--warning);"></i>
+                        Packs de coins
+                    </h2>
+                    <p class="coins-subtitle">
+                        1 coin = 5 FCFA - Économisez jusqu'à 20%
+                    </p>
+
+                    <div class="coins-grid" id="coinsGrid">
+                        <div class="loading-state">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <p>Chargement des packs...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Comparison -->
+                <div class="features-comparison">
+                    <h2 class="comparison-title">Comparaison détaillée</h2>
+                    <div class="comparison-grid">
+                        <div class="comparison-header">Fonctionnalités</div>
+                        <div class="comparison-header">Free</div>
+                        <div class="comparison-header">Starter</div>
+                        <div class="comparison-header">Basic</div>
+                        <div class="comparison-header">Pro</div>
+
+                        <div class="comparison-cell">RAM</div>
+                        <div class="comparison-cell">256 MB</div>
+                        <div class="comparison-cell">1 GB</div>
+                        <div class="comparison-cell">2 GB</div>
+                        <div class="comparison-cell">4 GB</div>
+
+                        <div class="comparison-cell">Stockage SSD</div>
+                        <div class="comparison-cell">1 GB</div>
+                        <div class="comparison-cell">3 GB</div>
+                        <div class="comparison-cell">5 GB</div>
+                        <div class="comparison-cell">10 GB</div>
+
+                        <div class="comparison-cell">CPU</div>
+                        <div class="comparison-cell">50%</div>
+                        <div class="comparison-cell">100%</div>
+                        <div class="comparison-cell">200%</div>
+                        <div class="comparison-cell">400%</div>
+
+                        <div class="comparison-cell">Durée</div>
+                        <div class="comparison-cell"><i class="fas fa-clock" style="color: var(--warning);"></i> 24h</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+                        <div class="comparison-cell"><i class="fas fa-calendar" style="color: var(--info);"></i> 7 jours</div>
+
+                        <div class="comparison-cell">Bases de données</div>
+                        <div class="comparison-cell">1</div>
+                        <div class="comparison-cell">3</div>
+                        <div class="comparison-cell">5</div>
+                        <div class="comparison-cell">10</div>
+
+                        <div class="comparison-cell">Backups</div>
+                        <div class="comparison-cell">1</div>
+                        <div class="comparison-cell">3</div>
+                        <div class="comparison-cell">5</div>
+                        <div class="comparison-cell">10</div>
+
+                        <div class="comparison-cell">Support</div>
+                        <div class="comparison-cell"><i class="fas fa-times" style="color: var(--danger);"></i></div>
+                        <div class="comparison-cell"><i class="fas fa-check" style="color: var(--success);"></i> Standard</div>
+                        <div class="comparison-cell"><i class="fas fa-check" style="color: var(--success);"></i> Prioritaire</div>
+                        <div class="comparison-cell"><i class="fas fa-check" style="color: var(--success);"></i> VIP 24/7</div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h2 class="faq-title">Questions fréquentes</h2>
+                    <div class="faq-grid">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Combien de temps dure un serveur ?
+                            </div>
+                            <div class="faq-answer">
+                                Le plan Free dure 24h pour vous permettre de tester. Les plans payants (Starter, Basic, Pro) durent 7 jours. Vous pouvez les renouveler à tout moment avec vos coins.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Comment payer en FCFA ?
+                            </div>
+                            <div class="faq-answer">
+                                Nous acceptons Orange Money et MTN Money via Fapshi, ainsi que PayPal en plusieurs devises (EUR, USD, GBP, CAD).
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Puis-je payer avec des coins ?
+                            </div>
+                            <div class="faq-answer">
+                                Oui ! 1 coin = 5 FCFA. Si vous n'avez pas assez de coins, vous pouvez acheter le complément.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <i class="fas fa-question-circle"></i>
+                                Que sont les coins ?
+                            </div>
+                            <div class="faq-answer">
+                                Les coins sont notre monnaie virtuelle. Achetez des packs pour économiser jusqu'à 20%.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- MODALS - IDENTIQUES À L'ORIGINAL -->
-    <div class="modal" id="paymentChoiceModal"><div class="modal-content"><div class="modal-header"><h2>Choisissez votre mode de paiement</h2><button class="modal-close" onclick="closeModal('paymentChoiceModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan choisi</span><span class="modal-info-value" id="choicePlanName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Prix</span><span class="modal-info-value" id="choicePlanPrice">- FCFA</span></div><div class="modal-info-item"><span class="modal-info-label">Prix en coins</span><span class="modal-info-value" id="choicePlanCoins">- coins</span></div><div class="modal-info-item"><span class="modal-info-label">Durée</span><span class="modal-info-value" id="choicePlanDuration">- jours</span></div><div class="modal-info-item"><span class="modal-info-label">Votre solde</span><span class="modal-info-value" id="choiceUserBalance">- coins</span></div><div class="modal-info-item" id="choiceDifference" style="display:none;"><span class="modal-info-label">Coins manquants</span><span class="modal-info-value warning" id="choiceMissingCoins">- coins</span></div></div><h3>Comment souhaitez-vous payer ?</h3><div class="payment-options"><div class="payment-option active" id="payWithCoins" onclick="selectPaymentMethod('coins')"><i class="fas fa-coins"></i><div>Payer avec mes coins</div></div><div class="payment-option" id="payWithMobile" onclick="selectPaymentMethod('mobile')"><i class="fas fa-mobile-alt"></i><div>Mobile Money</div></div><div class="payment-option" id="payWithPaypal" onclick="selectPaymentMethod('paypal')"><img src="https://files.catbox.moe/xe0dbx.jpeg" alt="PayPal" style="width:40px;height:40px;"><div>PayPal</div></div></div><div id="mobilePaymentInfo" style="display:none;"><h3>Choisissez votre opérateur</h3><div class="payment-options"><div class="payment-option mtn active" id="modalMethodMTN" onclick="selectModalMethod('MTN')"><img src="https://files.catbox.moe/zjgc9h.jpeg" alt="MTN" style="width:40px;height:40px;"><div>MTN Money</div></div><div class="payment-option orange" id="modalMethodOrange" onclick="selectModalMethod('ORANGE')"><img src="https://files.catbox.moe/asrati.jpeg" alt="Orange" style="width:40px;height:40px;"><div>Orange Money</div></div></div><input type="tel" class="phone-input" id="modalPhone" placeholder="Numéro de téléphone" maxlength="9"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('paymentChoiceModal')">Annuler</button><button class="btn btn-primary" onclick="proceedWithPayment()" id="proceedButton"><i class="fas fa-arrow-right"></i>Continuer</button></div></div></div>
-    <div class="modal" id="coinsConfirmModal"><div class="modal-content"><div class="modal-header"><h2>Confirmation du paiement</h2><button class="modal-close" onclick="closeModal('coinsConfirmModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan</span><span class="modal-info-value" id="confirmPlanName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Coins nécessaires</span><span class="modal-info-value" id="confirmCoinsNeeded">- coins</span></div><div class="modal-info-item"><span class="modal-info-label">Durée</span><span class="modal-info-value" id="confirmDuration">- jours</span></div><div class="modal-info-item"><span class="modal-info-label">Votre solde</span><span class="modal-info-value" id="confirmUserBalance">- coins</span></div><div class="modal-info-item"><span class="modal-info-label">Nouveau solde</span><span class="modal-info-value success" id="confirmNewBalance">- coins</span></div></div><p><i class="fas fa-info-circle"></i> En confirmant, vous acceptez de payer ce serveur avec vos coins.</p><div><input type="text" class="phone-input" id="serverNameInput" placeholder="Nom du serveur" maxlength="30"></div><div><input type="text" class="phone-input" id="serverUsernameInput" placeholder="Nom d'utilisateur" maxlength="20"><div class="username-warning" id="usernameWarning" style="display:none;"></div></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('coinsConfirmModal')">Annuler</button><button class="btn btn-primary" onclick="confirmCoinPayment()" id="confirmCoinBtn"><i class="fas fa-check"></i>Confirmer</button></div></div></div>
-    <div class="modal" id="mobilePaymentModal"><div class="modal-content"><div class="modal-header"><h2>Paiement par Mobile Money</h2><button class="modal-close" onclick="closeModal('mobilePaymentModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan choisi</span><span class="modal-info-value" id="mobilePlanName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Prix</span><span class="modal-info-value" id="mobilePlanPrice">- FCFA</span></div><div class="modal-info-item"><span class="modal-info-label">Durée</span><span class="modal-info-value" id="mobilePlanDuration">- jours</span></div></div><h3>Choisissez votre opérateur</h3><div class="payment-options"><div class="payment-option mtn active" id="mobileMethodMTN" onclick="selectMobileMethod('MTN')"><img src="https://files.catbox.moe/zjgc9h.jpeg" alt="MTN" style="width:40px;height:40px;"><div>MTN Money</div></div><div class="payment-option orange" id="mobileMethodOrange" onclick="selectMobileMethod('ORANGE')"><img src="https://files.catbox.moe/asrati.jpeg" alt="Orange" style="width:40px;height:40px;"><div>Orange Money</div></div></div><input type="tel" class="phone-input" id="mobilePhone" placeholder="Numéro de téléphone" maxlength="9"><div><input type="text" class="phone-input" id="mobileServerName" placeholder="Nom du serveur" maxlength="30"></div><div><input type="text" class="phone-input" id="mobileServerUsername" placeholder="Nom d'utilisateur" maxlength="20"><div class="username-warning" id="mobileUsernameWarning" style="display:none;"></div></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('mobilePaymentModal')">Annuler</button><button class="btn btn-primary" onclick="processMobilePayment()" id="mobilePayButton"><i class="fas fa-lock"></i>Payer maintenant</button></div></div></div>
-    <div class="modal" id="paypalPaymentModal"><div class="modal-content"><div class="modal-header"><h2>Paiement par PayPal</h2><button class="modal-close" onclick="closeModal('paypalPaymentModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan choisi</span><span class="modal-info-value" id="paypalPlanName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Prix</span><span class="modal-info-value" id="paypalPlanPrice">- FCFA</span></div><div class="modal-info-item"><span class="modal-info-label">Durée</span><span class="modal-info-value" id="paypalPlanDuration">- jours</span></div></div><div><label>Email PayPal *</label><input type="email" class="phone-input" id="paypalEmail" placeholder="exemple@email.com"></div><div><label>Nom complet *</label><input type="text" class="phone-input" id="paypalName" placeholder="Jean Dupont"></div><div><label>Devise de paiement *</label><select class="currency-select" id="paypalCurrency" onchange="updateConvertedPrice()"><option value="EUR">Euro (€)</option><option value="USD">Dollar US ($)</option><option value="GBP">Livre Sterling (£)</option><option value="CAD">Dollar Canadien (CA$)</option><option value="XAF">Franc CFA (FCFA)</option></select></div><div><label>Nom du serveur *</label><input type="text" class="phone-input" id="paypalServerName" placeholder="Mon Bot" maxlength="30"></div><div><label>Nom d'utilisateur *</label><input type="text" class="phone-input" id="paypalServerUsername" placeholder="monbot" maxlength="20"><div class="username-warning" id="paypalUsernameWarning" style="display:none;"></div></div><div class="converted-price" id="convertedPriceDisplay">Montant à payer : <span id="convertedAmount">-</span> <span id="convertedCurrency">-</span></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('paypalPaymentModal')">Annuler</button><button class="btn btn-primary" id="paypalPayButton" onclick="processPaypalPayment()" disabled><i class="fab fa-paypal"></i>Payer avec PayPal</button></div></div></div>
-    <div class="modal" id="confirmationModal"><div class="modal-content"><div class="modal-header"><h2>Demande envoyée !</h2><button class="modal-close" onclick="closeModal('confirmationModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" style="text-align:center;"><i class="fas fa-clock" style="font-size:4rem;color:var(--warning);"></i><p>Une demande de paiement a été envoyée au numéro :</p><p id="confirmationPhone">+237 659535227</p><p>Veuillez confirmer l'opération sur votre téléphone.</p></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('confirmationModal')">J'ai compris</button></div></div></div>
-    <div class="modal" id="buyCoinsModal"><div class="modal-content"><div class="modal-header"><h2>Coins insuffisants</h2><button class="modal-close" onclick="closeModal('buyCoinsModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" style="text-align:center;"><i class="fas fa-exclamation-triangle" style="font-size:4rem;color:var(--warning);"></i><p>Il vous manque <strong id="missingCoinsAmount">0 coins</strong></p><div class="payment-options"><a href="/buy-coins" class="btn btn-primary">Acheter des coins</a><button class="btn btn-outline" onclick="switchToMobilePayment()">Payer par Mobile</button><button class="btn btn-outline" onclick="switchToPaypalPayment()">Payer par PayPal</button></div></div></div></div>
-    <div class="success-modal" id="successModal"><div class="success-content"><div class="success-icon"><i class="fas fa-check-circle"></i></div><h2 class="success-title">Serveur créé avec succès !</h2><p class="success-subtitle">Vos identifiants ont été envoyés par email.</p><div class="credentials-box" id="credentialsBox"></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Conservez ces identifiants précieusement.</span></div><div class="success-actions"><a href="/dashboard" class="success-btn success-btn-primary"><i class="fas fa-tachometer-alt"></i>Tableau de bord</a><button class="success-btn success-btn-outline" onclick="closeSuccessModal()"><i class="fas fa-times"></i>Fermer</button></div></div></div>
+    <!-- MODAL 1: Choix du mode de paiement -->
+    <div class="modal" id="paymentChoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Choisissez votre mode de paiement</h2>
+                <button class="modal-close" onclick="closeModal('paymentChoiceModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan choisi</span>
+                        <span class="modal-info-value" id="choicePlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="choicePlanPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix en coins</span>
+                        <span class="modal-info-value" id="choicePlanCoins">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="choicePlanDuration">- jours</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Votre solde</span>
+                        <span class="modal-info-value" id="choiceUserBalance">- coins</span>
+                    </div>
+                    <div class="modal-info-item" id="choiceDifference" style="display: none;">
+                        <span class="modal-info-label">Coins manquants</span>
+                        <span class="modal-info-value warning" id="choiceMissingCoins">- coins</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px;">Comment souhaitez-vous payer ?</h3>
+                
+                <div class="payment-options">
+                    <div class="payment-option active" id="payWithCoins" onclick="selectPaymentMethod('coins')">
+                        <i class="fas fa-coins"></i>
+                        <div>Payer avec mes coins</div>
+                    </div>
+                    <div class="payment-option" id="payWithMobile" onclick="selectPaymentMethod('mobile')">
+                        <i class="fas fa-mobile-alt"></i>
+                        <div>Mobile Money</div>
+                    </div>
+                    <div class="payment-option" id="payWithPaypal" onclick="selectPaymentMethod('paypal')">
+                        <img src="https://files.catbox.moe/xe0dbx.jpeg" alt="PayPal" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                        <div>PayPal</div>
+                    </div>
+                </div>
+
+                <div id="mobilePaymentInfo" style="display: none;">
+                    <h3 style="margin: 20px 0 16px;">Choisissez votre opérateur</h3>
+                    <div class="payment-options">
+                        <div class="payment-option mtn active" id="modalMethodMTN" onclick="selectModalMethod('MTN')">
+                            <img src="https://files.catbox.moe/zjgc9h.jpeg" alt="MTN" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                            <div>MTN Money</div>
+                        </div>
+                        <div class="payment-option orange" id="modalMethodOrange" onclick="selectModalMethod('ORANGE')">
+                            <img src="https://files.catbox.moe/asrati.jpeg" alt="Orange" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                            <div>Orange Money</div>
+                        </div>
+                    </div>
+                    <input type="tel" class="phone-input" id="modalPhone" placeholder="Numéro de téléphone (ex: 691234567)" maxlength="9">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('paymentChoiceModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="proceedWithPayment()" id="proceedButton">
+                    <i class="fas fa-arrow-right"></i>
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Confirmation paiement par coins -->
+    <div class="modal" id="coinsConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmation du paiement</h2>
+                <button class="modal-close" onclick="closeModal('coinsConfirmModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan</span>
+                        <span class="modal-info-value" id="confirmPlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Coins nécessaires</span>
+                        <span class="modal-info-value" id="confirmCoinsNeeded">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="confirmDuration">- jours</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Votre solde</span>
+                        <span class="modal-info-value" id="confirmUserBalance">- coins</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Nouveau solde</span>
+                        <span class="modal-info-value success" id="confirmNewBalance">- coins</span>
+                    </div>
+                </div>
+                
+                <p style="color: var(--text-secondary); margin: 20px 0;">
+                    <i class="fas fa-info-circle"></i>
+                    En confirmant, vous acceptez de payer ce serveur avec vos coins.
+                </p>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="serverNameInput" placeholder="Nom du serveur (ex: MonBot)" maxlength="30">
+                    <small style="color: var(--text-secondary);">3 à 30 caractères</small>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="serverUsernameInput" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                    <div class="username-warning" id="usernameWarning" style="display: none;"></div>
+                    <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('coinsConfirmModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmCoinPayment()" id="confirmCoinBtn">
+                    <i class="fas fa-check"></i>
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Paiement par Mobile Money -->
+    <div class="modal" id="mobilePaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Paiement par Mobile Money</h2>
+                <button class="modal-close" onclick="closeModal('mobilePaymentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan choisi</span>
+                        <span class="modal-info-value" id="mobilePlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="mobilePlanPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="mobilePlanDuration">- jours</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px;">Choisissez votre opérateur</h3>
+                <div class="payment-options">
+                    <div class="payment-option mtn active" id="mobileMethodMTN" onclick="selectMobileMethod('MTN')">
+                        <img src="https://files.catbox.moe/zjgc9h.jpeg" alt="MTN" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                        <div>MTN Money</div>
+                    </div>
+                    <div class="payment-option orange" id="mobileMethodOrange" onclick="selectMobileMethod('ORANGE')">
+                        <img src="https://files.catbox.moe/asrati.jpeg" alt="Orange" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">
+                        <div>Orange Money</div>
+                    </div>
+                </div>
+
+                <input type="tel" class="phone-input" id="mobilePhone" placeholder="Numéro de téléphone (ex: 691234567)" maxlength="9">
+                
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="mobileServerName" placeholder="Nom du serveur (ex: MonBot)" maxlength="30">
+                    <small style="color: var(--text-secondary);">3 à 30 caractères</small>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <input type="text" class="phone-input" id="mobileServerUsername" placeholder="Nom d'utilisateur (ex: monbot)" maxlength="20">
+                    <div class="username-warning" id="mobileUsernameWarning" style="display: none;"></div>
+                    <small style="color: var(--text-secondary);">3-20 caractères, lettres, chiffres et _</small>
+                </div>
+                
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Vous recevrez une demande de confirmation sur votre téléphone.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('mobilePaymentModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="processMobilePayment()" id="mobilePayButton">
+                    <i class="fas fa-lock"></i>
+                    Payer maintenant
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Paiement par PayPal -->
+    <div class="modal" id="paypalPaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Paiement par PayPal</h2>
+                <button class="modal-close" onclick="closeModal('paypalPaymentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Plan choisi</span>
+                        <span class="modal-info-value" id="paypalPlanName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Prix</span>
+                        <span class="modal-info-value" id="paypalPlanPrice">- FCFA</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Durée</span>
+                        <span class="modal-info-value" id="paypalPlanDuration">- jours</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Email PayPal *</label>
+                    <input type="email" class="phone-input" id="paypalEmail" placeholder="exemple@email.com" style="margin-bottom: 0;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Nom complet *</label>
+                    <input type="text" class="phone-input" id="paypalName" placeholder="Jean Dupont" style="margin-bottom: 0;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Devise de paiement *</label>
+                    <select class="currency-select" id="paypalCurrency" onchange="updateConvertedPrice()">
+                        <option value="EUR">Euro (€) - 1€ = 656 FCFA</option>
+                        <option value="USD">Dollar US ($) - 1$ = 615 FCFA</option>
+                        <option value="GBP">Livre Sterling (£) - 1£ = 780 FCFA</option>
+                        <option value="CAD">Dollar Canadien (CA$) - 1CA$ = 450 FCFA</option>
+                        <option value="XAF">Franc CFA (FCFA)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Nom du serveur *</label>
+                    <input type="text" class="phone-input" id="paypalServerName" placeholder="Mon Bot" maxlength="30" style="margin-bottom: 0;">
+                    <small style="color: var(--text-secondary); font-size: 0.7rem;">3 à 30 caractères</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Nom d'utilisateur *</label>
+                    <input type="text" class="phone-input" id="paypalServerUsername" placeholder="monbot" maxlength="20" style="margin-bottom: 0;">
+                    <div class="username-warning" id="paypalUsernameWarning" style="display: none;"></div>
+                    <small style="color: var(--text-secondary); font-size: 0.7rem;">3-20 caractères, lettres, chiffres et _</small>
+                </div>
+
+                <div class="converted-price" id="convertedPriceDisplay">
+                    Montant à payer : <span id="convertedAmount">-</span> <span id="convertedCurrency">-</span>
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 12px;">
+                    <i class="fas fa-info-circle"></i>
+                    Vous serez redirigé vers PayPal pour finaliser le paiement. La transaction sera validée manuellement par notre équipe après réception du virement.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('paypalPaymentModal')">Annuler</button>
+                <button class="btn btn-primary" id="paypalPayButton" onclick="processPaypalPayment()" disabled>
+                    <i class="fab fa-paypal"></i>
+                    Payer avec PayPal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Confirmation de demande -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Demande envoyée !</h2>
+                <button class="modal-close" onclick="closeModal('confirmationModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-clock" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 20px;">
+                    Une demande de paiement a été envoyée au numéro :
+                </p>
+                <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 20px;" id="confirmationPhone">
+                    +237 659535227
+                </p>
+                <p style="color: var(--text-secondary);">
+                    Veuillez confirmer l'opération sur votre téléphone.
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeModal('confirmationModal')">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: Achat de coins nécessaire -->
+    <div class="modal" id="buyCoinsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Coins insuffisants</h2>
+                <button class="modal-close" onclick="closeModal('buyCoinsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+                <p style="margin-bottom: 20px; font-size: 1.2rem;">
+                    Il vous manque <strong id="missingCoinsAmount">0 coins</strong>
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                    Achetez le complément ou payez par Mobile Money ou PayPal.
+                </p>
+                
+                <div class="payment-options" style="margin-bottom: 20px;">
+                    <a href="/buy-coins" class="btn btn-primary" style="flex: 1; text-decoration: none; text-align: center;">
+                        <i class="fas fa-coins"></i>
+                        Acheter des coins
+                    </a>
+                    <button class="btn btn-outline" style="flex: 1;" onclick="switchToMobilePayment()">
+                        <i class="fas fa-mobile-alt"></i>
+                        Payer par Mobile
+                    </button>
+                    <button class="btn btn-outline" style="flex: 1;" onclick="switchToPaypalPayment()">
+                        <i class="fab fa-paypal"></i>
+                        Payer par PayPal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL (affichage identifiants) -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="success-title">Serveur créé avec succès !</h2>
+            <p class="success-subtitle">Vos identifiants ont été envoyés par email.</p>
+            
+            <div class="credentials-box" id="credentialsBox"></div>
+            
+            <div class="warning-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Conservez ces identifiants précieusement.</span>
+            </div>
+            
+            <div class="success-actions">
+                <a href="/dashboard" class="success-btn success-btn-primary">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Tableau de bord
+                </a>
+                <button class="success-btn success-btn-outline" onclick="closeSuccessModal()">
+                    <i class="fas fa-times"></i>
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ===== AVATAR MANAGER =====
         const AvatarManager = {
-            getAvatar: function(u) { const l=localStorage.getItem('user_avatar'); if(l)return l; const s=sessionStorage.getItem('user_avatar'); if(s)return s; return `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
-            setAvatar: function(d) { localStorage.setItem('user_avatar',d); sessionStorage.setItem('user_avatar',d); this.syncToServer(d); },
-            syncToServer: async function(d) { try{ const t=localStorage.getItem('token'); if(!t)return; await fetch('/api/user/avatar',{method:'POST',headers:{'Authorization':`Bearer ${t}`,'Content-Type':'application/json'},body:JSON.stringify({avatar:d})}); }catch(e){} },
-            reset: function(u) { localStorage.removeItem('user_avatar'); sessionStorage.removeItem('user_avatar'); return `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
-            applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const sb=document.getElementById('sidebarAvatar'); if(sb)sb.innerHTML=`<img src="${a}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; if(u)localStorage.setItem('username',u); }
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            setAvatar: function(avatarData) {
+                localStorage.setItem('user_avatar', avatarData);
+                sessionStorage.setItem('user_avatar', avatarData);
+                this.syncToServer(avatarData);
+            },
+            syncToServer: async function(avatarData) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+                    await fetch('/api/user/avatar', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ avatar: avatarData })
+                    });
+                } catch (error) {}
+            },
+            reset: function(username) {
+                localStorage.removeItem('user_avatar');
+                sessionStorage.removeItem('user_avatar');
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                if (username) localStorage.setItem('username', username);
+            }
         };
-        function setupAvatarClickRedirect(){ const u=document.getElementById('userMenu'); if(u){u.style.cursor='pointer';u.addEventListener('click',e=>{e.preventDefault();location.href='/profile';});} const s=document.getElementById('sidebarUser'); if(s){s.style.cursor='pointer';s.addEventListener('click',()=>location.href='/profile');} }
 
-        const token=localStorage.getItem('token');
-        const sidebar=document.getElementById('sidebar'),overlay=document.getElementById('sidebarOverlay'),menuToggle=document.getElementById('menuToggle'),closeSidebar=document.getElementById('closeSidebar');
-        function openSidebar(){sidebar.classList.add('active');overlay.classList.add('active');document.body.style.overflow='hidden';}
-        function closeSidebarFunc(){sidebar.classList.remove('active');overlay.classList.remove('active');document.body.style.overflow='';}
-        menuToggle.addEventListener('click',openSidebar); closeSidebar.addEventListener('click',closeSidebarFunc); overlay.addEventListener('click',closeSidebarFunc);
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
+        }
 
-        const toggle=document.getElementById('billingToggle'),monthlyLabel=document.getElementById('monthlyLabel'),yearlyLabel=document.getElementById('yearlyLabel'); let isYearly=false;
-        toggle.addEventListener('click',()=>{isYearly=!isYearly;toggle.className=`toggle-switch ${isYearly?'yearly':'monthly'}`;monthlyLabel.classList.toggle('active',!isYearly);yearlyLabel.classList.toggle('active',isYearly);updatePrices();});
+        const token = localStorage.getItem('token');
 
-        const PLANS={ 'free':{name:'Free',memory:2048,disk:4096,cpu:300,price_weekly:0,price_monthly:0,coins_needed_weekly:0,duration_days:1,features:['2 GB RAM','4 GB SSD','300% CPU','1 DB','1 backup','⏰ 24h d\'essai'],icon:'fa-gift',getCoinsNeeded:function(){return 0;}}, '1gb':{name:'Starter',memory:1024,disk:3072,cpu:100,price_weekly:500,price_monthly:1600,coins_needed_weekly:100,duration_days:7,features:['1 GB RAM','3 GB SSD','100% CPU','3 DB','3 backups','📅 7 jours','Support standard'],icon:'fa-rocket',popular:true,getCoinsNeeded:function(y){return y?this.coins_needed_weekly*4:this.coins_needed_weekly;}}, '2gb':{name:'Basic',memory:2048,disk:5120,cpu:200,price_weekly:800,price_monthly:2600,coins_needed_weekly:160,duration_days:7,features:['2 GB RAM','5 GB SSD','200% CPU','5 DB','5 backups','📅 7 jours','Support prioritaire'],icon:'fa-server',getCoinsNeeded:function(y){return y?this.coins_needed_weekly*4:this.coins_needed_weekly;}}, '4gb':{name:'Pro',memory:4096,disk:10240,cpu:400,price_weekly:1300,price_monthly:4200,coins_needed_weekly:260,duration_days:7,features:['4 GB RAM','10 GB SSD','400% CPU','10 DB','10 backups','📅 7 jours','Support VIP 24/7','Domaine gratuit'],icon:'fa-crown',getCoinsNeeded:function(y){return y?this.coins_needed_weekly*4:this.coins_needed_weekly;}}, '8gb':{name:'Business',memory:8192,disk:20480,cpu:800,price_weekly:1700,price_monthly:5500,coins_needed_weekly:340,duration_days:7,features:['8 GB RAM','20 GB SSD','800% CPU','15 DB','15 backups','📅 7 jours','Support VIP 24/7','Domaine gratuit','SSL dédié'],icon:'fa-star',getCoinsNeeded:function(y){return y?this.coins_needed_weekly*4:this.coins_needed_weekly;}} };
-        const COIN_PACKS={ 'small':{name:'Pack Découverte',coins:100,price:500,bonus:0,icon:'fa-seedling'}, 'medium':{name:'Pack Populaire',coins:300,price:1000,bonus:20,icon:'fa-fire',popular:true}, 'large':{name:'Pack Performance',coins:700,price:2000,bonus:50,icon:'fa-bolt'}, 'xlarge':{name:'Pack Ultimate',coins:2000,price:5000,bonus:200,icon:'fa-gem'} };
-        const EXCHANGE_RATES={ 'EUR':655.96, 'USD':615.00, 'GBP':780.00, 'CAD':450.00, 'XAF':1.00 };
-        function getCurrencySymbol(c){ const s={'EUR':'€','USD':'$','GBP':'£','CAD':'CA$','XAF':'FCFA'}; return s[c]||c; }
+        // ===== SIDEBAR FUNCTIONS =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
 
-        let selectedPlan=null,selectedMethod='MTN',userCoins=0,userData=null,paymentMethod='coins',currentPriceFcfa=0;
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-        function displayPlans(){ const c=document.getElementById('pricingGrid'); let h=''; Object.entries(PLANS).forEach(([k,p])=>{ const price=isYearly?p.price_monthly:p.price_weekly,coins=p.getCoinsNeeded(isYearly),pop=p.popular?'popular':'',btn=p.popular?'popular-btn':'',badge=k==='free'?'<span class="duration-highlight free"><i class="fas fa-clock"></i> 24h d\'essai</span>':'<span class="duration-highlight paid"><i class="fas fa-calendar"></i> 7 jours</span>'; h+=`<div class="pricing-card ${pop}">${p.popular?'<div class="popular-badge">🔥 Le plus populaire</div>':''}<div class="card-header"><div class="card-icon"><i class="fas ${p.icon}"></i></div><h3 class="card-name">${p.name}</h3><div class="card-price"><span class="price">${price.toLocaleString()}</span><span class="price-period">FCFA${isYearly?'/mois':'/7 jours'}</span></div><div class="price-coins"><i class="fas fa-coins"></i> ${coins} coins</div>${badge}</div><ul class="card-features">${p.features.map(f=>`<li><i class="fas fa-check"></i> ${f}</li>`).join('')}</ul><button class="card-btn ${btn}" onclick="selectPlan('${k}')">${p.price_weekly===0?'Essayer gratuitement':'Choisir ce plan'} <i class="fas fa-arrow-right"></i></button></div>`; }); c.innerHTML=h; }
-        function displayCoinPacks(){ const c=document.getElementById('coinsGrid'); let h=''; Object.entries(COIN_PACKS).forEach(([k,p])=>{ const t=p.coins+p.bonus,pop=p.popular?'popular':''; h+=`<div class="coin-pack ${pop}">${p.popular?'<div class="popular-badge" style="background:var(--warning);">⭐ Populaire</div>':''}<div class="coin-icon"><i class="fas ${p.icon}"></i></div><h3 class="coin-name">${p.name}</h3><div class="coin-amount">${t} coins</div><div class="coin-price">${p.price.toLocaleString()} FCFA</div>${p.bonus>0?`<div class="coin-bonus">+${p.bonus} offerts</div>`:''}<button class="coin-btn" onclick="buyCoins('${k}')">Acheter</button></div>`; }); c.innerHTML=h; }
-        function updatePrices(){ displayPlans(); }
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
-        function showToast(type,msg){ const t=document.createElement('div'); t.className=`toast ${type}`; t.innerHTML=`<i class="fas fa-${type==='success'?'check':type==='error'?'exclamation':'info'}-circle"></i><span>${msg}</span>`; document.body.appendChild(t); setTimeout(()=>{t.style.animation='slideOut 0.3s';setTimeout(()=>t.remove(),300);},3000); }
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
 
-        function checkAuth(){ if(token){ fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{ if(d.success){ userData=d.user; userCoins=d.user.coins; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=d.user.email; document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins; document.getElementById('sidebarServers').textContent=d.servers?.length||0; document.getElementById('navDashboard').style.display='block'; document.getElementById('navProfile').style.display='block'; document.getElementById('navHome').style.display='none'; document.getElementById('navLogin').style.display='none'; document.getElementById('navRegister').style.display='none'; document.getElementById('navLogout').style.display='block'; document.getElementById('balanceCard').style.display='block'; document.getElementById('userBalance').textContent=userCoins; AvatarManager.applyToPage(d.user.username); setupUsernameValidation(); setupPaypalUsernameValidation(); } }).catch(()=>{localStorage.removeItem('token');showNotConnected();}); }else{showNotConnected();} }
-        function showNotConnected(){ document.getElementById('sidebarUserName').textContent='Invité'; document.getElementById('sidebarUserEmail').textContent='Non connecté'; document.getElementById('sidebarUserBadge').textContent='Visiteur'; document.getElementById('sidebarCoins').textContent='0'; document.getElementById('sidebarServers').textContent='0'; document.getElementById('userAvatarSmall').src='https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40'; document.getElementById('navDashboard').style.display='none'; document.getElementById('navProfile').style.display='none'; document.getElementById('navHome').style.display='block'; document.getElementById('navLogin').style.display='block'; document.getElementById('navRegister').style.display='block'; document.getElementById('navLogout').style.display='none'; }
+        // ===== TOGGLE BILLING =====
+        const toggle = document.getElementById('billingToggle');
+        const monthlyLabel = document.getElementById('monthlyLabel');
+        const yearlyLabel = document.getElementById('yearlyLabel');
+        let isYearly = false;
 
-        async function checkPterodactylUsername(u){ try{ const r=await fetch('/api/check-username',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})}); return await r.json(); }catch(e){ return {available:false,error:'Erreur'}; } }
-        function debounce(f,w){ let t; return function(...a){ clearTimeout(t); t=setTimeout(()=>f.apply(this,a),w); }; }
-        async function validateUsernameField(e){ const i=e.target,u=i.value,w=document.getElementById('usernameWarning'); if(!w)return; if(u.length<3){w.style.display='none';i.setAttribute('data-valid','false');return;} if(!/^[a-zA-Z0-9_]+$/.test(u)){w.style.display='flex';w.className='username-warning error';w.innerHTML='<i class="fas fa-exclamation-circle"></i> Lettres, chiffres et _';i.setAttribute('data-valid','false');return;} w.style.display='flex';w.className='username-warning info';w.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...'; const r=await checkPterodactylUsername(u); if(r.available){w.className='username-warning success';w.innerHTML='<i class="fas fa-check-circle"></i> Disponible';i.setAttribute('data-valid','true');}else{w.className='username-warning error';w.innerHTML=`<i class="fas fa-exclamation-circle"></i> ${r.error||'Déjà utilisé'}`;i.setAttribute('data-valid','false');} }
-        async function validatePaypalUsernameField(e){ const i=e.target,u=i.value,w=document.getElementById('paypalUsernameWarning'); if(!w)return; if(u.length<3){w.style.display='none';i.setAttribute('data-valid-paypal','false');return;} if(!/^[a-zA-Z0-9_]+$/.test(u)){w.style.display='flex';w.className='username-warning error';w.innerHTML='<i class="fas fa-exclamation-circle"></i> Lettres, chiffres et _';i.setAttribute('data-valid-paypal','false');return;} w.style.display='flex';w.className='username-warning info';w.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...'; const r=await checkPterodactylUsername(u); if(r.available){w.className='username-warning success';w.innerHTML='<i class="fas fa-check-circle"></i> Disponible';i.setAttribute('data-valid-paypal','true');}else{w.className='username-warning error';w.innerHTML=`<i class="fas fa-exclamation-circle"></i> ${r.error||'Déjà utilisé'}`;i.setAttribute('data-valid-paypal','false');} }
-        async function validateMobileUsernameField(e){ const i=e.target,u=i.value,w=document.getElementById('mobileUsernameWarning'); if(!w)return; if(u.length<3){w.style.display='none';i.setAttribute('data-valid','false');return;} if(!/^[a-zA-Z0-9_]+$/.test(u)){w.style.display='flex';w.className='username-warning error';w.innerHTML='<i class="fas fa-exclamation-circle"></i> Lettres, chiffres et _';i.setAttribute('data-valid','false');return;} w.style.display='flex';w.className='username-warning info';w.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...'; const r=await checkPterodactylUsername(u); if(r.available){w.className='username-warning success';w.innerHTML='<i class="fas fa-check-circle"></i> Disponible';i.setAttribute('data-valid','true');}else{w.className='username-warning error';w.innerHTML=`<i class="fas fa-exclamation-circle"></i> ${r.error||'Déjà utilisé'}`;i.setAttribute('data-valid','false');} }
-        function setupUsernameValidation(){ const u=document.getElementById('serverUsernameInput'); if(u)u.addEventListener('input',debounce(validateUsernameField,500)); const m=document.getElementById('mobileServerUsername'); if(m)m.addEventListener('input',debounce(validateMobileUsernameField,500)); }
-        function setupPaypalUsernameValidation(){ const p=document.getElementById('paypalServerUsername'); if(p)p.addEventListener('input',debounce(validatePaypalUsernameField,500)); }
+        toggle.addEventListener('click', () => {
+            isYearly = !isYearly;
+            toggle.className = `toggle-switch ${isYearly ? 'yearly' : 'monthly'}`;
+            monthlyLabel.classList.toggle('active', !isYearly);
+            yearlyLabel.classList.toggle('active', isYearly);
+            updatePrices();
+        });
 
-        function selectPlan(k){ if(k==='free'){ if(!token)location.href='/register'; else location.href='/dashboard?create=free'; return; } if(!token){location.href=`/login?redirect=pricing&plan=${k}`;return;} selectedPlan=PLANS[k]; selectedPlan.key=k; currentPriceFcfa=isYearly?selectedPlan.price_monthly:selectedPlan.price_weekly; const coins=selectedPlan.getCoinsNeeded(isYearly); document.getElementById('choicePlanName').textContent=selectedPlan.name; document.getElementById('choicePlanPrice').textContent=currentPriceFcfa+' FCFA'; document.getElementById('choicePlanCoins').textContent=coins+' coins'; document.getElementById('choicePlanDuration').textContent=(isYearly?selectedPlan.duration_days*4:selectedPlan.duration_days)+' jours'; document.getElementById('choiceUserBalance').textContent=userCoins+' coins'; const diff=document.getElementById('choiceDifference'),miss=document.getElementById('choiceMissingCoins'); if(userCoins<coins){ diff.style.display='flex'; miss.textContent=(coins-userCoins)+' coins'; miss.className='modal-info-value warning'; document.getElementById('payWithCoins').classList.remove('active'); paymentMethod='mobile'; }else{ diff.style.display='none'; document.getElementById('payWithCoins').classList.add('active'); paymentMethod='coins'; } openModal('paymentChoiceModal'); }
-        function buyCoins(k){ if(!token)location.href=`/login?redirect=buy-coins&pack=${k}`; else location.href=`/buy-coins?pack=${k}`; }
-        function selectPaymentMethod(m){ paymentMethod=m; document.getElementById('payWithCoins').classList.toggle('active',m==='coins'); document.getElementById('payWithMobile').classList.toggle('active',m==='mobile'); document.getElementById('payWithPaypal').classList.toggle('active',m==='paypal'); document.getElementById('mobilePaymentInfo').style.display=m==='mobile'?'block':'none'; }
-        function selectModalMethod(m){ selectedMethod=m; document.getElementById('modalMethodMTN').classList.toggle('active',m==='MTN'); document.getElementById('modalMethodOrange').classList.toggle('active',m==='ORANGE'); }
-        function selectMobileMethod(m){ selectedMethod=m; document.getElementById('mobileMethodMTN').classList.toggle('active',m==='MTN'); document.getElementById('mobileMethodOrange').classList.toggle('active',m==='ORANGE'); }
+        // ===== PLANS DATA =====
+        const PLANS = {
+            'free': {
+                name: 'Free',
+                memory: 2048,
+                disk: 4096,
+                cpu: 300,
+                price_weekly: 0,
+                price_monthly: 0,
+                coins_needed_weekly: 0,
+                duration_days: 1,
+                features: ['2 GB RAM', '4 GB SSD', '300% CPU', '1 DB', '1 backup', '⏰ 24h d\'essai'],
+                icon: 'fa-gift',
+                color: 'gray',
+                getCoinsNeeded: function(isYearly) { return 0; }
+            },
+            '1gb': {
+                name: 'Starter',
+                memory: 1024,
+                disk: 3072,
+                cpu: 100,
+                price_weekly: 500,
+                price_monthly: 1600,
+                coins_needed_weekly: 100,
+                duration_days: 7,
+                features: ['1 GB RAM', '3 GB SSD', '100% CPU', '3 DB', '3 backups', '📅 7 jours', 'Support standard'],
+                icon: 'fa-rocket',
+                color: 'blue',
+                popular: true,
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
+            },
+            '2gb': {
+                name: 'Basic',
+                memory: 2048,
+                disk: 5120,
+                cpu: 200,
+                price_weekly: 800,
+                price_monthly: 2600,
+                coins_needed_weekly: 160,
+                duration_days: 7,
+                features: ['2 GB RAM', '5 GB SSD', '200% CPU', '5 DB', '5 backups', '📅 7 jours', 'Support prioritaire'],
+                icon: 'fa-server',
+                color: 'green',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
+            },
+            '4gb': {
+                name: 'Pro',
+                memory: 4096,
+                disk: 10240,
+                cpu: 400,
+                price_weekly: 1300,
+                price_monthly: 4200,
+                coins_needed_weekly: 260,
+                duration_days: 7,
+                features: ['4 GB RAM', '10 GB SSD', '400% CPU', '10 DB', '10 backups', '📅 7 jours', 'Support VIP 24/7', 'Domaine gratuit'],
+                icon: 'fa-crown',
+                color: 'purple',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
+            },
+            '8gb': {
+                name: 'Business',
+                memory: 8192,
+                disk: 20480,
+                cpu: 800,
+                price_weekly: 1700,
+                price_monthly: 5500,
+                coins_needed_weekly: 340,
+                duration_days: 7,
+                features: ['8 GB RAM', '20 GB SSD', '800% CPU', '15 DB', '15 backups', '📅 7 jours', 'Support VIP 24/7', 'Domaine gratuit', 'SSL dédié'],
+                icon: 'fa-star',
+                color: 'gold',
+                getCoinsNeeded: function(isYearly) { return isYearly ? this.coins_needed_weekly * 4 : this.coins_needed_weekly; }
+            }
+        };
 
-        function proceedWithPayment(){ const coins=selectedPlan.getCoinsNeeded(isYearly); if(paymentMethod==='coins'){ if(userCoins<coins){ showBuyCoinsModal(coins-userCoins); closeModal('paymentChoiceModal'); }else{ document.getElementById('confirmPlanName').textContent=selectedPlan.name; document.getElementById('confirmCoinsNeeded').textContent=coins+' coins'; document.getElementById('confirmDuration').textContent=(isYearly?selectedPlan.duration_days*4:selectedPlan.duration_days)+' jours'; document.getElementById('confirmUserBalance').textContent=userCoins+' coins'; document.getElementById('confirmNewBalance').textContent=(userCoins-coins)+' coins'; closeModal('paymentChoiceModal'); openModal('coinsConfirmModal'); } }else if(paymentMethod==='mobile'){ const p=document.getElementById('modalPhone').value; if(!p||p.length!==9){showToast('error','Numéro invalide');return;} document.getElementById('mobilePlanName').textContent=selectedPlan.name; document.getElementById('mobilePlanPrice').textContent=currentPriceFcfa+' FCFA'; document.getElementById('mobilePlanDuration').textContent=(isYearly?selectedPlan.duration_days*4:selectedPlan.duration_days)+' jours'; document.getElementById('mobilePhone').value=p; closeModal('paymentChoiceModal'); openModal('mobilePaymentModal'); }else if(paymentMethod==='paypal'){ document.getElementById('paypalPlanName').textContent=selectedPlan.name; document.getElementById('paypalPlanPrice').textContent=currentPriceFcfa+' FCFA'; document.getElementById('paypalPlanDuration').textContent=(isYearly?selectedPlan.duration_days*4:selectedPlan.duration_days)+' jours'; closeModal('paymentChoiceModal'); openModal('paypalPaymentModal'); document.getElementById('paypalEmail').value=userData?.email||''; updateConvertedPrice(); checkPaypalFormValidity(); } }
-        function updateConvertedPrice(){ const c=document.getElementById('paypalCurrency').value,r=EXCHANGE_RATES[c],conv=(currentPriceFcfa/r).toFixed(2); document.getElementById('convertedAmount').textContent=conv; document.getElementById('convertedCurrency').textContent=getCurrencySymbol(c); }
-        function checkPaypalFormValidity(){ const e=document.getElementById('paypalEmail').value,n=document.getElementById('paypalName').value,sn=document.getElementById('paypalServerName').value,su=document.getElementById('paypalServerUsername').value,uv=document.getElementById('paypalServerUsername').getAttribute('data-valid-paypal')==='true',btn=document.getElementById('paypalPayButton'); if(e&&e.includes('@')&&n&&n.length>=2&&sn&&sn.length>=3&&sn.length<=30&&su&&su.length>=3&&su.length<=20&&/^[a-zA-Z0-9_]+$/.test(su)&&uv)btn.disabled=false; else btn.disabled=true; }
-        async function processPaypalPayment(){ /* identique */ }
-        function switchToMobilePayment(){ closeModal('buyCoinsModal'); selectPaymentMethod('mobile'); openModal('paymentChoiceModal'); }
-        function switchToPaypalPayment(){ closeModal('buyCoinsModal'); selectPaymentMethod('paypal'); openModal('paymentChoiceModal'); }
-        function showBuyCoinsModal(m){ document.getElementById('missingCoinsAmount').textContent=m+' coins'; openModal('buyCoinsModal'); }
-        async function confirmCoinPayment(){ /* identique */ }
-        async function processMobilePayment(){ /* identique */ }
-        async function checkPaymentStatus(t){ /* identique */ }
-        function showSuccessModal(s){ /* identique */ }
-        function closeSuccessModal(){ document.getElementById('successModal').classList.remove('active'); }
-        function copyToClipboard(t){ navigator.clipboard.writeText(t); showToast('success','Copié !'); }
-        function openModal(id){ document.getElementById(id).classList.add('active'); }
-        function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+        const COIN_PACKS = {
+            'small': { name: 'Pack Découverte', coins: 100, price: 500, bonus: 0, icon: 'fa-seedling' },
+            'medium': { name: 'Pack Populaire', coins: 300, price: 1000, bonus: 20, icon: 'fa-fire', popular: true },
+            'large': { name: 'Pack Performance', coins: 700, price: 2000, bonus: 50, icon: 'fa-bolt' },
+            'xlarge': { name: 'Pack Ultimate', coins: 2000, price: 5000, bonus: 200, icon: 'fa-gem' }
+        };
 
-        document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');AvatarManager.reset();location.reload();});
+        const EXCHANGE_RATES = { 'EUR': 655.96, 'USD': 615.00, 'GBP': 780.00, 'CAD': 450.00, 'XAF': 1.00 };
 
-        displayPlans(); displayCoinPacks(); checkAuth(); setupAvatarClickRedirect();
-        const urlParams=new URLSearchParams(location.search),planParam=urlParams.get('plan'); if(planParam&&token)selectPlan(planParam);
-        window.addEventListener('resize',()=>{if(window.innerWidth>1024)closeSidebarFunc();});
+        function getCurrencySymbol(code) {
+            const symbols = { 'EUR': '€', 'USD': '$', 'GBP': '£', 'CAD': 'CA$', 'XAF': 'FCFA' };
+            return symbols[code] || code;
+        }
 
-        window.selectPlan=selectPlan; window.buyCoins=buyCoins; window.selectPaymentMethod=selectPaymentMethod; window.selectModalMethod=selectModalMethod;
-        window.selectMobileMethod=selectMobileMethod; window.proceedWithPayment=proceedWithPayment; window.confirmCoinPayment=confirmCoinPayment;
-        window.processMobilePayment=processMobilePayment; window.processPaypalPayment=processPaypalPayment; window.switchToMobilePayment=switchToMobilePayment;
-        window.switchToPaypalPayment=switchToPaypalPayment; window.updateConvertedPrice=updateConvertedPrice; window.checkPaypalFormValidity=checkPaypalFormValidity;
-        window.closeModal=closeModal; window.openModal=openModal; window.closeSuccessModal=closeSuccessModal; window.copyToClipboard=copyToClipboard;
+        let selectedPlan = null;
+        let selectedMethod = 'MTN';
+        let userCoins = 0;
+        let userData = null;
+        let paymentMethod = 'coins';
+        let currentPriceFcfa = 0;
+
+        // ===== DISPLAY PLANS =====
+        function displayPlans() {
+            const container = document.getElementById('pricingGrid');
+            let html = '';
+
+            Object.entries(PLANS).forEach(([key, plan]) => {
+                const price = isYearly ? plan.price_monthly : plan.price_weekly;
+                const pricePeriod = isYearly ? '/mois' : '/7 jours';
+                const coinsNeeded = plan.getCoinsNeeded(isYearly);
+                
+                const popularClass = plan.popular ? 'popular' : '';
+                const btnClass = plan.popular ? 'popular-btn' : '';
+
+                const durationBadge = key === 'free' 
+                    ? '<span class="duration-highlight free"><i class="fas fa-clock"></i> 24h d\'essai</span>'
+                    : '<span class="duration-highlight paid"><i class="fas fa-calendar"></i> 7 jours</span>';
+
+                html += `
+                    <div class="pricing-card ${popularClass}">
+                        ${plan.popular ? '<div class="popular-badge">🔥 Le plus populaire</div>' : ''}
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas ${plan.icon}"></i>
+                            </div>
+                            <h3 class="card-name">${plan.name}</h3>
+                            <div class="card-price">
+                                <span class="price">${price.toLocaleString()}</span>
+                                <span class="price-period">FCFA${pricePeriod}</span>
+                            </div>
+                            <div class="price-coins">
+                                <i class="fas fa-coins"></i>
+                                ${coinsNeeded} coins
+                            </div>
+                            ${durationBadge}
+                        </div>
+                        <ul class="card-features">
+                            ${plan.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
+                        </ul>
+                        <button class="card-btn ${btnClass}" onclick="selectPlan('${key}')">
+                            ${plan.price_weekly === 0 ? 'Essayer gratuitement' : 'Choisir ce plan'}
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function displayCoinPacks() {
+            const container = document.getElementById('coinsGrid');
+            let html = '';
+
+            Object.entries(COIN_PACKS).forEach(([key, pack]) => {
+                const totalCoins = pack.coins + pack.bonus;
+                const popularClass = pack.popular ? 'popular' : '';
+
+                html += `
+                    <div class="coin-pack ${popularClass}">
+                        ${pack.popular ? '<div class="popular-badge" style="background: var(--warning);">⭐ Populaire</div>' : ''}
+                        <div class="coin-icon">
+                            <i class="fas ${pack.icon}"></i>
+                        </div>
+                        <h3 class="coin-name">${pack.name}</h3>
+                        <div class="coin-amount">${totalCoins} coins</div>
+                        <div class="coin-price">${pack.price.toLocaleString()} FCFA</div>
+                        ${pack.bonus > 0 ? `<div class="coin-bonus">+${pack.bonus} offerts</div>` : ''}
+                        <button class="coin-btn" onclick="buyCoins('${key}')">
+                            Acheter
+                        </button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updatePrices() {
+            displayPlans();
+        }
+
+        // ===== TOAST =====
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // ===== CHECK AUTH =====
+        function checkAuth() {
+            if (token) {
+                fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        userData = data.user;
+                        userCoins = data.user.coins;
+                        
+                        document.getElementById('sidebarUserName').textContent = data.user.username;
+                        document.getElementById('sidebarUserEmail').textContent = data.user.email;
+                        document.getElementById('sidebarUserBadge').textContent = data.user.role;
+                        document.getElementById('sidebarCoins').textContent = data.user.coins;
+                        document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
+                        
+                        document.getElementById('navDashboard').style.display = 'block';
+                        document.getElementById('navProfile').style.display = 'block';
+                        document.getElementById('navHome').style.display = 'none';
+                        document.getElementById('navLogin').style.display = 'none';
+                        document.getElementById('navRegister').style.display = 'none';
+                        document.getElementById('navLogout').style.display = 'block';
+                        
+                        document.getElementById('balanceCard').style.display = 'block';
+                        document.getElementById('userBalance').textContent = userCoins;
+                        
+                        AvatarManager.applyToPage(data.user.username);
+                        setupUsernameValidation();
+                        setupPaypalUsernameValidation();
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('token');
+                    showNotConnectedSidebar();
+                });
+            } else {
+                showNotConnectedSidebar();
+            }
+        }
+
+        function showNotConnectedSidebar() {
+            document.getElementById('sidebarUserName').textContent = 'Invité';
+            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+            document.getElementById('sidebarCoins').textContent = '0';
+            document.getElementById('sidebarServers').textContent = '0';
+            document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+            
+            document.getElementById('navDashboard').style.display = 'none';
+            document.getElementById('navProfile').style.display = 'none';
+            document.getElementById('navHome').style.display = 'block';
+            document.getElementById('navLogin').style.display = 'block';
+            document.getElementById('navRegister').style.display = 'block';
+            document.getElementById('navLogout').style.display = 'none';
+        }
+
+        // ===== USERNAME VALIDATION =====
+        async function checkPterodactylUsername(username) {
+            try {
+                const response = await fetch('/api/check-username', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                return await response.json();
+            } catch (error) {
+                return { available: false, error: 'Erreur de connexion' };
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => { clearTimeout(timeout); func(...args); };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function validateUsernameField(event) {
+            const input = event.target;
+            const username = input.value;
+            const warning = document.getElementById('usernameWarning');
+            if (!warning) return;
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid', 'false'); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
+                warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
+                input.setAttribute('data-valid', 'false'); return;
+            }
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
+            warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            const result = await checkPterodactylUsername(username);
+            if (result.available) {
+                warning.className = 'username-warning success';
+                warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
+                input.setAttribute('data-valid', 'true');
+            } else {
+                warning.className = 'username-warning error';
+                warning.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.error || 'Nom d\'utilisateur déjà utilisé'}`;
+                input.setAttribute('data-valid', 'false');
+            }
+        }
+
+        async function validatePaypalUsernameField(event) {
+            const input = event.target;
+            const username = input.value;
+            const warning = document.getElementById('paypalUsernameWarning');
+            if (!warning) return;
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid-paypal', 'false'); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
+                warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
+                input.setAttribute('data-valid-paypal', 'false'); return;
+            }
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
+            warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            const result = await checkPterodactylUsername(username);
+            if (result.available) {
+                warning.className = 'username-warning success';
+                warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
+                input.setAttribute('data-valid-paypal', 'true');
+            } else {
+                warning.className = 'username-warning error';
+                warning.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.error || 'Nom d\'utilisateur déjà utilisé'}`;
+                input.setAttribute('data-valid-paypal', 'false');
+            }
+        }
+
+        async function validateMobileUsernameField(event) {
+            const input = event.target;
+            const username = input.value;
+            const warning = document.getElementById('mobileUsernameWarning');
+            if (!warning) return;
+            if (username.length < 3) { warning.style.display = 'none'; input.setAttribute('data-valid', 'false'); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                warning.style.display = 'flex'; warning.className = 'username-warning error';
+                warning.innerHTML = '<i class="fas fa-exclamation-circle"></i> Caractères autorisés: lettres, chiffres et _';
+                input.setAttribute('data-valid', 'false'); return;
+            }
+            warning.style.display = 'flex'; warning.className = 'username-warning info';
+            warning.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+            const result = await checkPterodactylUsername(username);
+            if (result.available) {
+                warning.className = 'username-warning success';
+                warning.innerHTML = '<i class="fas fa-check-circle"></i> Nom d\'utilisateur disponible';
+                input.setAttribute('data-valid', 'true');
+            } else {
+                warning.className = 'username-warning error';
+                warning.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${result.error || 'Nom d\'utilisateur déjà utilisé'}`;
+                input.setAttribute('data-valid', 'false');
+            }
+        }
+
+        function setupUsernameValidation() {
+            const usernameInput = document.getElementById('serverUsernameInput');
+            const mobileUsernameInput = document.getElementById('mobileServerUsername');
+            if (usernameInput) usernameInput.addEventListener('input', debounce(validateUsernameField, 500));
+            if (mobileUsernameInput) mobileUsernameInput.addEventListener('input', debounce(validateMobileUsernameField, 500));
+        }
+
+        function setupPaypalUsernameValidation() {
+            const usernameInput = document.getElementById('paypalServerUsername');
+            if (usernameInput) usernameInput.addEventListener('input', debounce(validatePaypalUsernameField, 500));
+        }
+
+        // ===== PLAN SELECTION =====
+        function selectPlan(planKey) {
+            if (planKey === 'free') {
+                if (!token) window.location.href = '/register';
+                else window.location.href = '/dashboard?create=free';
+                return;
+            }
+            if (!token) { window.location.href = `/login?redirect=pricing&plan=${planKey}`; return; }
+
+            selectedPlan = PLANS[planKey];
+            selectedPlan.key = planKey;
+            currentPriceFcfa = isYearly ? selectedPlan.price_monthly : selectedPlan.price_weekly;
+            const coinsNeeded = selectedPlan.getCoinsNeeded(isYearly);
+            
+            document.getElementById('choicePlanName').textContent = selectedPlan.name;
+            document.getElementById('choicePlanPrice').textContent = currentPriceFcfa + ' FCFA';
+            document.getElementById('choicePlanCoins').textContent = coinsNeeded + ' coins';
+            document.getElementById('choicePlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
+            document.getElementById('choiceUserBalance').textContent = userCoins + ' coins';
+            
+            const difference = document.getElementById('choiceDifference');
+            const missingCoins = document.getElementById('choiceMissingCoins');
+            
+            if (userCoins < coinsNeeded) {
+                difference.style.display = 'flex';
+                missingCoins.textContent = (coinsNeeded - userCoins) + ' coins';
+                missingCoins.className = 'modal-info-value warning';
+                document.getElementById('payWithCoins').classList.remove('active');
+                paymentMethod = 'mobile';
+            } else {
+                difference.style.display = 'none';
+                document.getElementById('payWithCoins').classList.add('active');
+                paymentMethod = 'coins';
+            }
+            
+            openModal('paymentChoiceModal');
+        }
+
+        function buyCoins(packKey) {
+            if (!token) window.location.href = `/login?redirect=buy-coins&pack=${packKey}`;
+            else window.location.href = `/buy-coins?pack=${packKey}`;
+        }
+
+        // ===== PAYMENT METHODS =====
+        function selectPaymentMethod(method) {
+            paymentMethod = method;
+            document.getElementById('payWithCoins').classList.toggle('active', method === 'coins');
+            document.getElementById('payWithMobile').classList.toggle('active', method === 'mobile');
+            document.getElementById('payWithPaypal').classList.toggle('active', method === 'paypal');
+            document.getElementById('mobilePaymentInfo').style.display = method === 'mobile' ? 'block' : 'none';
+        }
+
+        function selectModalMethod(method) {
+            selectedMethod = method;
+            document.getElementById('modalMethodMTN').classList.toggle('active', method === 'MTN');
+            document.getElementById('modalMethodOrange').classList.toggle('active', method === 'ORANGE');
+        }
+
+        function selectMobileMethod(method) {
+            selectedMethod = method;
+            document.getElementById('mobileMethodMTN').classList.toggle('active', method === 'MTN');
+            document.getElementById('mobileMethodOrange').classList.toggle('active', method === 'ORANGE');
+        }
+
+        function proceedWithPayment() {
+            const coinsNeeded = selectedPlan.getCoinsNeeded(isYearly);
+            
+            if (paymentMethod === 'coins') {
+                if (userCoins < coinsNeeded) {
+                    showBuyCoinsModal(coinsNeeded - userCoins);
+                    closeModal('paymentChoiceModal');
+                } else {
+                    document.getElementById('confirmPlanName').textContent = selectedPlan.name;
+                    document.getElementById('confirmCoinsNeeded').textContent = coinsNeeded + ' coins';
+                    document.getElementById('confirmDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
+                    document.getElementById('confirmUserBalance').textContent = userCoins + ' coins';
+                    document.getElementById('confirmNewBalance').textContent = (userCoins - coinsNeeded) + ' coins';
+                    
+                    closeModal('paymentChoiceModal');
+                    openModal('coinsConfirmModal');
+                }
+            } else if (paymentMethod === 'mobile') {
+                const phone = document.getElementById('modalPhone').value;
+                if (!phone || phone.length !== 9) { showToast('error', 'Numéro de téléphone invalide'); return; }
+                
+                document.getElementById('mobilePlanName').textContent = selectedPlan.name;
+                document.getElementById('mobilePlanPrice').textContent = currentPriceFcfa + ' FCFA';
+                document.getElementById('mobilePlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
+                document.getElementById('mobilePhone').value = phone;
+                
+                closeModal('paymentChoiceModal');
+                openModal('mobilePaymentModal');
+            } else if (paymentMethod === 'paypal') {
+                document.getElementById('paypalPlanName').textContent = selectedPlan.name;
+                document.getElementById('paypalPlanPrice').textContent = currentPriceFcfa + ' FCFA';
+                document.getElementById('paypalPlanDuration').textContent = (isYearly ? selectedPlan.duration_days * 4 : selectedPlan.duration_days) + ' jours';
+                
+                closeModal('paymentChoiceModal');
+                openModal('paypalPaymentModal');
+                
+                document.getElementById('paypalEmail').value = userData?.email || '';
+                document.getElementById('paypalName').value = '';
+                document.getElementById('paypalCurrency').value = 'EUR';
+                document.getElementById('paypalServerName').value = '';
+                document.getElementById('paypalServerUsername').value = '';
+                updateConvertedPrice();
+                checkPaypalFormValidity();
+                
+                document.getElementById('paypalEmail').addEventListener('input', checkPaypalFormValidity);
+                document.getElementById('paypalName').addEventListener('input', checkPaypalFormValidity);
+                document.getElementById('paypalCurrency').addEventListener('change', updateConvertedPrice);
+                document.getElementById('paypalServerName').addEventListener('input', checkPaypalFormValidity);
+                document.getElementById('paypalServerUsername').addEventListener('input', checkPaypalFormValidity);
+                setupPaypalUsernameValidation();
+            }
+        }
+
+        function updateConvertedPrice() {
+            const currency = document.getElementById('paypalCurrency').value;
+            const rate = EXCHANGE_RATES[currency];
+            const converted = (currentPriceFcfa / rate).toFixed(2);
+            document.getElementById('convertedAmount').textContent = converted;
+            document.getElementById('convertedCurrency').textContent = getCurrencySymbol(currency);
+        }
+
+        function checkPaypalFormValidity() {
+            const email = document.getElementById('paypalEmail').value;
+            const name = document.getElementById('paypalName').value;
+            const serverName = document.getElementById('paypalServerName').value;
+            const serverUsername = document.getElementById('paypalServerUsername').value;
+            const usernameValid = document.getElementById('paypalServerUsername').getAttribute('data-valid-paypal') === 'true';
+            const payButton = document.getElementById('paypalPayButton');
+            
+            if (email && email.includes('@') && name && name.length >= 2 && 
+                serverName && serverName.length >= 3 && serverName.length <= 30 &&
+                serverUsername && serverUsername.length >= 3 && serverUsername.length <= 20 &&
+                /^[a-zA-Z0-9_]+$/.test(serverUsername) && usernameValid) {
+                payButton.disabled = false;
+            } else {
+                payButton.disabled = true;
+            }
+        }
+
+        async function processPaypalPayment() {
+            const email = document.getElementById('paypalEmail').value;
+            const name = document.getElementById('paypalName').value;
+            const currency = document.getElementById('paypalCurrency').value;
+            const serverName = document.getElementById('paypalServerName').value;
+            const serverUsername = document.getElementById('paypalServerUsername').value;
+            const usernameValid = document.getElementById('paypalServerUsername').getAttribute('data-valid-paypal') === 'true';
+            
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide (3-30 caractères)'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide (3-20 caractères)"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
+            
+            const payButton = document.getElementById('paypalPayButton');
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création...';
+            
+            try {
+                const response = await fetch('/api/payment/paypal', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'server',
+                        plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
+                        server_name: serverName,
+                        server_username: serverUsername,
+                        paypal_email: email,
+                        paypal_name: name,
+                        currency: currency
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const paypalWindow = window.open(data.paypal_link, '_blank');
+                    if (paypalWindow) showToast('success', 'Redirection vers PayPal en cours...');
+                    else { showToast('info', `Cliquez ici si la redirection ne fonctionne pas: ${data.paypal_link}`); window.location.href = data.paypal_link; }
+                    closeModal('paypalPaymentModal');
+                    showToast('success', 'Demande PayPal créée ! Attendez la confirmation admin.');
+                    
+                    document.getElementById('paypalEmail').value = '';
+                    document.getElementById('paypalName').value = '';
+                    document.getElementById('paypalServerName').value = '';
+                    document.getElementById('paypalServerUsername').value = '';
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la création');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('error', 'Erreur réseau');
+            } finally {
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fab fa-paypal"></i> Payer avec PayPal';
+            }
+        }
+
+        function switchToMobilePayment() { closeModal('buyCoinsModal'); selectPaymentMethod('mobile'); openModal('paymentChoiceModal'); }
+        function switchToPaypalPayment() { closeModal('buyCoinsModal'); selectPaymentMethod('paypal'); openModal('paymentChoiceModal'); }
+
+        function showBuyCoinsModal(missingCoins) {
+            document.getElementById('missingCoinsAmount').textContent = missingCoins + ' coins';
+            openModal('buyCoinsModal');
+        }
+
+        // ===== COIN PAYMENT =====
+        async function confirmCoinPayment() {
+            const serverName = document.getElementById('serverNameInput').value;
+            const serverUsername = document.getElementById('serverUsernameInput').value;
+            const usernameValid = document.getElementById('serverUsernameInput').getAttribute('data-valid') === 'true';
+            
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
+
+            const confirmBtn = document.getElementById('confirmCoinBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+            try {
+                const response = await fetch('/api/create-server', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
+                        server_name: serverName,
+                        server_username: serverUsername,
+                        payment_method: 'coins'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal('coinsConfirmModal');
+                    showSuccessModal({
+                        server_name: serverName,
+                        username: data.credentials.username,
+                        password: data.credentials.password,
+                        panel_url: data.credentials.panel_url,
+                        identifier: data.credentials.identifier,
+                        expires_at: data.server.expires_at
+                    });
+                    showToast('success', 'Serveur créé !');
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmer';
+            }
+        }
+
+        // ===== MOBILE PAYMENT =====
+        async function processMobilePayment() {
+            const phone = document.getElementById('mobilePhone').value;
+            const serverName = document.getElementById('mobileServerName').value;
+            const serverUsername = document.getElementById('mobileServerUsername').value;
+            const usernameValid = document.getElementById('mobileServerUsername').getAttribute('data-valid') === 'true';
+            
+            if (!phone || phone.length !== 9) { showToast('error', 'Numéro invalide'); return; }
+            if (!serverName || serverName.length < 3 || serverName.length > 30) { showToast('error', 'Nom de serveur invalide'); return; }
+            if (!serverUsername || serverUsername.length < 3 || serverUsername.length > 20) { showToast('error', "Nom d'utilisateur invalide"); return; }
+            if (!/^[a-zA-Z0-9_]+$/.test(serverUsername)) { showToast('error', "Lettres, chiffres et _ uniquement"); return; }
+            if (!usernameValid) { showToast('error', 'Veuillez vérifier la disponibilité du nom d\'utilisateur'); return; }
+
+            const payButton = document.getElementById('mobilePayButton');
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+            try {
+                const response = await fetch('/api/payment/direct-server', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        plan_id: selectedPlan.key,
+                        is_monthly: isYearly,
+                        phone: phone,
+                        medium: selectedMethod,
+                        server_name: serverName,
+                        server_username: serverUsername
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal('mobilePaymentModal');
+                    document.getElementById('confirmationPhone').textContent = '+237 ' + phone;
+                    openModal('confirmationModal');
+                    
+                    localStorage.setItem('pendingServer', JSON.stringify({
+                        transactionId: data.transaction_id,
+                        serverName: serverName,
+                        serverUsername: serverUsername,
+                        planKey: selectedPlan.key,
+                        isYearly: isYearly
+                    }));
+                    
+                    setTimeout(() => checkPaymentStatus(data.transId), 5000);
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            } finally {
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fas fa-lock"></i> Payer maintenant';
+            }
+        }
+
+        async function checkPaymentStatus(transId) {
+            try {
+                const response = await fetch(`/api/payment/status/${transId}`);
+                const data = await response.json();
+
+                if (data.success && data.status === 'SUCCESSFUL') {
+                    const pending = JSON.parse(localStorage.getItem('pendingServer'));
+                    if (pending) {
+                        const createResponse = await fetch('/api/create-server', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                plan_id: pending.planKey,
+                                is_monthly: pending.isYearly,
+                                server_name: pending.serverName,
+                                server_username: pending.serverUsername,
+                                transaction_id: pending.transactionId,
+                                payment_method: 'fcfa'
+                            })
+                        });
+                        
+                        const createData = await createResponse.json();
+                        if (createData.success) {
+                            localStorage.removeItem('pendingServer');
+                            closeModal('confirmationModal');
+                            showSuccessModal({
+                                server_name: pending.serverName,
+                                username: createData.credentials.username,
+                                password: createData.credentials.password,
+                                panel_url: createData.credentials.panel_url,
+                                identifier: createData.credentials.identifier,
+                                expires_at: createData.server.expires_at
+                            });
+                            showToast('success', 'Paiement confirmé !');
+                        }
+                    }
+                } else if (data.status !== 'FAILED' && data.status !== 'EXPIRED') {
+                    setTimeout(() => checkPaymentStatus(transId), 5000);
+                }
+            } catch (error) {
+                console.error('Erreur vérification statut:', error);
+            }
+        }
+
+        // ===== SUCCESS MODAL =====
+        function showSuccessModal(serverData) {
+            const credentialsBox = document.getElementById('credentialsBox');
+            credentialsBox.innerHTML = `
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-server"></i> Serveur</span><span class="credential-value">${serverData.server_name}</span></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i> Utilisateur</span><span class="credential-value">${serverData.username}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.username}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i> Mot de passe</span><span class="credential-value">${serverData.password}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.password}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i> Panel</span><span class="credential-value">${serverData.panel_url}</span><button class="copy-btn" onclick="copyToClipboard('${serverData.panel_url}')"><i class="fas fa-copy"></i></button></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-id"></i> ID</span><span class="credential-value">${serverData.identifier}</span></div>
+                <div class="credential-item"><span class="credential-label"><i class="fas fa-calendar"></i> Expire le</span><span class="credential-value">${new Date(serverData.expires_at).toLocaleDateString('fr-FR')}</span></div>
+            `;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function closeSuccessModal() { document.getElementById('successModal').classList.remove('active'); }
+
+        function copyToClipboard(text) { navigator.clipboard.writeText(text); showToast('success', 'Copié !'); }
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        // ===== LOGOUT =====
+        document.getElementById('logoutLink')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            AvatarManager.reset();
+            window.location.reload();
+        });
+
+        // ===== INIT =====
+        displayPlans();
+        displayCoinPacks();
+        checkAuth();
+        setupAvatarClickRedirect();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const planParam = urlParams.get('plan');
+        if (planParam && token) selectPlan(planParam);
+
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.pricing-card, .coin-pack').forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Exposer les fonctions globalement
+        window.selectPlan = selectPlan;
+        window.buyCoins = buyCoins;
+        window.selectPaymentMethod = selectPaymentMethod;
+        window.selectModalMethod = selectModalMethod;
+        window.selectMobileMethod = selectMobileMethod;
+        window.proceedWithPayment = proceedWithPayment;
+        window.confirmCoinPayment = confirmCoinPayment;
+        window.processMobilePayment = processMobilePayment;
+        window.processPaypalPayment = processPaypalPayment;
+        window.switchToMobilePayment = switchToMobilePayment;
+        window.switchToPaypalPayment = switchToPaypalPayment;
+        window.updateConvertedPrice = updateConvertedPrice;
+        window.checkPaypalFormValidity = checkPaypalFormValidity;
+        window.closeModal = closeModal;
+        window.openModal = openModal;
+        window.closeSuccessModal = closeSuccessModal;
+        window.copyToClipboard = copyToClipboard;
     </script>
 </body>
 </html>
