@@ -4489,26 +4489,6 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
     }
 });
 
-// /api/dashboard - Un seul appel pour tout
-app.get('/api/dashboard', authenticateToken, async (req, res) => {
-    try {
-        const [user, servers, activities] = await Promise.all([
-            pool.query('SELECT id, username, email, role, coins, level, daily_login_streak, last_daily_login, free_panel_created FROM profiles WHERE id = $1', [req.user.id]),
-            pool.query('SELECT * FROM servers WHERE user_id = $1 ORDER BY created_at DESC', [req.user.id]),
-            pool.query('SELECT * FROM user_activities WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10', [req.user.id])
-        ]);
-        
-        res.json({
-            success: true,
-            user: user.rows[0],
-            servers: servers.rows,
-            activities: activities.rows
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
 // =============================================
 // ENDPOINTS AVATAR (POSTGRESQL)
 // =============================================
