@@ -242,6 +242,21 @@
         .stat-label { color: var(--text-secondary); font-size: 0.8rem; }
         .stat-change { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 
+        /* ===== SKELETON LOADING ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-md);
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .skeleton-text { height: 16px; margin-bottom: 8px; }
+        .skeleton-text-small { height: 12px; width: 60%; }
+        .skeleton-avatar { width: 48px; height: 48px; border-radius: 50%; }
+        .skeleton-card { padding: 16px; }
+        .skeleton-server { height: 200px; border-radius: var(--radius-lg); margin-bottom: 16px; }
+
         /* ===== WIDGET MÉTÉO RÉELLE ===== */
         .real-weather-widget {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
@@ -292,35 +307,7 @@
         .progress-bar { height: 8px; background: var(--bg-input); border-radius: var(--radius-full); overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: var(--radius-full); transition: width 0.5s ease; position: relative; }
         .progress-fill.animated::after { content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         .empty-goals { text-align: center; padding: 20px; color: var(--text-secondary); }
-
-        /* ===== SKELETON LOADING ===== */
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: skeletonShimmer 1.5s infinite;
-            border-radius: var(--radius-md);
-        }
-        @keyframes skeletonShimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .skeleton-server-card {
-            background: var(--bg-card); border-radius: var(--radius-lg); padding: 16px;
-            border: 1px solid var(--border-color); margin-bottom: 16px;
-        }
-        .skeleton-header {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-        }
-        .skeleton-title { width: 120px; height: 20px; }
-        .skeleton-status { width: 60px; height: 16px; }
-        .skeleton-body { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
-        .skeleton-info { height: 24px; }
-        .skeleton-footer { display: flex; justify-content: space-between; align-items: center; }
-        .skeleton-expiry { width: 80px; height: 16px; }
-        .skeleton-actions { display: flex; gap: 6px; }
-        .skeleton-btn { width: 32px; height: 32px; border-radius: var(--radius-md); }
 
         /* Smart Search */
         .search-overlay {
@@ -624,14 +611,14 @@
 
             <div class="notifications-panel" id="notificationsPanel">
                 <div class="notifications-header"><h3>Notifications</h3><button id="closeNotifications"><i class="fas fa-times"></i></button></div>
-                <div class="notifications-list" id="notificationsList"></div>
+                <div class="notifications-list" id="notificationsList"><div class="empty-state" style="padding: 20px;"><i class="fas fa-bell-slash"></i><p>Aucune notification</p></div></div>
             </div>
 
             <!-- Smart Search -->
             <div class="search-overlay" id="searchOverlay">
                 <div class="search-container">
                     <div class="search-input-wrapper"><i class="fas fa-search"></i><input type="text" id="smartSearchInput" placeholder="Rechercher un serveur, une page..." autocomplete="off"><span class="search-shortcut">ESC</span></div>
-                    <div class="search-results" id="searchResults"></div>
+                    <div class="search-results" id="searchResults"><div class="search-empty"><i class="fas fa-search"></i><p>Tapez pour rechercher...</p></div></div>
                 </div>
             </div>
 
@@ -653,22 +640,42 @@
                     <div class="welcome-content">
                         <h1 class="welcome-title" id="welcomeMessage">Bonjour !</h1>
                         <p class="welcome-subtitle" id="welcomeSubtitle">Bienvenue sur votre tableau de bord</p>
-                        <div class="welcome-stats" id="welcomeStats"></div>
+                        <div class="welcome-stats">
+                            <div class="welcome-stat"><i class="fas fa-coins"></i><div class="welcome-stat-info"><h4 id="welcomeCoins">0</h4><p>Coins disponibles</p></div></div>
+                            <div class="welcome-stat"><i class="fas fa-server"></i><div class="welcome-stat-info"><h4 id="welcomeServers">0</h4><p>Serveurs actifs</p></div></div>
+                            <div class="welcome-stat"><i class="fas fa-calendar"></i><div class="welcome-stat-info"><h4 id="welcomeStreak">0</h4><p>Jours de série</p></div></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Stats Cards -->
-                <div class="stats-grid focus-hide" id="statsGrid"></div>
+                <div class="stats-grid focus-hide" id="statsGrid">
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-value" id="statCoins">0</div><div class="stat-label">Coins total</div><div class="stat-change"><i class="fas fa-arrow-up"></i><span id="coinChange">+0 aujourd'hui</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-server"></i></div></div><div class="stat-value" id="statServers">0</div><div class="stat-label">Serveurs actifs</div><div class="stat-change"><i class="fas fa-clock"></i><span id="serversExpiring">0 bientôt expirés</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div></div><div class="stat-value" id="statStreak">0</div><div class="stat-label">Série de connexion</div><div class="stat-change"><i class="fas fa-gift"></i><span id="nextReward">1 coin demain🎁</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-gem"></i></div></div><div class="stat-value" id="statLevel">1</div><div class="stat-label">Niveau</div><div class="stat-change"><i class="fas fa-star"></i><span id="xpProgress">0/100 XP</span></div></div>
+                </div>
 
                 <!-- Quick Actions -->
-                <div class="quick-actions focus-hide" id="quickActions"></div>
+                <div class="quick-actions focus-hide" id="quickActions">
+                    <a href="/pricing" class="quick-action"><i class="fas fa-plus-circle"></i><h3>Nouveau serveur</h3><p>Créez un serveur</p></a>
+                    <a href="/buy-coins" class="quick-action"><i class="fas fa-coins"></i><h3>Acheter des coins</h3><p>Rechargez votre solde</p></a>
+                    <a href="#" class="quick-action" id="dailyRewardBtn"><i class="fas fa-gift"></i><h3>Récompense</h3><p id="rewardStatus">Quotidienne</p><div id="rewardCountdown" class="countdown-timer" style="display: none;"></div></a>
+                    <a href="/profile" class="quick-action"><i class="fas fa-user"></i><h3>Mon profil</h3><p>Gérez votre compte</p></a>
+                </div>
 
                 <!-- Section Serveurs (EN PREMIER) -->
                 <div class="section-header">
                     <h2><i class="fas fa-server"></i>Mes serveurs</h2>
                     <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981);"><i class="fas fa-plus-circle"></i>Nouveau serveur</a>
                 </div>
-                <div id="serversContainer"></div>
+                <div id="serversContainer">
+                    <!-- Skeleton servers -->
+                    <div class="servers-grid">
+                        <div class="skeleton skeleton-server"></div>
+                        <div class="skeleton skeleton-server"></div>
+                    </div>
+                </div>
 
                 <!-- Widget Météo Réelle (EN DEUXIÈME) -->
                 <div class="real-weather-widget focus-hide" id="realWeatherWidget">
@@ -687,12 +694,17 @@
                         <div class="goals-title"><i class="fas fa-bullseye"></i><span>Mes objectifs</span></div>
                         <button class="btn-icon" id="addGoalBtn" title="Ajouter un objectif"><i class="fas fa-plus"></i></button>
                     </div>
-                    <div class="goals-list" id="goalsList"></div>
+                    <div class="goals-list" id="goalsList">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                    </div>
                 </div>
 
                 <!-- Activité récente (EN DERNIER) -->
                 <div class="section-header focus-hide"><h2><i class="fas fa-history"></i>Activité récente</h2><div style="display: flex; gap: 8px;"><button class="btn btn-outline btn-small" id="refreshActivitiesBtn"><i class="fas fa-sync-alt"></i></button><button class="btn btn-danger btn-small" id="clearActivitiesBtn"><i class="fas fa-trash-alt"></i>Effacer</button></div></div>
-                <div class="activity-list focus-hide" id="activityContainer"></div>
+                <div class="activity-list focus-hide" id="activityContainer">
+                    <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div>
+                </div>
             </div>
         </main>
     </div>
@@ -705,6 +717,50 @@
     <div class="modal" id="goalModal"><div class="modal-content"><div class="modal-header"><h2>Nouvel objectif</h2><button class="modal-close" onclick="closeModal('goalModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="goalType" class="modal-select"><option value="coins">🎯 Atteindre X coins</option><option value="servers">🖥️ Avoir X serveurs</option><option value="streak">🔥 Série de X jours</option><option value="custom">✨ Objectif personnalisé</option></select><input type="number" id="goalTarget" class="modal-input" placeholder="Objectif" min="1"><input type="text" id="goalName" class="modal-input" placeholder="Nom" maxlength="30"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('goalModal')">Annuler</button><button class="btn btn-primary" onclick="saveGoal()">Créer</button></div></div></div>
 
     <script>
+        // ===== SYSTÈME DE CACHE LOCAL (EXPÉRIENCE APPLICATION INSTANTANÉE) =====
+        const CacheManager = {
+            // Durée de validité du cache : 5 minutes
+            CACHE_DURATION: 5 * 60 * 1000,
+            
+            // Sauvegarder des données
+            set: function(key, data) {
+                const cache = {
+                    timestamp: Date.now(),
+                    data: data
+                };
+                localStorage.setItem(key, JSON.stringify(cache));
+            },
+            
+            // Récupérer des données si valides
+            get: function(key) {
+                const cached = localStorage.getItem(key);
+                if (!cached) return null;
+                
+                try {
+                    const cache = JSON.parse(cached);
+                    const isExpired = (Date.now() - cache.timestamp) > this.CACHE_DURATION;
+                    return isExpired ? null : cache.data;
+                } catch (e) {
+                    return null;
+                }
+            },
+            
+            // Vérifier si le cache est valide
+            isValid: function(key) {
+                return this.get(key) !== null;
+            },
+            
+            // Supprimer un cache
+            remove: function(key) {
+                localStorage.removeItem(key);
+            },
+            
+            // Supprimer tous les caches du dashboard
+            clearAll: function() {
+                ['dashboard_user', 'dashboard_servers', 'dashboard_activities', 'dashboard_goals'].forEach(k => localStorage.removeItem(k));
+            }
+        };
+
         // ===== AVATAR MANAGER CORRIGÉ =====
         const AvatarManager = {
             getAvatar: async function(username) {
@@ -712,6 +768,8 @@
                 if (serverAvatar) { localStorage.setItem('user_avatar', serverAvatar); return serverAvatar; }
                 const localAvatar = localStorage.getItem('user_avatar');
                 if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             fetchFromServer: async function() {
@@ -757,38 +815,6 @@
         }
 
         const token = localStorage.getItem('token'); if (!token) location.href = '/login';
-
-        // ===== CACHE MANAGER =====
-        const CacheManager = {
-            CACHE_KEY: 'dashboard_cache',
-            CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
-            
-            get: function() {
-                try {
-                    const cached = localStorage.getItem(this.CACHE_KEY);
-                    if (!cached) return null;
-                    const data = JSON.parse(cached);
-                    if (Date.now() - data.timestamp > this.CACHE_DURATION) {
-                        localStorage.removeItem(this.CACHE_KEY);
-                        return null;
-                    }
-                    return data;
-                } catch (e) { return null; }
-            },
-            
-            set: function(user, servers, activities) {
-                try {
-                    localStorage.setItem(this.CACHE_KEY, JSON.stringify({
-                        user, servers, activities,
-                        timestamp: Date.now()
-                    }));
-                } catch (e) {}
-            },
-            
-            clear: function() {
-                localStorage.removeItem(this.CACHE_KEY);
-            }
-        };
 
         // ===== MODE FOCUS =====
         const focusBtn = document.getElementById('focusModeBtn');
@@ -854,53 +880,42 @@
 
         // ===== PLANS =====
         const PLANS = { 'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300, price: 0, coins: 0, duration: 1 }, '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 }, '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 }, '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 }, '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 } };
-        let userData = null, userServers = [], userActivities = [], currentAction = null, currentServerId = null, currentServer = null, whatsappShown = false, countdownInterval = null, isClaimingReward = false, userGoals = [];
+        let userData = null, userServers = [], currentAction = null, currentServerId = null, currentServer = null, whatsappShown = false, countdownInterval = null, isClaimingReward = false, userGoals = [];
 
-        // ===== SKELETON LOADING =====
-        function showSkeletons() {
-            // Serveurs skeletons
-            const serversContainer = document.getElementById('serversContainer');
-            serversContainer.innerHTML = `
-                <div class="servers-grid">
-                    <div class="skeleton-server-card">
-                        <div class="skeleton-header"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-status"></div></div>
-                        <div class="skeleton-body"><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div></div>
-                        <div class="skeleton-footer"><div class="skeleton skeleton-expiry"></div><div class="skeleton-actions"><div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div></div></div>
-                    </div>
-                    <div class="skeleton-server-card">
-                        <div class="skeleton-header"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-status"></div></div>
-                        <div class="skeleton-body"><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div><div class="skeleton skeleton-info"></div></div>
-                        <div class="skeleton-footer"><div class="skeleton skeleton-expiry"></div><div class="skeleton-actions"><div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div></div></div>
-                    </div>
-                </div>
-            `;
-            
-            // Activités skeletons
-            const activityContainer = document.getElementById('activityContainer');
-            activityContainer.innerHTML = `
-                <div class="activity-list">
-                    <div class="activity-item"><div class="activity-icon skeleton" style="width:36px;height:36px;border-radius:50%;"></div><div class="activity-content"><div class="skeleton" style="width:120px;height:16px;margin-bottom:8px;"></div><div class="skeleton" style="width:80px;height:12px;"></div></div></div>
-                    <div class="activity-item"><div class="activity-icon skeleton" style="width:36px;height:36px;border-radius:50%;"></div><div class="activity-content"><div class="skeleton" style="width:150px;height:16px;margin-bottom:8px;"></div><div class="skeleton" style="width:60px;height:12px;"></div></div></div>
-                    <div class="activity-item"><div class="activity-icon skeleton" style="width:36px;height:36px;border-radius:50%;"></div><div class="activity-content"><div class="skeleton" style="width:100px;height:16px;margin-bottom:8px;"></div><div class="skeleton" style="width:70px;height:12px;"></div></div></div>
-                </div>
-            `;
+        function loadGoals() { 
+            // Essayer le cache d'abord
+            const cached = CacheManager.get('dashboard_goals');
+            if (cached) { userGoals = cached; updateGoalsDisplay(); }
+            else { userGoals = [{ id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500 }, { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3 }]; }
+            saveGoals(); 
         }
-
-        function loadGoals() { const s = localStorage.getItem('kermhosting_goals'); userGoals = s ? JSON.parse(s) : [{ id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500 }, { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3 }]; saveGoals(); updateGoalsDisplay(); }
-        function saveGoals() { localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals)); }
+        function saveGoals() { 
+            localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals));
+            CacheManager.set('dashboard_goals', userGoals);
+            updateGoalsDisplay(); 
+        }
         function updateGoalsDisplay() {
-            const c = document.getElementById('goalsList'); if (!userGoals.length) { c.innerHTML = '<div class="empty-goals"><i class="fas fa-bullseye"></i><p>Aucun objectif</p></div>'; return; }
-            let h = ''; userGoals.forEach(g => { let cur = 0; if (g.type==='coins'&&userData) cur=userData.coins||0; else if (g.type==='servers') cur=userServers.length; else if (g.type==='streak'&&userData) cur=userData.daily_login_streak||0; else cur=g.current||0;
-                const p = Math.min((cur/g.target)*100,100), complete = p>=100; if (complete&&!g.completed) { g.completed=true; saveGoals(); celebrateConfetti(); }
-                h += `<div class="goal-item"><div class="goal-info"><div class="goal-name"><span>${g.name}</span><span class="goal-progress">${cur}/${g.target}</span></div><div class="progress-bar"><div class="progress-fill ${!complete?'animated':''}" style="width:${p}%;"></div></div></div><button class="btn-icon" onclick="deleteGoal('${g.id}')"><i class="fas fa-times"></i></button></div>`; });
+            const c = document.getElementById('goalsList'); 
+            if (!userGoals.length) { c.innerHTML = '<div class="empty-goals"><i class="fas fa-bullseye"></i><p>Aucun objectif</p></div>'; return; }
+            let h = ''; 
+            userGoals.forEach(g => { 
+                let cur = 0; 
+                if (g.type==='coins'&&userData) cur=userData.coins||0; 
+                else if (g.type==='servers') cur=userServers.length; 
+                else if (g.type==='streak'&&userData) cur=userData.daily_login_streak||0; 
+                else cur=g.current||0;
+                const p = Math.min((cur/g.target)*100,100), complete = p>=100; 
+                if (complete&&!g.completed) { g.completed=true; saveGoals(); celebrateConfetti(); }
+                h += `<div class="goal-item"><div class="goal-info"><div class="goal-name"><span>${g.name}</span><span class="goal-progress">${cur}/${g.target}</span></div><div class="progress-bar"><div class="progress-fill ${!complete?'animated':''}" style="width:${p}%;"></div></div></div><button class="btn-icon" onclick="deleteGoal('${g.id}')"><i class="fas fa-times"></i></button></div>`; 
+            });
             c.innerHTML = h;
         }
-        function deleteGoal(id) { userGoals = userGoals.filter(g => g.id !== id); saveGoals(); updateGoalsDisplay(); showToast('info', 'Objectif supprimé'); }
+        function deleteGoal(id) { userGoals = userGoals.filter(g => g.id !== id); saveGoals(); showToast('info', 'Objectif supprimé'); }
         function saveGoal() {
             const type = document.getElementById('goalType').value, target = parseInt(document.getElementById('goalTarget').value); let name = document.getElementById('goalName').value.trim();
             if (!target || target<1) { showToast('error', 'Objectif invalide'); return; }
             if (!name) { const names = { coins: 'coins', servers: 'serveurs', streak: 'jours', custom: 'objectif' }; name = `Atteindre ${target} ${names[type]}`; }
-            userGoals.push({ id: Date.now().toString(), name, type, target, current:0, completed:false }); saveGoals(); updateGoalsDisplay(); closeModal('goalModal'); showToast('success', 'Objectif créé !');
+            userGoals.push({ id: Date.now().toString(), name, type, target, current:0, completed:false }); saveGoals(); closeModal('goalModal'); showToast('success', 'Objectif créé !');
             document.getElementById('goalTarget').value = ''; document.getElementById('goalName').value = '';
         }
 
@@ -962,110 +977,107 @@
         function copyToClipboard(t) { navigator.clipboard.writeText(t); showToast('success','Copié !'); }
         function calculateDaysLeft(e) { if(!e) return 0; try { return Math.ceil((new Date(e)-new Date())/86400000); } catch { return 0; } }
 
-        // ===== CHARGEMENT OPTIMISÉ AVEC CACHE =====
+        // ===== CHARGEMENT DES DONNÉES AVEC CACHE (EXPÉRIENCE INSTANTANÉE) =====
         async function loadDashboardData() {
             // 1. AFFICHAGE INSTANTANÉ DU CACHE
-            const cached = CacheManager.get();
-            if (cached) {
-                userData = cached.user;
-                userServers = cached.servers || [];
-                userActivities = cached.activities || [];
-                updateUI(); // < 50ms
-            } else {
-                showSkeletons(); // Squelettes animés
+            const cachedUser = CacheManager.get('dashboard_user');
+            const cachedServers = CacheManager.get('dashboard_servers');
+            const cachedActivities = CacheManager.get('dashboard_activities');
+            
+            if (cachedUser) {
+                userData = cachedUser;
+                updateUIFromCache();
+            }
+            if (cachedServers) {
+                userServers = cachedServers;
+                displayServers();
+            }
+            if (cachedActivities) {
+                displayActivitiesFromCache(cachedActivities);
             }
             
-            // 2. RAFRAÎCHISSEMENT SILENCIEUX
-            try {
-                const res = await fetch('/api/dashboard', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                
-                if (data.success) {
-                    userData = data.user;
-                    userServers = data.servers || [];
-                    userActivities = data.activities || [];
-                    
-                    // Sauvegarde en cache
-                    CacheManager.set(userData, userServers, userActivities);
-                    
-                    updateUI(); // Mise à jour fluide
-                    
-                    const urlParams = new URLSearchParams(location.search);
-                    if (urlParams.get('create')==='free') prepareFreeServer();
-                    if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(showWhatsAppModal, 100);
-                } else {
-                    localStorage.removeItem('token');
-                    location.href = '/login';
-                }
-            } catch (error) {
-                if (!cached) {
-                    document.getElementById('serversContainer').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Erreur de connexion</h3><button class="btn btn-primary" onclick="location.reload()">Réessayer</button></div>';
-                }
-            }
+            // 2. RAFRAÎCHISSEMENT SILENCIEUX EN ARRIÈRE-PLAN
+            refreshDataInBackground();
         }
-
-        function updateUI() {
+        
+        function updateUIFromCache() {
             if (!userData) return;
-            
-            // Sidebar
             document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
             document.getElementById('sidebarUserEmail').textContent = userData.email || '';
             document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
             document.getElementById('sidebarCoins').textContent = userData.coins || 0;
-            document.getElementById('sidebarServers').textContent = userServers.length;
-            
-            // Welcome banner
             document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
-            document.getElementById('welcomeStats').innerHTML = `
-                <div class="welcome-stat"><i class="fas fa-coins"></i><div class="welcome-stat-info"><h4>${userData.coins || 0}</h4><p>Coins disponibles</p></div></div>
-                <div class="welcome-stat"><i class="fas fa-server"></i><div class="welcome-stat-info"><h4>${userServers.length}</h4><p>Serveurs actifs</p></div></div>
-                <div class="welcome-stat"><i class="fas fa-calendar"></i><div class="welcome-stat-info"><h4>${userData.daily_login_streak || 0}</h4><p>Jours de série</p></div></div>
-            `;
-            
-            // Stats grid
-            const expiring = userServers.filter(s => { const d = calculateDaysLeft(s.expires_at); return d>0 && d<=3; }).length;
-            document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-value">${userData.coins || 0}</div><div class="stat-label">Coins total</div><div class="stat-change"><i class="fas fa-arrow-up"></i><span>+0 aujourd'hui</span></div></div>
-                <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-server"></i></div></div><div class="stat-value">${userServers.length}</div><div class="stat-label">Serveurs actifs</div><div class="stat-change"><i class="fas fa-clock"></i><span>${expiring} bientôt expirés</span></div></div>
-                <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div></div><div class="stat-value">${userData.daily_login_streak || 0}</div><div class="stat-label">Série de connexion</div><div class="stat-change"><i class="fas fa-gift"></i><span>1 coin demain🎁</span></div></div>
-                <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-gem"></i></div></div><div class="stat-value">${userData.level || 1}</div><div class="stat-label">Niveau</div><div class="stat-change"><i class="fas fa-star"></i><span>0/100 XP</span></div></div>
-            `;
-            
-            // Quick actions
-            document.getElementById('quickActions').innerHTML = `
-                <a href="/pricing" class="quick-action"><i class="fas fa-plus-circle"></i><h3>Nouveau serveur</h3><p>Créez un serveur</p></a>
-                <a href="/buy-coins" class="quick-action"><i class="fas fa-coins"></i><h3>Acheter des coins</h3><p>Rechargez votre solde</p></a>
-                <a href="#" class="quick-action" id="dailyRewardBtn"><i class="fas fa-gift"></i><h3>Récompense</h3><p id="rewardStatus">Quotidienne</p><div id="rewardCountdown" class="countdown-timer" style="display: none;"></div></a>
-                <a href="/profile" class="quick-action"><i class="fas fa-user"></i><h3>Mon profil</h3><p>Gérez votre compte</p></a>
-            `;
-            
-            // Réattacher l'event listener
-            document.getElementById('dailyRewardBtn').addEventListener('click', async e => {
-                e.preventDefault(); if(isClaimingReward) return;
-                const rb=document.getElementById('dailyRewardBtn'), ri=rb.querySelector('i'), rs=document.getElementById('rewardStatus');
-                const origIcon=ri.className, origText=rs.textContent;
-                if(userData?.last_daily_login) { const r=getTimeRemaining(userData.last_daily_login); if(r!==null) { showToast('warning',`Disponible dans ${r.hours}h ${r.minutes}m`); return; } }
-                isClaimingReward=true; rb.classList.add('reward-loading'); ri.className='fas fa-spinner fa-spin'; rs.textContent='Chargement...';
-                try {
-                    const r=await fetch('/api/daily-reward', { method:'POST', headers:{ 'Authorization':`Bearer ${token}` } });
-                    const d=await r.json();
-                    if(d.success) { showToast('success',`+${d.coins} coins (série ${d.streak})`); await loadDashboardData(); celebrateConfetti(); }
-                    else { showToast('error',d.error||'Erreur'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
-                } catch(e) { showToast('error','Erreur réseau'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
-                finally { isClaimingReward=false; }
-            });
-            
-            // Notification badge
-            const badge = document.getElementById('notificationBadge');
-            if (expiring>0) { badge.textContent = expiring; badge.style.display = 'flex'; } else badge.style.display = 'none';
-            
+            document.getElementById('welcomeCoins').textContent = userData.coins || 0;
+            document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
+            document.getElementById('statCoins').textContent = userData.coins || 0;
+            document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
+            document.getElementById('statLevel').textContent = userData.level || 1;
             updateRewardButton();
-            displayServers();
-            displayActivities();
             updateGoalsDisplay();
             AvatarManager.applyToPage(userData.username);
+        }
+        
+        function displayActivitiesFromCache(activities) {
+            const c = document.getElementById('activityContainer');
+            if (!activities || !activities.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>'; return; }
+            let h = ''; 
+            activities.slice(0, 10).forEach(a => {
+                let icon = 'fa-history'; 
+                if (a.activity_type?.includes('creation')) icon = 'fa-plus-circle';
+                else if (a.activity_type?.includes('start')) icon = 'fa-play';
+                else if (a.activity_type?.includes('stop')) icon = 'fa-stop';
+                else if (a.activity_type?.includes('daily')) icon = 'fa-calendar-check';
+                else if (a.activity_type?.includes('coins')) icon = 'fa-coins';
+                h += `<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${a.description||'Action'}</div><div class="activity-time">${formatTimeAgo(a.created_at)}</div></div>${a.coins_earned!==0?`<div class="activity-coins ${a.coins_earned>0?'positive':'negative'}">${a.coins_earned>0?'+':''}${a.coins_earned}</div>`:''}</div>`;
+            });
+            c.innerHTML = h;
+        }
+        
+        async function refreshDataInBackground() {
+            try {
+                // Requêtes parallèles pour plus de rapidité
+                const [userRes, serversRes, activitiesRes] = await Promise.all([
+                    fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch('/api/servers', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch('/api/user/activities', { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+                
+                const userDataJson = await userRes.json();
+                const serversData = await serversRes.json();
+                const activitiesData = await activitiesRes.json();
+                
+                if (userDataJson.success) {
+                    userData = userDataJson.user;
+                    CacheManager.set('dashboard_user', userData);
+                    updateUIFromCache();
+                }
+                
+                if (serversData.success || serversData.servers) {
+                    userServers = serversData.servers || [];
+                    CacheManager.set('dashboard_servers', userServers);
+                    displayServers();
+                    document.getElementById('sidebarServers').textContent = userServers.length;
+                    document.getElementById('welcomeServers').textContent = userServers.length;
+                    document.getElementById('statServers').textContent = userServers.length;
+                    
+                    const expiring = userServers.filter(s => { const d = calculateDaysLeft(s.expires_at); return d>0 && d<=3; }).length;
+                    document.getElementById('serversExpiring').textContent = expiring + ' bientôt expirés';
+                    const badge = document.getElementById('notificationBadge');
+                    if (expiring>0) { badge.textContent = expiring; badge.style.display = 'flex'; } else badge.style.display = 'none';
+                }
+                
+                if (activitiesData.success) {
+                    CacheManager.set('dashboard_activities', activitiesData.activities || []);
+                    displayActivitiesFromCache(activitiesData.activities || []);
+                }
+                
+                // Préparer le serveur gratuit si nécessaire
+                if (new URLSearchParams(location.search).get('create')==='free') prepareFreeServer();
+                if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(showWhatsAppModal, 100);
+                
+            } catch (error) {
+                console.error('Erreur rafraîchissement:', error);
+            }
         }
 
         function displayServers() {
@@ -1086,16 +1098,6 @@
                 </div>`;
             });
             c.innerHTML = h + '</div>';
-        }
-
-        function displayActivities() {
-            const c = document.getElementById('activityContainer');
-            if (!userActivities || !userActivities.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>'; return; }
-            let h = ''; userActivities.slice(0, 5).forEach(a => {
-                let icon='fa-history'; if(a.activity_type?.includes('creation')) icon='fa-plus-circle'; else if(a.activity_type?.includes('start')) icon='fa-play'; else if(a.activity_type?.includes('stop')) icon='fa-stop'; else if(a.activity_type?.includes('daily')) icon='fa-calendar-check'; else if(a.activity_type?.includes('coins')) icon='fa-coins';
-                h += `<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${a.description||'Action'}</div><div class="activity-time">${formatTimeAgo(a.created_at)}</div></div>${a.coins_earned!==0?`<div class="activity-coins ${a.coins_earned>0?'positive':'negative'}">${a.coins_earned>0?'+':''}${a.coins_earned}</div>`:''}</div>`;
-            });
-            c.innerHTML = h;
         }
 
         async function showServerDetails(id) {
@@ -1131,15 +1133,30 @@
         async function loadAutoRenewStatus(id) { try { const r=await fetch(`/api/servers/${id}/auto-renew`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(d.success) document.getElementById('autoRenewToggle').checked=d.auto_renew||false; } catch(e){} }
         async function toggleAutoRenew() { if(!currentServer) return; const t=document.getElementById('autoRenewToggle'), en=t.checked; t.disabled=true; try { const r=await fetch(`/api/servers/${currentServer.id}/auto-renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({enabled:en})}); const d=await r.json(); if(d.success) showToast('success',`Auto-renouvellement ${en?'activé':'désactivé'}`); else { showToast('error',d.error||'Erreur'); t.checked=!en; } } catch(e) { showToast('error','Erreur réseau'); t.checked=!en; } finally { t.disabled=false; } }
         function renewServer() { closeModal('serverDetailsModal'); const p=PLANS[currentServer.server_type]||{name:'Inconnu',price:0,coins:0}; document.getElementById('renewServerName').textContent=currentServer.server_name||'Sans nom'; document.getElementById('renewPlan').textContent=p.name; document.getElementById('renewPrice').textContent=(p.price||0)+' FCFA'; document.getElementById('renewCoins').textContent=(p.coins||0)+' coins'; document.getElementById('renewBalance').textContent=(userData?.coins||0)+' coins'; openModal('renewModal'); }
-        async function confirmRenew() { if(!currentServer) return; const p=PLANS[currentServer.server_type]||{coins:0}; if((userData?.coins||0)<(p.coins||0)) { showToast('error','Coins insuffisants'); closeModal('renewModal'); return; } const btn=document.getElementById('renewConfirmBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>...'; try { const r=await fetch(`/api/servers/${currentServer.id}/renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({coins:p.coins})}); const d=await r.json(); if(d.success) { showToast('success','Serveur renouvelé !'); closeModal('renewModal'); loadDashboardData(); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-sync-alt"></i> Renouveler'; } }
+        async function confirmRenew() { if(!currentServer) return; const p=PLANS[currentServer.server_type]||{coins:0}; if((userData?.coins||0)<(p.coins||0)) { showToast('error','Coins insuffisants'); closeModal('renewModal'); return; } const btn=document.getElementById('renewConfirmBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>...'; try { const r=await fetch(`/api/servers/${currentServer.id}/renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({coins:p.coins})}); const d=await r.json(); if(d.success) { showToast('success','Serveur renouvelé !'); closeModal('renewModal'); refreshDataInBackground(); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-sync-alt"></i> Renouveler'; } }
         function powerAction(id, act) { const s=userServers.find(s=>s.id===id); if(s&&s.status==='suspended') { showToast('error','Serveur suspendu'); return; } currentServerId=id; currentAction=act; const titles={start:'Démarrer',stop:'Arrêter',restart:'Redémarrer'}; document.getElementById('actionTitle').textContent=titles[act]||'Action'; document.getElementById('actionMessage').textContent=`Confirmer ${(titles[act]||'action').toLowerCase()} ?`; openModal('actionModal'); }
-        async function confirmAction() { if(!currentServerId||!currentAction) return; closeModal('actionModal'); showToast('info','En cours...'); try { const r=await fetch(`/api/servers/${currentServerId}/power`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({action:currentAction})}); const d=await r.json(); if(d.success) { showToast('success','Action effectuée'); setTimeout(loadDashboardData,2000); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } currentServerId=null; currentAction=null; }
+        async function confirmAction() { if(!currentServerId||!currentAction) return; closeModal('actionModal'); showToast('info','En cours...'); try { const r=await fetch(`/api/servers/${currentServerId}/power`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({action:currentAction})}); const d=await r.json(); if(d.success) { showToast('success','Action effectuée'); setTimeout(() => refreshDataInBackground(), 2000); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } currentServerId=null; currentAction=null; }
         function toggleConsole(id) { const c=document.getElementById(`console-${id}`); if(c) c.style.display=c.style.display==='none'?'block':'none'; }
+
+        document.getElementById('dailyRewardBtn').addEventListener('click', async e => {
+            e.preventDefault(); if(isClaimingReward) return;
+            const rb=document.getElementById('dailyRewardBtn'), ri=rb.querySelector('i'), rs=document.getElementById('rewardStatus');
+            const origIcon=ri.className, origText=rs.textContent;
+            if(userData?.last_daily_login) { const r=getTimeRemaining(userData.last_daily_login); if(r!==null) { showToast('warning',`Disponible dans ${r.hours}h ${r.minutes}m`); return; } }
+            isClaimingReward=true; rb.classList.add('reward-loading'); ri.className='fas fa-spinner fa-spin'; rs.textContent='Chargement...';
+            try {
+                const r=await fetch('/api/daily-reward', { method:'POST', headers:{ 'Authorization':`Bearer ${token}` } });
+                const d=await r.json();
+                if(d.success) { showToast('success',`+${d.coins} coins (série ${d.streak})`); await refreshDataInBackground(); celebrateConfetti(); }
+                else { showToast('error',d.error||'Erreur'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            } catch(e) { showToast('error','Erreur réseau'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            finally { isClaimingReward=false; }
+        });
 
         async function loadNotifications() { const c=document.getElementById('notificationsList'), exp=userServers.filter(s=>{const d=calculateDaysLeft(s.expires_at); return d>0&&d<=3;}); let h=''; if(exp.length) h+=`<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${exp.length} serveur(s) expirent bientôt</div></div></div>`; else h='<div class="empty-state"><i class="fas fa-bell-slash"></i><p>Aucune notification</p></div>'; c.innerHTML=h; }
 
-        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => { if(!confirm('Supprimer?')) return; try { await fetch('/api/user/activities', { method:'DELETE', headers:{ 'Authorization':`Bearer ${token}` } }); showToast('success','Historique effacé'); loadDashboardData(); } catch { showToast('error','Erreur'); } });
-        document.getElementById('refreshActivitiesBtn').addEventListener('click', () => loadDashboardData());
+        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => { if(!confirm('Supprimer?')) return; try { await fetch('/api/user/activities', { method:'DELETE', headers:{ 'Authorization':`Bearer ${token}` } }); showToast('success','Historique effacé'); refreshDataInBackground(); } catch { showToast('error','Erreur'); } });
+        document.getElementById('refreshActivitiesBtn').addEventListener('click', () => refreshDataInBackground());
 
         function prepareFreeServer() { if(userData?.free_panel_created) { showToast('error','Serveur gratuit déjà utilisé'); return; } document.getElementById('planSelect').innerHTML = '<option value="free">Free - Gratuit</option>'; openModal('serverModal'); }
         async function createServer() {
@@ -1149,7 +1166,7 @@
             try {
                 const r=await fetch('/api/create-server', { method:'POST', headers:{ 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' }, body:JSON.stringify({ plan_id:plan, server_name:name, server_username:user, payment_method:plan==='free'?'free':'coins' }) });
                 const d=await r.json();
-                if(d.success) { showToast('success','Serveur créé !'); loadDashboardData(); }
+                if(d.success) { showToast('success','Serveur créé !'); refreshDataInBackground(); }
                 else showToast('error',d.error||'Erreur');
             } catch(e) { showToast('error','Erreur réseau'); }
         }
@@ -1159,12 +1176,18 @@
         document.addEventListener('click', () => document.getElementById('themeDropdown').classList.remove('active'));
         document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
 
-        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown'); CacheManager.clear(); AvatarManager.reset(); location.href = '/'; });
+        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown'); CacheManager.clearAll(); AvatarManager.reset(); location.href = '/'; });
         document.getElementById('whatsappJoinBtn').addEventListener('click', e => { e.preventDefault(); window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09','_blank'); closeWhatsAppModal(); });
         document.getElementById('whatsappLaterBtn').addEventListener('click', closeWhatsAppModal);
 
         // ===== INIT =====
-        loadGoals(); initTheme(); initSmartSearch(); loadDashboardData(); setupAvatarClickRedirect(); loadWeather(); initFocusMode();
+        loadGoals(); 
+        initTheme(); 
+        initSmartSearch(); 
+        loadDashboardData(); // ← NOUVEAU : Cache + Rafraîchissement
+        setupAvatarClickRedirect(); 
+        loadWeather(); 
+        initFocusMode();
 
         const planSelect = document.getElementById('planSelect');
         if (planSelect) { planSelect.innerHTML = '<option value="">Choisir un plan</option>'; Object.entries(PLANS).forEach(([k,p]) => { if(k!=='free') { const o=document.createElement('option'); o.value=k; o.textContent=`${p.name} - ${p.price} FCFA (${p.coins} coins)`; planSelect.appendChild(o); } }); }
