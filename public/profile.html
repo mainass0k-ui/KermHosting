@@ -36,17 +36,14 @@
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; position: relative; padding-top: var(--safe-area-inset-top); padding-bottom: var(--safe-area-inset-bottom); }
 
-        /* ===== SKELETON ===== */
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .skeleton { background: linear-gradient(90deg, #1A2332 25%, #2D3748 50%, #1A2332 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
         .skeleton-text { height: 16px; width: 100%; }
         .skeleton-text-sm { height: 12px; width: 60%; }
         .skeleton-avatar { width: 80px; height: 80px; border-radius: 50%; }
         .skeleton-badge { width: 80px; height: 30px; border-radius: 20px; }
-        .skeleton-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 16px; border: 1px solid var(--border-color); }
         .skeleton-transaction { height: 60px; margin-bottom: 8px; border-radius: var(--radius-md); }
 
-        /* ===== SIDEBAR ===== */
         .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: var(--shadow-lg); }
         .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
@@ -54,7 +51,7 @@
         .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
         .logo i { color: var(--primary); font-size: 1.5rem; }
-        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
+        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -76,7 +73,6 @@
         .stat-value { font-weight: 700; color: var(--primary); }
         .stat-label { font-size: 0.625rem; color: var(--text-secondary); }
 
-        /* ===== MAIN ===== */
         .main-content { flex: 1; width: 100%; min-width: 0; }
         .top-bar { position: sticky; top: 0; z-index: 100; background: var(--bg-sidebar); backdrop-filter: blur(10px); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
         .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
@@ -109,7 +105,7 @@
 
         .profile-body { padding: 24px 20px; }
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; overflow-x: auto; }
-        .tab { padding: 6px 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+        .tab { padding: 6px 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; white-space: nowrap; position: relative; }
         .tab.active { color: var(--primary); }
         .tab.active::after { content: ''; position: absolute; bottom: -13px; left: 0; right: 0; height: 2px; background: var(--primary); }
         .tab-pane { display: none; }
@@ -226,26 +222,24 @@
             <div class="page-content">
                 <div class="page-header"><h1 class="page-title"><span class="gradient-text">Mon profil</span></h1><p class="page-subtitle">Gérez vos informations personnelles et vos préférences</p></div>
 
-                <!-- Stats Mini Cards - SKELETONS -->
                 <div class="stats-mini-grid" id="statsContainer">
-                    <div class="stat-mini-card"><div class="skeleton skeleton-text" style="height:24px;width:40px;margin:0 auto 8px;"></div><div class="skeleton skeleton-text-sm" style="margin:0 auto;"></div></div>
-                    <div class="stat-mini-card"><div class="skeleton skeleton-text" style="height:24px;width:40px;margin:0 auto 8px;"></div><div class="skeleton skeleton-text-sm" style="margin:0 auto;"></div></div>
-                    <div class="stat-mini-card"><div class="skeleton skeleton-text" style="height:24px;width:40px;margin:0 auto 8px;"></div><div class="skeleton skeleton-text-sm" style="margin:0 auto;"></div></div>
-                    <div class="stat-mini-card"><div class="skeleton skeleton-text" style="height:24px;width:40px;margin:0 auto 8px;"></div><div class="skeleton skeleton-text-sm" style="margin:0 auto;"></div></div>
+                    <div class="stat-mini-card"><div class="stat-mini-value" id="profileCoins">0</div><div class="stat-mini-label">Coins</div></div>
+                    <div class="stat-mini-card"><div class="stat-mini-value" id="profileServers">0</div><div class="stat-mini-label">Serveurs</div></div>
+                    <div class="stat-mini-card"><div class="stat-mini-value" id="profileStreak">0</div><div class="stat-mini-label">Série</div></div>
+                    <div class="stat-mini-card"><div class="stat-mini-value" id="profileLevel">1</div><div class="stat-mini-label">Niveau</div></div>
                 </div>
 
-                <!-- Profile Card -->
                 <div class="profile-card">
                     <div class="profile-header">
                         <div class="profile-avatar">
                             <div class="avatar-large" id="profileAvatar" onclick="openAvatarModal()">
-                                <div class="skeleton-avatar" style="width:80px;height:80px;"></div>
+                                <i class="fas fa-user"></i>
                                 <span class="avatar-edit-overlay"><i class="fas fa-camera"></i></span>
                             </div>
                             <div class="avatar-info">
-                                <h2 id="profileName"><span class="skeleton skeleton-text" style="width:150px;"></span></h2>
-                                <p id="profileEmail"><span class="skeleton skeleton-text" style="width:200px;"></span></p>
-                                <p id="profileDate"><span class="skeleton skeleton-text" style="width:180px;"></span></p>
+                                <h2 id="profileName">Utilisateur</h2>
+                                <p id="profileEmail"><i class="fas fa-envelope"></i> email@example.com</p>
+                                <p id="profileDate"><i class="fas fa-calendar"></i> Membre depuis ...</p>
                             </div>
                         </div>
                     </div>
@@ -260,70 +254,76 @@
                             <div class="tab" onclick="switchTab('danger')">Zone dangereuse</div>
                         </div>
 
-                        <!-- Tab Info -->
                         <div class="tab-pane active" id="tab-info">
                             <div class="profile-section"><h3 class="section-title"><i class="fas fa-id-card"></i>Informations personnelles</h3>
                                 <div class="info-grid">
-                                    <div class="info-item"><span class="info-label"><i class="fas fa-user"></i>Nom d'utilisateur</span><span class="info-value"><span class="skeleton skeleton-text" style="width:100px;"></span></span></div>
-                                    <div class="info-item"><span class="info-label"><i class="fas fa-envelope"></i>Email</span><span class="info-value"><span class="skeleton skeleton-text" style="width:150px;"></span></span></div>
-                                    <div class="info-item"><span class="info-label"><i class="fas fa-id-badge"></i>Rôle</span><span class="info-value"><span class="skeleton skeleton-text" style="width:80px;"></span></span></div>
-                                    <div class="info-item"><span class="info-label"><i class="fas fa-calendar"></i>Membre depuis</span><span class="info-value"><span class="skeleton skeleton-text" style="width:100px;"></span></span></div>
+                                    <div class="info-item"><span class="info-label"><i class="fas fa-user"></i>Nom d'utilisateur</span><span class="info-value"><span id="infoUsername">-</span><button class="edit-btn" onclick="showEditUsernameModal()"><i class="fas fa-edit"></i></button></span></div>
+                                    <div class="info-item"><span class="info-label"><i class="fas fa-envelope"></i>Email</span><span class="info-value"><span id="infoEmail">-</span><button class="edit-btn" onclick="showEditEmailModal()"><i class="fas fa-edit"></i></button></span></div>
+                                    <div class="info-item"><span class="info-label"><i class="fas fa-id-badge"></i>Rôle</span><span class="info-value" id="infoRole">-</span></div>
+                                    <div class="info-item"><span class="info-label"><i class="fas fa-calendar"></i>Membre depuis</span><span class="info-value" id="infoDate">-</span></div>
                                 </div>
                             </div>
                             <div class="profile-section"><h3 class="section-title"><i class="fas fa-medal"></i>Badges</h3>
-                                <div class="badges-grid" id="badgesContainer">
-                                    <div class="skeleton skeleton-badge"></div>
-                                    <div class="skeleton skeleton-badge"></div>
-                                    <div class="skeleton skeleton-badge"></div>
-                                </div>
+                                <div class="badges-grid" id="badgesContainer"></div>
                             </div>
                         </div>
 
-                        <!-- Tab Security -->
                         <div class="tab-pane" id="tab-security">
                             <div class="profile-section"><h3 class="section-title"><i class="fas fa-key"></i>Clé API</h3>
-                                <div class="api-key-section"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height:40px;margin:12px 0;"></div><div class="skeleton skeleton-text" style="width:100px;height:36px;"></div></div>
+                                <div class="api-key-section">
+                                    <p style="color:var(--text-secondary);font-size:0.9rem;">Utilisée pour accéder à l'API. Gardez-la secrète.</p>
+                                    <div class="api-key-display"><span class="api-key-text" id="apiKey">••••••••••••</span><div class="api-key-actions"><button class="edit-btn" onclick="toggleApiKey()"><i class="fas fa-eye" id="apiKeyIcon"></i></button><button class="edit-btn" onclick="copyApiKey()"><i class="fas fa-copy"></i></button></div></div>
+                                    <button class="btn btn-outline btn-small" onclick="regenerateApiKey()"><i class="fas fa-sync-alt"></i>Régénérer</button>
+                                </div>
+                            </div>
+                            <div class="profile-section"><h3 class="section-title"><i class="fas fa-lock"></i>Mot de passe</h3>
+                                <button class="btn btn-outline" onclick="showChangePasswordModal()"><i class="fas fa-edit"></i>Changer le mot de passe</button>
                             </div>
                         </div>
 
-                        <!-- Tab Transactions -->
                         <div class="tab-pane" id="tab-transactions">
-                            <div class="transactions-list" id="transactionsContainer">
-                                <div class="skeleton skeleton-transaction"></div>
-                                <div class="skeleton skeleton-transaction"></div>
-                                <div class="skeleton skeleton-transaction"></div>
-                            </div>
+                            <div class="transactions-list" id="transactionsContainer"></div>
+                            <div id="transactionsPagination"></div>
                         </div>
 
-                        <!-- Tab Referrals -->
                         <div class="tab-pane" id="tab-referrals">
                             <div class="profile-section"><h3 class="section-title"><i class="fas fa-gift"></i>Votre lien de parrainage</h3>
-                                <div class="api-key-section"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height:40px;margin:12px 0;"></div></div>
+                                <div class="api-key-section">
+                                    <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:12px;">10 coins par filleul !</p>
+                                    <div class="api-key-display"><span class="api-key-text" id="referralLink">chargement...</span><button class="edit-btn" onclick="copyReferralLink()"><i class="fas fa-copy"></i></button></div>
+                                    <div class="qr-code-section"><div class="social-share-title"><i class="fas fa-qrcode"></i>Scanner pour rejoindre</div><div class="qr-code-container"><div id="qrcode"></div></div><div class="qr-code-actions"><button class="btn btn-outline btn-small" onclick="downloadQRCode()"><i class="fas fa-download"></i>Télécharger</button></div></div>
+                                    <div class="social-share-section"><div class="social-share-title"><i class="fas fa-share-alt"></i>Partager mon lien</div><div class="social-share-buttons" id="socialShareButtons"></div></div>
+                                    <div class="info-grid" style="margin-top:16px;"><div class="info-item"><span class="info-label">Personnes parrainées</span><span class="info-value" id="referralCount">0</span></div><div class="info-item"><span class="info-label">Coins gagnés</span><span class="info-value" id="referralCoins">0</span></div></div>
+                                </div>
+                            </div>
+                            <div class="profile-section"><h3 class="section-title"><i class="fas fa-users"></i>Liste des filleuls</h3>
+                                <div class="transactions-list" id="referralsList"></div>
+                                <div class="pagination" id="referralsPagination"></div>
                             </div>
                         </div>
 
-                        <!-- Tab Connections -->
                         <div class="tab-pane" id="tab-connections">
                             <div class="profile-section">
-                                <div class="connection-header"><h3 class="section-title"><i class="fas fa-history"></i>Historique de connexion</h3></div>
-                                <div id="connectionHistoryContainer">
-                                    <div class="skeleton skeleton-text" style="height:50px;margin-bottom:8px;"></div>
-                                    <div class="skeleton skeleton-text" style="height:50px;margin-bottom:8px;"></div>
+                                <div class="connection-header"><h3 class="section-title"><i class="fas fa-history"></i>Historique de connexion</h3>
+                                    <button class="btn btn-danger-outline btn-small" onclick="logoutAllSessions()"><i class="fas fa-sign-out-alt"></i>Déconnecter partout</button>
+                                </div>
+                                <div id="connectionHistoryContainer"></div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="tab-export">
+                            <div class="profile-section"><h3 class="section-title"><i class="fas fa-download"></i>Export de vos données</h3>
+                                <div class="api-key-section"><p style="color:var(--text-secondary);margin-bottom:16px;">Téléchargez toutes vos données au format JSON.</p>
+                                    <button class="btn btn-primary" onclick="exportUserData()"><i class="fas fa-file-export"></i>Exporter mes données (JSON)</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Tab Export -->
-                        <div class="tab-pane" id="tab-export">
-                            <div class="profile-section"><h3 class="section-title"><i class="fas fa-download"></i>Export de vos données</h3>
-                                <div class="api-key-section"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="width:200px;height:40px;margin-top:16px;"></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Tab Danger -->
                         <div class="tab-pane" id="tab-danger">
                             <div class="profile-section"><h3 class="section-title" style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i>Supprimer mon compte</h3>
-                                <div class="api-key-section" style="border-color:var(--danger);"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="width:180px;height:40px;margin-top:16px;"></div></div>
+                                <div class="api-key-section" style="border-color:var(--danger);"><p style="color:var(--text-secondary);margin-bottom:16px;">Cette action est irréversible.</p>
+                                    <button class="btn btn-danger" onclick="showDeleteAccountModal()"><i class="fas fa-trash-alt"></i>Supprimer mon compte</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -479,10 +479,10 @@
             document.getElementById('sidebarUserBadge').textContent=userData.role;
             document.getElementById('sidebarCoins').textContent=userData.coins;
             document.getElementById('sidebarServers').textContent=userServers.length;
-            const pc=document.getElementById('profileCoins'); if(pc)pc.textContent=userData.coins;
-            const ps=document.getElementById('profileServers'); if(ps)ps.textContent=userServers.length;
-            const pst=document.getElementById('profileStreak'); if(pst)pst.textContent=userData.daily_login_streak||0;
-            const pl=document.getElementById('profileLevel'); if(pl)pl.textContent=userData.level||1;
+            document.getElementById('profileCoins').textContent=userData.coins;
+            document.getElementById('profileServers').textContent=userServers.length;
+            document.getElementById('profileStreak').textContent=userData.daily_login_streak||0;
+            document.getElementById('profileLevel').textContent=userData.level||1;
             document.getElementById('profileName').textContent=userData.username;
             document.getElementById('profileEmail').innerHTML=`<i class="fas fa-envelope"></i> ${userData.email}`;
             const d=new Date(userData.account_created||userData.created_at);
