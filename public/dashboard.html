@@ -650,16 +650,14 @@
                     <a href="/profile" class="quick-action"><i class="fas fa-user"></i><h3>Mon profil</h3><p>Gérez votre compte</p></a>
                 </div>
 
-                <!-- Section Serveurs -->
+                <!-- Section Serveurs (EN PREMIER) -->
                 <div class="section-header">
                     <h2><i class="fas fa-server"></i>Mes serveurs</h2>
                     <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981);"><i class="fas fa-plus-circle"></i>Nouveau serveur</a>
                 </div>
-                <div id="serversContainer">
-                    <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement de vos serveurs...</p></div>
-                </div>
+                <div id="serversContainer"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div></div>
 
-                <!-- Widget Météo Réelle -->
+                <!-- Widget Météo Réelle (EN DEUXIÈME) -->
                 <div class="real-weather-widget focus-hide" id="realWeatherWidget">
                     <div class="real-weather-header">
                         <div class="real-weather-title"><i class="fas fa-cloud-sun"></i><span>Météo</span></div>
@@ -670,7 +668,7 @@
                     </div>
                 </div>
 
-                <!-- Objectifs -->
+                <!-- Objectifs (EN TROISIÈME) -->
                 <div class="goals-widget focus-hide">
                     <div class="goals-header">
                         <div class="goals-title"><i class="fas fa-bullseye"></i><span>Mes objectifs</span></div>
@@ -679,11 +677,9 @@
                     <div class="goals-list" id="goalsList"></div>
                 </div>
 
-                <!-- Activité récente -->
+                <!-- Activité récente (EN DERNIER) -->
                 <div class="section-header focus-hide"><h2><i class="fas fa-history"></i>Activité récente</h2><div style="display: flex; gap: 8px;"><button class="btn btn-outline btn-small" id="refreshActivitiesBtn"><i class="fas fa-sync-alt"></i></button><button class="btn btn-danger btn-small" id="clearActivitiesBtn"><i class="fas fa-trash-alt"></i>Effacer</button></div></div>
-                <div class="activity-list focus-hide" id="activityContainer">
-                    <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement des activités...</p></div>
-                </div>
+                <div class="activity-list focus-hide" id="activityContainer"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div></div>
             </div>
         </main>
     </div>
@@ -893,91 +889,33 @@
         function copyToClipboard(t) { navigator.clipboard.writeText(t); showToast('success','Copié !'); }
         function calculateDaysLeft(e) { if(!e) return 0; try { return Math.ceil((new Date(e)-new Date())/86400000); } catch { return 0; } }
 
-        // ===== CHARGEMENT DES DONNÉES (VERSION CORRIGÉE) =====
         async function loadUserData() {
-            try {
-                // 1. Afficher d'abord le cache pour une sensation de rapidité
-                const cachedUser = localStorage.getItem('cache_user');
-                const cachedServers = localStorage.getItem('cache_servers');
-                
-                if (cachedUser) {
-                    const user = JSON.parse(cachedUser);
-                    document.getElementById('sidebarUserName').textContent = user.username || 'Utilisateur';
-                    document.getElementById('sidebarUserEmail').textContent = user.email || '';
-                    document.getElementById('sidebarUserBadge').textContent = user.role || 'User';
-                    document.getElementById('sidebarCoins').textContent = user.coins || 0;
-                    document.getElementById('welcomeMessage').textContent = `Bonjour ${user.username || 'utilisateur'} !`;
-                    document.getElementById('welcomeCoins').textContent = user.coins || 0;
-                    document.getElementById('welcomeStreak').textContent = user.daily_login_streak || 0;
-                    document.getElementById('statCoins').textContent = user.coins || 0;
-                    document.getElementById('statStreak').textContent = user.daily_login_streak || 0;
-                    document.getElementById('statLevel').textContent = user.level || 1;
-                    AvatarManager.applyToPage(user.username);
-                }
-                
-                if (cachedServers) {
-                    const servers = JSON.parse(cachedServers);
-                    userServers = servers;
-                    displayServers();
-                    document.getElementById('sidebarServers').textContent = servers.length;
-                    document.getElementById('welcomeServers').textContent = servers.length;
-                    document.getElementById('statServers').textContent = servers.length;
-                }
-                
-                // 2. TOUJOURS faire l'appel API pour avoir les VRAIES données
-                const res = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                
-                if (data.success) {
-                    userData = data.user;
-                    userServers = data.servers || [];
-                    
-                    // Mettre à jour le cache avec les vraies données
-                    localStorage.setItem('cache_user', JSON.stringify(userData));
-                    localStorage.setItem('cache_servers', JSON.stringify(userServers));
-                    
-                    // Mettre à jour l'interface avec les VRAIES données
-                    updateUI();
-                    
-                    if (new URLSearchParams(location.search).get('create')==='free') prepareFreeServer();
-                    if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(showWhatsAppModal, 100);
-                } else {
-                    localStorage.removeItem('token');
-                    location.href = '/login';
-                }
-            } catch (error) {
-                showToast('error', 'Erreur de chargement');
-            }
+            try { const r = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } }); const d = await r.json();
+                if (d.success) { userData = d.user; userServers = d.servers || []; updateUI(); if (new URLSearchParams(location.search).get('create')==='free') prepareFreeServer(); if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(showWhatsAppModal, 100); }
+                else { localStorage.removeItem('token'); location.href = '/login'; }
+            } catch { showToast('error', 'Erreur chargement'); }
         }
 
         function updateUI() {
             if (!userData) return;
-            
             document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
             document.getElementById('sidebarUserEmail').textContent = userData.email || '';
             document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
             document.getElementById('sidebarCoins').textContent = userData.coins || 0;
             document.getElementById('sidebarServers').textContent = userServers.length;
-            
             document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
             document.getElementById('welcomeCoins').textContent = userData.coins || 0;
             document.getElementById('welcomeServers').textContent = userServers.length;
             document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
-            
             document.getElementById('statCoins').textContent = userData.coins || 0;
             document.getElementById('statServers').textContent = userServers.length;
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
-            
             const expiring = userServers.filter(s => { const d = calculateDaysLeft(s.expires_at); return d>0 && d<=3; }).length;
             document.getElementById('serversExpiring').textContent = expiring + ' bientôt expirés';
             const badge = document.getElementById('notificationBadge');
             if (expiring>0) { badge.textContent = expiring; badge.style.display = 'flex'; } else badge.style.display = 'none';
-            
-            updateRewardButton();
-            displayServers();
-            loadActivities();
-            updateGoalsDisplay();
+            updateRewardButton(); displayServers(); loadActivities(); updateGoalsDisplay();
             AvatarManager.applyToPage(userData.username);
         }
 
@@ -1092,7 +1030,7 @@
         document.addEventListener('click', () => document.getElementById('themeDropdown').classList.remove('active'));
         document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
 
-        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); localStorage.removeItem('cache_user'); localStorage.removeItem('cache_servers'); sessionStorage.removeItem('whatsapp_shown'); AvatarManager.reset(); location.href = '/'; });
+        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown'); AvatarManager.reset(); location.href = '/'; });
         document.getElementById('whatsappJoinBtn').addEventListener('click', e => { e.preventDefault(); window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09','_blank'); closeWhatsAppModal(); });
         document.getElementById('whatsappLaterBtn').addEventListener('click', closeWhatsAppModal);
 
