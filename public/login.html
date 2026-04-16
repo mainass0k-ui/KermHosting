@@ -11,11 +11,10 @@
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Cloudflare Turnstile -->
@@ -110,7 +109,6 @@
             }
         }
 
-        /* PAS DE CADRE - style épuré comme Cloudflare */
         .auth-card {
             background: transparent;
             border-radius: 0;
@@ -128,48 +126,33 @@
 
         .auth-header {
             text-align: left;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
-        /* Header avec S'inscrire à droite */
         .auth-header-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
-        /* Logo comme sur l'image - icône + texte côte à côte */
         .auth-logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 1.5rem;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
+            gap: 10px;
         }
 
-        .auth-logo-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .auth-logo-img {
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
+            object-fit: cover;
         }
 
         .auth-logo span {
+            font-size: 1.4rem;
+            font-weight: 600;
             color: var(--text-primary);
-        }
-
-        .auth-logo i {
-            display: none;
         }
 
         .signup-link {
@@ -186,15 +169,13 @@
         .auth-title {
             font-size: 1.75rem;
             font-weight: 600;
-            margin-bottom: 0;
-            background: none;
-            -webkit-background-clip: unset;
-            background-clip: unset;
+            margin-bottom: 4px;
             color: var(--text-primary);
         }
 
         .auth-subtitle {
-            display: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
         .auth-form {
@@ -210,25 +191,16 @@
             gap: 6px;
         }
 
-        .form-label {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .form-label i {
-            display: none;
-        }
-
         .form-label-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         .forgot-link {
@@ -265,6 +237,21 @@
             opacity: 0.7;
         }
 
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
         .cf-turnstile {
             display: flex;
             justify-content: flex-start;
@@ -272,7 +259,23 @@
         }
 
         .checkbox-group {
-            display: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
         }
 
         .auth-btn {
@@ -292,18 +295,8 @@
             gap: 10px;
         }
 
-        .auth-btn::before {
-            display: none;
-        }
-
         .auth-btn:hover {
             background: var(--primary-dark);
-            transform: none;
-            box-shadow: none;
-        }
-
-        .auth-btn i {
-            font-size: 1rem;
         }
 
         .auth-btn:disabled {
@@ -330,15 +323,10 @@
             font-weight: 600;
         }
 
-        .auth-links a::after {
-            display: none;
-        }
-
         .auth-links a:hover {
             color: var(--primary-light);
         }
 
-        /* Footer avec mention légale */
         .auth-footer {
             text-align: center;
             margin-top: 24px;
@@ -412,14 +400,6 @@
             to { transform: rotate(360deg); }
         }
 
-        .forgot-password {
-            display: none;
-        }
-
-        .captcha-badge-status {
-            display: none;
-        }
-
         .floating-shape {
             position: fixed;
             width: 300px;
@@ -441,21 +421,6 @@
             bottom: -100px;
             right: -100px;
             background: var(--secondary);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
         }
 
         @media (max-width: 480px) {
@@ -480,25 +445,22 @@
             <div class="auth-header">
                 <div class="auth-header-top">
                     <div class="auth-logo">
-                        <div class="auth-logo-icon">
-                            <i class="fas fa-cloud"></i>
-                        </div>
+                        <img src="https://files.catbox.moe/d66qx0.jpeg" alt="KermHosting" class="auth-logo-img">
                         <span>KermHosting</span>
                     </div>
                     <a href="/register" class="signup-link">S'inscrire</a>
                 </div>
-                <h1 class="auth-title">Se connecter à KermHosting</h1>
+                <h1 class="auth-title">Content de vous revoir !</h1>
+                <p class="auth-subtitle">Connectez-vous pour gérer vos serveurs</p>
             </div>
 
             <div id="messageContainer"></div>
 
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
-                    <div class="form-label">
-                        <span class="form-label-row">
-                            <span>E-mail ou Nom d'utilisateur</span>
-                            <a href="/forgot-password" class="forgot-link">E-mail oublié ?</a>
-                        </span>
+                    <div class="form-label-row">
+                        <label class="form-label">E-mail ou Nom d'utilisateur</label>
+                        <a href="/forgot-password" class="forgot-link">E-mail oublié ?</a>
                     </div>
                     <input type="text" class="form-input" id="loginIdentifier" 
                            placeholder="exemple@email.com ou johndoe" required 
@@ -506,11 +468,9 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="form-label">
-                        <span class="form-label-row">
-                            <span>Mot de passe</span>
-                            <a href="/forgot-password" class="forgot-link">Mot de passe oublié ?</a>
-                        </span>
+                    <div class="form-label-row">
+                        <label class="form-label">Mot de passe</label>
+                        <a href="/forgot-password" class="forgot-link">Mot de passe oublié ?</a>
                     </div>
                     <div class="password-wrapper">
                         <input type="password" class="form-input" id="password" 
@@ -527,7 +487,10 @@
                     <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
                 </div>
 
-                <input type="checkbox" id="rememberMe" style="display: none;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Se souvenir de moi</label>
+                </div>
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
                     <span>Se connecter</span>
@@ -554,7 +517,6 @@
         let turnstileVerified = false;
         let turnstileToken = null;
 
-        // ===== DÉTECTION MAINTENANCE =====
         async function checkMaintenance() {
             try {
                 const response = await fetch('/api/maintenance/status');
@@ -731,11 +693,9 @@
 
         document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', async () => {
-            // Vérifier d'abord la maintenance
             const isMaintenance = await checkMaintenance();
             if (isMaintenance) return;
             
-            // Ensuite vérifier si déjà connecté
             const isLoggedIn = await checkAlreadyLoggedIn();
             if (!isLoggedIn) {
                 loadSavedCredentials();
