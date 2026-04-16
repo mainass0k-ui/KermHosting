@@ -16,7 +16,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Cloudflare Turnstile -->
@@ -111,59 +111,69 @@
             }
         }
 
+        /* PAS DE CADRE */
         .auth-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 28px 24px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .auth-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            display: none;
         }
 
         .auth-header {
-            text-align: center;
+            text-align: left;
             margin-bottom: 20px;
         }
 
-        .auth-logo {
-            display: inline-flex;
+        .auth-header-top {
+            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1.75rem;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
+            justify-content: space-between;
             margin-bottom: 16px;
-            padding: 0 16px 16px;
-            border-bottom: 2px solid var(--border-color);
-            position: relative;
         }
 
-        .auth-logo i {
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .auth-logo span {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .login-link {
             color: var(--primary);
-            font-size: 2.2rem;
-            filter: drop-shadow(0 0 10px var(--primary-glow));
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .login-link:hover {
+            color: var(--primary-light);
         }
 
         .auth-title {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, #fff, var(--text-secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
         .auth-subtitle {
@@ -171,11 +181,28 @@
             font-size: 0.95rem;
         }
 
+        .promo-badge {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .promo-badge i {
+            font-size: 1.1rem;
+        }
+
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            margin-bottom: 18px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -185,25 +212,16 @@
         }
 
         .form-label {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-label i {
-            color: var(--primary);
-            font-size: 1rem;
-            width: 18px;
         }
 
         .form-input {
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 11px 14px;
+            padding: 12px 14px;
             color: var(--text-primary);
             font-size: 0.95rem;
             transition: all 0.3s;
@@ -220,6 +238,21 @@
         .form-input::placeholder {
             color: var(--text-muted);
             opacity: 0.7;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
         }
 
         .password-strength {
@@ -245,16 +278,44 @@
 
         .cf-turnstile {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             margin: 6px 0;
         }
 
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 4px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .checkbox-group a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            color: var(--primary-light);
+        }
+
         .auth-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: var(--radius-full);
-            padding: 13px;
+            border-radius: var(--radius-md);
+            padding: 12px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -264,37 +325,10 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auth-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .auth-btn:hover::before {
-            left: 100%;
-        }
-
-        .auth-btn i {
-            font-size: 1.1rem;
-            transition: transform 0.3s;
-        }
-
-        .auth-btn:hover i {
-            transform: translateX(4px);
+            background: var(--primary-dark);
         }
 
         .auth-btn:disabled {
@@ -304,37 +338,40 @@
 
         .auth-links {
             text-align: center;
-            margin-top: 18px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
             color: var(--text-secondary);
+        }
+
+        .auth-links p {
+            display: inline;
+            margin: 0;
         }
 
         .auth-links a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .auth-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.3s;
         }
 
         .auth-links a:hover {
             color: var(--primary-light);
         }
 
-        .auth-links a:hover::after {
-            width: 100%;
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .legal-notice {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legal-notice a {
+            color: var(--text-secondary);
+            text-decoration: underline;
         }
 
         .message {
@@ -395,56 +432,35 @@
             to { transform: rotate(360deg); }
         }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 4px 0;
+        .floating-shape {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--primary);
+            filter: blur(100px);
+            opacity: 0.1;
+            z-index: -1;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
+        .shape-1 {
+            top: -100px;
+            left: -100px;
+            background: var(--primary);
         }
 
-        .checkbox-group label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .checkbox-group a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .promo-badge {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(124, 58, 237, 0.1));
-            border: 1px solid var(--accent);
-            border-radius: var(--radius-full);
-            padding: 10px 16px;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--accent);
-            font-size: 0.9rem;
-        }
-
-        .promo-badge i {
-            font-size: 1.1rem;
+        .shape-2 {
+            bottom: -100px;
+            right: -100px;
+            background: var(--secondary);
         }
 
         @media (max-width: 480px) {
             .auth-card {
-                padding: 22px 18px;
-            }
-            .auth-logo {
-                font-size: 1.5rem;
+                padding: 0;
             }
             .auth-title {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             .auth-btn {
                 padding: 12px;
@@ -453,12 +469,18 @@
     </style>
 </head>
 <body>
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-logo">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
+                <div class="auth-header-top">
+                    <div class="auth-logo">
+                        <img src="https://files.catbox.moe/d66qx0.jpeg" alt="KermHosting" class="auth-logo-img">
+                        <span>KermHosting</span>
+                    </div>
+                    <a href="/login" class="login-link">Se connecter</a>
                 </div>
                 <h1 class="auth-title">Rejoignez l'aventure</h1>
                 <p class="auth-subtitle">Créez votre compte et obtenez 5 coins gratuits</p>
@@ -473,10 +495,7 @@
 
             <form class="auth-form" id="registerForm">
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-user"></i>
-                        Nom d'utilisateur
-                    </label>
+                    <label class="form-label">Nom d'utilisateur</label>
                     <input type="text" class="form-input" id="username" 
                            placeholder="johndoe" required 
                            minlength="3" maxlength="20"
@@ -485,26 +504,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-envelope"></i>
-                        Adresse email
-                    </label>
+                    <label class="form-label">Adresse email</label>
                     <input type="email" class="form-input" id="email" 
                            placeholder="exemple@email.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Mot de passe
-                    </label>
-                    <div style="position: relative;">
+                    <label class="form-label">Mot de passe</label>
+                    <div class="password-wrapper">
                         <input type="password" class="form-input" id="password" 
                                placeholder="••••••••" required 
                                minlength="6">
-                        <button type="button" class="password-toggle" 
-                                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer;"
-                                onclick="togglePassword()">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
                             <i class="far fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
@@ -515,10 +526,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-gift"></i>
-                        Code de parrainage (optionnel)
-                    </label>
+                    <label class="form-label">Code de parrainage (optionnel)</label>
                     <input type="text" class="form-input" id="referral" 
                            placeholder="KERMXXXXXX">
                 </div>
@@ -544,16 +552,22 @@
                 </div>
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
-                    <span>Vérification en cours...</span>
-                    <i class="fas fa-spinner fa-pulse"></i>
+                    <span>Créer mon compte</span>
                 </button>
             </form>
 
             <div class="auth-links">
                 <p>Déjà un compte ?</p>
-                <a href="/login" style="font-size: 1.05rem;">
-                    Se connecter
-                </a>
+                <a href="/login">Se connecter</a>
+            </div>
+
+            <div class="auth-footer">
+                <div class="legal-notice">
+                    En cliquant sur Créer mon compte, j'accepte les 
+                    <a href="#">conditions</a>, la 
+                    <a href="#">politique de confidentialité</a> et la 
+                    <a href="#">politique relative aux cookies</a> de KermHosting.
+                </div>
             </div>
         </div>
     </div>
@@ -562,19 +576,15 @@
         let turnstileVerified = false;
         let turnstileToken = null;
 
-        // Callback Cloudflare Turnstile
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
             turnstileToken = token;
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
-            
-            // Pas de badge de succès
+            submitBtn.innerHTML = '<span>Créer mon compte</span>';
         };
 
-        // Vérification si déjà connecté
         async function checkAlreadyLoggedIn() {
             const token = localStorage.getItem('token');
             if (!token) return false;
@@ -701,13 +711,13 @@
                     }, 1500);
                 } else {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
+                    submitBtn.innerHTML = '<span>Créer mon compte</span>';
                     showMessage('error', data.error || 'Erreur lors de l\'inscription');
                     
                     turnstileVerified = false;
                     turnstileToken = null;
                     document.getElementById('submitBtn').disabled = true;
-                    document.getElementById('submitBtn').innerHTML = '<span>Vérification en cours...</span><i class="fas fa-spinner fa-pulse"></i>';
+                    document.getElementById('submitBtn').innerHTML = '<span>Créer mon compte</span>';
                     
                     if(window.turnstile) {
                         turnstile.reset();
@@ -715,7 +725,7 @@
                 }
             } catch (error) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Créer mon compte</span><i class="fas fa-arrow-right"></i>';
+                submitBtn.innerHTML = '<span>Créer mon compte</span>';
                 showMessage('error', 'Erreur de connexion au serveur');
             }
         });
