@@ -111,7 +111,6 @@
             }
         }
 
-        /* PAS DE CADRE */
         .auth-card {
             background: transparent;
             border-radius: 0;
@@ -278,7 +277,7 @@
 
         .cf-turnstile {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
             margin: 6px 0;
         }
 
@@ -522,7 +521,7 @@
                     <div class="password-strength">
                         <div class="strength-bar" id="strengthBar"></div>
                     </div>
-                    <div class="strength-text" id="strengthText">Minimum 6 caractères</div>
+                    <div class="strength-text" id="strengthText"></div>
                 </div>
 
                 <div class="form-group">
@@ -626,9 +625,16 @@
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
             
+            // Si le champ est vide, cacher le texte et la barre
+            if (password.length === 0) {
+                strengthBar.style.width = '0';
+                strengthText.textContent = '';
+                return;
+            }
+            
             let strength = 0;
             let color = '#EF4444';
-            let message = 'Faible';
+            let message = 'Très faible';
             
             if (password.length >= 6) strength += 1;
             if (password.length >= 8) strength += 1;
