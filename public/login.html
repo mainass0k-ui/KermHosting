@@ -110,71 +110,98 @@
             }
         }
 
+        /* PAS DE CADRE - style épuré comme Cloudflare */
         .auth-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 32px 28px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .auth-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            display: none;
         }
 
         .auth-header {
-            text-align: center;
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        /* Header avec S'inscrire à droite */
+        .auth-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 24px;
         }
 
+        /* Logo comme sur l'image - icône + texte côte à côte */
         .auth-logo {
-            display: inline-flex;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+        }
+
+        .auth-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.75rem;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: 16px;
-            padding: 0 16px 16px;
-            border-bottom: 2px solid var(--border-color);
-            position: relative;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .auth-logo span {
+            color: var(--text-primary);
         }
 
         .auth-logo i {
+            display: none;
+        }
+
+        .signup-link {
             color: var(--primary);
-            font-size: 2.2rem;
-            filter: drop-shadow(0 0 10px var(--primary-glow));
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .signup-link:hover {
+            color: var(--primary-light);
         }
 
         .auth-title {
-            font-size: 1.8rem;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, #fff, var(--text-secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: var(--text-primary);
         }
 
         .auth-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            display: none;
         }
 
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group {
@@ -184,18 +211,35 @@
         }
 
         .form-label {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-primary);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
         }
 
         .form-label i {
+            display: none;
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .forgot-link {
             color: var(--primary);
-            font-size: 1rem;
-            width: 18px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .forgot-link:hover {
+            color: var(--primary-light);
         }
 
         .form-input {
@@ -223,36 +267,20 @@
 
         .cf-turnstile {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             margin: 8px 0;
         }
 
         .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 6px 0;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            cursor: pointer;
+            display: none;
         }
 
         .auth-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: var(--radius-full);
-            padding: 14px;
+            border-radius: var(--radius-md);
+            padding: 12px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -262,37 +290,20 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            position: relative;
-            overflow: hidden;
         }
 
         .auth-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
+            display: none;
         }
 
         .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .auth-btn:hover::before {
-            left: 100%;
+            background: var(--primary-dark);
+            transform: none;
+            box-shadow: none;
         }
 
         .auth-btn i {
-            font-size: 1.1rem;
-            transition: transform 0.3s;
-        }
-
-        .auth-btn:hover i {
-            transform: translateX(4px);
+            font-size: 1rem;
         }
 
         .auth-btn:disabled {
@@ -302,41 +313,45 @@
 
         .auth-links {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
             color: var(--text-secondary);
+        }
+
+        .auth-links p {
+            display: inline;
+            margin: 0;
         }
 
         .auth-links a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
-            position: relative;
         }
 
         .auth-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.3s;
+            display: none;
         }
 
         .auth-links a:hover {
             color: var(--primary-light);
         }
 
-        .auth-links a:hover::after {
-            width: 100%;
+        /* Footer avec mention légale */
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
         }
 
-        .auth-links p {
-            margin: 10px 0;
+        .legal-notice {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legal-notice a {
+            color: var(--text-secondary);
+            text-decoration: underline;
         }
 
         .message {
@@ -398,40 +413,11 @@
         }
 
         .forgot-password {
-            text-align: right;
-            margin-top: 2px;
-        }
-
-        .forgot-password a {
-            color: var(--primary);
-            font-size: 0.8rem;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .forgot-password a:hover {
-            color: var(--primary-light);
+            display: none;
         }
 
         .captcha-badge-status {
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .captcha-waiting-badge {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: var(--shadow-sm);
+            display: none;
         }
 
         .floating-shape {
@@ -457,22 +443,30 @@
             background: var(--secondary);
         }
 
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
         @media (max-width: 480px) {
             .auth-card {
-                padding: 24px 20px;
-            }
-            .auth-logo {
-                font-size: 1.5rem;
+                padding: 0;
             }
             .auth-title {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             .auth-btn {
                 padding: 13px;
-            }
-            .captcha-badge-status {
-                bottom: 10px;
-                right: 10px;
             }
         }
     </style>
@@ -484,39 +478,45 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-logo">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
+                <div class="auth-header-top">
+                    <div class="auth-logo">
+                        <div class="auth-logo-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <span>KermHosting</span>
+                    </div>
+                    <a href="/register" class="signup-link">S'inscrire</a>
                 </div>
-                <h1 class="auth-title">Content de vous revoir !</h1>
-                <p class="auth-subtitle">Connectez-vous pour gérer vos serveurs</p>
+                <h1 class="auth-title">Se connecter à KermHosting</h1>
             </div>
 
             <div id="messageContainer"></div>
 
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-user"></i>
-                        Email ou Nom d'utilisateur
-                    </label>
+                    <div class="form-label">
+                        <span class="form-label-row">
+                            <span>E-mail ou Nom d'utilisateur</span>
+                            <a href="/forgot-password" class="forgot-link">E-mail oublié ?</a>
+                        </span>
+                    </div>
                     <input type="text" class="form-input" id="loginIdentifier" 
                            placeholder="exemple@email.com ou johndoe" required 
                            autocomplete="username">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-lock"></i>
-                        Mot de passe
-                    </label>
-                    <div style="position: relative;">
+                    <div class="form-label">
+                        <span class="form-label-row">
+                            <span>Mot de passe</span>
+                            <a href="/forgot-password" class="forgot-link">Mot de passe oublié ?</a>
+                        </span>
+                    </div>
+                    <div class="password-wrapper">
                         <input type="password" class="form-input" id="password" 
                                placeholder="••••••••" required 
                                autocomplete="current-password">
-                        <button type="button" class="password-toggle" 
-                                style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer;"
-                                onclick="togglePassword()">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
                             <i class="far fa-eye" id="toggleIcon"></i>
                         </button>
                     </div>
@@ -527,38 +527,26 @@
                     <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe">Se souvenir de moi</label>
-                </div>
-
-                <div class="forgot-password">
-                    <a href="/forgot-password">Mot de passe oublié ?</a>
-                </div>
+                <input type="checkbox" id="rememberMe" style="display: none;">
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
-                    <span>Vérification en cours...</span>
-                    <i class="fas fa-spinner fa-pulse"></i>
+                    <span>Se connecter</span>
                 </button>
             </form>
 
             <div class="auth-links">
-                <p>Pas encore de compte ?</p>
-                <a href="/register" style="font-size: 1.05rem;">
-                    Créer un compte gratuitement
-                </a>
-                <p style="margin-top: 16px; font-size: 0.8rem;">
-                    En vous connectant, vous acceptez nos 
-                    <a href="#">conditions d'utilisation</a>
-                </p>
+                <p>Vous ne possédez pas de compte ?</p>
+                <a href="/register">S'inscrire</a>
             </div>
-        </div>
-    </div>
 
-    <div class="captcha-badge-status" id="captchaBadge">
-        <div class="captcha-waiting-badge">
-            <i class="fas fa-shield-alt"></i>
-            <span>Vérification en attente...</span>
+            <div class="auth-footer">
+                <div class="legal-notice">
+                    En cliquant sur Continuer, j'accepte les 
+                    <a href="#">conditions</a>, la 
+                    <a href="#">politique de confidentialité</a> et la 
+                    <a href="#">politique relative aux cookies</a> de KermHosting.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -588,9 +576,7 @@
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
-            
-            // Le badge reste en "Vérification en attente..." (pas de changement)
+            submitBtn.innerHTML = '<span>Se connecter</span>';
         };
 
         async function checkAlreadyLoggedIn() {
@@ -716,7 +702,7 @@
                     }, 1000);
                 } else {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
+                    submitBtn.innerHTML = '<span>Se connecter</span>';
                     
                     if (data.requiresVerification) {
                         showMessage('info', 'Email non vérifié. Redirection...');
@@ -729,7 +715,7 @@
                         turnstileVerified = false;
                         turnstileToken = null;
                         document.getElementById('submitBtn').disabled = true;
-                        document.getElementById('submitBtn').innerHTML = '<span>Vérification en cours...</span><i class="fas fa-spinner fa-pulse"></i>';
+                        document.getElementById('submitBtn').innerHTML = '<span>Se connecter</span>';
                         
                         if(window.turnstile) {
                             turnstile.reset();
@@ -738,7 +724,7 @@
                 }
             } catch (error) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Se connecter</span><i class="fas fa-arrow-right"></i>';
+                submitBtn.innerHTML = '<span>Se connecter</span>';
                 showMessage('error', 'Erreur de connexion au serveur');
             }
         });
