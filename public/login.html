@@ -425,40 +425,6 @@
             background: var(--secondary);
         }
 
-        /* Style pour le sélecteur de langue */
-        .language-switcher {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 10000;
-            background: rgba(26, 35, 50, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 50px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-        }
-        .language-switcher button {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 6px 12px;
-            margin: 0 4px;
-            border-radius: 30px;
-            transition: all 0.2s;
-        }
-        .language-switcher button:hover {
-            color: var(--text-primary);
-            background: var(--bg-hover);
-        }
-        .language-switcher button.active {
-            background: var(--primary);
-            color: white;
-        }
-
         @media (max-width: 480px) {
             .auth-card {
                 padding: 0;
@@ -469,27 +435,12 @@
             .auth-btn {
                 padding: 13px;
             }
-            .language-switcher {
-                bottom: 12px;
-                left: 12px;
-                padding: 5px 12px;
-            }
-            .language-switcher button {
-                padding: 4px 8px;
-                font-size: 12px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
-
-    <!-- Sélecteur de langue -->
-    <div class="language-switcher">
-        <button id="btnFr" class="active">🇫🇷 Français</button>
-        <button id="btnEn">🇬🇧 English</button>
-    </div>
 
     <div class="auth-container">
         <div class="auth-card">
@@ -499,10 +450,10 @@
                         <img src="https://files.catbox.moe/d66qx0.jpeg" alt="KermHosting" class="auth-logo-img">
                         <span>KermHosting</span>
                     </div>
-                    <a href="/register" class="signup-link" id="signupLink">S'inscrire</a>
+                    <a href="/register" class="signup-link">S'inscrire</a>
                 </div>
-                <h1 class="auth-title" id="title">Content de vous revoir !</h1>
-                <p class="auth-subtitle" id="subtitle">Connectez-vous pour gérer vos serveurs</p>
+                <h1 class="auth-title">Content de vous revoir !</h1>
+                <p class="auth-subtitle">Connectez-vous pour gérer vos serveurs</p>
             </div>
 
             <div id="messageContainer"></div>
@@ -510,8 +461,8 @@
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
                     <div class="form-label-row">
-                        <label class="form-label" id="emailLabel">E-mail ou Nom d'utilisateur</label>
-                        <a href="/forgot-password" class="forgot-link" id="emailForgot">E-mail oublié ?</a>
+                        <label class="form-label">E-mail ou Nom d'utilisateur</label>
+                        <a href="/forgot-password" class="forgot-link">E-mail oublié ?</a>
                     </div>
                     <input type="text" class="form-input" id="loginIdentifier" 
                            placeholder="exemple@email.com ou johndoe" required 
@@ -520,8 +471,8 @@
 
                 <div class="form-group">
                     <div class="form-label-row">
-                        <label class="form-label" id="passwordLabel">Mot de passe</label>
-                        <a href="/forgot-password" class="forgot-link" id="passwordForgot">Mot de passe oublié ?</a>
+                        <label class="form-label">Mot de passe</label>
+                        <a href="/forgot-password" class="forgot-link">Mot de passe oublié ?</a>
                     </div>
                     <div class="password-wrapper">
                         <input type="password" class="form-input" id="password" 
@@ -540,21 +491,21 @@
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe" id="rememberLabel">Se souvenir de moi</label>
+                    <label for="rememberMe">Se souvenir de moi</label>
                 </div>
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
-                    <span id="loginBtnText">Se connecter</span>
+                    <span>Se connecter</span>
                 </button>
             </form>
 
             <div class="auth-links">
-                <p id="noAccountText">Vous ne possédez pas de compte ?</p>
-                <a href="/register" id="signupFooterLink">S'inscrire</a>
+                <p>Vous ne possédez pas de compte ?</p>
+                <a href="/register">S'inscrire</a>
             </div>
 
             <div class="auth-footer">
-                <div class="legal-notice" id="legalNotice">
+                <div class="legal-notice">
                     En cliquant sur Continuer, j'accepte les 
                     <a href="#">conditions</a>, la 
                     <a href="#">politique de confidentialité</a> et la 
@@ -567,112 +518,6 @@
     <script>
         let turnstileVerified = false;
         let turnstileToken = null;
-        let currentLang = 'fr';
-
-        // Dictionnaire des traductions
-        const translations = {
-            en: {
-                // Header
-                signupLink: 'Sign up',
-                title: 'Welcome back!',
-                subtitle: 'Log in to manage your servers',
-                
-                // Form
-                emailLabel: 'Email or Username',
-                emailForgot: 'Forgot email?',
-                passwordLabel: 'Password',
-                passwordForgot: 'Forgot password?',
-                emailPlaceholder: 'example@email.com or johndoe',
-                passwordPlaceholder: '••••••••',
-                rememberLabel: 'Remember me',
-                loginBtn: 'Log in',
-                loginProcessing: 'Logging in',
-                
-                // Footer
-                noAccountText: 'Don\'t have an account?',
-                signupLink: 'Sign up',
-                legalText: 'By clicking Continue, I accept the terms, privacy policy and cookies policy of KermHosting.',
-                
-                // Messages
-                errorIdentifier: 'Please enter your email or username',
-                errorTurnstile: 'Please complete the verification',
-                errorCredentials: 'Incorrect email or password',
-                errorServer: 'Connection error',
-                successLogin: 'Login successful! Redirecting...',
-                infoVerification: 'Email not verified. Redirecting...'
-            },
-            fr: {
-                // Header
-                signupLink: 'S\'inscrire',
-                title: 'Content de vous revoir !',
-                subtitle: 'Connectez-vous pour gérer vos serveurs',
-                
-                // Form
-                emailLabel: 'E-mail ou Nom d\'utilisateur',
-                emailForgot: 'E-mail oublié ?',
-                passwordLabel: 'Mot de passe',
-                passwordForgot: 'Mot de passe oublié ?',
-                emailPlaceholder: 'exemple@email.com ou johndoe',
-                passwordPlaceholder: '••••••••',
-                rememberLabel: 'Se souvenir de moi',
-                loginBtn: 'Se connecter',
-                loginProcessing: 'Connexion en cours',
-                
-                // Footer
-                noAccountText: 'Vous ne possédez pas de compte ?',
-                signupLink: 'S\'inscrire',
-                legalText: 'En cliquant sur Continuer, j\'accepte les conditions, la politique de confidentialité et la politique relative aux cookies de KermHosting.',
-                
-                // Messages
-                errorIdentifier: 'Veuillez entrer votre email ou nom d\'utilisateur',
-                errorTurnstile: 'Veuillez compléter la vérification',
-                errorCredentials: 'Identifiant ou mot de passe incorrect',
-                errorServer: 'Erreur de connexion au serveur',
-                successLogin: 'Connexion réussie ! Redirection...',
-                infoVerification: 'Email non vérifié. Redirection...'
-            }
-        };
-
-        function switchLanguage(lang) {
-            currentLang = lang;
-            const t = translations[lang];
-            
-            // Mettre à jour tous les textes
-            document.getElementById('signupLink').innerText = t.signupLink;
-            document.getElementById('title').innerText = t.title;
-            document.getElementById('subtitle').innerText = t.subtitle;
-            document.getElementById('emailLabel').innerText = t.emailLabel;
-            document.getElementById('emailForgot').innerText = t.emailForgot;
-            document.getElementById('passwordLabel').innerText = t.passwordLabel;
-            document.getElementById('passwordForgot').innerText = t.passwordForgot;
-            document.getElementById('rememberLabel').innerText = t.rememberLabel;
-            document.getElementById('loginBtnText').innerText = t.loginBtn;
-            document.getElementById('noAccountText').innerText = t.noAccountText;
-            document.getElementById('signupFooterLink').innerText = t.signupLink;
-            document.getElementById('legalNotice').innerHTML = t.legalText;
-            
-            // Mettre à jour les placeholders
-            document.getElementById('loginIdentifier').placeholder = t.emailPlaceholder;
-            document.getElementById('password').placeholder = t.passwordPlaceholder;
-            
-            // Mettre à jour le style des boutons
-            document.getElementById('btnFr').classList.remove('active');
-            document.getElementById('btnEn').classList.remove('active');
-            document.getElementById(lang === 'fr' ? 'btnFr' : 'btnEn').classList.add('active');
-            
-            // Sauvegarder le choix
-            localStorage.setItem('user_lang', lang);
-        }
-
-        // Événements des boutons de langue
-        document.getElementById('btnFr').addEventListener('click', () => switchLanguage('fr'));
-        document.getElementById('btnEn').addEventListener('click', () => switchLanguage('en'));
-
-        // Restaurer la langue sauvegardée
-        const savedLang = localStorage.getItem('user_lang');
-        if (savedLang && savedLang === 'en') {
-            switchLanguage('en');
-        }
 
         async function checkMaintenance() {
             try {
@@ -695,7 +540,7 @@
             
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>${translations[currentLang].loginBtn}</span>`;
+            submitBtn.innerHTML = '<span>Se connecter</span>';
         };
 
         async function checkAlreadyLoggedIn() {
@@ -734,13 +579,8 @@
             }
         }
 
-        function showMessage(type, textKey) {
+        function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
-            const texts = {
-                error: translations[currentLang][textKey] || textKey,
-                success: translations[currentLang][textKey] || textKey,
-                info: translations[currentLang][textKey] || textKey
-            };
             const icons = {
                 error: 'fa-exclamation-circle',
                 success: 'fa-check-circle',
@@ -750,7 +590,7 @@
             container.innerHTML = `
                 <div class="message ${type}">
                     <i class="fas ${icons[type]}"></i>
-                    <span>${texts[type]}</span>
+                    <span>${text}</span>
                 </div>
             `;
         }
@@ -790,17 +630,17 @@
             const submitBtn = document.getElementById('submitBtn');
             
             if (!identifier) {
-                showMessage('error', 'errorIdentifier');
+                showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur');
                 return;
             }
             
             if (!turnstileVerified) {
-                showMessage('error', 'errorTurnstile');
+                showMessage('error', 'Veuillez compléter la vérification');
                 return;
             }
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span>${translations[currentLang].loginProcessing}</span><span class="loader"></span>`;
+            submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
             
             try {
                 const response = await fetch('/api/login', {
@@ -819,27 +659,27 @@
                     saveCredentials(identifier, password, rememberMe);
                     localStorage.setItem('token', data.token);
                     
-                    showMessage('success', 'successLogin');
+                    showMessage('success', 'Connexion réussie ! Redirection...');
                     
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1000);
                 } else {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<span>${translations[currentLang].loginBtn}</span>`;
+                    submitBtn.innerHTML = '<span>Se connecter</span>';
                     
                     if (data.requiresVerification) {
-                        showMessage('info', 'infoVerification');
+                        showMessage('info', 'Email non vérifié. Redirection...');
                         setTimeout(() => {
                             window.location.href = `/email-verification?email=${encodeURIComponent(identifier)}`;
                         }, 1500);
                     } else {
-                        showMessage('error', 'errorCredentials');
+                        showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
                         
                         turnstileVerified = false;
                         turnstileToken = null;
                         document.getElementById('submitBtn').disabled = true;
-                        document.getElementById('submitBtn').innerHTML = `<span>${translations[currentLang].loginBtn}</span>`;
+                        document.getElementById('submitBtn').innerHTML = '<span>Se connecter</span>';
                         
                         if(window.turnstile) {
                             turnstile.reset();
@@ -848,8 +688,8 @@
                 }
             } catch (error) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>${translations[currentLang].loginBtn}</span>`;
-                showMessage('error', 'errorServer');
+                submitBtn.innerHTML = '<span>Se connecter</span>';
+                showMessage('error', 'Erreur de connexion au serveur');
             }
         });
 
