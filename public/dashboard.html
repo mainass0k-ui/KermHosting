@@ -396,7 +396,7 @@
         .server-card.expiring { border-left: 4px solid var(--warning); }
         .server-card.expired { border-left: 4px solid var(--danger); opacity: 0.7; }
         .server-card.suspended { border-left: 4px solid var(--danger); opacity: 0.8; background: linear-gradient(135deg, var(--bg-card), rgba(239, 68, 68, 0.1)); }
-        .server-header { padding: 14px; background: var(--bg-hover); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .server-header { padding: 14px; background: var(--bg-hover); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px; }
         .server-name { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
         .server-name i { color: var(--primary); }
         .server-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
@@ -547,7 +547,7 @@
 
         .confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99999; }
 
-        /* ===== STYLES CONSOLE TEMPS RÉEL - AJOUTÉS ===== */
+        /* ===== STYLES CONSOLE TEMPS RÉEL ===== */
         .console-modal .modal-content { max-width: 900px; width: 90%; }
         .console-stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
         .console-stat-card { flex: 1; background: var(--bg-input); border-radius: var(--radius-md); padding: 12px; text-align: center; }
@@ -751,14 +751,14 @@
         </main>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals existants -->
     <div class="modal" id="serverModal"><div class="modal-content"><div class="modal-header"><h2>Créer un serveur</h2><button class="modal-close" onclick="closeModal('serverModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="planSelect" class="modal-select"><option value="">Choisissez un plan</option></select><input type="text" id="serverName" class="modal-input" placeholder="Nom du serveur" maxlength="30"><input type="text" id="serverUsername" class="modal-input" placeholder="Nom d'utilisateur" maxlength="20"><small>3-20 caractères, lettres, chiffres et _</small></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverModal')">Annuler</button><button class="btn btn-primary" onclick="createServer()">Créer</button></div></div></div>
     <div class="modal" id="serverDetailsModal"><div class="modal-content"><div class="modal-header"><h2 id="detailsServerName">Détails</h2><button class="modal-close" onclick="closeModal('serverDetailsModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan</span><span class="modal-info-value" id="detailsPlan">-</span></div><div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value" id="detailsStatus">-</span></div><div class="modal-info-item"><span class="modal-info-label">Expiration</span><span class="modal-info-value" id="detailsExpiry">-</span></div><div class="modal-info-item"><span class="modal-info-label">Temps restant</span><span class="modal-info-value" id="detailsTimeLeft">-</span></div></div><h3>🔑 Identifiants</h3><div class="credentials-box" id="detailsCredentials"></div><div class="auto-renew-section" id="autoRenewSection"><div class="auto-renew-header"><span class="auto-renew-title"><i class="fas fa-sync-alt"></i>Auto-renouvellement</span><label class="toggle-switch"><input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()"><span class="toggle-slider"></span></label></div><div class="auto-renew-info" id="autoRenewInfo"><i class="fas fa-info-circle"></i><span>Renouvellement automatique tous les 7 jours</span></div><div class="auto-renew-error" id="autoRenewError"></div></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Conservez ces identifiants précieusement.</span></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button><button class="btn btn-success" onclick="renewServer()" id="renewBtn">Renouveler</button></div></div></div>
     <div class="modal" id="actionModal"><div class="modal-content"><div class="modal-header"><h2 id="actionTitle">Action</h2><button class="modal-close" onclick="closeModal('actionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><p id="actionMessage">Confirmer ?</p></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button><button class="btn btn-danger" id="actionConfirmBtn" onclick="confirmAction()">Confirmer</button></div></div></div>
     <div class="modal" id="renewModal"><div class="modal-content"><div class="modal-header"><h2>Renouveler</h2><button class="modal-close" onclick="closeModal('renewModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Serveur</span><span class="modal-info-value" id="renewServerName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Plan</span><span class="modal-info-value" id="renewPlan">-</span></div><div class="modal-info-item"><span class="modal-info-label">Prix</span><span class="modal-info-value" id="renewPrice">- FCFA</span></div><div class="modal-info-item"><span class="modal-info-label">En coins</span><span class="modal-info-value" id="renewCoins">- coins</span></div><div class="modal-info-item"><span class="modal-info-label">Votre solde</span><span class="modal-info-value" id="renewBalance">- coins</span></div></div><p><i class="fas fa-info-circle"></i>Le renouvellement prolonge la durée de 30 jours.</p></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('renewModal')">Annuler</button><button class="btn btn-success" onclick="confirmRenew()" id="renewConfirmBtn"><i class="fas fa-sync-alt"></i>Renouveler</button></div></div></div>
     <div class="modal" id="goalModal"><div class="modal-content"><div class="modal-header"><h2>Nouvel objectif</h2><button class="modal-close" onclick="closeModal('goalModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="goalType" class="modal-select"><option value="coins">🎯 Atteindre X coins</option><option value="servers">🖥️ Avoir X serveurs</option><option value="streak">🔥 Série de X jours</option><option value="custom">✨ Objectif personnalisé</option></select><input type="number" id="goalTarget" class="modal-input" placeholder="Objectif" min="1"><input type="text" id="goalName" class="modal-input" placeholder="Nom" maxlength="30"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('goalModal')">Annuler</button><button class="btn btn-primary" onclick="saveGoal()">Créer</button></div></div></div>
 
-    <!-- Modal Console Temps Réel - AJOUTÉ -->
+    <!-- Modal Console Temps Réel -->
     <div class="modal console-modal" id="rtConsoleModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -777,7 +777,6 @@
                 </div>
                 <div class="console-logs" id="rtConsoleLogs">
                     <div class="console-log-line">[INFO] Connecté au serveur</div>
-                    <div class="console-log-line">[INFO] En attente des logs...</div>
                 </div>
                 <div class="console-input-area">
                     <input type="text" class="console-input" id="rtConsoleCommandInput" placeholder="Entrez une commande (ex: npm start, ls, node index.js)" onkeypress="handleRtConsoleCommandKeypress(event)">
@@ -1112,6 +1111,56 @@
         let rtCurrentServerId = null;
         let rtStatsChart = null;
         let rtChartData = { cpu: [], ram: [], disk: [] };
+        let rtStatsInterval = null;
+        let rtLogsInterval = null;
+        
+        // Fonctions API REST (fallback)
+        async function fetchServerStatsRest(serverId) {
+            try {
+                const response = await fetch(`/api/servers/${serverId}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success && data.stats) {
+                    return data.stats;
+                }
+                return null;
+            } catch (error) {
+                console.error('Erreur fetch stats REST:', error);
+                return null;
+            }
+        }
+
+        async function fetchServerLogsRest(serverId) {
+            try {
+                const response = await fetch(`/api/servers/${serverId}/logs?lines=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success && data.logs) {
+                    return data.logs;
+                }
+                return [];
+            } catch (error) {
+                console.error('Erreur fetch logs REST:', error);
+                return [];
+            }
+        }
+
+        async function sendServerCommandRest(serverId, command) {
+            try {
+                const response = await fetch(`/api/servers/${serverId}/command`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command })
+                });
+                const data = await response.json();
+                return data.success;
+            } catch (error) {
+                console.error('Erreur envoi commande REST:', error);
+                return false;
+            }
+        }
         
         function initRtWebSocket() {
             if (rtWs && rtWs.readyState === WebSocket.OPEN) return;
@@ -1264,33 +1313,90 @@
             const input = document.getElementById('rtConsoleCommandInput');
             const command = input.value.trim();
             if (!command || !rtCurrentServerId) return;
+            
+            addRtConsoleLog(`> ${command}`);
+            
             if (rtWs && rtWs.readyState === WebSocket.OPEN) {
                 rtWs.send(JSON.stringify({ type: 'command', serverId: rtCurrentServerId, command: command }));
-                addRtConsoleLog(`> ${command}`);
-                input.value = '';
             } else {
-                showToast('error', 'WebSocket non connecté');
+                sendServerCommandRest(rtCurrentServerId, command).then(success => {
+                    if (!success) showToast('error', 'Erreur lors de l\'envoi');
+                });
             }
+            input.value = '';
         }
         
         function handleRtConsoleCommandKeypress(event) {
             if (event.key === 'Enter') sendRtConsoleCommand();
         }
         
-        function openRtConsoleModal(serverId, serverName) {
+        async function openRtConsoleModal(serverId, serverName) {
             rtCurrentServerId = serverId;
             document.getElementById('rtConsoleServerName').textContent = serverName;
-            document.getElementById('rtConsoleLogs').innerHTML = '<div class="console-log-line">[INFO] Connexion au serveur...</div>';
+            document.getElementById('rtConsoleLogs').innerHTML = '<div class="console-log-line">[INFO] Chargement des logs...</div>';
             document.getElementById('rtConsoleCommandInput').value = '';
             rtChartData = { cpu: [], ram: [], disk: [] };
             
             initRtChart();
             initRtWebSocket();
             
+            // Récupération immédiate des stats
+            const stats = await fetchServerStatsRest(serverId);
+            if (stats) {
+                updateRtConsoleStats(stats);
+                updateServerCardStats(serverId, stats);
+            }
+            
+            // Récupération des logs initiaux
+            const logs = await fetchServerLogsRest(serverId);
+            const logsDiv = document.getElementById('rtConsoleLogs');
+            logsDiv.innerHTML = '';
+            if (logs && logs.length > 0) {
+                logs.forEach(log => addRtConsoleLog(log));
+            } else {
+                addRtConsoleLog('[INFO] Aucun log disponible');
+            }
+            
+            // Démarrer le polling de secours pour les stats (toutes les 3s)
+            if (rtStatsInterval) clearInterval(rtStatsInterval);
+            rtStatsInterval = setInterval(async () => {
+                if (rtCurrentServerId) {
+                    const newStats = await fetchServerStatsRest(rtCurrentServerId);
+                    if (newStats) {
+                        updateRtConsoleStats(newStats);
+                        updateServerCardStats(rtCurrentServerId, newStats);
+                    }
+                }
+            }, 3000);
+            
+            // Démarrer le polling de secours pour les logs (toutes les 5s)
+            if (rtLogsInterval) clearInterval(rtLogsInterval);
+            rtLogsInterval = setInterval(async () => {
+                if (rtCurrentServerId) {
+                    const newLogs = await fetchServerLogsRest(rtCurrentServerId);
+                    if (newLogs && newLogs.length > 0) {
+                        const logsDiv = document.getElementById('rtConsoleLogs');
+                        const lastLog = logsDiv.lastChild?.textContent;
+                        const lastNewLog = newLogs[newLogs.length - 1];
+                        if (lastNewLog && !lastLog?.includes(lastNewLog)) {
+                            newLogs.forEach(log => addRtConsoleLog(log));
+                        }
+                    }
+                }
+            }, 5000);
+            
             document.getElementById('rtConsoleModal').classList.add('active');
         }
         
         function closeRtConsoleModal() {
+            if (rtStatsInterval) {
+                clearInterval(rtStatsInterval);
+                rtStatsInterval = null;
+            }
+            if (rtLogsInterval) {
+                clearInterval(rtLogsInterval);
+                rtLogsInterval = null;
+            }
             if (rtCurrentServerId && rtWs && rtWs.readyState === WebSocket.OPEN) {
                 rtWs.send(JSON.stringify({ type: 'unsubscribe', serverId: rtCurrentServerId }));
             }
@@ -1399,6 +1505,14 @@
                 </div>`;
             });
             c.innerHTML = h + '</div>';
+            
+            // Récupération initiale des stats pour chaque serveur
+            userServers.forEach(async s => {
+                if (s.status === 'active' && calculateDaysLeft(s.expires_at) > 0) {
+                    const stats = await fetchServerStatsRest(s.id);
+                    if (stats) updateServerCardStats(s.id, stats);
+                }
+            });
         }
 
         async function showServerDetails(id) {
