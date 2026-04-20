@@ -621,15 +621,34 @@
             }
         }
 
+        function isEmail(identifier) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(identifier);
+        }
+
+        // Fonction pour tenter la connexion avec un identifiant donné
+        async function attemptLogin(identifier, password, turnstileToken) {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    identifier: identifier,
+                    password: password,
+                    'cf-turnstile-response': turnstileToken
+                })
+            });
+            return await response.json();
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const rawIdentifier = document.getElementById('loginIdentifier').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             const submitBtn = document.getElementById('submitBtn');
             
-            if (!identifier) {
+            if (!rawIdentifier) {
                 showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur');
                 return;
             }
@@ -643,20 +662,33 @@
             submitBtn.innerHTML = '<span>Connexion en cours</span><span class="loader"></span>';
             
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        identifier: identifier,
-                        password: password,
-                        'cf-turnstile-response': turnstileToken
-                    })
-                });
+                let data;
+                let successfulIdentifier = rawIdentifier;
                 
-                const data = await response.json();
+                // Si c'est un email, on essaie d'abord la version minuscule
+                if (isEmail(rawIdentifier)) {
+                    const lowerCaseEmail = rawIdentifier.toLowerCase();
+                    
+                    // Première tentative avec la version minuscule
+                    data = await attemptLogin(lowerCaseEmail, password, turnstileToken);
+                    
+                    // Si échec et que l'email original n'est pas déjà en minuscules, on essaie la version originale
+                    if (!data.success && rawIdentifier !== lowerCaseEmail) {
+                        const secondAttempt = await attemptLogin(rawIdentifier, password, turnstileToken);
+                        if (secondAttempt.success) {
+                            data = secondAttempt;
+                            successfulIdentifier = rawIdentifier;
+                        }
+                    } else if (data.success) {
+                        successfulIdentifier = lowerCaseEmail;
+                    }
+                } else {
+                    // Pour le nom d'utilisateur, on garde la casse exacte
+                    data = await attemptLogin(rawIdentifier, password, turnstileToken);
+                }
                 
                 if (data.success) {
-                    saveCredentials(identifier, password, rememberMe);
+                    saveCredentials(successfulIdentifier, password, rememberMe);
                     localStorage.setItem('token', data.token);
                     
                     showMessage('success', 'Connexion réussie ! Redirection...');
@@ -671,7 +703,7 @@
                     if (data.requiresVerification) {
                         showMessage('info', 'Email non vérifié. Redirection...');
                         setTimeout(() => {
-                            window.location.href = `/email-verification?email=${encodeURIComponent(identifier)}`;
+                            window.location.href = `/email-verification?email=${encodeURIComponent(rawIdentifier)}`;
                         }, 1500);
                     } else {
                         showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
