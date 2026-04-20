@@ -524,7 +524,7 @@
                 <div class="form-group">
                     <label class="form-label">Adresse email</label>
                     <input type="email" class="form-input" id="email" 
-                           placeholder="exemple@email.com" required>
+                           placeholder="exemple@gmail.com" required>
                     <div class="email-hint" id="emailHint">
                         <i class="fas fa-info-circle"></i>
                         <span>Utilisez Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>
@@ -595,14 +595,24 @@
     </div>
 
     <script>
-        // Liste des domaines d'email autorisés
+        // Liste STRICTE des domaines d'email autorisés (uniquement les fournisseurs reconnus)
         const ALLOWED_EMAIL_DOMAINS = [
-            // Grands fournisseurs internationaux
+            // Google
             'gmail.com', 'googlemail.com',
-            'yahoo.com', 'yahoo.fr', 'ymail.com', 'rocketmail.com',
+            
+            // Microsoft
             'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'live.com', 'live.fr', 'msn.com',
+            
+            // Apple
             'icloud.com', 'me.com', 'mac.com',
+            
+            // Yahoo
+            'yahoo.com', 'yahoo.fr', 'ymail.com', 'rocketmail.com',
+            
+            // Proton
             'protonmail.com', 'proton.me', 'pm.me',
+            
+            // Autres internationaux
             'aol.com', 'aim.com',
             'zoho.com', 'zohomail.com',
             'mail.com', 'email.com',
@@ -614,33 +624,33 @@
             
             // Fournisseurs français
             'laposte.net',
-            'orange.fr', 'wanadoo.fr', 'voila.fr',
+            'orange.fr', 'wanadoo.fr',
             'free.fr',
             'sfr.fr', 'neuf.fr', 'cegetel.net',
             'bbox.fr', 'bouyguestelecom.fr',
             
-            // Fournisseurs africains
-            'africaonline.com',
-            'voila.fr',
-            
-            // Éducation
-            'edu', '.edu', 'ac.', '.ac.',
-            
-            // Professionnels/Gouvernement
-            '.gov', '.gouv', '.gob',
-            
-            // Autres TLD courants
-            '.org', '.net', '.co', '.io', '.me', '.info', '.biz', '.pro', '.site', '.online', '.store', '.tech', '.cloud', '.dev', '.app', '.blog'
+            // Pro/Éducation (domaines spécifiques uniquement, pas de wildcard)
+            'student.gla.ac.uk', 'ed.ac.uk', 'cam.ac.uk', 'ox.ac.uk',
+            'harvard.edu', 'stanford.edu', 'mit.edu', 'berkeley.edu', 'yale.edu', 'princeton.edu', 'columbia.edu',
+            'sorbonne-universite.fr', 'univ-paris.fr', 'univ-lyon.fr',
+            'polytechnique.edu', 'hec.edu', 'essec.edu', 'escp.eu',
+            'epfl.ch', 'ethz.ch'
         ];
 
-        // Domaines jetables/temporaires à bloquer explicitement
+        // Domaines jetables/temporaires à bloquer
         const BLOCKED_EMAIL_PATTERNS = [
-            'temp', 'tmp', 'disposable', 'throwaway', 'trash', 'fake', 'spam', '10min', 'guerrilla', 'mailinator', 'yopmail', 'jetable', 'courrieljetable', 'trashmail', 'wegwerf', 'spambog', 'spamex', 'mytemp', 'temp-mail', 'temporary', 'fake-mail', 'fakemail', 'shitmail', 'dispostable', 'maildrop', 'mailnesia', 'mintemail', 'mytrashmail', 'nwytg', 'objectmail', 'obobbo', 'oneoffemail', 'owlymail', 'pookmail', 'safetymail', 'sendspam', 'sharklasers', 'spam4', 'spamgourmet', 'spamhole', 'spamify', 'spaminator', 'spammotel', 'techemail', 'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail', 'yopmail.fr', 'yopmail.net'
+            'temp', 'tmp', 'disposable', 'throwaway', 'trash', 'fake', 'spam', '10min', 'guerrilla', 
+            'mailinator', 'yopmail', 'jetable', 'courrieljetable', 'trashmail', 'wegwerf', 'spambog', 
+            'spamex', 'mytemp', 'temp-mail', 'temporary', 'fake-mail', 'fakemail', 'shitmail', 
+            'dispostable', 'maildrop', 'mailnesia', 'mintemail', 'mytrashmail', 'nwytg', 'objectmail',
+            'obobbo', 'oneoffemail', 'owlymail', 'pookmail', 'safetymail', 'sendspam', 'sharklasers',
+            'spam4', 'spamgourmet', 'spamhole', 'spamify', 'spaminator', 'spammotel', 'techemail',
+            'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail.fr', 'yopmail.net',
+            'arol.com' // Ajout explicite de arol.com comme domaine bloqué
         ];
 
         let emailValid = false;
 
-        // Fonction pour valider l'email
         function validateEmail(email) {
             const emailInput = document.getElementById('email');
             const emailHint = document.getElementById('emailHint');
@@ -653,41 +663,37 @@
                 return false;
             }
 
-            const domain = email.split('@')[1]?.toLowerCase() || '';
-            
-            // Vérifier les domaines jetables
-            const isDisposable = BLOCKED_EMAIL_PATTERNS.some(pattern => 
-                domain.includes(pattern) || email.toLowerCase().includes(pattern)
-            );
-            
-            if (isDisposable) {
+            // Vérifier le format email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
                 emailValid = false;
                 emailInput.classList.remove('valid');
                 emailInput.classList.add('error');
-                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Les adresses email jetables ne sont pas autorisées</span>`;
+                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Format d'email invalide</span>`;
                 emailHint.style.color = 'var(--danger)';
                 return false;
             }
 
-            // Vérifier si le domaine est dans la liste autorisée
-            const isAllowed = ALLOWED_EMAIL_DOMAINS.some(allowedDomain => {
-                if (allowedDomain.startsWith('.')) {
-                    return domain.endsWith(allowedDomain);
-                }
-                return domain === allowedDomain || domain.endsWith('.' + allowedDomain);
-            });
-
-            // Vérifier les domaines d'éducation
-            const isEducational = domain.includes('.edu') || domain.includes('.ac.');
+            const domain = email.split('@')[1]?.toLowerCase() || '';
             
-            // Vérifier les domaines gouvernementaux
-            const isGovernment = domain.includes('.gov') || domain.includes('.gouv') || domain.includes('.gob');
+            // Vérifier les domaines jetables/bloqués
+            const isBlocked = BLOCKED_EMAIL_PATTERNS.some(pattern => 
+                domain.includes(pattern) || email.toLowerCase().includes(pattern)
+            );
             
-            // Vérifier les TLD courants
-            const commonTLDs = ['.com', '.org', '.net', '.fr', '.io', '.co', '.me', '.info', '.biz', '.pro', '.site', '.online', '.store', '.tech', '.cloud', '.dev', '.app', '.blog'];
-            const hasValidTLD = commonTLDs.some(tld => domain.endsWith(tld));
+            if (isBlocked) {
+                emailValid = false;
+                emailInput.classList.remove('valid');
+                emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Les adresses email jetables ou non reconnues ne sont pas autorisées</span>`;
+                emailHint.style.color = 'var(--danger)';
+                return false;
+            }
 
-            if (isAllowed || isEducational || isGovernment || hasValidTLD) {
+            // Vérifier si le domaine est EXACTEMENT dans la liste autorisée
+            const isAllowed = ALLOWED_EMAIL_DOMAINS.includes(domain);
+            
+            if (isAllowed) {
                 emailValid = true;
                 emailInput.classList.remove('error');
                 emailInput.classList.add('valid');
@@ -851,7 +857,8 @@
                 return;
             }
             
-            if (!emailValid) {
+            // Re-valider l'email avant soumission
+            if (!validateEmail(email)) {
                 showMessage('error', 'Veuillez utiliser une adresse email valide (Gmail, iCloud, Yahoo, Outlook, etc.)');
                 return;
             }
@@ -909,7 +916,6 @@
             document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
             document.querySelector('.auth-card').style.opacity = '1';
             
-            // Pré-remplir l'email si présent dans l'URL
             const urlParams = new URLSearchParams(window.location.search);
             const emailParam = urlParams.get('email');
             if (emailParam) {
