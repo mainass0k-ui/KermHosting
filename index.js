@@ -7756,6 +7756,253 @@ app.post('/api/check-username', async (req, res) => {
 });
 
 // =============================================
+// ROUTES LOGS PTERODACTYL (CORRIGÉES)
+// =============================================
+
+// Récupérer les logs d'un serveur via l'API client Pterodactyl (endpoint correct)
+app.get('/api/servers/:serverId/logs', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { lines = 100 } = req.query;
+        
+        // Récupérer le serveur dans la base de données
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status, pterodactyl_id')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.json({ 
+                success: true, 
+                logs: [`[INFO] Serveur ${server.status} - logs non disponibles`] 
+            });
+        }
+        
+        let logs = [];
+        
+        // Méthode 1: Utiliser l'API client Pterodactyl pour récupérer les logs
+        try {
+            // Essayer d'abord l'endpoint standard
+            const logsResponse = await callPterodactylClientAPI(
+                `/api/client/servers/${server.server_identifier}/logs`,
+                'GET'
+            );
+            
+            if (logsResponse && logsResponse.data) {
+                // Si la réponse est une chaîne (logs bruts)
+                if (typeof logsResponse.data === 'string') {
+                    logs = logsResponse.data.split('\n').slice(-parseInt(lines));
+                } 
+                // Si c'est un objet avec des logs
+                else if (logsResponse.data.logs) {
+                    logs = logsResponse.data.logs.split('\n').slice(-parseInt(lines));
+                }
+                else {
+                    logs = [`[INFO] Logs récupérés avec succès (${logsResponse.data.length || 0} lignes)`];
+                }
+            }
+        } catch (firstError) {
+            console.log(`⚠️ Endpoint /logs échoué, tentative /ws/${server.server_identifier}/logs...`);
+            
+            // Méthode 2: Essayer l'endpoint WebSocket logs
+            try {
+                const wsLogsResponse = await callPterodactylClientAPI(
+                    `/api/client/ws/${server.server_identifier}/logs`,
+                    'GET'
+                );
+                if (wsLogsResponse && wsLogsResponse.data) {
+                    if (typeof wsLogsResponse.data === 'string') {
+                        logs = wsLogsResponse.data.split('\n').slice(-parseInt(lines));
+                    } else if (wsLogsResponse.data.logs) {
+                        logs = wsLogsResponse.data.logs.split('\n').slice(-parseInt(lines));
+                    }
+                }
+            } catch (secondError) {
+                console.log(`⚠️ Endpoint /ws/logs échoué aussi`);
+                
+                // Méthode 3: Utiliser l'API application pour récupérer les logs via le node
+                try {
+                    // Récupérer les allocations du serveur pour avoir l'IP et le port
+                    const allocations = await getServerAllocations(server.pterodactyl_id);
+                    if (allocations && allocations.length > 0) {
+                        const allocation = allocations[0];
+                        logs = [
+                            `[INFO] Serveur ${server.server_name}`,
+                            `[INFO] IP: ${allocation.ip}:${allocation.port}`,
+                            `[INFO] Pour voir les logs, connectez-vous au panel Pterodactyl: ${PTERODACTYL_CONFIG.url}`,
+                            `[INFO] Identifiant: ${server.username}`,
+                            `[INFO] Les logs en temps réel sont disponibles dans le panel client`
+                        ];
+                    } else {
+                        logs = [`[INFO] Aucune allocation trouvée pour ce serveur`];
+                    }
+                } catch (allocError) {
+                    logs = [
+                        `[INFO] Impossible de récupérer les logs via l'API Pterodactyl`,
+                        `[INFO] Connectez-vous directement au panel: ${PTERODACTYL_CONFIG.url}`,
+                        `[INFO] Identifiant: ${server.username}`,
+                        `[INFO] Mot de passe: ${server.password}`
+                    ];
+                }
+            }
+        }
+        
+        // Filtrer les logs vides
+        logs = logs.filter(log => log && log.trim() !== '');
+        
+        if (logs.length === 0) {
+            logs = [`[INFO] Aucun log disponible pour le moment`];
+        }
+        
+        res.json({ success: true, logs });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération logs:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur récupération des logs',
+            logs: [`[ERREUR] Impossible de récupérer les logs: ${error.message}`]
+        });
+    }
+});
+
+// Endpoint pour les logs en temps réel via WebSocket (streaming)
+app.get('/api/servers/:serverId/logs/stream', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.json({ success: false, error: 'Serveur non actif' });
+        }
+        
+        // Configurer SSE (Server-Sent Events) pour le streaming des logs
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        
+        let lastLogCount = 0;
+        let interval = setInterval(async () => {
+            try {
+                // Simuler des logs ou récupérer depuis Pterodactyl
+                const logsResponse = await callPterodactylClientAPI(
+                    `/api/client/servers/${server.server_identifier}/logs`,
+                    'GET'
+                ).catch(() => null);
+                
+                if (logsResponse && logsResponse.data) {
+                    let logs = [];
+                    if (typeof logsResponse.data === 'string') {
+                        logs = logsResponse.data.split('\n');
+                    } else if (logsResponse.data.logs) {
+                        logs = logsResponse.data.logs.split('\n');
+                    }
+                    
+                    const newLogs = logs.slice(lastLogCount);
+                    lastLogCount = logs.length;
+                    
+                    for (const log of newLogs) {
+                        if (log && log.trim()) {
+                            res.write(`data: ${JSON.stringify({ log })}\n\n`);
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignorer les erreurs
+            }
+        }, 3000);
+        
+        req.on('close', () => {
+            clearInterval(interval);
+            res.end();
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur stream logs:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Endpoint pour les stats avec plus de détails
+app.get('/api/servers/:serverId/stats/detailed', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status, pterodactyl_id')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.json({ 
+                success: true, 
+                stats: { state: server.status, message: 'Serveur non actif' } 
+            });
+        }
+        
+        // Récupérer les ressources
+        const resources = await getServerResources(server.server_identifier);
+        
+        // Récupérer les allocations
+        const allocations = await getServerAllocations(server.pterodactyl_id);
+        
+        // Récupérer les limites du serveur depuis la base
+        const plan = PLANS[server.server_type] || { memory: 0, disk: 0, cpu: 0 };
+        
+        const stats = {
+            cpu: resources?.resources?.cpu_percent || 0,
+            memory: {
+                used: resources?.resources?.memory_bytes || 0,
+                limit: plan.memory * 1024 * 1024,
+                percent: resources?.resources?.memory_percent || 0
+            },
+            disk: {
+                used: resources?.resources?.disk_bytes || 0,
+                limit: plan.disk * 1024 * 1024,
+                percent: resources?.resources?.disk_percent || 0
+            },
+            uptime: resources?.resources?.uptime || 0,
+            state: resources?.state || 'offline',
+            allocations: allocations,
+            plan: {
+                name: plan.name,
+                memory: plan.memory,
+                disk: plan.disk,
+                cpu: plan.cpu
+            }
+        };
+        
+        res.json({ success: true, stats });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération stats détaillées:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// =============================================
 // ROUTES PAGES HTML
 // =============================================
 
