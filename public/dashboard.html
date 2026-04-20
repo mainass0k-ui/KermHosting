@@ -68,6 +68,21 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
+        /* Thèmes - 13 thèmes */
+        [data-theme="default"] { --primary: #7C3AED; --primary-light: #9D6CFF; --primary-dark: #5B2AB0; --secondary: #10B981; --secondary-light: #34D399; --accent: #F59E0B; }
+        [data-theme="cyberpunk"] { --primary: #FF007F; --primary-light: #FF3399; --primary-dark: #CC0066; --secondary: #00FFFF; --secondary-light: #66FFFF; --accent: #FFD700; }
+        [data-theme="ocean"] { --primary: #0066FF; --primary-light: #3399FF; --primary-dark: #0044CC; --secondary: #00CCAA; --secondary-light: #33FFDD; --accent: #FFAA00; }
+        [data-theme="sunset"] { --primary: #FF6B35; --primary-light: #FF8F66; --primary-dark: #CC4A1A; --secondary: #FFD700; --secondary-light: #FFE44D; --accent: #8B4513; }
+        [data-theme="forest"] { --primary: #2D8B57; --primary-light: #3CB371; --primary-dark: #1B5E3A; --secondary: #8B7355; --secondary-light: #A0896C; --accent: #DAA520; }
+        [data-theme="mint"] { --primary: #00B894; --primary-light: #55EFC4; --primary-dark: #00996E; --secondary: #74B9FF; --secondary-light: #A4D0FF; --accent: #FFEAA7; }
+        [data-theme="galaxy"] { --primary: #9B59B6; --primary-light: #C39BD3; --primary-dark: #7D3C98; --secondary: #3498DB; --secondary-light: #5DADE2; --accent: #E74C3C; }
+        [data-theme="candy"] { --primary: #FF69B4; --primary-light: #FFB6C1; --primary-dark: #DB7093; --secondary: #98FB98; --secondary-light: #C1FFC1; --accent: #FFD700; }
+        [data-theme="midnight"] { --primary: #1a1a2e; --primary-light: #16213e; --primary-dark: #0f3460; --secondary: #e94560; --secondary-light: #ff6b6b; --accent: #c0c0c0; }
+        [data-theme="fire"] { --primary: #FF4500; --primary-light: #FF6347; --primary-dark: #DC143C; --secondary: #FF8C00; --secondary-light: #FFA500; --accent: #FFD700; }
+        [data-theme="neon"] { --primary: #39FF14; --primary-light: #7FFF00; --primary-dark: #32CD32; --secondary: #FFFF00; --secondary-light: #FFD700; --accent: #FF00FF; }
+        [data-theme="lavender"] { --primary: #8A2BE2; --primary-light: #BA55D3; --primary-dark: #6A0DAD; --secondary: #DA70D6; --secondary-light: #EE82EE; --accent: #FFB6C1; }
+        [data-theme="coffee"] { --primary: #6F4E37; --primary-light: #8B6914; --primary-dark: #3E2723; --secondary: #D2B48C; --secondary-light: #DEB887; --accent: #FFE4B5; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -381,7 +396,7 @@
         .server-card.expiring { border-left: 4px solid var(--warning); }
         .server-card.expired { border-left: 4px solid var(--danger); opacity: 0.7; }
         .server-card.suspended { border-left: 4px solid var(--danger); opacity: 0.8; background: linear-gradient(135deg, var(--bg-card), rgba(239, 68, 68, 0.1)); }
-        .server-header { padding: 14px; background: var(--bg-hover); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px; }
+        .server-header { padding: 14px; background: var(--bg-hover); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
         .server-name { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
         .server-name i { color: var(--primary); }
         .server-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
@@ -393,10 +408,13 @@
         .server-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
         .server-info-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 0.85rem; }
         .server-info-item i { color: var(--primary); width: 16px; }
+        
+        /* AJOUT - Stats temps réel sur les cartes */
         .stats-row { display: flex; gap: 16px; margin: 12px 0; flex-wrap: wrap; }
         .stat-item { flex: 1; text-align: center; padding: 8px; background: var(--bg-input); border-radius: var(--radius-md); }
         .stat-item-label { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px; }
         .stat-item-value { font-size: 1rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+        
         .server-footer { padding: 14px; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .server-expiry { font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
         .server-expiry.warning { color: var(--warning); }
@@ -411,6 +429,9 @@
         .server-action-btn.stop:hover { background: var(--danger); }
         .server-action-btn.start:hover { background: var(--success); }
         .server-action-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .server-console { margin-top: 12px; background: var(--bg-input); border-radius: var(--radius-md); padding: 12px; font-family: monospace; font-size: 0.75rem; max-height: 150px; overflow-y: auto; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .console-line { padding: 2px 0; border-bottom: 1px solid var(--border-light); color: var(--text-primary); }
+        .console-line:last-child { border-bottom: none; }
 
         .details-btn {
             background: none; border: 1px solid var(--border-color); color: var(--text-secondary);
@@ -526,7 +547,7 @@
 
         .confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99999; }
 
-        /* Styles console temps réel */
+        /* ===== STYLES CONSOLE TEMPS RÉEL - AJOUTÉS ===== */
         .console-modal .modal-content { max-width: 900px; width: 90%; }
         .console-stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
         .console-stat-card { flex: 1; background: var(--bg-input); border-radius: var(--radius-md); padding: 12px; text-align: center; }
@@ -730,14 +751,14 @@
         </main>
     </div>
 
-    <!-- Modals existants -->
+    <!-- Modals -->
     <div class="modal" id="serverModal"><div class="modal-content"><div class="modal-header"><h2>Créer un serveur</h2><button class="modal-close" onclick="closeModal('serverModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="planSelect" class="modal-select"><option value="">Choisissez un plan</option></select><input type="text" id="serverName" class="modal-input" placeholder="Nom du serveur" maxlength="30"><input type="text" id="serverUsername" class="modal-input" placeholder="Nom d'utilisateur" maxlength="20"><small>3-20 caractères, lettres, chiffres et _</small></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverModal')">Annuler</button><button class="btn btn-primary" onclick="createServer()">Créer</button></div></div></div>
     <div class="modal" id="serverDetailsModal"><div class="modal-content"><div class="modal-header"><h2 id="detailsServerName">Détails</h2><button class="modal-close" onclick="closeModal('serverDetailsModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Plan</span><span class="modal-info-value" id="detailsPlan">-</span></div><div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value" id="detailsStatus">-</span></div><div class="modal-info-item"><span class="modal-info-label">Expiration</span><span class="modal-info-value" id="detailsExpiry">-</span></div><div class="modal-info-item"><span class="modal-info-label">Temps restant</span><span class="modal-info-value" id="detailsTimeLeft">-</span></div></div><h3>🔑 Identifiants</h3><div class="credentials-box" id="detailsCredentials"></div><div class="auto-renew-section" id="autoRenewSection"><div class="auto-renew-header"><span class="auto-renew-title"><i class="fas fa-sync-alt"></i>Auto-renouvellement</span><label class="toggle-switch"><input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()"><span class="toggle-slider"></span></label></div><div class="auto-renew-info" id="autoRenewInfo"><i class="fas fa-info-circle"></i><span>Renouvellement automatique tous les 7 jours</span></div><div class="auto-renew-error" id="autoRenewError"></div></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Conservez ces identifiants précieusement.</span></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverDetailsModal')">Fermer</button><button class="btn btn-success" onclick="renewServer()" id="renewBtn">Renouveler</button></div></div></div>
     <div class="modal" id="actionModal"><div class="modal-content"><div class="modal-header"><h2 id="actionTitle">Action</h2><button class="modal-close" onclick="closeModal('actionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><p id="actionMessage">Confirmer ?</p></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('actionModal')">Annuler</button><button class="btn btn-danger" id="actionConfirmBtn" onclick="confirmAction()">Confirmer</button></div></div></div>
     <div class="modal" id="renewModal"><div class="modal-content"><div class="modal-header"><h2>Renouveler</h2><button class="modal-close" onclick="closeModal('renewModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">Serveur</span><span class="modal-info-value" id="renewServerName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Plan</span><span class="modal-info-value" id="renewPlan">-</span></div><div class="modal-info-item"><span class="modal-info-label">Prix</span><span class="modal-info-value" id="renewPrice">- FCFA</span></div><div class="modal-info-item"><span class="modal-info-label">En coins</span><span class="modal-info-value" id="renewCoins">- coins</span></div><div class="modal-info-item"><span class="modal-info-label">Votre solde</span><span class="modal-info-value" id="renewBalance">- coins</span></div></div><p><i class="fas fa-info-circle"></i>Le renouvellement prolonge la durée de 30 jours.</p></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('renewModal')">Annuler</button><button class="btn btn-success" onclick="confirmRenew()" id="renewConfirmBtn"><i class="fas fa-sync-alt"></i>Renouveler</button></div></div></div>
     <div class="modal" id="goalModal"><div class="modal-content"><div class="modal-header"><h2>Nouvel objectif</h2><button class="modal-close" onclick="closeModal('goalModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><select id="goalType" class="modal-select"><option value="coins">🎯 Atteindre X coins</option><option value="servers">🖥️ Avoir X serveurs</option><option value="streak">🔥 Série de X jours</option><option value="custom">✨ Objectif personnalisé</option></select><input type="number" id="goalTarget" class="modal-input" placeholder="Objectif" min="1"><input type="text" id="goalName" class="modal-input" placeholder="Nom" maxlength="30"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('goalModal')">Annuler</button><button class="btn btn-primary" onclick="saveGoal()">Créer</button></div></div></div>
 
-    <!-- Modal Console Temps Réel -->
+    <!-- Modal Console Temps Réel - AJOUTÉ -->
     <div class="modal console-modal" id="rtConsoleModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -756,6 +777,7 @@
                 </div>
                 <div class="console-logs" id="rtConsoleLogs">
                     <div class="console-log-line">[INFO] Connecté au serveur</div>
+                    <div class="console-log-line">[INFO] En attente des logs...</div>
                 </div>
                 <div class="console-input-area">
                     <input type="text" class="console-input" id="rtConsoleCommandInput" placeholder="Entrez une commande (ex: npm start, ls, node index.js)" onkeypress="handleRtConsoleCommandKeypress(event)">
@@ -820,106 +842,272 @@
             const su = document.getElementById('sidebarUser'); if (su) { su.style.cursor = 'pointer'; su.addEventListener('click', () => location.href = '/profile'); }
         }
 
-        const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/login';
+        const token = localStorage.getItem('token'); if (!token) location.href = '/login';
 
-        // ===== VARIABLES =====
-        let userData = null;
-        let userServers = [];
-        let statsUpdateIntervals = new Map(); // Pour le polling de secours
-
-        const PLANS = { 
-            'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300, price: 0, coins: 0, duration: 1 },
-            '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 },
-            '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 },
-            '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 },
-            '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 }
-        };
-
-        // ===== FONCTIONS UTILITAIRES =====
-        function showToast(type, msg) {
-            const t = document.createElement('div');
-            t.className = `toast ${type}`;
-            t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i><span>${msg}</span>`;
-            document.body.appendChild(t);
-            setTimeout(() => {
-                t.style.animation = 'slideOut 0.3s';
-                setTimeout(() => t.remove(), 300);
-            }, 3000);
-        }
-
-        function calculateDaysLeft(expiresAt) {
-            if (!expiresAt) return 0;
-            try {
-                return Math.ceil((new Date(expiresAt) - new Date()) / 86400000);
-            } catch { return 0; }
-        }
-
-        // ===== RÉCUPÉRATION DES STATS D'UN SERVEUR (API REST) =====
-        async function fetchServerStats(serverId) {
-            try {
-                const response = await fetch(`/api/servers/${serverId}/stats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success && data.stats) {
-                    updateServerStatsDisplay(serverId, data.stats);
-                    return data.stats;
+        // ===== MASQUER/AFFICHER LES COINS =====
+        let coinsHidden = false;
+        const hideCoinsBtn = document.getElementById('hideCoinsBtn');
+        const coinElements = ['welcomeCoins', 'statCoins', 'sidebarCoins'];
+        
+        function toggleHideCoins() {
+            coinsHidden = !coinsHidden;
+            const icon = hideCoinsBtn.querySelector('i');
+            icon.className = coinsHidden ? 'fas fa-eye' : 'fas fa-eye-slash';
+            hideCoinsBtn.classList.toggle('active', coinsHidden);
+            
+            coinElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (coinsHidden) {
+                        el.setAttribute('data-real-value', el.textContent);
+                        el.textContent = '••••';
+                        el.classList.add('blurred');
+                    } else {
+                        const realValue = el.getAttribute('data-real-value');
+                        if (realValue) el.textContent = realValue;
+                        el.classList.remove('blurred');
+                    }
                 }
-                return null;
-            } catch (error) {
-                console.error(`Erreur fetch stats pour ${serverId}:`, error);
-                return null;
-            }
+            });
+            
+            localStorage.setItem('coins_hidden', coinsHidden);
+        }
+        
+        hideCoinsBtn.addEventListener('click', toggleHideCoins);
+        
+        if (localStorage.getItem('coins_hidden') === 'true') {
+            setTimeout(() => toggleHideCoins(), 100);
         }
 
-        function updateServerStatsDisplay(serverId, stats) {
-            if (!stats) return;
+        // ===== MÉTÉO =====
+        async function fetchWeather(lat, lon) {
+            try { 
+                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,pressure_msl,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`);
+                const d = await r.json();
+                return { 
+                    current: {
+                        temp: d.current.temperature_2m,
+                        feelsLike: d.current.apparent_temperature,
+                        humidity: d.current.relative_humidity_2m,
+                        wind: d.current.wind_speed_10m,
+                        pressure: d.current.pressure_msl,
+                        code: d.current.weather_code
+                    },
+                    daily: d.daily
+                };
+            } catch (e) { return null; }
+        }
+        
+        async function getCityFromCoords(lat, lon) {
+            try { 
+                const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=fr`);
+                const d = await r.json();
+                return d.address?.city || d.address?.town || d.address?.village || d.address?.county || 'Votre position';
+            } catch (e) { return 'Votre position'; }
+        }
+        
+        function getWeatherIcon(code, isDay = true) {
+            if (code === 0) return { icon: isDay ? 'fa-sun' : 'fa-moon', class: 'sunny', condition: 'Ciel clair' };
+            if ([1,2,3].includes(code)) return { icon: isDay ? 'fa-cloud-sun' : 'fa-cloud-moon', class: 'cloudy', condition: 'Partiellement nuageux' };
+            if ([45,48].includes(code)) return { icon: 'fa-smog', class: 'cloudy', condition: 'Brumeux' };
+            if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) return { icon: 'fa-cloud-rain', class: 'rainy', condition: 'Pluvieux' };
+            if ([71,73,75,77,85,86].includes(code)) return { icon: 'fa-snowflake', class: 'snowy', condition: 'Neige' };
+            if ([95,96,99].includes(code)) return { icon: 'fa-cloud-lightning', class: 'stormy', condition: 'Orageux' };
+            return { icon: 'fa-cloud', class: 'cloudy', condition: 'Nuageux' };
+        }
+        
+        function getDayName(dateStr) {
+            const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            return days[new Date(dateStr).getDay()];
+        }
+        
+        async function loadWeather() {
+            const container = document.getElementById('realWeatherContent');
+            const forecastContainer = document.getElementById('weatherForecast');
             
-            const cpuEl = document.getElementById(`stat-cpu-${serverId}`);
-            const ramEl = document.getElementById(`stat-ram-${serverId}`);
-            const diskEl = document.getElementById(`stat-disk-${serverId}`);
-            
-            if (cpuEl) cpuEl.textContent = `${Math.round(stats.cpu || 0)}%`;
-            if (ramEl) {
-                const usedMB = Math.round((stats.memory?.used || 0) / 1024 / 1024);
-                const limitMB = Math.round((stats.memory?.limit || 0) / 1024 / 1024);
-                ramEl.textContent = `${usedMB} / ${limitMB} MB`;
+            if (!navigator.geolocation) { 
+                showWeatherFallback(container, forecastContainer); 
+                return; 
             }
-            if (diskEl) {
-                const usedMB = Math.round((stats.disk?.used || 0) / 1024 / 1024);
-                const limitMB = Math.round((stats.disk?.limit || 0) / 1024 / 1024);
-                diskEl.textContent = `${usedMB} / ${limitMB} MB`;
-            }
             
-            // Mettre à jour aussi dans userServers
-            const server = userServers.find(s => s.id === serverId);
-            if (server) server.stats = stats;
+            navigator.geolocation.getCurrentPosition(async pos => {
+                const { latitude, longitude } = pos.coords;
+                const [weather, city] = await Promise.all([
+                    fetchWeather(latitude, longitude), 
+                    getCityFromCoords(latitude, longitude)
+                ]);
+                if (weather) displayWeather(container, forecastContainer, weather, city); 
+                else showWeatherFallback(container, forecastContainer);
+            }, () => showWeatherFallback(container, forecastContainer));
+        }
+        
+        function showWeatherFallback(container, forecastContainer) { 
+            fetchWeather(4.0511, 9.7679).then(async w => { 
+                if (w) displayWeather(container, forecastContainer, w, 'Douala'); 
+                else container.innerHTML = '<p>Météo indisponible</p>'; 
+            }); 
+        }
+        
+        function displayWeather(container, forecastContainer, weather, city) {
+            const wi = getWeatherIcon(weather.current.code);
+            
+            container.innerHTML = `
+                <div class="real-weather-main">
+                    <div class="real-weather-icon ${wi.class}">
+                        <i class="fas ${wi.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="real-weather-temp">${Math.round(weather.current.temp)}°C</div>
+                        <div class="real-weather-city">
+                            <i class="fas fa-map-marker-alt"></i> ${city}
+                        </div>
+                        <div class="real-weather-condition">${wi.condition}</div>
+                    </div>
+                </div>
+                <div class="real-weather-details">
+                    <div class="real-weather-detail">
+                        <i class="fas fa-temperature-high"></i>
+                        <span>Ressenti</span>
+                        <span class="value">${Math.round(weather.current.feelsLike)}°C</span>
+                    </div>
+                    <div class="real-weather-detail">
+                        <i class="fas fa-tint"></i>
+                        <span>Humidité</span>
+                        <span class="value">${weather.current.humidity}%</span>
+                    </div>
+                    <div class="real-weather-detail">
+                        <i class="fas fa-wind"></i>
+                        <span>Vent</span>
+                        <span class="value">${weather.current.wind} km/h</span>
+                    </div>
+                    <div class="real-weather-detail">
+                        <i class="fas fa-compress-alt"></i>
+                        <span>Pression</span>
+                        <span class="value">${weather.current.pressure} hPa</span>
+                    </div>
+                </div>
+            `;
+            
+            if (weather.daily && weather.daily.time) {
+                let forecastHtml = `
+                    <div class="weather-forecast">
+                        <div class="forecast-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Prévisions 5 jours</span>
+                        </div>
+                        <div class="forecast-days">
+                `;
+                
+                for (let i = 0; i < 5; i++) {
+                    const dayCode = weather.daily.weather_code[i];
+                    const dayWi = getWeatherIcon(dayCode, true);
+                    const maxTemp = Math.round(weather.daily.temperature_2m_max[i]);
+                    const minTemp = Math.round(weather.daily.temperature_2m_min[i]);
+                    const dayName = i === 0 ? 'Auj.' : getDayName(weather.daily.time[i]);
+                    
+                    forecastHtml += `
+                        <div class="forecast-day">
+                            <div class="forecast-day-name">${dayName}</div>
+                            <div class="forecast-day-icon ${dayWi.class}">
+                                <i class="fas ${dayWi.icon}"></i>
+                            </div>
+                            <div class="forecast-day-temp">
+                                <span>${maxTemp}°</span>
+                                <span>${minTemp}°</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                forecastHtml += `</div></div>`;
+                forecastContainer.innerHTML = forecastHtml;
+            }
+        }
+        
+        function refreshWeather() { 
+            document.getElementById('realWeatherContent').innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>';
+            document.getElementById('weatherForecast').innerHTML = '';
+            loadWeather(); 
         }
 
-        // Démarrer le polling des stats pour un serveur actif
-        function startStatsPolling(serverId) {
-            if (statsUpdateIntervals.has(serverId)) return;
-            
-            // Récupération immédiate
-            fetchServerStats(serverId);
-            
-            // Puis toutes les 3 secondes
-            const interval = setInterval(() => {
-                fetchServerStats(serverId);
-            }, 3000);
-            
-            statsUpdateIntervals.set(serverId, interval);
+        const PLANS = { 'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300, price: 0, coins: 0, duration: 1 }, '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 }, '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 }, '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 }, '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 } };
+        let userData = null, userServers = [], currentAction = null, currentServerId = null, currentServer = null, whatsappShown = false, countdownInterval = null, isClaimingReward = false, userGoals = [];
+
+        function loadGoals() { const s = localStorage.getItem('kermhosting_goals'); userGoals = s ? JSON.parse(s) : [{ id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500 }, { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3 }]; updateGoalsDisplay(); }
+        function saveGoals() { localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals)); }
+        function updateGoalsDisplay() {
+            const c = document.getElementById('goalsList'); if (!userGoals.length) { c.innerHTML = '<div class="empty-goals"><i class="fas fa-bullseye"></i><p>Aucun objectif</p></div>'; return; }
+            let h = ''; userGoals.forEach(g => { let cur = 0; if (g.type==='coins'&&userData) cur=userData.coins||0; else if (g.type==='servers') cur=userServers.length; else if (g.type==='streak'&&userData) cur=userData.daily_login_streak||0; else cur=g.current||0;
+                const p = Math.min((cur/g.target)*100,100), complete = p>=100; if (complete&&!g.completed) { g.completed=true; saveGoals(); celebrateConfetti(); }
+                h += `<div class="goal-item"><div class="goal-info"><div class="goal-name"><span>${g.name}</span><span class="goal-progress">${cur}/${g.target}</span></div><div class="progress-bar"><div class="progress-fill ${!complete?'animated':''}" style="width:${p}%;"></div></div></div><button class="btn-icon" onclick="deleteGoal('${g.id}')"><i class="fas fa-times"></i></button></div>`; });
+            c.innerHTML = h;
+        }
+        function deleteGoal(id) { userGoals = userGoals.filter(g => g.id !== id); saveGoals(); updateGoalsDisplay(); showToast('info', 'Objectif supprimé'); }
+        function saveGoal() {
+            const type = document.getElementById('goalType').value, target = parseInt(document.getElementById('goalTarget').value); let name = document.getElementById('goalName').value.trim();
+            if (!target || target<1) { showToast('error', 'Objectif invalide'); return; }
+            if (!name) { const names = { coins: 'coins', servers: 'serveurs', streak: 'jours', custom: 'objectif' }; name = `Atteindre ${target} ${names[type]}`; }
+            userGoals.push({ id: Date.now().toString(), name, type, target, current:0, completed:false }); saveGoals(); updateGoalsDisplay(); closeModal('goalModal'); showToast('success', 'Objectif créé !');
+            document.getElementById('goalTarget').value = ''; document.getElementById('goalName').value = '';
         }
 
-        function stopStatsPolling(serverId) {
-            if (statsUpdateIntervals.has(serverId)) {
-                clearInterval(statsUpdateIntervals.get(serverId));
-                statsUpdateIntervals.delete(serverId);
-            }
+        function initTheme() { const t = localStorage.getItem('kermhosting_theme') || 'default'; document.body.setAttribute('data-theme', t); document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme===t)); }
+        function setTheme(t) { document.body.setAttribute('data-theme', t); localStorage.setItem('kermhosting_theme', t); document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme===t)); showToast('success', `Thème ${t} activé`); }
+        function celebrateConfetti() { showToast('success', '🎉 Objectif atteint !'); }
+
+        function initSmartSearch() {
+            const overlay = document.getElementById('searchOverlay'), input = document.getElementById('smartSearchInput'), results = document.getElementById('searchResults');
+            document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey)&&e.key==='k') { e.preventDefault(); overlay.classList.add('active'); input.focus(); } if (e.key==='Escape'&&overlay.classList.contains('active')) overlay.classList.remove('active'); });
+            overlay.addEventListener('click', e => { if (e.target===overlay) overlay.classList.remove('active'); });
+            input.addEventListener('input', e => {
+                const q = e.target.value.toLowerCase(); if (!q) { results.innerHTML = '<div class="search-empty"><i class="fas fa-search"></i><p>Tapez pour rechercher...</p></div>'; return; }
+                const items = [...userServers.map(s => ({ type:'server', title:s.server_name, subtitle:`${PLANS[s.server_type]?.name||'Serveur'} - ${s.status}`, action:()=>showServerDetails(s.id) })), { type:'page', title:'Tableau de bord', url:'/dashboard' }, { type:'page', title:'Tarifs', url:'/pricing' }, { type:'page', title:'Acheter des coins', url:'/buy-coins' }, { type:'page', title:'Profil', url:'/profile' }, { type:'page', title:'Support', url:'/support' }];
+                const filtered = items.filter(i => i.title.toLowerCase().includes(q) || (i.subtitle&&i.subtitle.toLowerCase().includes(q)));
+                if (!filtered.length) { results.innerHTML = `<div class="search-empty"><i class="fas fa-search"></i><p>Aucun résultat pour "${q}"</p></div>`; return; }
+                let h = ''; filtered.slice(0,8).forEach(i => { h += `<div class="search-result-item" onclick="handleSearchResult(${JSON.stringify(i).replace(/"/g,'&quot;')})"><div class="search-result-icon"><i class="fas ${i.type==='server'?'fa-server':'fa-file'}"></i></div><div class="search-result-content"><div class="search-result-title">${i.title}</div><div class="search-result-subtitle">${i.subtitle||''}</div></div></div>`; });
+                results.innerHTML = h;
+            });
+        }
+        function handleSearchResult(item) { document.getElementById('searchOverlay').classList.remove('active'); document.getElementById('smartSearchInput').value = ''; if (item.action) item.action(); else if (item.url) location.href = item.url; }
+
+        function formatTimeAgo(d) { if(!d) return ''; const n=new Date(), p=new Date(d), s=Math.floor((n-p)/1000); if(s<60) return 'à l\'instant'; if(s<3600) return `il y a ${Math.floor(s/60)} min`; if(s<86400) return `il y a ${Math.floor(s/3600)} h`; return p.toLocaleDateString('fr-FR'); }
+        function getTimeRemaining(last) { if(!last) return null; const n=new Date(), l=new Date(last); if(isNaN(l)) return null; const next=new Date(l.getTime()+86400000), diff=next-n; if(diff<=0) return null; return { hours: Math.floor(diff/3600000), minutes: Math.floor((diff%3600000)/60000), seconds: Math.floor((diff%60000)/1000) }; }
+        function startCountdown(last) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            const cd = document.getElementById('rewardCountdown'), rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus');
+            function update() { const r = getTimeRemaining(last); if (!r) { cd.style.display='none'; rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; if(countdownInterval) clearInterval(countdownInterval); return; }
+                cd.style.display='block'; cd.textContent=`Disponible dans ${r.hours}h ${r.minutes}m ${r.seconds}s`; rb.classList.remove('reward-ready'); rb.classList.add('reward-claimed'); rs.textContent='Réclamée'; rs.style.color='var(--text-secondary)'; }
+            update(); countdownInterval = setInterval(update, 1000);
+        }
+        function updateRewardButton() {
+            if (userData && userData.last_daily_login) {
+                const r = getTimeRemaining(userData.last_daily_login), rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus'), cd = document.getElementById('rewardCountdown');
+                if (r===null) { rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; cd.style.display='none'; if(countdownInterval) clearInterval(countdownInterval); }
+                else { cd.style.display='block'; cd.textContent=`Disponible dans ${r.hours}h ${r.minutes}m ${r.seconds}s`; rb.classList.remove('reward-ready'); rb.classList.add('reward-claimed'); rs.textContent='Réclamée'; rs.style.color='var(--text-secondary)'; startCountdown(userData.last_daily_login); }
+            } else { const rb = document.getElementById('dailyRewardBtn'), rs = document.getElementById('rewardStatus'), cd = document.getElementById('rewardCountdown'); rb.classList.add('reward-ready'); rb.classList.remove('reward-claimed'); rs.textContent='Prête !'; rs.style.color='#fff'; cd.style.display='none'; if(countdownInterval) clearInterval(countdownInterval); }
         }
 
-        // ===== CONSOLE TEMPS RÉEL =====
+        function showWhatsAppModal() { if(!whatsappShown) { document.getElementById('whatsappModal').classList.remove('hidden'); whatsappShown=true; sessionStorage.setItem('whatsapp_shown','true'); } }
+        function closeWhatsAppModal() { document.getElementById('whatsappModal').classList.add('hidden'); }
+
+        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+        function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+        document.getElementById('menuToggle').addEventListener('click', openSidebar);
+        document.getElementById('closeSidebar').addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        const notifBtn = document.getElementById('notificationBtn'), notifPanel = document.getElementById('notificationsPanel');
+        notifBtn.addEventListener('click', () => { notifPanel.classList.toggle('active'); if(userServers.length) loadNotifications(); });
+        document.getElementById('closeNotifications').addEventListener('click', () => notifPanel.classList.remove('active'));
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function showToast(type, msg) { const t=document.createElement('div'); t.className=`toast ${type}`; t.innerHTML=`<i class="fas fa-${type==='success'?'check':type==='error'?'exclamation':'info'}-circle"></i><span>${msg}</span>`; document.body.appendChild(t); setTimeout(()=>{ t.style.animation='slideOut 0.3s'; setTimeout(()=>t.remove(),300); },3000); }
+        function copyToClipboard(t) { navigator.clipboard.writeText(t); showToast('success','Copié !'); }
+        function calculateDaysLeft(e) { if(!e) return 0; try { return Math.ceil((new Date(e)-new Date())/86400000); } catch { return 0; } }
+
+        // ===== WEBSOCKET POUR STATS TEMPS RÉEL =====
         let rtWs = null;
         let rtCurrentServerId = null;
         let rtStatsChart = null;
@@ -927,7 +1115,6 @@
         
         function initRtWebSocket() {
             if (rtWs && rtWs.readyState === WebSocket.OPEN) return;
-            
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${protocol}//${window.location.host}`;
             
@@ -950,6 +1137,7 @@
                     else if (data.type === 'stats' && data.serverId === rtCurrentServerId) {
                         updateRtConsoleStats(data.stats);
                         updateRtChart(data.stats);
+                        updateServerCardStats(data.serverId, data.stats);
                     }
                     else if (data.type === 'log' && data.serverId === rtCurrentServerId) {
                         addRtConsoleLog(data.log);
@@ -974,15 +1162,33 @@
             };
         }
         
+        function updateServerCardStats(serverId, stats) {
+            if (!stats) return;
+            const cpuEl = document.getElementById(`stat-cpu-${serverId}`);
+            const ramEl = document.getElementById(`stat-ram-${serverId}`);
+            const diskEl = document.getElementById(`stat-disk-${serverId}`);
+            if (cpuEl) cpuEl.textContent = `${Math.round(stats.cpu || 0)}%`;
+            if (ramEl) {
+                const usedMB = Math.round((stats.memory?.used || 0) / 1024 / 1024);
+                const limitMB = Math.round((stats.memory?.limit || 0) / 1024 / 1024);
+                ramEl.textContent = limitMB > 0 ? `${usedMB} / ${limitMB} MB` : `${usedMB} MB`;
+            }
+            if (diskEl) {
+                const usedMB = Math.round((stats.disk?.used || 0) / 1024 / 1024);
+                const limitMB = Math.round((stats.disk?.limit || 0) / 1024 / 1024);
+                diskEl.textContent = limitMB > 0 ? `${usedMB} / ${limitMB} MB` : `${usedMB} MB`;
+            }
+        }
+        
         function updateRtConsoleStats(stats) {
             if (!stats) return;
             document.getElementById('rtConsoleCPU').textContent = `${Math.round(stats.cpu || 0)}%`;
             const ramMB = Math.round((stats.memory?.used || 0) / 1024 / 1024);
             const ramLimitMB = Math.round((stats.memory?.limit || 0) / 1024 / 1024);
-            document.getElementById('rtConsoleRAM').textContent = `${ramMB} / ${ramLimitMB} MB`;
+            document.getElementById('rtConsoleRAM').textContent = ramLimitMB > 0 ? `${ramMB} / ${ramLimitMB} MB` : `${ramMB} MB`;
             const diskMB = Math.round((stats.disk?.used || 0) / 1024 / 1024);
             const diskLimitMB = Math.round((stats.disk?.limit || 0) / 1024 / 1024);
-            document.getElementById('rtConsoleDISK').textContent = `${diskMB} / ${diskLimitMB} MB`;
+            document.getElementById('rtConsoleDISK').textContent = diskLimitMB > 0 ? `${diskMB} / ${diskLimitMB} MB` : `${diskMB} MB`;
             const uptime = stats.uptime || 0;
             const hours = Math.floor(uptime / 3600);
             const minutes = Math.floor((uptime % 3600) / 60);
@@ -1058,26 +1264,12 @@
             const input = document.getElementById('rtConsoleCommandInput');
             const command = input.value.trim();
             if (!command || !rtCurrentServerId) return;
-            
             if (rtWs && rtWs.readyState === WebSocket.OPEN) {
                 rtWs.send(JSON.stringify({ type: 'command', serverId: rtCurrentServerId, command: command }));
                 addRtConsoleLog(`> ${command}`);
                 input.value = '';
             } else {
-                // Fallback: appel API REST
-                fetch(`/api/servers/${rtCurrentServerId}/command`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ command: command })
-                }).then(res => res.json()).then(data => {
-                    if (data.success) {
-                        addRtConsoleLog(`> ${command}`);
-                        showToast('success', 'Commande envoyée');
-                    } else {
-                        showToast('error', data.error || 'Erreur');
-                    }
-                }).catch(err => showToast('error', 'Erreur réseau'));
-                input.value = '';
+                showToast('error', 'WebSocket non connecté');
             }
         }
         
@@ -1107,100 +1299,6 @@
             if (rtStatsChart) { rtStatsChart.destroy(); rtStatsChart = null; }
         }
 
-        // ===== POWER ACTIONS =====
-        async function powerAction(serverId, action) {
-            try {
-                const res = await fetch(`/api/servers/${serverId}/power`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('success', `Action ${action} effectuée`);
-                    setTimeout(() => loadUserData(), 2000);
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (e) {
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        // ===== FONCTIONS EXISTANTES (conservées) =====
-        function toggleHideCoins() { /* garde ton code existant */ }
-        function refreshWeather() { /* garde ton code existant */ }
-        function loadWeather() { /* garde ton code existant */ }
-        
-        // Fonction displayServers modifiée pour ajouter les stats
-        function displayServers() {
-            const container = document.getElementById('serversContainer');
-            if (!userServers.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-server"></i><h3>Aucun serveur</h3><a href="/pricing" class="btn btn-primary">Créer un serveur</a></div>';
-                return;
-            }
-            
-            let html = '<div class="servers-grid">';
-            userServers.forEach(server => {
-                const days = calculateDaysLeft(server.expires_at);
-                const expired = days < 0;
-                const plan = PLANS[server.server_type] || { name: server.server_type || 'Inconnu', memory: 0, disk: 0, cpu: 0 };
-                
-                let status = '', statusClass = '';
-                if (server.status === 'suspended') { status = 'Suspendu'; statusClass = 'status-suspended'; }
-                else if (server.status === 'stopped') { status = 'Arrêté'; statusClass = 'status-stopped'; }
-                else if (server.status === 'active') {
-                    if (expired) { status = 'Expiré'; statusClass = 'status-stopped'; }
-                    else { status = 'En ligne'; statusClass = 'status-running'; }
-                }
-                
-                const expiryClass = (days <= 3 && days > 0 && !expired) ? 'warning' : (expired ? 'danger' : '');
-                const serverId = server.id;
-                
-                html += `
-                    <div class="server-card ${server.status === 'suspended' ? 'suspended' : (expired ? 'expired' : (days <= 3 && days > 0 ? 'expiring' : ''))}">
-                        <div class="server-header">
-                            <div class="server-name"><i class="fas fa-cloud"></i>${server.server_name || 'Sans nom'}<button class="details-btn" onclick="showServerDetails('${serverId}')"><i class="fas fa-info-circle"></i> Détails</button></div>
-                            <div class="server-status"><span class="status-dot ${statusClass}"></span><span>${status}</span></div>
-                        </div>
-                        <div class="server-body">
-                            <div class="stats-row">
-                                <div class="stat-item"><div class="stat-item-label">CPU</div><div class="stat-item-value" id="stat-cpu-${serverId}">--%</div></div>
-                                <div class="stat-item"><div class="stat-item-label">RAM</div><div class="stat-item-value" id="stat-ram-${serverId}">-- MB</div></div>
-                                <div class="stat-item"><div class="stat-item-label">DISK</div><div class="stat-item-value" id="stat-disk-${serverId}">-- MB</div></div>
-                            </div>
-                            <div class="server-info">
-                                <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
-                                <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk / 1024} GB</span></div>
-                                <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
-                                <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
-                            </div>
-                        </div>
-                        <div class="server-footer">
-                            <div class="server-expiry ${expiryClass}"><i class="fas fa-clock"></i> ${expired ? 'Expiré' : days === 0 ? 'Aujourd\'hui' : days + 'j'}</div>
-                            <div class="server-actions">
-                                <button class="server-action-btn" onclick="openRtConsoleModal('${serverId}', '${server.server_name}')" title="Console"><i class="fas fa-terminal"></i></button>
-                                ${server.status !== 'suspended' && !expired ? `
-                                    <button class="server-action-btn" onclick="powerAction('${serverId}','restart')" title="Redémarrer"><i class="fas fa-sync-alt"></i></button>
-                                    <button class="server-action-btn ${status === 'En ligne' ? 'stop' : 'start'}" onclick="powerAction('${serverId}','${status === 'En ligne' ? 'stop' : 'start'}')" title="${status === 'En ligne' ? 'Arrêter' : 'Démarrer'}">
-                                        <i class="fas fa-${status === 'En ligne' ? 'stop' : 'play'}"></i>
-                                    </button>
-                                ` : '<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>'}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html + '</div>';
-            
-            // Démarrer le polling des stats pour les serveurs actifs
-            userServers.forEach(server => {
-                if (server.status === 'active' && calculateDaysLeft(server.expires_at) > 0) {
-                    startStatsPolling(server.id);
-                }
-            });
-        }
-
         // ===== CHARGEMENT DES DONNÉES =====
         async function loadUserData() {
             try {
@@ -1210,17 +1308,10 @@
                     userData = data.user;
                     userServers = data.servers || [];
                     updateUI();
-                    if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(() => {
-                        document.getElementById('whatsappModal').classList.remove('hidden');
-                        sessionStorage.setItem('whatsapp_shown', 'true');
-                    }, 100);
-                } else {
-                    localStorage.removeItem('token');
-                    window.location.href = '/login';
-                }
-            } catch (e) {
-                showToast('error', 'Erreur de chargement');
-            }
+                    if (new URLSearchParams(location.search).get('create')==='free') prepareFreeServer();
+                    if (!sessionStorage.getItem('whatsapp_shown')) setTimeout(showWhatsAppModal, 100);
+                } else { localStorage.removeItem('token'); location.href = '/login'; }
+            } catch (e) { showToast('error', 'Erreur de chargement'); }
         }
 
         function updateUI() {
@@ -1228,166 +1319,203 @@
             document.getElementById('sidebarUserName').textContent = userData.username || 'Utilisateur';
             document.getElementById('sidebarUserEmail').textContent = userData.email || '';
             document.getElementById('sidebarUserBadge').textContent = userData.role || 'User';
-            document.getElementById('sidebarCoins').textContent = userData.coins || 0;
+            
+            const sidebarCoins = document.getElementById('sidebarCoins');
+            sidebarCoins.textContent = userData.coins || 0;
+            if (coinsHidden) {
+                sidebarCoins.setAttribute('data-real-value', userData.coins || 0);
+                sidebarCoins.textContent = '••••';
+                sidebarCoins.classList.add('blurred');
+            }
+            
             document.getElementById('sidebarServers').textContent = userServers.length;
             document.getElementById('welcomeMessage').textContent = `Bonjour ${userData.username || 'utilisateur'} !`;
-            document.getElementById('welcomeCoins').textContent = userData.coins || 0;
+            
+            const welcomeCoins = document.getElementById('welcomeCoins');
+            welcomeCoins.textContent = userData.coins || 0;
+            if (coinsHidden) {
+                welcomeCoins.setAttribute('data-real-value', userData.coins || 0);
+                welcomeCoins.textContent = '••••';
+                welcomeCoins.classList.add('blurred');
+            }
+            
             document.getElementById('welcomeServers').textContent = userServers.length;
             document.getElementById('welcomeStreak').textContent = userData.daily_login_streak || 0;
-            document.getElementById('statCoins').textContent = userData.coins || 0;
+            
+            const statCoins = document.getElementById('statCoins');
+            statCoins.textContent = userData.coins || 0;
+            if (coinsHidden) {
+                statCoins.setAttribute('data-real-value', userData.coins || 0);
+                statCoins.textContent = '••••';
+                statCoins.classList.add('blurred');
+            }
+            
             document.getElementById('statServers').textContent = userServers.length;
             document.getElementById('statStreak').textContent = userData.daily_login_streak || 0;
             document.getElementById('statLevel').textContent = userData.level || 1;
             
-            const expiring = userServers.filter(s => { const d = calculateDaysLeft(s.expires_at); return d > 0 && d <= 3; }).length;
+            const expiring = userServers.filter(s => { const d = calculateDaysLeft(s.expires_at); return d>0 && d<=3; }).length;
             document.getElementById('serversExpiring').textContent = expiring + ' bientôt expirés';
+            const badge = document.getElementById('notificationBadge');
+            if (expiring>0) { badge.textContent = expiring; badge.style.display = 'flex'; } else badge.style.display = 'none';
             
-            displayServers();
+            updateRewardButton(); displayServers(); loadActivities(); updateGoalsDisplay();
             AvatarManager.applyToPage(userData.username);
         }
 
-        // ===== FONCTIONS DES MODALS (conservées) =====
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        
-        async function showServerDetails(id) { /* garde ton code existant */ }
-        async function toggleAutoRenew() { /* garde ton code existant */ }
-        function renewServer() { /* garde ton code existant */ }
-        async function confirmRenew() { /* garde ton code existant */ }
-        async function confirmAction() { /* garde ton code existant */ }
-        async function createServer() { /* garde ton code existant */ }
-        
-        // ===== INITIALISATION =====
-        function initTheme() {
-            const t = localStorage.getItem('kermhosting_theme') || 'default';
-            document.body.setAttribute('data-theme', t);
-            document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === t));
-        }
-        function setTheme(t) {
-            document.body.setAttribute('data-theme', t);
-            localStorage.setItem('kermhosting_theme', t);
-            document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === t));
-            showToast('success', `Thème ${t} activé`);
-        }
-        
-        // Sidebar
-        function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('sidebarOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeSidebarFunc() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active'); document.body.style.overflow = ''; }
-        document.getElementById('menuToggle').addEventListener('click', openSidebar);
-        document.getElementById('closeSidebar').addEventListener('click', closeSidebarFunc);
-        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebarFunc);
-        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
-        
-        // Notifications
-        document.getElementById('notificationBtn').addEventListener('click', () => showToast('info', 'Pas de nouvelles notifications'));
-        
-        // Logout
-        document.getElementById('navLogout').addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            window.location.href = '/';
-        });
-        
-        // WhatsApp modal
-        document.getElementById('whatsappJoinBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09', '_blank');
-            document.getElementById('whatsappModal').classList.add('hidden');
-        });
-        document.getElementById('whatsappLaterBtn').addEventListener('click', () => {
-            document.getElementById('whatsappModal').classList.add('hidden');
-        });
-        
-        // Thème
-        document.getElementById('themeToggleBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('themeDropdown').classList.toggle('active');
-        });
-        document.querySelectorAll('.theme-option').forEach(o => o.addEventListener('click', (e) => {
-            setTheme(e.target.dataset.theme);
-            document.getElementById('themeDropdown').classList.remove('active');
-        }));
-        document.addEventListener('click', () => document.getElementById('themeDropdown').classList.remove('active'));
-        
-        // Objectifs
-        let userGoals = [];
-        function loadGoals() {
-            const s = localStorage.getItem('kermhosting_goals');
-            userGoals = s ? JSON.parse(s) : [];
-            updateGoalsDisplay();
-        }
-        function saveGoals() { localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals)); }
-        function updateGoalsDisplay() {
-            const container = document.getElementById('goalsList');
-            if (!userGoals.length) {
-                container.innerHTML = '<div class="empty-goals"><i class="fas fa-bullseye"></i><p>Aucun objectif</p></div>';
-                return;
-            }
-            let html = '';
-            userGoals.forEach(g => {
-                let cur = 0;
-                if (g.type === 'coins' && userData) cur = userData.coins || 0;
-                else if (g.type === 'servers') cur = userServers.length;
-                else if (g.type === 'streak' && userData) cur = userData.daily_login_streak || 0;
-                else cur = g.current || 0;
-                const p = Math.min((cur / g.target) * 100, 100);
-                html += `
-                    <div class="goal-item">
-                        <div class="goal-info">
-                            <div class="goal-name"><span>${g.name}</span><span class="goal-progress">${cur}/${g.target}</span></div>
-                            <div class="progress-bar"><div class="progress-fill animated" style="width:${p}%;"></div></div>
-                        </div>
-                        <button class="btn-icon" onclick="deleteGoal('${g.id}')"><i class="fas fa-times"></i></button>
+        function displayServers() {
+            const c = document.getElementById('serversContainer');
+            if (!userServers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-server"></i><h3>Aucun serveur</h3><a href="/pricing" class="btn btn-primary">Créer un serveur</a></div>'; return; }
+            let h = '<div class="servers-grid">';
+            userServers.forEach(s => {
+                const days = calculateDaysLeft(s.expires_at), expired = days<0, plan = PLANS[s.server_type] || { name: s.server_type||'Inconnu', memory:0, disk:0, cpu:0 };
+                let status = '', cls = ''; if (s.status==='suspended') { status='Suspendu'; cls='suspended'; } else if (s.status==='stopped') status='Arrêté'; else if (s.status==='active') { if (expired) { status='Expiré'; cls='expired'; } else status='En ligne'; }
+                if (days<=3 && days>0 && s.status==='active' && !expired) cls='expiring';
+                h += `<div class="server-card ${cls}">
+                    <div class="server-header">
+                        <div class="server-name"><i class="fas fa-cloud"></i>${s.server_name||'Sans nom'}<button class="details-btn" onclick="showServerDetails('${s.id}')"><i class="fas fa-info-circle"></i> Détails</button></div>
+                        <div class="server-status"><span class="status-dot ${s.status==='active'&&!expired?'status-running':s.status==='suspended'?'status-suspended':'status-stopped'}"></span><span>${status}</span></div>
                     </div>
-                `;
+                    <div class="server-body">
+                        <div class="stats-row">
+                            <div class="stat-item"><div class="stat-item-label">CPU</div><div class="stat-item-value" id="stat-cpu-${s.id}">--%</div></div>
+                            <div class="stat-item"><div class="stat-item-label">RAM</div><div class="stat-item-value" id="stat-ram-${s.id}">-- MB</div></div>
+                            <div class="stat-item"><div class="stat-item-label">DISK</div><div class="stat-item-value" id="stat-disk-${s.id}">-- MB</div></div>
+                        </div>
+                        <div class="server-info">
+                            <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
+                            <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk/1024} GB</span></div>
+                            <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
+                            <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
+                        </div>
+                    </div>
+                    <div class="server-footer">
+                        <div class="server-expiry ${days<=3&&days>0?'warning':''} ${expired?'danger':''}"><i class="fas fa-clock"></i> ${expired?'Expiré':days===0?'Aujourd\'hui':days+'j'}</div>
+                        <div class="server-actions">
+                            <button class="server-action-btn" onclick="openRtConsoleModal('${s.id}', '${s.server_name}')"><i class="fas fa-terminal"></i></button>
+                            ${s.status!=='suspended'&&!expired?`<button class="server-action-btn" onclick="powerAction('${s.id}','restart')"><i class="fas fa-sync-alt"></i></button><button class="server-action-btn ${status==='En ligne'?'stop':'start'}" onclick="powerAction('${s.id}','${status==='En ligne'?'stop':'start'}')"><i class="fas fa-${status==='En ligne'?'stop':'play'}"></i></button>`:'<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>'}
+                        </div>
+                    </div>
+                </div>`;
             });
-            container.innerHTML = html;
+            c.innerHTML = h + '</div>';
         }
-        function deleteGoal(id) { userGoals = userGoals.filter(g => g.id !== id); saveGoals(); updateGoalsDisplay(); showToast('info', 'Objectif supprimé'); }
-        function saveGoal() {
-            const type = document.getElementById('goalType').value;
-            const target = parseInt(document.getElementById('goalTarget').value);
-            let name = document.getElementById('goalName').value.trim();
-            if (!target || target < 1) { showToast('error', 'Objectif invalide'); return; }
-            if (!name) {
-                const names = { coins: 'coins', servers: 'serveurs', streak: 'jours', custom: 'objectif' };
-                name = `Atteindre ${target} ${names[type]}`;
-            }
-            userGoals.push({ id: Date.now().toString(), name, type, target, current: 0, completed: false });
-            saveGoals();
-            updateGoalsDisplay();
-            closeModal('goalModal');
-            showToast('success', 'Objectif créé !');
-            document.getElementById('goalTarget').value = '';
-            document.getElementById('goalName').value = '';
+
+        async function showServerDetails(id) {
+            const s = userServers.find(s => s.id===id); if(!s) return; currentServer = s;
+            const plan = PLANS[s.server_type]||{name:s.server_type||'Inconnu'}, days=calculateDaysLeft(s.expires_at);
+            let status = s.status==='suspended'?'Suspendu':s.status==='stopped'?'Arrêté':days<0?'Expiré':'Actif';
+            document.getElementById('detailsServerName').textContent = s.server_name||'Sans nom';
+            document.getElementById('detailsPlan').textContent = plan.name;
+            document.getElementById('detailsStatus').textContent = status;
+            document.getElementById('detailsExpiry').textContent = s.expires_at?new Date(s.expires_at).toLocaleDateString('fr-FR'):'Non définie';
+            document.getElementById('detailsTimeLeft').textContent = days<0?'Expiré':days+' jours';
+            try {
+                const r = await fetch(`/api/servers/${id}/credentials`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const d = await r.json();
+                if (d.success) { 
+                    const cred=d.credentials; const panelUrl = cred.panel_url || '#';
+                    document.getElementById('detailsCredentials').innerHTML = `
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-user"></i>Utilisateur</span><span class="credential-value">${cred.username||'N/A'}</span><button class="copy-btn" onclick="copyToClipboard('${cred.username||''}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-lock"></i>Mot de passe</span><span class="credential-value">${cred.password||'N/A'}</span><button class="copy-btn" onclick="copyToClipboard('${cred.password||''}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="credential-item"><span class="credential-label"><i class="fas fa-globe"></i>Panel</span><span class="credential-value">${panelUrl}</span><button class="copy-btn" onclick="copyToClipboard('${panelUrl}')"><i class="fas fa-copy"></i></button></div>
+                        <a href="${panelUrl}" target="_blank" class="panel-btn"><i class="fas fa-external-link-alt"></i> Ouvrir le panel</a>`;
+                } else document.getElementById('detailsCredentials').innerHTML = '<p>Identifiants non disponibles</p>';
+            } catch(e) { document.getElementById('detailsCredentials').innerHTML = '<p>Erreur de chargement</p>'; }
+            await loadAutoRenewStatus(id);
+            const btn = document.getElementById('renewBtn');
+            if (s.status==='suspended'||days<0) { btn.textContent='Réactiver'; btn.className='btn btn-warning'; }
+            else { btn.textContent='Renouveler'; btn.className='btn btn-success'; }
+            openModal('serverDetailsModal');
         }
         
+        async function loadAutoRenewStatus(id) { try { const r=await fetch(`/api/servers/${id}/auto-renew`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(d.success) document.getElementById('autoRenewToggle').checked=d.auto_renew||false; } catch(e){} }
+        
+        async function toggleAutoRenew() { if(!currentServer) return; const t=document.getElementById('autoRenewToggle'), en=t.checked; t.disabled=true; try { const r=await fetch(`/api/servers/${currentServer.id}/auto-renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({enabled:en})}); const d=await r.json(); if(d.success) showToast('success',`Auto-renouvellement ${en?'activé':'désactivé'}`); else { showToast('error',d.error||'Erreur'); t.checked=!en; } } catch(e) { showToast('error','Erreur réseau'); t.checked=!en; } finally { t.disabled=false; } }
+        
+        function renewServer() { closeModal('serverDetailsModal'); const p=PLANS[currentServer.server_type]||{name:'Inconnu',price:0,coins:0}; document.getElementById('renewServerName').textContent=currentServer.server_name||'Sans nom'; document.getElementById('renewPlan').textContent=p.name; document.getElementById('renewPrice').textContent=(p.price||0)+' FCFA'; document.getElementById('renewCoins').textContent=(p.coins||0)+' coins'; document.getElementById('renewBalance').textContent=(userData?.coins||0)+' coins'; openModal('renewModal'); }
+        
+        async function confirmRenew() { if(!currentServer) return; const p=PLANS[currentServer.server_type]||{coins:0}; if((userData?.coins||0)<(p.coins||0)) { showToast('error','Coins insuffisants'); closeModal('renewModal'); return; } const btn=document.getElementById('renewConfirmBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>...'; try { const r=await fetch(`/api/servers/${currentServer.id}/renew`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({coins:p.coins})}); const d=await r.json(); if(d.success) { showToast('success','Serveur renouvelé !'); closeModal('renewModal'); loadUserData(); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-sync-alt"></i> Renouveler'; } }
+        
+        function powerAction(id, act) { const s=userServers.find(s=>s.id===id); if(s&&s.status==='suspended') { showToast('error','Serveur suspendu'); return; } currentServerId=id; currentAction=act; const titles={start:'Démarrer',stop:'Arrêter',restart:'Redémarrer'}; document.getElementById('actionTitle').textContent=titles[act]||'Action'; document.getElementById('actionMessage').textContent=`Confirmer ${(titles[act]||'action').toLowerCase()} ?`; openModal('actionModal'); }
+        
+        async function confirmAction() { if(!currentServerId||!currentAction) return; closeModal('actionModal'); showToast('info','En cours...'); try { const r=await fetch(`/api/servers/${currentServerId}/power`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({action:currentAction})}); const d=await r.json(); if(d.success) { showToast('success','Action effectuée'); setTimeout(loadUserData,2000); } else showToast('error',d.error||'Erreur'); } catch(e) { showToast('error','Erreur réseau'); } currentServerId=null; currentAction=null; }
+
+        document.getElementById('dailyRewardBtn').addEventListener('click', async e => {
+            e.preventDefault(); if(isClaimingReward) return;
+            const rb=document.getElementById('dailyRewardBtn'), ri=rb.querySelector('i'), rs=document.getElementById('rewardStatus');
+            const origIcon=ri.className, origText=rs.textContent;
+            if(userData?.last_daily_login) { const r=getTimeRemaining(userData.last_daily_login); if(r!==null) { showToast('warning',`Disponible dans ${r.hours}h ${r.minutes}m`); return; } }
+            isClaimingReward=true; rb.classList.add('reward-loading'); ri.className='fas fa-spinner fa-spin'; rs.textContent='Chargement...';
+            try {
+                const r=await fetch('/api/daily-reward', { method:'POST', headers:{ 'Authorization':`Bearer ${token}` } });
+                const d=await r.json();
+                if(d.success) { showToast('success',`+${d.coins} coins (série ${d.streak})`); await loadUserData(); celebrateConfetti(); }
+                else { showToast('error',d.error||'Erreur'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            } catch(e) { showToast('error','Erreur réseau'); rb.classList.remove('reward-loading'); ri.className=origIcon; rs.textContent=origText; }
+            finally { isClaimingReward=false; }
+        });
+
+        async function loadNotifications() { const c=document.getElementById('notificationsList'), exp=userServers.filter(s=>{const d=calculateDaysLeft(s.expires_at); return d>0&&d<=3;}); let h=''; if(exp.length) h+=`<div class="notification-item unread"><div class="notification-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="notification-content"><div class="notification-title">⚠️ Serveurs bientôt expirés</div><div class="notification-message">${exp.length} serveur(s) expirent bientôt</div></div></div>`; else h='<div class="empty-state"><i class="fas fa-bell-slash"></i><p>Aucune notification</p></div>'; c.innerHTML=h; }
+
+        async function loadActivities() {
+            const c=document.getElementById('activityContainer');
+            c.innerHTML='<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div>';
+            try {
+                const r=await fetch('/api/user/activities', { headers:{ 'Authorization':`Bearer ${token}` } });
+                const d=await r.json();
+                if(!d.success||!d.activities||!d.activities.length) { c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>Aucune activité</h3></div>'; return; }
+                let h=''; d.activities.forEach(a=>{
+                    let icon='fa-history'; if(a.activity_type?.includes('creation')) icon='fa-plus-circle'; else if(a.activity_type?.includes('start')) icon='fa-play'; else if(a.activity_type?.includes('stop')) icon='fa-stop'; else if(a.activity_type?.includes('daily')) icon='fa-calendar-check'; else if(a.activity_type?.includes('coins')) icon='fa-coins';
+                    h+=`<div class="activity-item"><div class="activity-icon"><i class="fas ${icon}"></i></div><div class="activity-content"><div class="activity-title">${a.description||'Action'}</div><div class="activity-time">${formatTimeAgo(a.created_at)}</div></div>${a.coins_earned!==0?`<div class="activity-coins ${a.coins_earned>0?'positive':'negative'}">${a.coins_earned>0?'+':''}${a.coins_earned}</div>`:''}</div>`;
+                });
+                c.innerHTML=h;
+            } catch(e) { c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
+        }
+
+        document.getElementById('clearActivitiesBtn').addEventListener('click', async () => { if(!confirm('Supprimer?')) return; try { await fetch('/api/user/activities', { method:'DELETE', headers:{ 'Authorization':`Bearer ${token}` } }); showToast('success','Historique effacé'); loadActivities(); } catch { showToast('error','Erreur'); } });
+        document.getElementById('refreshActivitiesBtn').addEventListener('click', loadActivities);
+
+        function prepareFreeServer() { if(userData?.free_panel_created) { showToast('error','Serveur gratuit déjà utilisé'); return; } document.getElementById('planSelect').innerHTML = '<option value="free">Free - Gratuit</option>'; openModal('serverModal'); }
+        
+        async function createServer() {
+            const plan=document.getElementById('planSelect').value, name=document.getElementById('serverName').value?.trim(), user=document.getElementById('serverUsername').value?.trim();
+            if(!plan||!name||!user) { showToast('error','Tous les champs requis'); return; }
+            closeModal('serverModal'); showToast('info','Création...');
+            try {
+                const r=await fetch('/api/create-server', { method:'POST', headers:{ 'Authorization':`Bearer ${token}`,'Content-Type':'application/json' }, body:JSON.stringify({ plan_id:plan, server_name:name, server_username:user, payment_method:plan==='free'?'free':'coins' }) });
+                const d=await r.json();
+                if(d.success) { showToast('success','Serveur créé !'); loadUserData(); }
+                else showToast('error',d.error||'Erreur');
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+
+        document.getElementById('themeToggleBtn').addEventListener('click', e => { e.stopPropagation(); document.getElementById('themeDropdown').classList.toggle('active'); });
+        document.querySelectorAll('.theme-option').forEach(o => o.addEventListener('click', e => { setTheme(e.target.dataset.theme); document.getElementById('themeDropdown').classList.remove('active'); }));
+        document.addEventListener('click', () => document.getElementById('themeDropdown').classList.remove('active'));
         document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
-        
-        // Exports globaux
-        window.closeModal = closeModal;
-        window.showServerDetails = showServerDetails;
-        window.powerAction = powerAction;
-        window.confirmAction = confirmAction;
-        window.renewServer = renewServer;
-        window.confirmRenew = confirmRenew;
-        window.createServer = createServer;
-        window.toggleAutoRenew = toggleAutoRenew;
-        window.deleteGoal = deleteGoal;
-        window.saveGoal = saveGoal;
-        window.refreshWeather = refreshWeather;
+
+        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown'); AvatarManager.reset(); location.href = '/'; });
+        document.getElementById('whatsappJoinBtn').addEventListener('click', e => { e.preventDefault(); window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09','_blank'); closeWhatsAppModal(); });
+        document.getElementById('whatsappLaterBtn').addEventListener('click', closeWhatsAppModal);
+
+        // Init
+        loadGoals(); initTheme(); initSmartSearch(); loadUserData(); setupAvatarClickRedirect(); loadWeather();
+
+        const planSelect = document.getElementById('planSelect');
+        if (planSelect) { planSelect.innerHTML = '<option value="">Choisir un plan</option>'; Object.entries(PLANS).forEach(([k,p]) => { if(k!=='free') { const o=document.createElement('option'); o.value=k; o.textContent=`${p.name} - ${p.price} FCFA (${p.coins} coins)`; planSelect.appendChild(o); } }); }
+
+        window.closeModal=closeModal; window.showServerDetails=showServerDetails; window.powerAction=powerAction; window.confirmAction=confirmAction;
+        window.renewServer=renewServer; window.confirmRenew=confirmRenew; window.copyToClipboard=copyToClipboard;
+        window.createServer=createServer; window.toggleAutoRenew=toggleAutoRenew; window.deleteGoal=deleteGoal; window.saveGoal=saveGoal;
+        window.handleSearchResult=handleSearchResult; window.refreshWeather=refreshWeather;
         window.openRtConsoleModal = openRtConsoleModal;
         window.closeRtConsoleModal = closeRtConsoleModal;
         window.sendRtConsoleCommand = sendRtConsoleCommand;
         window.handleRtConsoleCommandKeypress = handleRtConsoleCommandKeypress;
         window.clearRtConsoleLogs = clearRtConsoleLogs;
         
-        // Lancement
-        loadGoals();
-        initTheme();
-        loadUserData();
-        setupAvatarClickRedirect();
-        loadWeather();
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
     </script>
 </body>
 </html>
