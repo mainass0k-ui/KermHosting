@@ -1,6 +1,6 @@
 // =============================================
-// index.js - KERMHOSTING BACKEND ULTIME - VERSION EMAILS OPTIMISÉS
-// AVEC PAYPAL ET MINIPAY
+// index.js - KERMHOSTING BACKEND ULTIME - VERSION COMPLÈTE
+// AVEC WEBSOCKET TEMPS RÉEL, STATS, LOGOUT-ALL
 // =============================================
 
 import express from 'express';
@@ -60,7 +60,6 @@ const RESEND_CONFIG = {
     supportFrom: 'Support KermHosting <support@kermhosting.site>'
 };
 
-// Initialisation Resend
 const resend = new Resend(RESEND_CONFIG.apiKey);
 
 // =============================================
@@ -1547,6 +1546,55 @@ async function sendServerPowerAction(serverIdentifier, action) {
 }
 
 // =============================================
+// FONCTIONS STATS TEMPS RÉEL
+// =============================================
+
+async function getDetailedServerStats(serverIdentifier) {
+    try {
+        const resources = await getServerResources(serverIdentifier);
+        
+        if (!resources) return null;
+        
+        let logs = [];
+        try {
+            const logsResponse = await callPterodactylClientAPI(
+                `/api/client/servers/${serverIdentifier}/logs`,
+                'GET'
+            );
+            if (logsResponse && logsResponse.data) {
+                logs = logsResponse.data.split('\n').slice(-50);
+            }
+        } catch (logError) {
+            console.log(`⚠️ Impossible de récupérer les logs pour ${serverIdentifier}`);
+        }
+        
+        return {
+            cpu: resources.resources?.cpu_percent || 0,
+            memory: {
+                used: resources.resources?.memory_bytes || 0,
+                limit: resources.resources?.memory_limit_bytes || 0,
+                percent: resources.resources?.memory_percent || 0
+            },
+            disk: {
+                used: resources.resources?.disk_bytes || 0,
+                limit: resources.resources?.disk_limit_bytes || 0,
+                percent: resources.resources?.disk_percent || 0
+            },
+            uptime: resources.resources?.uptime || 0,
+            network: {
+                rx: resources.resources?.network_rx_bytes || 0,
+                tx: resources.resources?.network_tx_bytes || 0
+            },
+            state: resources.state || 'offline',
+            logs: logs
+        };
+    } catch (error) {
+        console.error(`❌ Erreur getDetailedServerStats:`, error);
+        return null;
+    }
+}
+
+// =============================================
 // FONCTIONS FAPSHI
 // =============================================
 
@@ -1725,7 +1773,7 @@ async function fapshiBalance() {
 }
 
 // =============================================
-// MIDDLEWARE AUTH
+// MIDDLEWARE AUTH (MODIFIÉ AVEC LOGOUT-ALL)
 // =============================================
 
 const authenticateToken = async (req, res, next) => {
@@ -1751,6 +1799,20 @@ const authenticateToken = async (req, res, next) => {
 
         if (user.banned) {
             return res.status(403).json({ success: false, error: 'Compte suspendu', code: 'ACCOUNT_BANNED' });
+        }
+
+        // Vérifier si l'utilisateur a fait un logout-all après l'émission du token
+        if (user.last_logout_all) {
+            const tokenIssuedAt = decoded.iat;
+            const lastLogoutAll = new Date(user.last_logout_all).getTime() / 1000;
+            
+            if (lastLogoutAll > tokenIssuedAt) {
+                return res.status(401).json({ 
+                    success: false, 
+                    error: 'Session expirée - déconnexion de toutes les sessions', 
+                    code: 'LOGOUT_ALL' 
+                });
+            }
         }
 
         req.user = user;
@@ -2926,6 +2988,7 @@ async function setupAutoRenewTables() {
         console.log('  - servers.free_notification_sent (boolean)');
         console.log('  - profiles.registration_ip (text)');
         console.log('  - profiles.ban_reason (text)');
+        console.log('  - profiles.last_logout_all (timestamptz)');
         console.log('  - auto_renew_logs (table)');
         console.log('  - mass_email_campaigns (table)');
         
@@ -3031,6 +3094,200 @@ app.get('/api/servers/:serverId/auto-renew', authenticateToken, async (req, res)
             success: false, 
             error: 'Erreur serveur' 
         });
+    }
+});
+
+// =============================================
+// ROUTE LOGOUT-ALL (NOUVELLE)
+// =============================================
+
+app.post('/api/user/logout-all', authenticateToken, async (req, res) => {
+    try {
+        // Mettre à jour la date de logout-all pour invalider tous les tokens existants
+        const { error } = await supabase
+            .from('profiles')
+            .update({ 
+                last_logout_all: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', req.user.id);
+        
+        if (error) throw error;
+        
+        // Enregistrer l'activité
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'logout_all_sessions',
+                description: 'Déconnexion de toutes les sessions (logout all)'
+            }]);
+        
+        res.json({ 
+            success: true, 
+            message: 'Toutes les sessions ont été déconnectées. Veuillez vous reconnecter.'
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur logout-all:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur lors de la déconnexion de toutes les sessions' 
+        });
+    }
+});
+
+// =============================================
+// ROUTES STATS TEMPS RÉEL
+// =============================================
+
+app.get('/api/servers/:serverId/stats', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.json({ 
+                success: true, 
+                stats: { state: server.status, message: 'Serveur non actif' } 
+            });
+        }
+        
+        const stats = await getDetailedServerStats(server.server_identifier);
+        
+        res.json({ success: true, stats });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération stats:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/servers/:serverId/logs', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { lines = 100 } = req.query;
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.json({ 
+                success: true, 
+                logs: [`[INFO] Serveur ${server.status} - logs non disponibles`] 
+            });
+        }
+        
+        let logs = [];
+        try {
+            const logsResponse = await callPterodactylClientAPI(
+                `/api/client/servers/${server.server_identifier}/logs`,
+                'GET'
+            );
+            if (logsResponse && logsResponse.data) {
+                logs = logsResponse.data.split('\n').slice(-parseInt(lines));
+            }
+        } catch (logError) {
+            logs = [`[ERREUR] Impossible de récupérer les logs: ${logError.message}`];
+        }
+        
+        res.json({ success: true, logs });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération logs:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/servers/:serverId/command', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        const { command } = req.body;
+        
+        if (!command) {
+            return res.status(400).json({ success: false, error: 'Commande requise' });
+        }
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('server_identifier, status, server_name')
+            .eq('id', serverId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.status !== 'active') {
+            return res.status(400).json({ success: false, error: 'Serveur non actif' });
+        }
+        
+        await callPterodactylClientAPI(
+            `/api/client/servers/${server.server_identifier}/command`,
+            'POST',
+            { command }
+        );
+        
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'server_command',
+                description: `Commande exécutée sur ${server.server_name}: ${command.substring(0, 50)}`
+            }]);
+        
+        res.json({ success: true, message: 'Commande envoyée' });
+        
+    } catch (error) {
+        console.error('❌ Erreur envoi commande:', error);
+        res.status(500).json({ success: false, error: 'Erreur lors de l\'envoi de la commande' });
+    }
+});
+
+app.get('/api/servers/:serverId/allocations', authenticateToken, async (req, res) => {
+    try {
+        const { serverId } = req.params;
+        
+        const { data: server, error } = await supabase
+            .from('servers')
+            .select('pterodactyl_id, user_id')
+            .eq('id', serverId)
+            .single();
+        
+        if (error || !server) {
+            return res.status(404).json({ success: false, error: 'Serveur non trouvé' });
+        }
+        
+        if (server.user_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, error: 'Accès non autorisé' });
+        }
+        
+        const allocations = await getServerAllocations(server.pterodactyl_id);
+        
+        res.json({ success: true, allocations });
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération allocations:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
@@ -3164,6 +3421,234 @@ setInterval(async () => {
     }
     
 }, 30000);
+
+// =============================================
+// WEBSOCKET AMÉLIORÉ AVEC STATS TEMPS RÉEL
+// =============================================
+
+// Stocker les clients WebSocket par serveur
+const wsClients = new Map();
+const wsIntervals = new Map();
+
+wss.on('connection', (ws, req) => {
+    console.log('🔌 Nouvelle connexion WebSocket');
+    let currentUser = null;
+    let subscribedServers = new Set();
+    
+    ws.on('message', async (message) => {
+        try {
+            const data = JSON.parse(message);
+            
+            if (data.type === 'auth' && data.token) {
+                try {
+                    const decoded = jwt.verify(data.token, SITE_CONFIG.jwtSecret);
+                    
+                    const { data: user, error } = await supabase
+                        .from('profiles')
+                        .select('id, username, role')
+                        .eq('id', decoded.userId)
+                        .single();
+                    
+                    if (user && !error) {
+                        currentUser = user;
+                        ws.user = user;
+                        ws.send(JSON.stringify({ 
+                            type: 'auth', 
+                            success: true,
+                            message: 'Authentifié avec succès'
+                        }));
+                        console.log(`✅ Utilisateur authentifié: ${user.username}`);
+                    } else {
+                        ws.send(JSON.stringify({ type: 'auth', success: false, error: 'Utilisateur non trouvé' }));
+                    }
+                } catch (err) {
+                    ws.send(JSON.stringify({ type: 'auth', success: false, error: 'Token invalide' }));
+                }
+            }
+            
+            if (data.type === 'subscribe' && data.serverId && currentUser) {
+                const { data: server, error } = await supabase
+                    .from('servers')
+                    .select('id, server_identifier, status, user_id')
+                    .eq('id', data.serverId)
+                    .single();
+                
+                const hasAccess = server && (
+                    server.user_id === currentUser.id || 
+                    currentUser.role === 'admin' || 
+                    currentUser.role === 'superadmin'
+                );
+                
+                if (!hasAccess) {
+                    ws.send(JSON.stringify({ 
+                        type: 'error', 
+                        error: 'Accès non autorisé à ce serveur' 
+                    }));
+                    return;
+                }
+                
+                subscribedServers.add(data.serverId);
+                
+                if (!wsClients.has(data.serverId)) {
+                    wsClients.set(data.serverId, new Set());
+                }
+                wsClients.get(data.serverId).add(ws);
+                
+                if (!wsIntervals.has(data.serverId) && server.status === 'active') {
+                    console.log(`📊 Démarrage stats temps réel pour serveur ${data.serverId}`);
+                    const interval = setInterval(async () => {
+                        try {
+                            const stats = await getDetailedServerStats(server.server_identifier);
+                            if (stats && wsClients.has(data.serverId)) {
+                                const message = JSON.stringify({
+                                    type: 'stats',
+                                    serverId: data.serverId,
+                                    stats: stats,
+                                    timestamp: Date.now()
+                                });
+                                for (const client of wsClients.get(data.serverId)) {
+                                    if (client.readyState === WebSocket.OPEN) {
+                                        client.send(message);
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error(`❌ Erreur envoi stats:`, error);
+                        }
+                    }, 2000);
+                    wsIntervals.set(data.serverId, interval);
+                }
+                
+                const initialStats = await getDetailedServerStats(server.server_identifier);
+                if (initialStats) {
+                    ws.send(JSON.stringify({
+                        type: 'stats',
+                        serverId: data.serverId,
+                        stats: initialStats
+                    }));
+                }
+                
+                try {
+                    const logsResponse = await callPterodactylClientAPI(
+                        `/api/client/servers/${server.server_identifier}/logs`,
+                        'GET'
+                    );
+                    if (logsResponse && logsResponse.data) {
+                        const logs = logsResponse.data.split('\n').slice(-100);
+                        ws.send(JSON.stringify({
+                            type: 'initial_logs',
+                            serverId: data.serverId,
+                            logs: logs
+                        }));
+                    }
+                } catch (logError) {
+                    console.log(`⚠️ Impossible de récupérer les logs initiaux`);
+                }
+                
+                ws.send(JSON.stringify({ 
+                    type: 'subscribed', 
+                    serverId: data.serverId,
+                    message: `Abonné aux stats du serveur`
+                }));
+            }
+            
+            if (data.type === 'unsubscribe' && data.serverId) {
+                subscribedServers.delete(data.serverId);
+                if (wsClients.has(data.serverId)) {
+                    wsClients.get(data.serverId).delete(ws);
+                    if (wsClients.get(data.serverId).size === 0 && wsIntervals.has(data.serverId)) {
+                        clearInterval(wsIntervals.get(data.serverId));
+                        wsIntervals.delete(data.serverId);
+                        console.log(`⏹️ Arrêt stats pour serveur ${data.serverId}`);
+                    }
+                }
+                ws.send(JSON.stringify({ 
+                    type: 'unsubscribed', 
+                    serverId: data.serverId 
+                }));
+            }
+            
+            if (data.type === 'command' && data.serverId && data.command && currentUser) {
+                const { data: server, error } = await supabase
+                    .from('servers')
+                    .select('server_identifier, status, user_id')
+                    .eq('id', data.serverId)
+                    .single();
+                
+                const hasAccess = server && (
+                    server.user_id === currentUser.id || 
+                    currentUser.role === 'admin' || 
+                    currentUser.role === 'superadmin'
+                );
+                
+                if (!hasAccess) {
+                    ws.send(JSON.stringify({ 
+                        type: 'error', 
+                        error: 'Accès non autorisé' 
+                    }));
+                    return;
+                }
+                
+                if (server.status !== 'active') {
+                    ws.send(JSON.stringify({
+                        type: 'error',
+                        error: 'Serveur non actif'
+                    }));
+                    return;
+                }
+                
+                try {
+                    await callPterodactylClientAPI(
+                        `/api/client/servers/${server.server_identifier}/command`,
+                        'POST',
+                        { command: data.command }
+                    );
+                    
+                    ws.send(JSON.stringify({
+                        type: 'command_ack',
+                        serverId: data.serverId,
+                        command: data.command,
+                        status: 'sent'
+                    }));
+                    
+                    ws.send(JSON.stringify({
+                        type: 'log',
+                        serverId: data.serverId,
+                        log: `> ${data.command}`,
+                        timestamp: new Date().toISOString()
+                    }));
+                    
+                } catch (cmdError) {
+                    ws.send(JSON.stringify({
+                        type: 'error',
+                        error: `Erreur commande: ${cmdError.message}`
+                    }));
+                }
+            }
+            
+            if (data.type === 'ping') {
+                ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur message WebSocket:', error);
+            ws.send(JSON.stringify({ type: 'error', error: error.message }));
+        }
+    });
+    
+    ws.on('close', () => {
+        console.log('🔌 Déconnexion WebSocket');
+        for (const serverId of subscribedServers) {
+            if (wsClients.has(serverId)) {
+                wsClients.get(serverId).delete(ws);
+                if (wsClients.get(serverId).size === 0 && wsIntervals.has(serverId)) {
+                    clearInterval(wsIntervals.get(serverId));
+                    wsIntervals.delete(serverId);
+                }
+            }
+        }
+    });
+});
 
 // =============================================
 // ROUTES AUTH (MODIFIÉES POUR COINS)
@@ -3477,7 +3962,7 @@ app.post('/api/login', async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user.id, username: user.username, role: user.role },
+            { userId: user.id, username: user.username, role: user.role, iat: Math.floor(Date.now() / 1000) },
             SITE_CONFIG.jwtSecret,
             { expiresIn: '3d' }
         );
@@ -4490,20 +4975,18 @@ app.post('/api/user/delete-account', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ENDPOINTS AVATAR (POSTGRESQL)
+// ENDPOINTS AVATAR (SUPABASE)
 // =============================================
 
-// ===== GET /api/user/avatar - Récupérer l'avatar =====
 app.get('/api/user/avatar', authenticateToken, async (req, res) => {
     try {
-        const result = await pool.query(
-            'SELECT avatar FROM profiles WHERE id = $1',
-            [req.user.id]
-        );
+        const { data: user, error } = await supabase
+            .from('profiles')
+            .select('avatar')
+            .eq('id', req.user.id)
+            .single();
         
-        const user = result.rows[0];
-        
-        if (!user) {
+        if (error || !user) {
             return res.status(404).json({ 
                 success: false, 
                 error: 'Utilisateur non trouvé' 
@@ -4523,12 +5006,10 @@ app.get('/api/user/avatar', authenticateToken, async (req, res) => {
     }
 });
 
-// ===== POST /api/user/avatar - Mettre à jour l'avatar =====
 app.post('/api/user/avatar', authenticateToken, async (req, res) => {
     try {
         const { avatar } = req.body;
         
-        // Vérifier si l'avatar est fourni
         if (!avatar) {
             return res.status(400).json({ 
                 success: false, 
@@ -4536,7 +5017,6 @@ app.post('/api/user/avatar', authenticateToken, async (req, res) => {
             });
         }
         
-        // Vérifier que c'est bien une image base64
         if (!avatar.startsWith('data:image/')) {
             return res.status(400).json({ 
                 success: false, 
@@ -4544,7 +5024,6 @@ app.post('/api/user/avatar', authenticateToken, async (req, res) => {
             });
         }
         
-        // Vérifier le type MIME
         const mimeMatch = avatar.match(/^data:(image\/\w+);base64,/);
         if (!mimeMatch) {
             return res.status(400).json({ 
@@ -4563,13 +5042,11 @@ app.post('/api/user/avatar', authenticateToken, async (req, res) => {
             });
         }
         
-        // Calculer la taille approximative en base64 (caractères * 0.75 = octets)
         const base64Data = avatar.split(',')[1];
         const sizeInBytes = Math.ceil((base64Data.length * 3) / 4);
         const sizeInMB = sizeInBytes / (1024 * 1024);
-        
-        // Limite à 5 Mo
         const MAX_SIZE_MB = 5;
+        
         if (sizeInMB > MAX_SIZE_MB) {
             return res.status(400).json({ 
                 success: false, 
@@ -4577,37 +5054,24 @@ app.post('/api/user/avatar', authenticateToken, async (req, res) => {
             });
         }
         
-        // Optionnel : Redimensionner l'image si elle est trop grande
-        let finalAvatar = avatar;
-        if (sizeInMB > 2) {
-            // Pour les images > 2 Mo, on pourrait les redimensionner côté serveur
-            // avec sharp ou jimp, mais pour l'instant on accepte jusqu'à 5 Mo
-            console.log(`Avatar de ${sizeInMB.toFixed(2)} Mo accepté pour l'utilisateur ${req.user.id}`);
-        }
+        const { error } = await supabase
+            .from('profiles')
+            .update({ avatar: avatar })
+            .eq('id', req.user.id);
         
-        // Mettre à jour la base de données
-        await pool.query(
-            'UPDATE profiles SET avatar = $1, updated_at = NOW() WHERE id = $2',
-            [avatar, req.user.id]
-        );
+        if (error) throw error;
         
-        // Enregistrer l'activité
-        await pool.query(
-            `INSERT INTO user_activities (user_id, activity_type, description, metadata) 
-             VALUES ($1, $2, $3, $4)`,
-            [
-                req.user.id,
-                'avatar_update',
-                'Photo de profil mise à jour',
-                JSON.stringify({ size_mb: sizeInMB.toFixed(2), mime_type: mimeType })
-            ]
-        );
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'avatar_update',
+                description: 'Photo de profil mise à jour'
+            }]);
         
         res.json({ 
             success: true, 
-            message: 'Avatar mis à jour avec succès',
-            size_mb: sizeInMB.toFixed(2),
-            mime_type: mimeType
+            message: 'Avatar mis à jour avec succès'
         });
         
     } catch (error) {
@@ -4619,22 +5083,22 @@ app.post('/api/user/avatar', authenticateToken, async (req, res) => {
     }
 });
 
-// ===== DELETE /api/user/avatar - Supprimer l'avatar =====
 app.delete('/api/user/avatar', authenticateToken, async (req, res) => {
     try {
-        const result = await pool.query(
-            'UPDATE profiles SET avatar = NULL, updated_at = NOW() WHERE id = $1 RETURNING avatar',
-            [req.user.id]
-        );
+        const { error } = await supabase
+            .from('profiles')
+            .update({ avatar: null })
+            .eq('id', req.user.id);
         
-        const oldAvatar = result.rows[0]?.avatar;
+        if (error) throw error;
         
-        // Enregistrer l'activité
-        await pool.query(
-            `INSERT INTO user_activities (user_id, activity_type, description) 
-             VALUES ($1, $2, $3)`,
-            [req.user.id, 'avatar_delete', 'Photo de profil supprimée']
-        );
+        await supabase
+            .from('user_activities')
+            .insert([{
+                user_id: req.user.id,
+                activity_type: 'avatar_delete',
+                description: 'Photo de profil supprimée'
+            }]);
         
         res.json({ 
             success: true, 
@@ -4646,277 +5110,6 @@ app.delete('/api/user/avatar', authenticateToken, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             error: 'Erreur serveur lors de la suppression' 
-        });
-    }
-});
-
-// ===== POST /api/connection-history - Enregistrer une connexion =====
-app.post('/api/connection-history', authenticateToken, async (req, res) => {
-    try {
-        const { device, browser, os } = req.body;
-        const ip = req.headers['x-forwarded-for']?.split(',')[0] || 
-                   req.socket.remoteAddress || 
-                   req.connection.remoteAddress;
-        
-        await pool.query(
-            `INSERT INTO connection_history (user_id, ip_address, user_agent, device_type, browser, os) 
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-            [req.user.id, ip, req.headers['user-agent'], device, browser, os]
-        );
-        
-        // Garder seulement les 20 dernières connexions
-        await pool.query(`
-            DELETE FROM connection_history 
-            WHERE user_id = $1 AND id NOT IN (
-                SELECT id FROM connection_history 
-                WHERE user_id = $1 
-                ORDER BY created_at DESC 
-                LIMIT 20
-            )
-        `, [req.user.id]);
-        
-        res.json({ success: true });
-        
-    } catch (error) {
-        console.error('Erreur historique connexion:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur serveur' 
-        });
-    }
-});
-
-// ===== GET /api/connection-history - Récupérer l'historique =====
-app.get('/api/connection-history', authenticateToken, async (req, res) => {
-    try {
-        const result = await pool.query(
-            `SELECT ip_address, user_agent, device_type, browser, os, created_at 
-             FROM connection_history 
-             WHERE user_id = $1 
-             ORDER BY created_at DESC 
-             LIMIT 10`,
-            [req.user.id]
-        );
-        
-        // Masquer partiellement les IP pour la sécurité
-        const history = result.rows.map(conn => ({
-            ...conn,
-            ip_address: conn.ip_address ? 
-                conn.ip_address.split('.').slice(0, 2).join('.') + '.***.***' : 
-                'Inconnue'
-        }));
-        
-        res.json({ 
-            success: true, 
-            history 
-        });
-        
-    } catch (error) {
-        console.error('Erreur GET historique:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur serveur' 
-        });
-    }
-});
-
-// POST /api/user/logout-all
-app.post('/api/user/logout-all', authenticateToken, async (req, res) => {
-    try {
-        const newApiKey = 'KERM_' + require('crypto').randomBytes(32).toString('hex');
-        await pool.query('UPDATE profiles SET api_key = $1 WHERE id = $2', [newApiKey, req.user.id]);
-        res.json({ success: true, message: 'Toutes les sessions déconnectées' });
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// ===== GET /api/user/export - Exporter toutes les données =====
-app.get('/api/user/export', authenticateToken, async (req, res) => {
-    try {
-        // Récupérer l'utilisateur
-        const userResult = await pool.query(
-            `SELECT id, username, email, role, coins, level, daily_login_streak, 
-                    account_created, created_at, avatar, free_panel_created, badges,
-                    experience, total_login_days, last_login, email_verified
-             FROM profiles WHERE id = $1`,
-            [req.user.id]
-        );
-        const user = userResult.rows[0];
-        
-        if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Utilisateur non trouvé' 
-            });
-        }
-        
-        // Récupérer les serveurs
-        const serversResult = await pool.query(
-            `SELECT id, server_type, server_name, status, expires_at, 
-                    created_at, updated_at, limits, feature_limits
-             FROM servers WHERE user_id = $1`,
-            [req.user.id]
-        );
-        
-        // Récupérer les transactions
-        const transactionsResult = await pool.query(
-            `SELECT id, type, plan_key, amount, currency, coins_amount, status, 
-                    completed_at, created_at
-             FROM transactions WHERE user_id = $1`,
-            [req.user.id]
-        );
-        
-        // Récupérer les filleuls (parrainage)
-        const referralsResult = await pool.query(
-            `SELECT u.username, r.created_at, r.coins_rewarded 
-             FROM referrals r 
-             JOIN profiles u ON r.referred_id = u.id 
-             WHERE r.referrer_id = $1`,
-            [req.user.id]
-        );
-        
-        // Récupérer l'historique des connexions
-        const connectionsResult = await pool.query(
-            `SELECT device_type, browser, os, created_at 
-             FROM connection_history 
-             WHERE user_id = $1 
-             ORDER BY created_at DESC`,
-            [req.user.id]
-        );
-        
-        // Récupérer les activités
-        const activitiesResult = await pool.query(
-            `SELECT activity_type, description, coins_earned, created_at 
-             FROM user_activities 
-             WHERE user_id = $1 
-             ORDER BY created_at DESC`,
-            [req.user.id]
-        );
-        
-        // Récupérer les récompenses quotidiennes
-        const rewardsResult = await pool.query(
-            `SELECT reward_date, coins_earned, streak_count 
-             FROM daily_rewards 
-             WHERE user_id = $1 
-             ORDER BY reward_date DESC`,
-            [req.user.id]
-        );
-        
-        const exportData = {
-            export_date: new Date().toISOString(),
-            user: {
-                username: user.username,
-                email: user.email,
-                role: user.role,
-                coins: user.coins,
-                level: user.level,
-                experience: user.experience,
-                daily_login_streak: user.daily_login_streak,
-                total_login_days: user.total_login_days,
-                account_created: user.account_created,
-                last_login: user.last_login,
-                email_verified: user.email_verified,
-                badges: user.badges,
-                free_panel_created: user.free_panel_created,
-                has_avatar: !!user.avatar
-            },
-            servers: serversResult.rows,
-            transactions: transactionsResult.rows,
-            referrals: referralsResult.rows,
-            connection_history: connectionsResult.rows,
-            activities: activitiesResult.rows,
-            daily_rewards: rewardsResult.rows
-        };
-        
-        // Enregistrer l'activité d'export
-        await pool.query(
-            `INSERT INTO user_activities (user_id, activity_type, description) 
-             VALUES ($1, $2, $3)`,
-            [req.user.id, 'data_export', 'Export des données personnelles']
-        );
-        
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', 
-            `attachment; filename=kermhosting-export-${user.username}-${new Date().toISOString().split('T')[0]}.json`
-        );
-        res.json(exportData);
-        
-    } catch (error) {
-        console.error('Erreur export:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur serveur lors de l\'export' 
-        });
-    }
-});
-
-// ===== MODIFICATION DE L'ENDPOINT /api/user/me =====
-// Ajouter l'avatar dans la réponse
-app.get('/api/user/me', authenticateToken, async (req, res) => {
-    try {
-        const userResult = await pool.query(
-            `SELECT id, username, email, role, coins, level, daily_login_streak, 
-                    account_created, created_at, api_key, avatar, free_panel_created,
-                    experience, total_login_days, badges, email_verified,
-                    last_daily_login, banned
-             FROM profiles WHERE id = $1`,
-            [req.user.id]
-        );
-        const user = userResult.rows[0];
-        
-        if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Utilisateur non trouvé' 
-            });
-        }
-        
-        // Récupérer les serveurs
-        const serversResult = await pool.query(
-            `SELECT id, server_type, server_name, pterodactyl_id, server_identifier,
-                    username, email, expires_at, status, limits, feature_limits,
-                    auto_backup, last_backup, created_at, updated_at
-             FROM servers 
-             WHERE user_id = $1 
-             ORDER BY created_at DESC`,
-            [req.user.id]
-        );
-        
-        // Récupérer les dernières transactions
-        const transactionsResult = await pool.query(
-            `SELECT id, type, plan_key, amount, currency, coins_amount, status, 
-                    completed_at, created_at
-             FROM transactions 
-             WHERE user_id = $1 
-             ORDER BY created_at DESC 
-             LIMIT 20`,
-            [req.user.id]
-        );
-        
-        // Calculer les badges à partir du JSONB
-        let badges = [];
-        try {
-            badges = user.badges || [];
-        } catch (e) {
-            badges = [];
-        }
-        
-        res.json({ 
-            success: true, 
-            user: {
-                ...user,
-                badges: badges
-            }, 
-            servers: serversResult.rows,
-            transactions: transactionsResult.rows
-        });
-        
-    } catch (error) {
-        console.error('Erreur /me:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur serveur' 
         });
     }
 });
@@ -5951,9 +6144,6 @@ app.get('/api/admin/fapshi/balance', authenticateToken, requireAdmin, async (req
     }
 });
 
-// =============================================
-// NOUVELLE ROUTE ADMIN - NETTOYAGE DES UTILISATEURS PTERODACTYL ORPHELINS
-// =============================================
 app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuperAdmin, async (req, res) => {
     try {
         console.log('🧹 Début du nettoyage des utilisateurs Pterodactyl orphelins...');
@@ -6595,9 +6785,6 @@ app.get('/api/admin/pterodactyl/stats', authenticateToken, requireAdmin, async (
     }
 });
 
-// =============================================
-// ROUTE SUPPRESSION LOGS
-// =============================================
 app.post('/api/admin/logs/delete-all', authenticateToken, requireAdmin, async (req, res) => {
     try {
         console.log('🗑️ Suppression de tous les logs par', req.user.username);
@@ -6802,7 +6989,7 @@ app.post('/api/admin/maintenance', authenticateToken, requireAdmin, async (req, 
 });
 
 // =============================================
-// ADMIN - EMAILS MASSIFS AVEC TEMPLATES ET DELAY (NOUVEAU)
+// ADMIN - EMAILS MASSIFS
 // =============================================
 
 const EMAIL_TEMPLATES = {
@@ -6915,10 +7102,6 @@ app.get('/api/admin/email-templates', authenticateToken, requireAdmin, async (re
     }
 });
 
-// =============================================
-// ADMIN - EMAILS MASSIFS (VERSION ASYNC SANS TIMEOUT)
-// =============================================
-
 app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { 
@@ -6962,7 +7145,6 @@ app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (r
             });
         }
         
-        // MODE TEST : envoi immédiat d'un seul email
         if (send_test_first && test_email) {
             console.log(`📧 Mode test : envoi à ${test_email} uniquement`);
             
@@ -6987,12 +7169,10 @@ app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (r
             });
         }
         
-        // MODE RÉEL : création de la campagne (réponse immédiate)
         console.log(`📧 Création campagne email : ${users.length} destinataires, template: ${template_type}`);
         
         const campaignId = generateTransactionId();
         
-        // Sauvegarder la campagne avec les utilisateurs dans metadata
         await supabase
             .from('mass_email_campaigns')
             .insert([{
@@ -7012,7 +7192,6 @@ app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (r
                 started_at: new Date().toISOString()
             }]);
         
-        // Log admin
         await supabase
             .from('admin_actions')
             .insert([{
@@ -7025,10 +7204,8 @@ app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (r
                 user_agent: req.headers['user-agent']
             }]);
         
-        // Démarrer le traitement en arrière-plan (SANS AWAIT)
         processMassEmailCampaign(campaignId);
         
-        // Réponse immédiate (avant la fin des envois)
         res.json({
             success: true,
             message: `Campagne lancée en arrière-plan pour ${users.length} utilisateurs. Les emails seront envoyés avec un délai de 60s entre chaque.`,
@@ -7047,14 +7224,10 @@ app.post('/api/admin/send-mass-email', authenticateToken, requireAdmin, async (r
     }
 });
 
-// =============================================
-// TRAITEMENT ASYNCHRONE DE LA CAMPAGNE
-// =============================================
 async function processMassEmailCampaign(campaignId) {
     try {
         console.log(`📧 [BG] Début traitement campagne ${campaignId}`);
         
-        // Récupérer la campagne
         const { data: campaign, error } = await supabase
             .from('mass_email_campaigns')
             .select('*')
@@ -7071,7 +7244,6 @@ async function processMassEmailCampaign(campaignId) {
             return;
         }
         
-        // Mettre à jour le statut
         await supabase
             .from('mass_email_campaigns')
             .update({ status: 'in_progress' })
@@ -7109,7 +7281,6 @@ async function processMassEmailCampaign(campaignId) {
                 console.log(`❌ [BG] [${i+1}/${users.length}] Erreur pour ${user.email}: ${err.message}`);
             }
             
-            // Mise à jour progressive dans la base (pour le frontend polling)
             await supabase
                 .from('mass_email_campaigns')
                 .update({
@@ -7119,14 +7290,12 @@ async function processMassEmailCampaign(campaignId) {
                 })
                 .eq('id', campaignId);
             
-            // Delay de 60 secondes entre chaque email (évite rate limiting)
             if (i < users.length - 1) {
                 console.log(`⏳ [BG] Attente 60 secondes avant le prochain email...`);
                 await new Promise(resolve => setTimeout(resolve, 60000));
             }
         }
         
-        // Terminer la campagne
         await supabase
             .from('mass_email_campaigns')
             .update({
@@ -7140,7 +7309,6 @@ async function processMassEmailCampaign(campaignId) {
         
         console.log(`✅ [BG] Campagne ${campaignId} terminée: ${successCount} succès, ${failCount} échecs`);
         
-        // Log final
         await supabase
             .from('admin_actions')
             .insert([{
@@ -7196,9 +7364,6 @@ app.get('/api/admin/email-campaigns', authenticateToken, requireAdmin, async (re
     }
 });
 
-// =============================================
-// ADMIN - RÉCUPÉRER UNE CAMPAGNE SPÉCIFIQUE
-// =============================================
 app.get('/api/admin/email-campaign/:campaignId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { campaignId } = req.params;
@@ -7434,54 +7599,6 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
             error: 'Erreur serveur' 
         });
     }
-});
-
-// =============================================
-// WEBSOCKET
-// =============================================
-
-wss.on('connection', (ws) => {
-    console.log('🔌 Nouvelle connexion WebSocket');
-
-    ws.on('message', async (message) => {
-        try {
-            const data = JSON.parse(message);
-            
-            if (data.type === 'auth' && data.token) {
-                try {
-                    const decoded = jwt.verify(data.token, SITE_CONFIG.jwtSecret);
-                    
-                    const { data: user } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', decoded.userId)
-                        .single();
-
-                    if (user) {
-                        ws.user = user;
-                        ws.send(JSON.stringify({ type: 'auth', success: true }));
-                    }
-                } catch (err) {
-                    ws.send(JSON.stringify({ type: 'auth', success: false }));
-                }
-            }
-
-            if (data.type === 'subscribe' && data.serverId && ws.user) {
-                ws.serverId = data.serverId;
-                ws.send(JSON.stringify({ type: 'subscribed', serverId: data.serverId }));
-            }
-
-            if (data.type === 'ping') {
-                ws.send(JSON.stringify({ type: 'pong' }));
-            }
-        } catch (error) {
-            console.error('❌ Erreur WebSocket:', error);
-        }
-    });
-
-    ws.on('close', () => {
-        console.log('🔌 Déconnexion WebSocket');
-    });
 });
 
 // =============================================
