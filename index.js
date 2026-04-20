@@ -7756,6 +7756,88 @@ app.post('/api/check-username', async (req, res) => {
 });
 
 // =============================================
+// ROUTE DE VÉRIFICATION DE DISPONIBILITÉ DU NOM D'UTILISATEUR REGISTER
+// =============================================
+app.get('/api/username/available', async (req, res) => {
+    try {
+        const { username } = req.query;
+
+        if (!username || username.trim().length === 0) {
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Nom d\'utilisateur requis' 
+            });
+        }
+
+        const cleanUsername = username.trim().toLowerCase();
+        
+        // Validation du format
+        if (cleanUsername.length < 3) {
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Le nom d\'utilisateur doit contenir au moins 3 caractères' 
+            });
+        }
+        
+        if (cleanUsername.length > 20) {
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Le nom d\'utilisateur ne peut pas dépasser 20 caractères' 
+            });
+        }
+        
+        if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Caractères autorisés : lettres, chiffres et underscore (_)' 
+            });
+        }
+
+        // Vérifier dans la table profiles
+        const { data: existingUser, error } = await supabase
+            .from('profiles')
+            .select('id, username')
+            .ilike('username', cleanUsername)
+            .maybeSingle();
+
+        if (error) {
+            console.error('❌ Erreur vérification username:', error);
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Erreur lors de la vérification' 
+            });
+        }
+
+        if (existingUser) {
+            return res.json({ 
+                success: true, 
+                available: false, 
+                message: 'Ce nom d\'utilisateur est déjà pris' 
+            });
+        }
+
+        return res.json({ 
+            success: true, 
+            available: true, 
+            message: 'Nom d\'utilisateur disponible' 
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur route username/available:', error);
+        res.status(500).json({ 
+            success: false, 
+            available: false, 
+            message: 'Erreur serveur' 
+        });
+    }
+});
+
+// =============================================
 // ROUTE POUR LES LOGS DES SERVEURS
 // =============================================
 
