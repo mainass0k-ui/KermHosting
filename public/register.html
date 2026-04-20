@@ -247,6 +247,24 @@
             border-color: var(--success);
         }
 
+        /* Styles pour le feedback du username */
+        .username-feedback {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .username-feedback.valid {
+            color: var(--success);
+        }
+        .username-feedback.error {
+            color: var(--danger);
+        }
+        .username-feedback.info {
+            color: var(--primary);
+        }
+
         .email-hint {
             font-size: 0.75rem;
             margin-top: 4px;
@@ -519,6 +537,7 @@
                            minlength="3" maxlength="20"
                            pattern="[a-zA-Z0-9_]+"
                            title="Lettres, chiffres et underscore uniquement">
+                    <div class="username-feedback" id="username-feedback"></div>
                 </div>
 
                 <div class="form-group">
@@ -646,10 +665,109 @@
             'obobbo', 'oneoffemail', 'owlymail', 'pookmail', 'safetymail', 'sendspam', 'sharklasers',
             'spam4', 'spamgourmet', 'spamhole', 'spamify', 'spaminator', 'spammotel', 'techemail',
             'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail.fr', 'yopmail.net',
-            'arol.com' // Ajout explicite de arol.com comme domaine bloqué
+            'arol.com'
         ];
 
         let emailValid = false;
+
+        // =============================================
+        // VÉRIFICATION EN TEMPS RÉEL DU NOM D'UTILISATEUR
+        // =============================================
+
+        let usernameCheckTimeout = null;
+        let usernameAvailable = false;
+        let usernameChecking = false;
+        let usernameValidFormat = false;
+
+        async function checkUsernameAvailability(username) {
+            const usernameInput = document.getElementById('username');
+            const feedbackDiv = document.getElementById('username-feedback');
+            
+            if (!username || username.length === 0) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            // Vérifier le format
+            const usernameRegex = /^[a-zA-Z0-9_]+$/;
+            if (username.length < 3) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('Minimum 3 caractères', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            if (username.length > 20) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('Maximum 20 caractères', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            if (!usernameRegex.test(username)) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('Caractères autorisés : lettres, chiffres et underscore (_)', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            usernameValidFormat = true;
+            usernameChecking = true;
+            updateUsernameFeedback('Vérification...', false, 'info');
+            
+            try {
+                const response = await fetch(`/api/username/available?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+                
+                if (data.available) {
+                    usernameAvailable = true;
+                    updateUsernameFeedback('✓ Nom d\'utilisateur disponible', true);
+                } else {
+                    usernameAvailable = false;
+                    updateUsernameFeedback(data.message || '✗ Ce nom d\'utilisateur est déjà pris', false);
+                }
+            } catch (error) {
+                console.error('Erreur vérification username:', error);
+                usernameAvailable = false;
+                updateUsernameFeedback('Erreur de vérification, réessayez', false);
+            } finally {
+                usernameChecking = false;
+                updateSubmitButton();
+            }
+        }
+
+        function updateUsernameFeedback(message, isValid, type = '') {
+            const usernameInput = document.getElementById('username');
+            const feedbackDiv = document.getElementById('username-feedback');
+            
+            if (!message) {
+                feedbackDiv.innerHTML = '';
+                feedbackDiv.className = 'username-feedback';
+                usernameInput.classList.remove('valid', 'error');
+                return;
+            }
+            
+            feedbackDiv.innerHTML = message;
+            
+            if (isValid) {
+                feedbackDiv.className = 'username-feedback valid';
+                usernameInput.classList.remove('error');
+                usernameInput.classList.add('valid');
+            } else if (type === 'info') {
+                feedbackDiv.className = 'username-feedback info';
+                usernameInput.classList.remove('valid', 'error');
+            } else {
+                feedbackDiv.className = 'username-feedback error';
+                usernameInput.classList.remove('valid');
+                usernameInput.classList.add('error');
+            }
+        }
 
         function validateEmail(email) {
             const emailInput = document.getElementById('email');
@@ -663,7 +781,6 @@
                 return false;
             }
 
-            // Vérifier le format email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 emailValid = false;
@@ -676,7 +793,6 @@
 
             const domain = email.split('@')[1]?.toLowerCase() || '';
             
-            // Vérifier les domaines jetables/bloqués
             const isBlocked = BLOCKED_EMAIL_PATTERNS.some(pattern => 
                 domain.includes(pattern) || email.toLowerCase().includes(pattern)
             );
@@ -690,7 +806,6 @@
                 return false;
             }
 
-            // Vérifier si le domaine est EXACTEMENT dans la liste autorisée
             const isAllowed = ALLOWED_EMAIL_DOMAINS.includes(domain);
             
             if (isAllowed) {
@@ -723,8 +838,9 @@
             const submitBtn = document.getElementById('submitBtn');
             const terms = document.getElementById('terms').checked;
             const username = document.getElementById('username').value;
+            const usernameIsValid = usernameAvailable && usernameValidFormat && username.length >= 3;
             
-            if (turnstileVerified && terms && username.length >= 3 && emailValid) {
+            if (turnstileVerified && terms && usernameIsValid && emailValid) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Créer mon compte</span>';
             } else {
@@ -773,7 +889,32 @@
             }
         }
 
-        // Validation email en temps réel
+        // Écouteurs d'événements
+        let usernameDebounceTimeout;
+        document.getElementById('username').addEventListener('input', function(e) {
+            clearTimeout(usernameDebounceTimeout);
+            const username = e.target.value;
+            
+            // Mise à jour immédiate du format
+            const usernameRegex = /^[a-zA-Z0-9_]*$/;
+            if (username && !usernameRegex.test(username)) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('Caractères autorisés : lettres, chiffres et underscore (_)', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            updateUsernameFeedback('', false);
+            
+            // Debounce pour l'appel API (300ms)
+            usernameDebounceTimeout = setTimeout(() => {
+                checkUsernameAvailability(username);
+            }, 300);
+            
+            updateSubmitButton();
+        });
+
         document.getElementById('email').addEventListener('input', function(e) {
             validateEmail(e.target.value);
             updateSubmitButton();
@@ -783,10 +924,6 @@
             validateEmail(e.target.value);
         });
 
-        // Validation username en temps réel
-        document.getElementById('username').addEventListener('input', updateSubmitButton);
-
-        // Validation des conditions
         document.getElementById('terms').addEventListener('change', updateSubmitButton);
 
         document.getElementById('password').addEventListener('input', function(e) {
@@ -857,7 +994,11 @@
                 return;
             }
             
-            // Re-valider l'email avant soumission
+            if (!usernameAvailable || !usernameValidFormat) {
+                showMessage('error', 'Veuillez choisir un nom d\'utilisateur valide et disponible');
+                return;
+            }
+            
             if (!validateEmail(email)) {
                 showMessage('error', 'Veuillez utiliser une adresse email valide (Gmail, iCloud, Yahoo, Outlook, etc.)');
                 return;
