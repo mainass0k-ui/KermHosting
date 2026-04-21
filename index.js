@@ -71,8 +71,8 @@ const SMTP_CONFIG = {
     port: 587,
     secure: false,
     auth: {
-        user: 'kermrayan6@gmail.com',
-        pass: 'eyfg jvnm mnni venf'
+        user: 'partnerxbet73@gmail.com',
+        pass: 'klrj jvyv aenh tsdj'
     },
     from: 'KermHosting <noreply@kermhosting.site>'
 };
