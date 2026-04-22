@@ -163,6 +163,75 @@
         .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
         .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
 
+        /* ===== LOGOUT OVERLAY ===== */
+        .logout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 17, 32, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .logout-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-content {
+            text-align: center;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .logout-icon {
+            font-size: 60px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            filter: drop-shadow(0 0 30px var(--primary-glow));
+            animation: cloudFloat 3s ease-in-out infinite;
+        }
+
+        .logout-text {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logout-dots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        .logout-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+            background: var(--secondary);
+        }
+
+        .logout-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+            background: var(--accent);
+        }
+
         /* ===== MAIN CONTENT ===== */
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
@@ -390,6 +459,97 @@
         .quick-action.reward-loading i { animation: spin 1s linear infinite; }
         .countdown-timer { font-size: 0.7rem; color: var(--warning); margin-top: 4px; }
 
+        /* ===== FILTRES SERVEURS ===== */
+        .servers-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .servers-search {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-full);
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+
+        .servers-search:focus-within {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .servers-search i {
+            color: var(--text-secondary);
+            margin-right: 10px;
+        }
+
+        .servers-search input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .servers-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .servers-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .servers-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-tab:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .filter-tab .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+        }
+
+        .filter-tab.active .count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .servers-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
         .server-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; position: relative; }
         .server-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow-glow); }
@@ -409,7 +569,6 @@
         .server-info-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 0.85rem; }
         .server-info-item i { color: var(--primary); width: 16px; }
         
-        /* AJOUT - Stats temps réel sur les cartes */
         .stats-row { display: flex; gap: 16px; margin: 12px 0; flex-wrap: wrap; }
         .stat-item { flex: 1; text-align: center; padding: 8px; background: var(--bg-input); border-radius: var(--radius-md); }
         .stat-item-label { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px; }
@@ -429,9 +588,60 @@
         .server-action-btn.stop:hover { background: var(--danger); }
         .server-action-btn.start:hover { background: var(--success); }
         .server-action-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-        .server-console { margin-top: 12px; background: var(--bg-input); border-radius: var(--radius-md); padding: 12px; font-family: monospace; font-size: 0.75rem; max-height: 150px; overflow-y: auto; color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .console-line { padding: 2px 0; border-bottom: 1px solid var(--border-light); color: var(--text-primary); }
-        .console-line:last-child { border-bottom: none; }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-ellipsis {
+            color: var(--text-secondary);
+            padding: 0 4px;
+        }
+
+        .servers-count {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
 
         .details-btn {
             background: none; border: 1px solid var(--border-color); color: var(--text-secondary);
@@ -570,15 +780,45 @@
         .console-input:focus { outline: none; border-color: var(--primary); }
         .console-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
 
+        @keyframes cloudFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @keyframes dotPulse {
+            0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
+            30% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (min-width: 640px) { .welcome-stats { flex-direction: row; } .quick-actions { grid-template-columns: repeat(4, 1fr); } .servers-grid { grid-template-columns: repeat(2, 1fr); } .toast { left: auto; right: 20px; } }
-        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } .servers-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .page-content { padding: 24px; } .servers-grid { grid-template-columns: repeat(3, 1fr); } .menu-toggle { display: none; } .sidebar { transform: translateX(0); position: sticky; } .sidebar-overlay { display: none; } .top-bar-logo { display: none; } }
-        @media (min-width: 1280px) { .servers-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } .servers-filters { flex-direction: row; align-items: center; } .servers-search { flex: 1; } .servers-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .page-content { padding: 24px; } .servers-grid { grid-template-columns: repeat(2, 1fr); } .menu-toggle { display: none; } .sidebar { transform: translateX(0); position: sticky; } .sidebar-overlay { display: none; } .top-bar-logo { display: none; } }
+        @media (min-width: 1280px) { .servers-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- LOGOUT OVERLAY -->
+        <div class="logout-overlay" id="logoutOverlay">
+            <div class="logout-content">
+                <div class="logout-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="logout-text">Déconnexion en cours...</div>
+                <div class="logout-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
         
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -727,12 +967,47 @@
                     <h2><i class="fas fa-server"></i>Mes serveurs</h2>
                     <a href="/pricing" class="btn btn-primary btn-small" style="background: linear-gradient(135deg, #7C3AED, #10B981);"><i class="fas fa-plus-circle"></i>Nouveau serveur</a>
                 </div>
+
+                <!-- FILTRES ET RECHERCHE SERVEURS -->
+                <div class="servers-filters">
+                    <div class="servers-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="serverSearchInput" placeholder="Rechercher un serveur..." oninput="filterServers()">
+                    </div>
+                    <div class="servers-tabs">
+                        <div class="filter-tab active" data-filter="all" onclick="setServerFilter('all')">
+                            <i class="fas fa-list"></i>
+                            <span>Tous</span>
+                            <span class="count" id="filterCountAll">0</span>
+                        </div>
+                        <div class="filter-tab" data-filter="active" onclick="setServerFilter('active')">
+                            <i class="fas fa-play-circle"></i>
+                            <span>En ligne</span>
+                            <span class="count" id="filterCountActive">0</span>
+                        </div>
+                        <div class="filter-tab" data-filter="suspended" onclick="setServerFilter('suspended')">
+                            <i class="fas fa-ban"></i>
+                            <span>Suspendus</span>
+                            <span class="count" id="filterCountSuspended">0</span>
+                        </div>
+                        <div class="filter-tab" data-filter="expired" onclick="setServerFilter('expired')">
+                            <i class="fas fa-clock"></i>
+                            <span>Expirés</span>
+                            <span class="count" id="filterCountExpired">0</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="serversContainer">
                     <div class="servers-grid">
                         <div class="skeleton-server-card"><div class="skeleton-header"><div class="skeleton-title"></div><div class="skeleton-status"></div></div><div class="skeleton-body"><div class="skeleton-row"><div class="skeleton-item"></div><div class="skeleton-item"></div></div><div class="skeleton-item" style="margin-bottom:0;"></div></div><div class="skeleton-footer"><div class="skeleton-expiry"></div><div class="skeleton-actions"><div class="skeleton-btn"></div><div class="skeleton-btn"></div><div class="skeleton-btn"></div></div></div></div>
                         <div class="skeleton-server-card"><div class="skeleton-header"><div class="skeleton-title"></div><div class="skeleton-status"></div></div><div class="skeleton-body"><div class="skeleton-row"><div class="skeleton-item"></div><div class="skeleton-item"></div></div><div class="skeleton-item" style="margin-bottom:0;"></div></div><div class="skeleton-footer"><div class="skeleton-expiry"></div><div class="skeleton-actions"><div class="skeleton-btn"></div><div class="skeleton-btn"></div><div class="skeleton-btn"></div></div></div></div>
                     </div>
                 </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination" id="serversPagination"></div>
+                <div class="servers-count" id="serversCount"></div>
 
                 <div class="real-weather-widget" id="realWeatherWidget">
                     <div class="real-weather-header"><div class="real-weather-title"><i class="fas fa-cloud-sun"></i><span>Météo</span></div><button class="btn-icon" onclick="refreshWeather()"><i class="fas fa-sync-alt"></i></button></div>
@@ -1031,6 +1306,13 @@
 
         const PLANS = { 'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300, price: 0, coins: 0, duration: 1 }, '1gb': { name: 'Starter', memory: 1024, disk: 3072, cpu: 100, price: 500, coins: 100, duration: 30 }, '2gb': { name: 'Basic', memory: 2048, disk: 5120, cpu: 200, price: 800, coins: 160, duration: 30 }, '4gb': { name: 'Pro', memory: 4096, disk: 10240, cpu: 400, price: 1300, coins: 260, duration: 30 }, '8gb': { name: 'Business', memory: 8192, disk: 20480, cpu: 800, price: 1700, coins: 340, duration: 30 } };
         let userData = null, userServers = [], currentAction = null, currentServerId = null, currentServer = null, whatsappShown = false, countdownInterval = null, isClaimingReward = false, userGoals = [];
+        
+        // Pagination et filtres
+        let currentPage = 1;
+        const itemsPerPage = 2;
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let filteredServers = [];
 
         function loadGoals() { const s = localStorage.getItem('kermhosting_goals'); userGoals = s ? JSON.parse(s) : [{ id: '1', name: 'Atteindre 500 coins', type: 'coins', target: 500 }, { id: '2', name: '3 serveurs actifs', type: 'servers', target: 3 }]; updateGoalsDisplay(); }
         function saveGoals() { localStorage.setItem('kermhosting_goals', JSON.stringify(userGoals)); }
@@ -1097,8 +1379,15 @@
         overlay.addEventListener('click', closeSidebarFunc);
 
         const notifBtn = document.getElementById('notificationBtn'), notifPanel = document.getElementById('notificationsPanel');
-        notifBtn.addEventListener('click', () => { notifPanel.classList.toggle('active'); if(userServers.length) loadNotifications(); });
+        notifBtn.addEventListener('click', (e) => { e.stopPropagation(); notifPanel.classList.toggle('active'); if(userServers.length) loadNotifications(); });
         document.getElementById('closeNotifications').addEventListener('click', () => notifPanel.classList.remove('active'));
+        
+        // Fermer le panel de notifications quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (notifPanel.classList.contains('active') && !notifPanel.contains(e.target) && e.target !== notifBtn && !notifBtn.contains(e.target)) {
+                notifPanel.classList.remove('active');
+            }
+        });
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -1114,7 +1403,6 @@
         let rtStatsInterval = null;
         let rtLogsInterval = null;
         
-        // Fonctions API REST (fallback)
         async function fetchServerStatsRest(serverId) {
             try {
                 const response = await fetch(`/api/servers/${serverId}/stats`, {
@@ -1340,14 +1628,12 @@
             initRtChart();
             initRtWebSocket();
             
-            // Récupération immédiate des stats
             const stats = await fetchServerStatsRest(serverId);
             if (stats) {
                 updateRtConsoleStats(stats);
                 updateServerCardStats(serverId, stats);
             }
             
-            // Récupération des logs initiaux
             const logs = await fetchServerLogsRest(serverId);
             const logsDiv = document.getElementById('rtConsoleLogs');
             logsDiv.innerHTML = '';
@@ -1357,7 +1643,6 @@
                 addRtConsoleLog('[INFO] Aucun log disponible');
             }
             
-            // Démarrer le polling de secours pour les stats (toutes les 3s)
             if (rtStatsInterval) clearInterval(rtStatsInterval);
             rtStatsInterval = setInterval(async () => {
                 if (rtCurrentServerId) {
@@ -1369,7 +1654,6 @@
                 }
             }, 3000);
             
-            // Démarrer le polling de secours pour les logs (toutes les 5s)
             if (rtLogsInterval) clearInterval(rtLogsInterval);
             rtLogsInterval = setInterval(async () => {
                 if (rtCurrentServerId) {
@@ -1403,6 +1687,175 @@
             rtCurrentServerId = null;
             document.getElementById('rtConsoleModal').classList.remove('active');
             if (rtStatsChart) { rtStatsChart.destroy(); rtStatsChart = null; }
+        }
+
+        // ===== FILTRES ET PAGINATION SERVEURS =====
+        function filterServers() {
+            const searchInput = document.getElementById('serverSearchInput');
+            searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
+            applyFiltersAndPagination();
+        }
+
+        function setServerFilter(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.filter === filter);
+            });
+            
+            applyFiltersAndPagination();
+        }
+
+        function applyFiltersAndPagination() {
+            // Filtrer les serveurs
+            filteredServers = userServers.filter(server => {
+                // Filtre par statut
+                if (currentFilter === 'active') {
+                    const days = calculateDaysLeft(server.expires_at);
+                    if (server.status !== 'active' || days < 0) return false;
+                } else if (currentFilter === 'suspended') {
+                    if (server.status !== 'suspended') return false;
+                } else if (currentFilter === 'expired') {
+                    const days = calculateDaysLeft(server.expires_at);
+                    if (days >= 0 && server.status !== 'suspended') return false;
+                }
+                
+                // Filtre par recherche
+                if (searchQuery) {
+                    return server.server_name?.toLowerCase().includes(searchQuery) ||
+                           PLANS[server.server_type]?.name?.toLowerCase().includes(searchQuery) ||
+                           server.id?.toLowerCase().includes(searchQuery);
+                }
+                
+                return true;
+            });
+            
+            // Mettre à jour les compteurs
+            updateFilterCounts();
+            
+            // Pagination
+            renderServersWithPagination();
+        }
+
+        function updateFilterCounts() {
+            const allCount = userServers.length;
+            const activeCount = userServers.filter(s => s.status === 'active' && calculateDaysLeft(s.expires_at) >= 0).length;
+            const suspendedCount = userServers.filter(s => s.status === 'suspended').length;
+            const expiredCount = userServers.filter(s => calculateDaysLeft(s.expires_at) < 0 && s.status !== 'suspended').length;
+            
+            document.getElementById('filterCountAll').textContent = allCount;
+            document.getElementById('filterCountActive').textContent = activeCount;
+            document.getElementById('filterCountSuspended').textContent = suspendedCount;
+            document.getElementById('filterCountExpired').textContent = expiredCount;
+        }
+
+        function renderServersWithPagination() {
+            const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const serversToShow = filteredServers.slice(startIndex, endIndex);
+            
+            displayServersList(serversToShow);
+            renderPagination(totalPages);
+            
+            const countText = document.getElementById('serversCount');
+            if (filteredServers.length === 0) {
+                countText.textContent = 'Aucun serveur trouvé';
+            } else {
+                countText.textContent = `${startIndex + 1}-${Math.min(endIndex, filteredServers.length)} sur ${filteredServers.length} serveur${filteredServers.length > 1 ? 's' : ''}`;
+            }
+        }
+
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('serversPagination');
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Bouton précédent
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
+            
+            // Pages
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+            
+            // Bouton suivant
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+            
+            paginationContainer.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredServers.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderServersWithPagination();
+        }
+
+        function displayServersList(servers) {
+            const c = document.getElementById('serversContainer');
+            if (!servers.length) {
+                let emptyMessage = '';
+                if (currentFilter === 'all') emptyMessage = 'Aucun serveur';
+                else if (currentFilter === 'active') emptyMessage = 'Aucun serveur en ligne';
+                else if (currentFilter === 'suspended') emptyMessage = 'Aucun serveur suspendu';
+                else if (currentFilter === 'expired') emptyMessage = 'Aucun serveur expiré';
+                
+                if (searchQuery) emptyMessage = 'Aucun serveur trouvé pour cette recherche';
+                
+                c.innerHTML = `<div class="empty-state"><i class="fas fa-server"></i><h3>${emptyMessage}</h3><a href="/pricing" class="btn btn-primary">Créer un serveur</a></div>`;
+                return;
+            }
+            
+            let h = '<div class="servers-grid">';
+            servers.forEach(s => {
+                const days = calculateDaysLeft(s.expires_at), expired = days<0, plan = PLANS[s.server_type] || { name: s.server_type||'Inconnu', memory:0, disk:0, cpu:0 };
+                let status = '', cls = ''; if (s.status==='suspended') { status='Suspendu'; cls='suspended'; } else if (s.status==='stopped') status='Arrêté'; else if (s.status==='active') { if (expired) { status='Expiré'; cls='expired'; } else status='En ligne'; }
+                if (days<=3 && days>0 && s.status==='active' && !expired) cls='expiring';
+                h += `<div class="server-card ${cls}">
+                    <div class="server-header">
+                        <div class="server-name"><i class="fas fa-cloud"></i>${s.server_name||'Sans nom'}<button class="details-btn" onclick="showServerDetails('${s.id}')"><i class="fas fa-info-circle"></i> Détails</button></div>
+                        <div class="server-status"><span class="status-dot ${s.status==='active'&&!expired?'status-running':s.status==='suspended'?'status-suspended':'status-stopped'}"></span><span>${status}</span></div>
+                    </div>
+                    <div class="server-body">
+                        <div class="stats-row">
+                            <div class="stat-item"><div class="stat-item-label">CPU</div><div class="stat-item-value" id="stat-cpu-${s.id}">--%</div></div>
+                            <div class="stat-item"><div class="stat-item-label">RAM</div><div class="stat-item-value" id="stat-ram-${s.id}">-- MB</div></div>
+                            <div class="stat-item"><div class="stat-item-label">DISK</div><div class="stat-item-value" id="stat-disk-${s.id}">-- MB</div></div>
+                        </div>
+                        <div class="server-info">
+                            <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
+                            <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk/1024} GB</span></div>
+                            <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
+                            <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
+                        </div>
+                    </div>
+                    <div class="server-footer">
+                        <div class="server-expiry ${days<=3&&days>0?'warning':''} ${expired?'danger':''}"><i class="fas fa-clock"></i> ${expired?'Expiré':days===0?'Aujourd\'hui':days+'j'}</div>
+                        <div class="server-actions">
+                            <button class="server-action-btn" onclick="openRtConsoleModal('${s.id}', '${s.server_name}')"><i class="fas fa-terminal"></i></button>
+                            ${s.status!=='suspended'&&!expired?`<button class="server-action-btn" onclick="powerAction('${s.id}','restart')"><i class="fas fa-sync-alt"></i></button><button class="server-action-btn ${status==='En ligne'?'stop':'start'}" onclick="powerAction('${s.id}','${status==='En ligne'?'stop':'start'}')"><i class="fas fa-${status==='En ligne'?'stop':'play'}"></i></button>`:'<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>'}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            c.innerHTML = h + '</div>';
+            
+            servers.forEach(async s => {
+                if (s.status === 'active' && calculateDaysLeft(s.expires_at) > 0) {
+                    const stats = await fetchServerStatsRest(s.id);
+                    if (stats) updateServerCardStats(s.id, stats);
+                }
+            });
         }
 
         // ===== CHARGEMENT DES DONNÉES =====
@@ -1465,54 +1918,11 @@
             const badge = document.getElementById('notificationBadge');
             if (expiring>0) { badge.textContent = expiring; badge.style.display = 'flex'; } else badge.style.display = 'none';
             
-            updateRewardButton(); displayServers(); loadActivities(); updateGoalsDisplay();
+            updateRewardButton();
+            applyFiltersAndPagination();
+            loadActivities();
+            updateGoalsDisplay();
             AvatarManager.applyToPage(userData.username);
-        }
-
-        function displayServers() {
-            const c = document.getElementById('serversContainer');
-            if (!userServers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-server"></i><h3>Aucun serveur</h3><a href="/pricing" class="btn btn-primary">Créer un serveur</a></div>'; return; }
-            let h = '<div class="servers-grid">';
-            userServers.forEach(s => {
-                const days = calculateDaysLeft(s.expires_at), expired = days<0, plan = PLANS[s.server_type] || { name: s.server_type||'Inconnu', memory:0, disk:0, cpu:0 };
-                let status = '', cls = ''; if (s.status==='suspended') { status='Suspendu'; cls='suspended'; } else if (s.status==='stopped') status='Arrêté'; else if (s.status==='active') { if (expired) { status='Expiré'; cls='expired'; } else status='En ligne'; }
-                if (days<=3 && days>0 && s.status==='active' && !expired) cls='expiring';
-                h += `<div class="server-card ${cls}">
-                    <div class="server-header">
-                        <div class="server-name"><i class="fas fa-cloud"></i>${s.server_name||'Sans nom'}<button class="details-btn" onclick="showServerDetails('${s.id}')"><i class="fas fa-info-circle"></i> Détails</button></div>
-                        <div class="server-status"><span class="status-dot ${s.status==='active'&&!expired?'status-running':s.status==='suspended'?'status-suspended':'status-stopped'}"></span><span>${status}</span></div>
-                    </div>
-                    <div class="server-body">
-                        <div class="stats-row">
-                            <div class="stat-item"><div class="stat-item-label">CPU</div><div class="stat-item-value" id="stat-cpu-${s.id}">--%</div></div>
-                            <div class="stat-item"><div class="stat-item-label">RAM</div><div class="stat-item-value" id="stat-ram-${s.id}">-- MB</div></div>
-                            <div class="stat-item"><div class="stat-item-label">DISK</div><div class="stat-item-value" id="stat-disk-${s.id}">-- MB</div></div>
-                        </div>
-                        <div class="server-info">
-                            <div class="server-info-item"><i class="fas fa-microchip"></i><span>${plan.memory} MB</span></div>
-                            <div class="server-info-item"><i class="fas fa-hdd"></i><span>${plan.disk/1024} GB</span></div>
-                            <div class="server-info-item"><i class="fas fa-tachometer-alt"></i><span>${plan.cpu}%</span></div>
-                            <div class="server-info-item"><i class="fas fa-tag"></i><span>${plan.name}</span></div>
-                        </div>
-                    </div>
-                    <div class="server-footer">
-                        <div class="server-expiry ${days<=3&&days>0?'warning':''} ${expired?'danger':''}"><i class="fas fa-clock"></i> ${expired?'Expiré':days===0?'Aujourd\'hui':days+'j'}</div>
-                        <div class="server-actions">
-                            <button class="server-action-btn" onclick="openRtConsoleModal('${s.id}', '${s.server_name}')"><i class="fas fa-terminal"></i></button>
-                            ${s.status!=='suspended'&&!expired?`<button class="server-action-btn" onclick="powerAction('${s.id}','restart')"><i class="fas fa-sync-alt"></i></button><button class="server-action-btn ${status==='En ligne'?'stop':'start'}" onclick="powerAction('${s.id}','${status==='En ligne'?'stop':'start'}')"><i class="fas fa-${status==='En ligne'?'stop':'play'}"></i></button>`:'<button class="server-action-btn" disabled><i class="fas fa-ban"></i></button>'}
-                        </div>
-                    </div>
-                </div>`;
-            });
-            c.innerHTML = h + '</div>';
-            
-            // Récupération initiale des stats pour chaque serveur
-            userServers.forEach(async s => {
-                if (s.status === 'active' && calculateDaysLeft(s.expires_at) > 0) {
-                    const stats = await fetchServerStatsRest(s.id);
-                    if (stats) updateServerCardStats(s.id, stats);
-                }
-            });
         }
 
         async function showServerDetails(id) {
@@ -1609,7 +2019,21 @@
         document.addEventListener('click', () => document.getElementById('themeDropdown').classList.remove('active'));
         document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
 
-        document.getElementById('navLogout').addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); localStorage.removeItem('kermhosting_theme'); sessionStorage.removeItem('whatsapp_shown'); AvatarManager.reset(); location.href = '/'; });
+        // LOGOUT AVEC OVERLAY
+        document.getElementById('navLogout').addEventListener('click', e => {
+            e.preventDefault();
+            const overlay = document.getElementById('logoutOverlay');
+            overlay.classList.add('active');
+            
+            setTimeout(() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('kermhosting_theme');
+                sessionStorage.removeItem('whatsapp_shown');
+                AvatarManager.reset();
+                location.href = '/';
+            }, 1500);
+        });
+        
         document.getElementById('whatsappJoinBtn').addEventListener('click', e => { e.preventDefault(); window.open('https://whatsapp.com/channel/0029Vb7SZlxGZNCvMMMiJj09','_blank'); closeWhatsAppModal(); });
         document.getElementById('whatsappLaterBtn').addEventListener('click', closeWhatsAppModal);
 
@@ -1628,6 +2052,9 @@
         window.sendRtConsoleCommand = sendRtConsoleCommand;
         window.handleRtConsoleCommandKeypress = handleRtConsoleCommandKeypress;
         window.clearRtConsoleLogs = clearRtConsoleLogs;
+        window.filterServers = filterServers;
+        window.setServerFilter = setServerFilter;
+        window.goToPage = goToPage;
         
         window.addEventListener('resize', () => { if (window.innerWidth > 1024) closeSidebarFunc(); });
     </script>
