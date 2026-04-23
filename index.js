@@ -598,6 +598,22 @@ const maintenanceCheck = async (req, res, next) => {
 
 app.use(maintenanceCheck);
 
+app.get('/api', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Bienvenue sur l\'API KermHosting',
+        documentation: 'https://kermhosting.site/api-docs',
+        endpoints: {
+            auth: '/api/login, /api/register, /api/user/me',
+            servers: '/api/servers, /api/create-server',
+            payments: '/api/payment/buy-coins, /api/payment/paypal, /api/payment/minipay/initiate',
+            coins: '/api/coin-packs, /api/daily-reward',
+            referral: '/api/referral/info'
+        },
+        version: '3.0.0'
+    });
+});
+
 // =============================================
 // SERVEUR STATIQUE
 // =============================================
