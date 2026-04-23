@@ -16,7 +16,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -94,18 +94,9 @@
         .skeleton-badge { width: 80px; height: 30px; border-radius: 20px; }
         .skeleton-transaction { height: 60px; margin-bottom: 8px; border-radius: var(--radius-md); }
 
-        .sidebar {
-            position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
-            background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
-            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: var(--shadow-lg);
-        }
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: var(--shadow-lg); }
         .sidebar.active { transform: translateX(0); }
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
-            z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
         .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
@@ -192,131 +183,6 @@
         .badge-item::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
         .badge-item:hover::before { left: 100%; }
 
-        /* ===== ONGLET API ===== */
-        .api-tab-container {
-            max-width: 650px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .api-hero {
-            padding: 20px 0 32px;
-        }
-
-        .api-hero-icon {
-            width: 72px; height: 72px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: white; margin: 0 auto 20px;
-            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
-        }
-
-        .api-hero h3 {
-            font-size: 1.5rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
-            margin-bottom: 8px;
-        }
-
-        .api-hero p {
-            color: var(--text-secondary); font-size: 0.9rem;
-            max-width: 500px; margin: 0 auto; line-height: 1.6;
-        }
-
-        .api-key-notice {
-            background: rgba(124, 58, 237, 0.08);
-            border: 1px solid rgba(124, 58, 237, 0.2);
-            border-radius: var(--radius-lg); padding: 16px 20px;
-            margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
-            text-align: left; font-size: 0.85rem; color: var(--text-secondary);
-        }
-
-        .api-key-notice i {
-            color: var(--primary); font-size: 1.2rem;
-        }
-
-        .api-key-notice a {
-            color: var(--primary-light); text-decoration: none; font-weight: 600;
-        }
-
-        .api-key-notice a:hover {
-            text-decoration: underline;
-        }
-
-        .api-routes-grid {
-            display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;
-        }
-
-        .api-route-card {
-            display: flex; align-items: center; gap: 14px;
-            padding: 14px 18px; background: var(--bg-hover);
-            border-radius: var(--radius-lg); border: 1px solid var(--border-color);
-            text-align: left; transition: all 0.2s;
-        }
-
-        .api-route-card:hover {
-            border-color: rgba(124, 58, 237, 0.3);
-            background: rgba(30, 41, 59, 0.8);
-        }
-
-        .api-route-method {
-            padding: 5px 12px; border-radius: var(--radius-sm);
-            font-weight: 700; font-size: 0.7rem; text-transform: uppercase;
-            font-family: 'JetBrains Mono', monospace; min-width: 55px; text-align: center;
-        }
-
-        .api-route-method.get { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .api-route-method.post { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .api-route-method.delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
-
-        .api-route-info {
-            flex: 1; display: flex; align-items: center; justify-content: space-between;
-            gap: 10px; min-width: 0;
-        }
-
-        .api-route-path {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
-            color: var(--primary-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .api-route-desc {
-            color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0;
-        }
-
-        .api-info-box {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg); padding: 16px 20px;
-            margin-bottom: 24px; text-align: left;
-        }
-
-        .api-info-box p {
-            color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        .api-info-box p:last-child { margin-bottom: 0; }
-
-        .api-info-box code {
-            background: var(--bg-input); padding: 3px 8px; border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
-            color: var(--primary-light);
-        }
-
-        .api-doc-btn {
-            width: 100%; max-width: 320px; margin: 0 auto;
-            padding: 14px 24px; border-radius: var(--radius-full);
-            font-weight: 600; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            gap: 10px; text-decoration: none; transition: all 0.3s;
-            font-size: 0.95rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
-        }
-
-        .api-doc-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5);
-        }
-
         .api-key-section { background: var(--bg-hover); border-radius: var(--radius-lg); padding: 16px; border: 1px solid var(--border-color); margin-bottom: 20px; }
         .api-key-display { background: var(--bg-input); border-radius: var(--radius-md); padding: 14px; font-family: monospace; font-size: 0.9rem; border: 1px solid var(--border-color); margin: 12px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .api-key-text { word-break: break-all; flex: 1; }
@@ -354,6 +220,15 @@
         .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .pagination-ellipsis { color: var(--text-secondary); padding: 0 4px; }
         .pagination-info { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px; }
+
+        .btn { padding: 12px 20px; border-radius: var(--radius-full); font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: all 0.3s; font-size: 0.9rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .btn-outline { background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); }
+        .btn-outline:hover { border-color: var(--primary); background: var(--bg-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-small { padding: 8px 16px; font-size: 0.85rem; }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .tabs::-webkit-scrollbar { display: none; }
@@ -405,20 +280,9 @@
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
-        @media (min-width: 640px) {
-            .stats-mini-grid { grid-template-columns: repeat(4, 1fr); }
-            .info-grid { grid-template-columns: repeat(2, 1fr); }
-            .profile-avatar { flex-direction: row; text-align: left; }
-            .avatar-info p { justify-content: flex-start; }
-            .toast { left: auto; right: 20px; }
-        }
+        @media (min-width: 640px) { .stats-mini-grid { grid-template-columns: repeat(4, 1fr); } .info-grid { grid-template-columns: repeat(2, 1fr); } .profile-avatar { flex-direction: row; text-align: left; } .avatar-info p { justify-content: flex-start; } .toast { left: auto; right: 20px; } }
         @media (min-width: 768px) { .page-content { padding: 24px; } .page-title { font-size: 2rem; } }
-        @media (min-width: 1024px) {
-            .menu-toggle { display: none; }
-            .sidebar { transform: translateX(0); position: sticky; }
-            .sidebar-overlay { display: none; }
-            .top-bar-logo { display: none; }
-        }
+        @media (min-width: 1024px) { .menu-toggle { display: none; } .sidebar { transform: translateX(0); position: sticky; } .sidebar-overlay { display: none; } .top-bar-logo { display: none; } }
     </style>
 </head>
 <body>
@@ -557,74 +421,64 @@
 
                         <!-- NOUVEL ONGLET API -->
                         <div class="tab-pane" id="tab-api">
-                            <div class="api-tab-container">
-                                <div class="api-hero">
-                                    <div class="api-hero-icon">
+                            <div class="profile-section" style="text-align: center;">
+                                <div style="max-width: 600px; margin: 0 auto;">
+                                    <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 16px;">
                                         <i class="fas fa-code"></i>
                                     </div>
-                                    <h3>API KermHosting</h3>
-                                    <p>Automatisez la gestion de vos serveurs Node.js grâce à notre API REST. Intégrez KermHosting à vos applications.</p>
-                                </div>
+                                    <h3 class="section-title" style="justify-content: center;">API KermHosting</h3>
+                                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Automatisez la gestion de vos serveurs Node.js grâce à notre API REST.</p>
+                                    
+                                    <div class="api-key-section" style="text-align: left; background: rgba(124, 58, 237, 0.08); border: 1px solid rgba(124, 58, 237, 0.2);">
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px;">
+                                            <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                                            Votre clé API se trouve dans l'onglet <strong>Sécurité</strong>. Utilisez-la dans le header <code style="background: var(--bg-input); padding: 2px 6px; border-radius: 4px;">Authorization: Bearer VOTRE_TOKEN</code>
+                                        </p>
+                                    </div>
 
-                                <div class="api-key-notice">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Votre clé API se trouve dans l'onglet <a href="#" onclick="switchTab('security'); return false;">Sécurité</a>. Utilisez-la dans le header <code>Authorization: Bearer VOTRE_TOKEN</code></span>
-                                </div>
+                                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; text-align: left;">
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(16, 185, 129, 0.2); color: var(--success); min-width: 50px; text-align: center;">GET</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/servers</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Liste des serveurs</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(59, 130, 246, 0.2); color: #60a5fa; min-width: 50px; text-align: center;">POST</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/create-server</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Créer un serveur</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(16, 185, 129, 0.2); color: var(--success); min-width: 50px; text-align: center;">GET</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/servers/{id}/stats</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Stats temps réel</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(59, 130, 246, 0.2); color: #60a5fa; min-width: 50px; text-align: center;">POST</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/servers/{id}/command</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Commande console</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(59, 130, 246, 0.2); color: #60a5fa; min-width: 50px; text-align: center;">POST</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/payment/buy-coins</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Acheter des coins</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; background: rgba(16, 185, 129, 0.2); color: var(--success); min-width: 50px; text-align: center;">GET</span>
+                                            <span style="font-family: monospace; color: var(--primary-light);">/api/referral/info</span>
+                                            <span style="margin-left: auto; color: var(--text-muted); font-size: 0.8rem;">Parrainage</span>
+                                        </div>
+                                    </div>
 
-                                <div class="api-routes-grid">
-                                    <div class="api-route-card">
-                                        <span class="api-route-method get">GET</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/servers</span>
-                                            <span class="api-route-desc">Liste des serveurs</span>
-                                        </div>
+                                    <div style="background: var(--bg-hover); border-radius: var(--radius-lg); padding: 16px; border: 1px solid var(--border-color); text-align: left; margin-bottom: 24px;">
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 6px;"><i class="fas fa-link" style="color: var(--primary); margin-right: 6px;"></i><strong>Base URL :</strong> <code style="background: var(--bg-input); padding: 2px 6px; border-radius: 4px;">https://kermhosting.site/api</code></p>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 6px;"><i class="fas fa-lock" style="color: var(--primary); margin-right: 6px;"></i><strong>Authentification :</strong> <code style="background: var(--bg-input); padding: 2px 6px; border-radius: 4px;">Authorization: Bearer VOTRE_TOKEN</code></p>
+                                        <p style="color: var(--text-secondary); font-size: 0.85rem;"><i class="fas fa-clock" style="color: var(--primary); margin-right: 6px;"></i><strong>Token JWT :</strong> Valable 7 jours</p>
                                     </div>
-                                    <div class="api-route-card">
-                                        <span class="api-route-method post">POST</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/create-server</span>
-                                            <span class="api-route-desc">Créer un serveur</span>
-                                        </div>
-                                    </div>
-                                    <div class="api-route-card">
-                                        <span class="api-route-method get">GET</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/servers/{id}/stats</span>
-                                            <span class="api-route-desc">Stats temps réel</span>
-                                        </div>
-                                    </div>
-                                    <div class="api-route-card">
-                                        <span class="api-route-method post">POST</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/servers/{id}/command</span>
-                                            <span class="api-route-desc">Commande console</span>
-                                        </div>
-                                    </div>
-                                    <div class="api-route-card">
-                                        <span class="api-route-method post">POST</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/payment/buy-coins</span>
-                                            <span class="api-route-desc">Acheter des coins</span>
-                                        </div>
-                                    </div>
-                                    <div class="api-route-card">
-                                        <span class="api-route-method get">GET</span>
-                                        <div class="api-route-info">
-                                            <span class="api-route-path">/api/referral/info</span>
-                                            <span class="api-route-desc">Parrainage</span>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="api-info-box">
-                                    <p><i class="fas fa-link"></i> <strong>Base URL :</strong> <code>https://kermhosting.site/api</code></p>
-                                    <p><i class="fas fa-lock"></i> <strong>Authentification :</strong> <code>Authorization: Bearer VOTRE_TOKEN</code></p>
-                                    <p><i class="fas fa-clock"></i> <strong>Token JWT :</strong> Valable 7 jours</p>
+                                    <a href="/doc-api" class="btn btn-primary" style="display: inline-flex;">
+                                        <i class="fas fa-book"></i> Documentation complète
+                                    </a>
                                 </div>
-
-                                <a href="/doc-api" class="api-doc-btn">
-                                    <i class="fas fa-book"></i> Documentation complète
-                                </a>
                             </div>
                         </div>
 
@@ -730,42 +584,30 @@
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             fetchFromServer: async function() {
-                try {
-                    const token = localStorage.getItem('token');
-                    if (!token) return null;
-                    const response = await fetch('/api/user/avatar', { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (response.ok) { const data = await response.json(); return data.avatar || null; }
-                    return null;
-                } catch (error) { return null; }
+                try { const token = localStorage.getItem('token'); if (!token) return null;
+                    const r = await fetch('/api/user/avatar', { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r.ok) { const d = await r.json(); return d.avatar || null; } return null;
+                } catch (e) { return null; }
             },
             getAvatarSync: function(username) {
                 const localAvatar = localStorage.getItem('user_avatar');
                 if (localAvatar) return localAvatar;
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
-            setAvatar: async function(avatarData) {
-                localStorage.setItem('user_avatar', avatarData);
-                sessionStorage.setItem('user_avatar', avatarData);
-                await this.syncToServer(avatarData);
-            },
+            setAvatar: async function(avatarData) { localStorage.setItem('user_avatar', avatarData); sessionStorage.setItem('user_avatar', avatarData); await this.syncToServer(avatarData); },
             syncToServer: async function(avatarData) {
-                try {
-                    const token = localStorage.getItem('token');
-                    if (!token) return false;
-                    const response = await fetch('/api/user/avatar', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ avatar: avatarData }) });
-                    const data = await response.json();
-                    return data.success;
-                } catch (error) { return false; }
+                try { const token = localStorage.getItem('token'); if (!token) return false;
+                    const r = await fetch('/api/user/avatar', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ avatar: avatarData }) });
+                    const d = await r.json(); return d.success;
+                } catch (e) { return false; }
             },
             reset: async function(username) {
-                localStorage.removeItem('user_avatar');
-                sessionStorage.removeItem('user_avatar');
-                try { const token = localStorage.getItem('token'); if (token) { await fetch('/api/user/avatar', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } } catch (error) {}
+                localStorage.removeItem('user_avatar'); sessionStorage.removeItem('user_avatar');
+                try { const token = localStorage.getItem('token'); if (token) { await fetch('/api/user/avatar', { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } } catch (e) {}
                 return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             applyToPage: async function(username) {
-                const quickAvatar = this.getAvatarSync(username);
-                this.updateAvatarElements(quickAvatar);
+                const quickAvatar = this.getAvatarSync(username); this.updateAvatarElements(quickAvatar);
                 const serverAvatar = await this.getAvatar(username);
                 if (serverAvatar !== quickAvatar) this.updateAvatarElements(serverAvatar);
                 if (username) localStorage.setItem('username', username);
@@ -776,9 +618,7 @@
                 const sidebarAvatar = document.getElementById('sidebarAvatar');
                 if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
                 const profileAvatar = document.getElementById('profileAvatar');
-                if (profileAvatar) {
-                    profileAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;"><span class="avatar-edit-overlay"><i class="fas fa-camera"></i></span>`;
-                }
+                if (profileAvatar) profileAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;"><span class="avatar-edit-overlay"><i class="fas fa-camera"></i></span>`;
                 document.querySelectorAll('[data-avatar]').forEach(el => { if (el.tagName === 'IMG') el.src = avatar; else { el.style.backgroundImage = `url(${avatar})`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; } });
             }
         };
@@ -817,15 +657,7 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            // Trouver le bon onglet
-            const tabs = document.querySelectorAll('.tab');
-            let targetTab = null;
-            tabs.forEach(t => {
-                if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(`'${tabId}'`)) {
-                    targetTab = t;
-                }
-            });
-            if (targetTab) targetTab.classList.add('active');
+            event.target.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
             if (tabId === 'transactions') { currentTransactionPage = 1; displayTransactionsWithPagination(); }
             if (tabId === 'referrals') { currentReferralPage = 1; displayReferralsWithPagination(); }
