@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Documentation API KermHosting - Gérez vos serveurs programmatiquement">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Documentation API - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            pointer-events: none; z-index: -1;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .top-bar-logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem;
+            text-decoration: none; color: var(--text-primary);
+        }
+
+        .top-bar-logo-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .top-bar-actions {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 18px; border-radius: var(--radius-full);
+            font-weight: 600; border: none; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; text-decoration: none; transition: all 0.3s;
+            font-size: 0.9rem; font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5); }
+
+        .btn-outline {
+            background: transparent; border: 2px solid var(--border-color); color: var(--text-primary);
+        }
+        .btn-outline:hover { border-color: var(--primary); background: rgba(124, 58, 237, 0.1); }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center; padding: 60px 24px 40px;
+            position: relative; overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(16, 185, 129, 0.2));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            padding: 8px 20px; border-radius: var(--radius-full);
+            margin-bottom: 20px; color: var(--primary-light);
+            font-weight: 600; font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 3rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 16px; line-height: 1.2;
+        }
+
+        .hero .gradient-text {
+            background: linear-gradient(135deg, #c4b5fd, #6ee7b7, #fcd34d);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-secondary); font-size: 1.1rem; max-width: 700px;
+            margin: 0 auto 24px;
+        }
+
+        .hero-base-url {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color);
+            padding: 12px 24px; border-radius: var(--radius-full);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+            color: var(--primary-light);
+        }
+
+        .hero-base-url code {
+            background: transparent; color: var(--success);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1100px; margin: 0 auto; padding: 0 24px 60px;
+        }
+
+        /* ===== TOKEN SECTION ===== */
+        .token-section {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.9), rgba(17, 24, 39, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-xl); padding: 28px; margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .token-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+        }
+
+        .token-header-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-md); display: flex;
+            align-items: center; justify-content: center;
+            color: white; font-size: 1.3rem;
+        }
+
+        .token-header h3 {
+            font-size: 1.3rem; font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .token-header p {
+            color: var(--text-secondary); font-size: 0.85rem;
+        }
+
+        .token-input-group {
+            display: flex; gap: 12px; margin-bottom: 16px;
+        }
+
+        .token-input {
+            flex: 1;
+            background: var(--bg-input); border: 2px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 14px 18px;
+            color: var(--primary-light); font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem; transition: all 0.3s;
+        }
+
+        .token-input:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+        }
+
+        .token-input::placeholder {
+            color: var(--text-muted); font-family: 'Inter', sans-serif;
+        }
+
+        .token-note {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md); padding: 14px 18px;
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        .token-note i {
+            color: var(--success); font-size: 1.1rem; margin-top: 2px;
+        }
+
+        /* ===== TABS NAVIGATION ===== */
+        .tabs-nav {
+            display: flex; gap: 8px; margin-bottom: 32px;
+            overflow-x: auto; padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tabs-nav::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            padding: 10px 20px; border-radius: var(--radius-full);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 41, 59, 0.4); color: var(--text-secondary);
+            font-size: 0.9rem; font-weight: 500; cursor: pointer;
+            transition: all 0.3s; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-btn:hover {
+            background: rgba(30, 41, 59, 0.6); color: var(--text-primary);
+            border-color: rgba(124, 58, 237, 0.3);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent; color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .tab-btn .count {
+            background: rgba(255, 255, 255, 0.2); padding: 2px 8px;
+            border-radius: var(--radius-full); font-size: 0.75rem;
+        }
+
+        /* ===== ENDPOINT CARD ===== */
+        .endpoint-card {
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.9), rgba(17, 24, 39, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-xl); margin-bottom: 20px;
+            overflow: hidden; transition: all 0.3s;
+        }
+
+        .endpoint-card:hover {
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .endpoint-header {
+            padding: 20px; display: flex; align-items: center; gap: 16px;
+            cursor: pointer; transition: background 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .endpoint-card.active .endpoint-header {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .endpoint-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .method-badge {
+            padding: 6px 14px; border-radius: var(--radius-md);
+            font-weight: 700; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.5px; min-width: 60px; text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .method-badge.get { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .method-badge.post { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .method-badge.put { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .method-badge.delete { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .method-badge.ws { background: rgba(16, 185, 129, 0.3); color: var(--secondary-light); border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .endpoint-url {
+            flex: 1; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem; color: var(--primary-light);
+            word-break: break-all;
+        }
+
+        .endpoint-badges {
+            display: flex; gap: 6px; flex-wrap: wrap;
+        }
+
+        .auth-badge {
+            padding: 4px 10px; border-radius: var(--radius-full);
+            font-size: 0.7rem; font-weight: 600;
+        }
+
+        .auth-badge.required {
+            background: rgba(245, 158, 11, 0.2); color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .auth-badge.public {
+            background: rgba(16, 185, 129, 0.2); color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .endpoint-arrow {
+            color: var(--text-muted); transition: transform 0.3s;
+        }
+
+        .endpoint-card.active .endpoint-arrow {
+            transform: rotate(180deg);
+        }
+
+        .endpoint-body {
+            padding: 0; max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .endpoint-card.active .endpoint-body {
+            max-height: 2000px; padding: 24px;
+        }
+
+        .endpoint-body h4 {
+            font-size: 1rem; margin-bottom: 12px; margin-top: 20px;
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-primary); font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .endpoint-body h4:first-child { margin-top: 0; }
+
+        .endpoint-body h4 i {
+            color: var(--primary); width: 20px;
+        }
+
+        .endpoint-body p {
+            color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px;
+        }
+
+        .param-table {
+            width: 100%; border-collapse: collapse; margin: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .param-table th {
+            padding: 12px; text-align: left; border-bottom: 2px solid var(--border-color);
+            color: var(--primary-light); font-weight: 600; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .param-table td {
+            padding: 12px; border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .param-table td:first-child {
+            font-family: 'JetBrains Mono', monospace; color: var(--warning);
+            font-weight: 500;
+        }
+
+        .param-table td:nth-child(3) {
+            text-align: center;
+        }
+
+        .param-required {
+            color: var(--danger); font-weight: 600;
+        }
+
+        .param-optional {
+            color: var(--text-muted);
+        }
+
+        .code-block {
+            position: relative; margin: 16px 0;
+        }
+
+        .code-block pre {
+            background: #0a0e17; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 20px;
+            overflow-x: auto; font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: #e2e8f0; line-height: 1.7;
+        }
+
+        .code-block pre .keyword { color: #c084fc; }
+        .code-block pre .string { color: #6ee7b7; }
+        .code-block pre .comment { color: #6b7280; font-style: italic; }
+        .code-block pre .url { color: #60a5fa; }
+
+        .copy-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-color);
+            padding: 6px 12px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.75rem; color: var(--text-secondary);
+            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+
+        .copy-btn.copied {
+            background: var(--success); color: white; border-color: var(--success);
+        }
+
+        .response-preview {
+            background: #0a0e17; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 20px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            color: #e2e8f0; line-height: 1.7; overflow-x: auto;
+            position: relative;
+        }
+
+        .response-preview .copy-btn {
+            position: absolute; top: 12px; right: 12px;
+        }
+
+        .info-box {
+            padding: 16px; border-radius: var(--radius-md); margin: 16px 0;
+            display: flex; align-items: flex-start; gap: 12px;
+            font-size: 0.85rem; line-height: 1.6;
+        }
+
+        .info-box i { font-size: 1.1rem; margin-top: 2px; }
+
+        .info-box.info {
+            background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #93bbfd;
+        }
+        .info-box.info i { color: var(--info); }
+
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+        .info-box.warning i { color: var(--warning); }
+
+        .info-box.success {
+            background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+        .info-box.success i { color: var(--success); }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center; padding: 40px 24px; border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary); font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex; align-items: center; justify-content: center;
+            gap: 24px; margin-bottom: 16px; flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary); text-decoration: none;
+            transition: color 0.2s; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .footer-links a:hover { color: var(--primary-light); }
+
+        .footer-links a i { color: var(--primary); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 14px 20px; border-radius: var(--radius-md);
+            color: white; display: flex; align-items: center; gap: 10px;
+            z-index: 9999; animation: slideUp 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px); font-size: 0.9rem;
+        }
+
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 0.95rem; }
+            .token-input-group { flex-direction: column; }
+            .endpoint-header { flex-wrap: wrap; gap: 10px; }
+            .endpoint-url { font-size: 0.8rem; }
+            .tabs-nav { gap: 6px; }
+            .tab-btn { padding: 8px 14px; font-size: 0.8rem; }
+            .param-table { font-size: 0.75rem; }
+            .param-table th, .param-table td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <a href="/dashboard" class="top-bar-logo">
+            <div class="top-bar-logo-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <span>KermHosting</span>
+        </a>
+        <div class="top-bar-actions">
+            <a href="/dashboard" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Tableau de bord</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <i class="fas fa-code"></i>
+            <span>API REST v2.0</span>
+        </div>
+        <h1>
+            <span class="gradient-text">Automatisez</span> votre hébergement
+        </h1>
+        <p>
+            Gérez vos serveurs Node.js, achetez des coins, et intégrez KermHosting à vos applications
+            grâce à notre API REST complète et notre WebSocket temps réel.
+        </p>
+        <div class="hero-base-url">
+            <i class="fas fa-link"></i>
+            <span>Base URL :</span>
+            <code>https://kermhosting.site/api</code>
+        </div>
+    </section>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Token Section -->
+        <div class="token-section">
+            <div class="token-header">
+                <div class="token-header-icon"><i class="fas fa-key"></i></div>
+                <div>
+                    <h3>Votre token d'authentification</h3>
+                    <p>Utilisez ce token dans le header Authorization de vos requêtes</p>
+                </div>
+            </div>
+            <div class="token-input-group">
+                <input type="text" id="tokenInput" class="token-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                <button class="btn btn-primary" id="saveTokenBtn"><i class="fas fa-save"></i> Sauvegarder</button>
+                <button class="btn btn-outline" id="clearTokenBtn"><i class="fas fa-trash"></i> Effacer</button>
+            </div>
+            <div class="token-note">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Comment obtenir votre token ?</strong><br>
+                    Connectez-vous via <code>/api/login</code> ou utilisez le formulaire de connexion. Le token JWT est valable 7 jours.
+                    Toutes les requêtes doivent inclure le header : <code>Authorization: Bearer VOTRE_TOKEN</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('auth')">
+                <i class="fas fa-user-lock"></i> Authentification
+                <span class="count">5</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('servers')">
+                <i class="fas fa-server"></i> Serveurs
+                <span class="count">9</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('coins')">
+                <i class="fas fa-coins"></i> Coins & Plans
+                <span class="count">4</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('payments')">
+                <i class="fas fa-credit-card"></i> Paiements
+                <span class="count">6</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('referral')">
+                <i class="fas fa-gift"></i> Parrainage
+                <span class="count">1</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('profile')">
+                <i class="fas fa-user-cog"></i> Profil
+                <span class="count">6</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('websocket')">
+                <i class="fas fa-plug"></i> WebSocket
+                <span class="count">1</span>
+            </button>
+        </div>
+
+        <!-- ==================== ONGLET AUTHENTIFICATION ==================== -->
+        <div class="tab-content" id="tab-auth">
+            <!-- POST /api/login -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/login</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <p>Authentifie un utilisateur et retourne un token JWT ainsi que les informations du profil.</p>
+                    
+                    <h4><i class="fas fa-arrow-down"></i> Paramètres</h4>
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>identifier</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Email ou nom d'utilisateur</td></tr>
+                        <tr><td>password</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Mot de passe</td></tr>
+                        <tr><td>cf-turnstile-response</td><td>string</td><td><span class="param-optional">❌ Optionnel</span></td><td>Token Cloudflare Turnstile (si activé)</td></tr>
+                    </table>
+
+                    <h4><i class="fas fa-arrow-up"></i> Réponse (200 OK)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this, 'loginResponse')"><i class="far fa-copy"></i> Copier</button>
+                        <pre id="loginResponse"><span class="comment">// POST /api/login - Réponse succès</span>
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"token"</span>: <span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>,
+  <span class="string">"user"</span>: {
+    <span class="string">"id"</span>: <span class="string">"550e8400-e29b-41d4-a716-446655440000"</span>,
+    <span class="string">"username"</span>: <span class="string">"johndoe"</span>,
+    <span class="string">"email"</span>: <span class="string">"john@example.com"</span>,
+    <span class="string">"coins"</span>: <span class="keyword">250</span>,
+    <span class="string">"role"</span>: <span class="string">"user"</span>,
+    <span class="string">"level"</span>: <span class="keyword">3</span>,
+    <span class="string">"daily_login_streak"</span>: <span class="keyword">5</span>
+  }
+}</pre>
+                    </div>
+
+                    <h4><i class="fas fa-terminal"></i> Exemple curl</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/login"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"identifier": "votre-email@exemple.com", "password": "votre-mot-de-passe"}'</span></pre>
+                    </div>
+
+                    <h4><i class="fas fa-code"></i> Exemple JavaScript</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre><span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="string">'https://kermhosting.site/api/login'</span>, {
+  method: <span class="string">'POST'</span>,
+  headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+  body: JSON.stringify({ identifier: <span class="string">'john@example.com'</span>, password: <span class="string">'mypassword'</span> })
+});
+<span class="keyword">const</span> data = <span class="keyword">await</span> response.json();
+<span class="keyword">if</span> (data.success) {
+  localStorage.setItem(<span class="string">'token'</span>, data.token);
+  console.log(<span class="string">'Connecté en tant que'</span>, data.user.username);
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/register -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/register</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crée un nouveau compte utilisateur avec 5 coins offerts.</p>
+                    
+                    <h4><i class="fas fa-arrow-down"></i> Paramètres</h4>
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>username</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Nom d'utilisateur (3-20 caractères, lettres/chiffres/_</td></tr>
+                        <tr><td>email</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Adresse email valide (Gmail, iCloud, Yahoo, etc.)</td></tr>
+                        <tr><td>password</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Mot de passe (minimum 6 caractères)</td></tr>
+                        <tr><td>referral_code</td><td>string</td><td><span class="param-optional">❌ Optionnel</span></td><td>Code de parrainage</td></tr>
+                        <tr><td>newsletter</td><td>boolean</td><td><span class="param-optional">❌ Optionnel</span></td><td>Accepte les offres promotionnelles</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/register"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"username": "johndoe", "email": "john@gmail.com", "password": "monpassword"}'</span></pre>
+                    </div>
+
+                    <div class="info-box info">
+                        <i class="fas fa-info-circle"></i>
+                        <div>Les emails jetables (Yopmail, Mailinator, etc.) sont automatiquement bloqués. Seuls les fournisseurs reconnus (Gmail, iCloud, Yahoo, Outlook, Proton, etc.) sont acceptés.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/verify-email -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/verify-email</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <p>Vérifie l'adresse email avec le code à 6 chiffres reçu après l'inscription.</p>
+                    
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>email</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Adresse email à vérifier</td></tr>
+                        <tr><td>code</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Code à 6 chiffres reçu par email</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/verify-email"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"email": "john@gmail.com", "code": "123456"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/forgot-password -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/forgot-password</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/forgot-password"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"email": "john@gmail.com"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/reset-password -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/reset-password</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>email</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Adresse email</td></tr>
+                        <tr><td>code</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Code reçu par email</td></tr>
+                        <tr><td>newPassword</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Nouveau mot de passe (min 6 caractères)</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/reset-password"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"email": "john@gmail.com", "code": "123456", "newPassword": "nouveau_mdp"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET SERVEURS ==================== -->
+        <div class="tab-content" id="tab-servers" style="display: none;">
+            <!-- GET /api/servers -->
+            <div class="endpoint-card active">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/servers</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body" style="max-height: 2000px; padding: 24px;">
+                    <p>Récupère la liste complète de tous vos serveurs avec leurs détails.</p>
+                    
+                    <h4><i class="fas fa-arrow-up"></i> Réponse</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre id="curlServers"><span class="comment">// GET /api/servers - Réponse</span>
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"servers"</span>: [
+    {
+      <span class="string">"id"</span>: <span class="string">"abc-123-def"</span>,
+      <span class="string">"server_name"</span>: <span class="string">"mon-bot-discord"</span>,
+      <span class="string">"server_type"</span>: <span class="string">"2gb"</span>,
+      <span class="string">"status"</span>: <span class="string">"active"</span>,
+      <span class="string">"expires_at"</span>: <span class="string">"2026-05-15T00:00:00.000Z"</span>,
+      <span class="string">"panel_url"</span>: <span class="string">"https://panel.kermhosting.site/server/abc123"</span>
+    }
+  ]
+}</pre>
+                    </div>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/servers"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/servers/:id -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/servers/{id}</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/servers/abc-123-def"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/create-server -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/create-server</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>plan_id</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>free, 1gb, 2gb, 4gb, 8gb</td></tr>
+                        <tr><td>server_name</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Nom du serveur (3-30 caractères)</td></tr>
+                        <tr><td>server_username</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Nom d'utilisateur Pterodactyl (3-20 car.)</td></tr>
+                        <tr><td>payment_method</td><td>string</td><td><span class="param-optional">❌ Optionnel</span></td><td>coins (défaut: coins)</td></tr>
+                    </table>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/create-server"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"plan_id": "2gb", "server_name": "mon-bot", "server_username": "mybot"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/servers/:id/power -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/servers/{id}/power</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>action</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>start, stop, restart, kill</td></tr>
+                    </table>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/servers/abc-123/power"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"action": "restart"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/servers/:id/renew -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/servers/{id}/renew</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/servers/abc-123/renew"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"coins": 160}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/servers/:id/stats -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/servers/{id}/stats</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/servers/abc-123/stats"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/servers/:id/logs -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/servers/{id}/logs?lines=50</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/servers/abc-123/logs?lines=100"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/servers/:id/command -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/servers/{id}/command</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/servers/abc-123/command"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"command": "npm start"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/servers/:id/auto-renew -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/servers/{id}/auto-renew</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>enabled</td><td>boolean</td><td><span class="param-required">✅ Requis</span></td><td>true ou false</td></tr>
+                    </table>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/servers/abc-123/auto-renew"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"enabled": true}'</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET COINS & PLANS ==================== -->
+        <div class="tab-content" id="tab-coins" style="display: none;">
+            <!-- GET /api/user/me -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/user/me</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <p>Récupère le profil complet, le solde de coins et les statistiques.</p>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/user/me"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/coin-packs -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/coin-packs</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/coin-packs"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/plans -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/plans</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/plans"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/daily-reward -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/daily-reward</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/daily-reward"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET PAIEMENTS ==================== -->
+        <div class="tab-content" id="tab-payments" style="display: none;">
+            <!-- POST /api/payment/buy-coins -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/payment/buy-coins</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <table class="param-table">
+                        <tr><th>Nom</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+                        <tr><td>pack_id</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>small, medium, large, xlarge</td></tr>
+                        <tr><td>phone</td><td>string</td><td><span class="param-required">✅ Requis</span></td><td>Numéro Mobile Money (9 chiffres)</td></tr>
+                        <tr><td>medium</td><td>string</td><td><span class="param-optional">❌ Optionnel</span></td><td>MTN ou ORANGE (défaut: MTN)</td></tr>
+                    </table>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/payment/buy-coins"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"pack_id": "medium", "phone": "655555555", "medium": "MTN"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/payment/paypal -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/payment/paypal</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/payment/paypal"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"type": "coins", "pack_id": "medium", "paypal_email": "moi@paypal.com", "paypal_name": "Jean Dupont", "currency": "EUR"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/payment/minipay/initiate -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/payment/minipay/initiate</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/payment/minipay/initiate"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"pack_id": "medium", "phone": "699999999", "country_code": "CM"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/payment/status/:transId -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/payment/status/{transId}</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/payment/status/TRANS_ID"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/currencies -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/currencies</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/currencies"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/countries -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/countries</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge public">Public</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/countries"</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET PARRAINAGE ==================== -->
+        <div class="tab-content" id="tab-referral" style="display: none;">
+            <div class="endpoint-card active">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/referral/info</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body" style="max-height: 2000px; padding: 24px;">
+                    <p>Récupère vos informations de parrainage : code, lien, filleuls et gains.</p>
+                    
+                    <h4><i class="fas fa-arrow-up"></i> Réponse</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"referral_code"</span>: <span class="string">"KERMABC123"</span>,
+  <span class="string">"referral_link"</span>: <span class="string">"https://kermhosting.site/register?ref=KERMABC123"</span>,
+  <span class="string">"total_referrals"</span>: <span class="keyword">5</span>,
+  <span class="string">"total_coins_earned"</span>: <span class="keyword">25</span>,
+  <span class="string">"referrals"</span>: [
+    { <span class="string">"username"</span>: <span class="string">"ami1"</span>, <span class="string">"joined_at"</span>: <span class="string">"2026-04-01"</span>, <span class="string">"coins_earned"</span>: <span class="keyword">5</span> }
+  ]
+}</pre>
+                    </div>
+
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/referral/info"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET PROFIL ==================== -->
+        <div class="tab-content" id="tab-profile" style="display: none;">
+            <!-- POST /api/user/regenerate-api-key -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/user/regenerate-api-key</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/user/regenerate-api-key"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/user/update-username -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/user/update-username</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/user/update-username"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"username": "nouveau_nom"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/change-password -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/change-password</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/change-password"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"current_password": "ancien", "new_password": "nouveau_mdp"}'</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET /api/user/activities -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge get">GET</span>
+                    <span class="endpoint-url">/api/user/activities</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X GET <span class="url">"https://kermhosting.site/api/user/activities"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DELETE /api/user/activities -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge delete">DELETE</span>
+                    <span class="endpoint-url">/api/user/activities</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X DELETE <span class="url">"https://kermhosting.site/api/user/activities"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST /api/user/logout-all -->
+            <div class="endpoint-card">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge post">POST</span>
+                    <span class="endpoint-url">/api/user/logout-all</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body">
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre>curl -X POST <span class="url">"https://kermhosting.site/api/user/logout-all"</span> \
+  -H <span class="string">"Authorization: Bearer VOTRE_TOKEN"</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ONGLET WEBSOCKET ==================== -->
+        <div class="tab-content" id="tab-websocket" style="display: none;">
+            <div class="endpoint-card active">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="method-badge ws">WS</span>
+                    <span class="endpoint-url">wss://kermhosting.site</span>
+                    <div class="endpoint-badges">
+                        <span class="auth-badge required">Auth requise</span>
+                    </div>
+                    <i class="fas fa-chevron-down endpoint-arrow"></i>
+                </div>
+                <div class="endpoint-body" style="max-height: 2000px; padding: 24px;">
+                    <p>Connexion WebSocket pour recevoir les statistiques en temps réel et interagir avec la console de vos serveurs.</p>
+
+                    <h4><i class="fas fa-plug"></i> Connexion</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre id="wsConnect"><span class="keyword">const</span> ws = <span class="keyword">new</span> WebSocket(<span class="string">'wss://kermhosting.site'</span>);
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({ type: <span class="string">'auth'</span>, token: <span class="string">'VOTRE_TOKEN'</span> }));
+};
+
+ws.onmessage = (event) => {
+  <span class="keyword">const</span> data = JSON.parse(event.data);
+  console.log(<span class="string">'Message reçu:'</span>, data);
+};</pre>
+                    </div>
+
+                    <h4><i class="fas fa-exchange-alt"></i> Types de messages</h4>
+                    <table class="param-table">
+                        <tr><th>Type</th><th>Direction</th><th>Description</th></tr>
+                        <tr><td>auth</td><td>Client → Serveur</td><td>Authentification avec token JWT</td></tr>
+                        <tr><td>subscribe</td><td>Client → Serveur</td><td>S'abonner aux stats d'un serveur</td></tr>
+                        <tr><td>unsubscribe</td><td>Client → Serveur</td><td>Se désabonner des stats</td></tr>
+                        <tr><td>command</td><td>Client → Serveur</td><td>Envoyer une commande console</td></tr>
+                        <tr><td>ping</td><td>Client → Serveur</td><td>Keep-alive</td></tr>
+                        <tr><td>stats</td><td>Serveur → Client</td><td>Statistiques temps réel (CPU, RAM, DISK)</td></tr>
+                        <tr><td>log</td><td>Serveur → Client</td><td>Ligne de log console</td></tr>
+                        <tr><td>pong</td><td>Serveur → Client</td><td>Réponse keep-alive</td></tr>
+                    </table>
+
+                    <h4><i class="fas fa-code"></i> Exemple complet</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="far fa-copy"></i> Copier</button>
+                        <pre><span class="keyword">const</span> ws = <span class="keyword">new</span> WebSocket(<span class="string">'wss://kermhosting.site'</span>);
+
+ws.onopen = () => {
+  <span class="comment">// Authentification</span>
+  ws.send(JSON.stringify({ type: <span class="string">'auth'</span>, token: <span class="string">'VOTRE_TOKEN'</span> }));
+  
+  <span class="comment">// S'abonner aux stats d'un serveur</span>
+  ws.send(JSON.stringify({ type: <span class="string">'subscribe'</span>, serverId: <span class="string">'abc-123-def'</span> }));
+  
+  <span class="comment">// Envoyer une commande</span>
+  ws.send(JSON.stringify({ type: <span class="string">'command'</span>, serverId: <span class="string">'abc-123-def'</span>, command: <span class="string">'node index.js'</span> }));
+};
+
+ws.onmessage = (event) => {
+  <span class="keyword">const</span> data = JSON.parse(event.data);
+  
+  <span class="keyword">if</span> (data.type === <span class="string">'stats'</span>) {
+    console.log(<span class="string">'CPU:'</span>, data.stats.cpu + <span class="string">'%'</span>);
+    console.log(<span class="string">'RAM:'</span>, data.stats.memory.used / 1024 / 1024, <span class="string">'MB'</span>);
+  }
+  
+  <span class="keyword">if</span> (data.type === <span class="string">'log'</span>) {
+    console.log(<span class="string">'Log:'</span>, data.log);
+  }
+};
+
+<span class="comment">// Keep-alive toutes les 30 secondes</span>
+setInterval(() => {
+  <span class="keyword">if</span> (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: <span class="string">'ping'</span> }));
+  }
+}, 30000);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="mailto:bookmakerp@gmail.com"><i class="fas fa-envelope"></i> bookmakerp@gmail.com</a>
+            <a href="https://wa.me/237659535227"><i class="fab fa-whatsapp"></i> +237 659535227</a>
+            <a href="https://discord.gg/pDyM3Du3h"><i class="fab fa-discord"></i> Discord</a>
+        </div>
+        <p>© 2026 KermHosting - Tous droits réservés</p>
+    </footer>
+
+    <script>
+        let currentToken = localStorage.getItem('api_token') || '';
+
+        function loadToken() {
+            const savedToken = localStorage.getItem('api_token');
+            if (savedToken) {
+                currentToken = savedToken;
+                document.getElementById('tokenInput').value = currentToken;
+            }
+        }
+
+        function saveToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (token) {
+                currentToken = token;
+                localStorage.setItem('api_token', token);
+                showToast('Token sauvegardé avec succès', 'success');
+            } else {
+                showToast('Veuillez entrer un token valide', 'error');
+            }
+        }
+
+        function clearToken() {
+            currentToken = '';
+            localStorage.removeItem('api_token');
+            document.getElementById('tokenInput').value = '';
+            showToast('Token effacé', 'info');
+        }
+
+        function copyCode(btn, elementId) {
+            let text;
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                text = element ? element.innerText : '';
+            } else {
+                const pre = btn.parentElement.querySelector('pre');
+                text = pre ? pre.innerText : '';
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="far fa-copy"></i> Copier';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function showToast(message, type) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function toggleEndpoint(header) {
+            const card = header.closest('.endpoint-card');
+            card.classList.toggle('active');
+        }
+
+        function switchTab(tabName) {
+            // Mettre à jour les boutons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabName}'`));
+            });
+            
+            // Afficher/masquer les contenus
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) targetTab.style.display = 'block';
+        }
+
+        document.getElementById('saveTokenBtn').addEventListener('click', saveToken);
+        document.getElementById('clearTokenBtn').addEventListener('click', clearToken);
+        
+        loadToken();
+    </script>
+</body>
+</html>
