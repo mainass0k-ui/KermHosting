@@ -598,6 +598,13 @@ const maintenanceCheck = async (req, res, next) => {
 
 app.use(maintenanceCheck);
 
+
+
+// =============================================
+// SERVEUR STATIQUE
+// =============================================
+app.use(express.static('public'));
+
 app.get('/api', (req, res) => {
     res.json({
         success: true,
@@ -613,11 +620,6 @@ app.get('/api', (req, res) => {
         version: '3.0.0'
     });
 });
-
-// =============================================
-// SERVEUR STATIQUE
-// =============================================
-app.use(express.static('public'));
 
 // =============================================
 // FONCTIONS UTILITAIRES
