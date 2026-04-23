@@ -531,6 +531,7 @@ const maintenanceCheck = async (req, res, next) => {
             '/email-verification', 
             '/forgot-password', 
             '/admin',
+            '/api',
             '/maintenance',
             '/api/health',
             '/api/maintenance-status',
