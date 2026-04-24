@@ -6252,7 +6252,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
     try {
         console.log('🧹 Nettoyage des utilisateurs Pterodactyl orphelins...');
         
-        // 1. Récupérer les utilisateurs KermHosting qui ont un pterodactyl_user_id
         const { data: kermUsers } = await supabase
             .from('profiles')
             .select('pterodactyl_user_id');
@@ -6263,7 +6262,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
                 .map(u => u.pterodactyl_user_id.toString())
         );
 
-        // 2. Récupérer TOUS les utilisateurs Pterodactyl
         let allPteroUsers = [];
         let page = 1;
         while (true) {
@@ -6274,7 +6272,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
         }
 
         console.log(`📊 ${allPteroUsers.length} utilisateurs Pterodactyl trouvés`);
-        console.log(`📊 ${linkedPteroIds.size} utilisateurs liés à KermHosting`);
 
         let stats = {
             total: allPteroUsers.length,
@@ -6288,38 +6285,49 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
             const pteroId = pteroUser.attributes.id.toString();
             const pteroUsername = pteroUser.attributes.username;
 
-            // Si lié à KermHosting → ON GARDE
+            // Lié à KermHosting → CONSERVÉ
             if (linkedPteroIds.has(pteroId)) {
                 stats.linked++;
                 console.log(`✅ Conservé (lié): ${pteroUsername}`);
                 continue;
             }
 
-            // Vérifier si l'utilisateur a des serveurs
             try {
+                // Vérifier les serveurs de l'utilisateur
                 const userDetails = await callPterodactylAPI(`/api/application/users/${pteroId}`);
                 const servers = userDetails.attributes.relationships?.servers?.data || [];
                 
                 if (servers.length > 0) {
-                    // A des serveurs → ON GARDE (même orphelin)
+                    // A des serveurs → CONSERVÉ
                     stats.has_servers++;
-                    console.log(`⚠️ Conservé (a ${servers.length} serveur(s)): ${pteroUsername}`);
+                    console.log(`⚠️ Conservé (${servers.length} serveur(s)): ${pteroUsername}`);
                 } else {
-                    // Sans serveur et non lié → ON SUPPRIME
-                    await callPterodactylAPI(`/api/application/users/${pteroId}`, 'DELETE');
-                    stats.deleted++;
-                    console.log(`🗑️ Supprimé (orphelin sans serveur): ${pteroUsername}`);
+                    // Sans serveur → SUPPRIMÉ
+                    try {
+                        await callPterodactylAPI(`/api/application/users/${pteroId}`, 'DELETE');
+                        stats.deleted++;
+                        console.log(`🗑️ Supprimé: ${pteroUsername}`);
+                    } catch (deleteError) {
+                        // Gérer l'erreur "Cannot delete a user with active servers"
+                        if (deleteError.response?.data?.errors?.[0]?.detail?.includes('active servers')) {
+                            stats.has_servers++;
+                            console.log(`⚠️ Conservé (a des serveurs actifs): ${pteroUsername}`);
+                        } else {
+                            stats.failed++;
+                            console.error(`❌ Échec suppression ${pteroUsername}:`, deleteError.message);
+                        }
+                    }
                 }
-            } catch (err) {
+            } catch (checkError) {
                 stats.failed++;
-                console.error(`❌ Erreur vérification ${pteroUsername}:`, err.message);
+                console.error(`❌ Erreur vérification ${pteroUsername}:`, checkError.message);
             }
         }
 
-        console.log(`\n📊 RÉSULTAT DU NETTOYAGE :`);
+        console.log(`\n📊 RÉSULTAT:`);
         console.log(`   ✅ Conservés (liés): ${stats.linked}`);
         console.log(`   ⚠️ Conservés (avec serveurs): ${stats.has_servers}`);
-        console.log(`   🗑️ Supprimés (orphelins sans serveur): ${stats.deleted}`);
+        console.log(`   🗑️ Supprimés: ${stats.deleted}`);
         console.log(`   ❌ Échecs: ${stats.failed}`);
 
         res.json({
