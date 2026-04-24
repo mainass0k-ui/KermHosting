@@ -6250,166 +6250,87 @@ app.get('/api/admin/fapshi/balance', authenticateToken, requireAdmin, async (req
 
 app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuperAdmin, async (req, res) => {
     try {
-        console.log('🧹 Début du nettoyage des utilisateurs Pterodactyl orphelins...');
+        console.log('🧹 Nettoyage des utilisateurs Pterodactyl orphelins...');
         
-        const { data: kermUsers, error: usersError } = await supabase
+        // 1. Récupérer les utilisateurs KermHosting qui ont un pterodactyl_user_id
+        const { data: kermUsers } = await supabase
             .from('profiles')
-            .select('pterodactyl_user_id, username, email');
-        
-        if (usersError) throw usersError;
-        
+            .select('pterodactyl_user_id');
+
         const linkedPteroIds = new Set(
             kermUsers
                 .filter(u => u.pterodactyl_user_id)
                 .map(u => u.pterodactyl_user_id.toString())
         );
-        
-        console.log(`📊 Utilisateurs KermHosting avec lien Pterodactyl: ${linkedPteroIds.size}`);
-        
+
+        // 2. Récupérer TOUS les utilisateurs Pterodactyl
         let allPteroUsers = [];
         let page = 1;
-        let hasMore = true;
-        
-        while (hasMore) {
-            try {
-                const response = await callPterodactylAPI(`/api/application/users?page=${page}`);
-                
-                if (response.data && response.data.length > 0) {
-                    allPteroUsers = [...allPteroUsers, ...response.data];
-                    page++;
-                    
-                    if (response.meta?.pagination?.total_pages && page > response.meta.pagination.total_pages) {
-                        hasMore = false;
-                    }
-                } else {
-                    hasMore = false;
-                }
-            } catch (error) {
-                console.error('❌ Erreur récupération page Pterodactyl:', error);
-                hasMore = false;
-            }
+        while (true) {
+            const response = await callPterodactylAPI(`/api/application/users?page=${page}`);
+            if (!response.data || response.data.length === 0) break;
+            allPteroUsers.push(...response.data);
+            page++;
         }
-        
-        console.log(`📊 Total utilisateurs Pterodactyl trouvés: ${allPteroUsers.length}`);
-        
+
+        console.log(`📊 ${allPteroUsers.length} utilisateurs Pterodactyl trouvés`);
+        console.log(`📊 ${linkedPteroIds.size} utilisateurs liés à KermHosting`);
+
         let stats = {
-            total_ptero_users: allPteroUsers.length,
-            linked_users: 0,
-            orphan_with_servers: 0,
-            orphan_without_servers: 0,
-            deleted_users: 0,
-            failed_deletions: 0,
-            details: []
+            total: allPteroUsers.length,
+            linked: 0,
+            has_servers: 0,
+            deleted: 0,
+            failed: 0
         };
-        
+
         for (const pteroUser of allPteroUsers) {
             const pteroId = pteroUser.attributes.id.toString();
             const pteroUsername = pteroUser.attributes.username;
-            const pteroEmail = pteroUser.attributes.email;
-            
+
+            // Si lié à KermHosting → ON GARDE
             if (linkedPteroIds.has(pteroId)) {
-                stats.linked_users++;
-                stats.details.push({
-                    id: pteroId,
-                    username: pteroUsername,
-                    email: pteroEmail,
-                    status: 'linked',
-                    action: 'conservé (lié à KermHosting)'
-                });
+                stats.linked++;
+                console.log(`✅ Conservé (lié): ${pteroUsername}`);
                 continue;
             }
-            
+
+            // Vérifier si l'utilisateur a des serveurs
             try {
-                const serversResponse = await callPterodactylAPI(`/api/application/users/${pteroId}`);
-                const servers = serversResponse.attributes.relationships?.servers?.data || [];
+                const userDetails = await callPterodactylAPI(`/api/application/users/${pteroId}`);
+                const servers = userDetails.attributes.relationships?.servers?.data || [];
                 
                 if (servers.length > 0) {
-                    stats.orphan_with_servers++;
-                    stats.details.push({
-                        id: pteroId,
-                        username: pteroUsername,
-                        email: pteroEmail,
-                        servers_count: servers.length,
-                        status: 'orphan_with_servers',
-                        action: 'conservé (a des serveurs)'
-                    });
+                    // A des serveurs → ON GARDE (même orphelin)
+                    stats.has_servers++;
+                    console.log(`⚠️ Conservé (a ${servers.length} serveur(s)): ${pteroUsername}`);
                 } else {
-                    stats.orphan_without_servers++;
-                    
-                    try {
-                        await callPterodactylAPI(`/api/application/users/${pteroId}`, 'DELETE');
-                        stats.deleted_users++;
-                        stats.details.push({
-                            id: pteroId,
-                            username: pteroUsername,
-                            email: pteroEmail,
-                            status: 'deleted',
-                            action: 'supprimé'
-                        });
-                        console.log(`✅ Utilisateur Pterodactyl supprimé: ${pteroUsername} (ID: ${pteroId})`);
-                    } catch (deleteError) {
-                        stats.failed_deletions++;
-                        stats.details.push({
-                            id: pteroId,
-                            username: pteroUsername,
-                            email: pteroEmail,
-                            status: 'delete_failed',
-                            error: deleteError.message,
-                            action: 'échec suppression'
-                        });
-                        console.error(`❌ Échec suppression utilisateur ${pteroUsername}:`, deleteError.message);
-                    }
+                    // Sans serveur et non lié → ON SUPPRIME
+                    await callPterodactylAPI(`/api/application/users/${pteroId}`, 'DELETE');
+                    stats.deleted++;
+                    console.log(`🗑️ Supprimé (orphelin sans serveur): ${pteroUsername}`);
                 }
-            } catch (serverError) {
-                console.error(`❌ Erreur vérification serveurs pour ${pteroUsername}:`, serverError.message);
-                stats.details.push({
-                    id: pteroId,
-                    username: pteroUsername,
-                    email: pteroEmail,
-                    status: 'check_failed',
-                    error: serverError.message,
-                    action: 'non traité'
-                });
+            } catch (err) {
+                stats.failed++;
+                console.error(`❌ Erreur vérification ${pteroUsername}:`, err.message);
             }
         }
-        
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'pterodactyl_cleanup',
-                target_type: 'system',
-                description: `Nettoyage utilisateurs Pterodactyl: ${stats.deleted_users}/${stats.orphan_without_servers} supprimés`,
-                metadata: stats,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-        
-        console.log('✅ Nettoyage terminé avec succès');
-        
+
+        console.log(`\n📊 RÉSULTAT DU NETTOYAGE :`);
+        console.log(`   ✅ Conservés (liés): ${stats.linked}`);
+        console.log(`   ⚠️ Conservés (avec serveurs): ${stats.has_servers}`);
+        console.log(`   🗑️ Supprimés (orphelins sans serveur): ${stats.deleted}`);
+        console.log(`   ❌ Échecs: ${stats.failed}`);
+
         res.json({
             success: true,
-            message: `Nettoyage terminé: ${stats.deleted_users} utilisateurs supprimés sur ${stats.orphan_without_servers} orphelins`,
-            stats: {
-                total_ptero_users: stats.total_ptero_users,
-                linked_users: stats.linked_users,
-                orphan_with_servers: stats.orphan_with_servers,
-                orphan_without_servers: stats.orphan_without_servers,
-                deleted_users: stats.deleted_users,
-                failed_deletions: stats.failed_deletions,
-                success_rate: stats.orphan_without_servers > 0 
-                    ? Math.round((stats.deleted_users / stats.orphan_without_servers) * 100) 
-                    : 100
-            },
-            details: stats.details.slice(0, 50)
+            message: `${stats.deleted} utilisateurs supprimés`,
+            stats
         });
-        
+
     } catch (error) {
-        console.error('❌ Erreur nettoyage utilisateurs Pterodactyl:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur lors du nettoyage: ' + error.message 
-        });
+        console.error('❌ Erreur nettoyage:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
