@@ -6,10 +6,8 @@
     <meta name="theme-color" content="#7C3AED">
     <meta name="description" content="Maintenance - KermHosting">
     
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -52,17 +50,11 @@
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-xl: 24px;
+            --radius-2xl: 32px;
             --radius-full: 9999px;
-            
-            --safe-area-inset-top: env(safe-area-inset-top, 0px);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -74,444 +66,526 @@
             justify-content: center;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        body::before {
-            content: '';
+        /* Fond animé */
+        .bg-animation {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.15) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: -1;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb:nth-child(1) {
+            width: 500px; height: 500px;
+            background: var(--primary);
+            top: -150px; left: -150px;
+            animation-delay: 0s;
+        }
+
+        .bg-orb:nth-child(2) {
+            width: 400px; height: 400px;
+            background: var(--secondary);
+            bottom: -150px; right: -150px;
+            animation-delay: -7s;
+        }
+
+        .bg-orb:nth-child(3) {
+            width: 300px; height: 300px;
+            background: var(--accent);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -40px) scale(1.08); }
+            50% { transform: translate(-25px, 25px) scale(0.92); }
+            75% { transform: translate(-40px, -15px) scale(1.04); }
         }
 
         .maintenance-container {
             width: 100%;
-            max-width: 600px;
-            animation: fadeInUp 0.8s ease-out;
+            max-width: 500px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             z-index: 1;
+            margin: auto 0;
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Logo cloud KermHosting */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .kerm-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .kerm-logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: cloudBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Carte principale */
         .maintenance-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 48px 32px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(26, 35, 50, 0.95), rgba(17, 24, 39, 0.95));
+            border-radius: var(--radius-2xl);
+            padding: 36px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .maintenance-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary), var(--primary));
+            background-size: 200% 100%;
+            animation: gradientShift 3s linear infinite;
         }
 
-        .maintenance-icon {
-            font-size: 5rem;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Icône maintenance */
+        .maintenance-icon-wrapper {
             text-align: center;
             margin-bottom: 24px;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.05);
-            }
+        .maintenance-icon-circle {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(245, 158, 11, 0.15));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        .maintenance-icon i {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+        .maintenance-icon-circle::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--accent);
+            animation: spinBorder 3s linear infinite;
+        }
+
+        @keyframes spinBorder {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .maintenance-icon-circle i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            animation: pulse 2s ease-in-out infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.85; }
+        }
+
+        /* Titre */
         .maintenance-title {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
             text-align: center;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #c4b5fd);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
         .maintenance-message {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             line-height: 1.6;
-            padding: 0 20px;
         }
 
+        /* Statut */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            border-radius: var(--radius-full);
+            margin-bottom: 24px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: dotBlink 1.5s ease-in-out infinite;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            animation: none;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--warning); }
+            50% { opacity: 0.3; box-shadow: 0 0 2px var(--warning); }
+        }
+
+        /* ===== BARRE DE PROGRESSION ===== */
+        .progress-section {
+            margin-bottom: 24px;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .progress-header span:last-child {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: var(--radius-full);
+            transition: width 1s linear;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShine 2s linear infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Compte à rebours */
         .countdown-container {
-            background: var(--bg-hover);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 32px;
-            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(17, 24, 39, 0.5));
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            text-align: center;
         }
 
         .countdown-title {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 16px;
+            font-weight: 500;
         }
 
         .countdown {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
         }
 
         .countdown-item {
             text-align: center;
-            min-width: 80px;
+            min-width: 55px;
         }
 
         .countdown-value {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             line-height: 1;
             margin-bottom: 4px;
         }
 
+        .countdown-separator {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-top: -12px;
+        }
+
         .countdown-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-size: 0.65rem;
+            color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .contact-item {
-            background: var(--bg-hover);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-
-        .contact-item:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .contact-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .contact-icon.whatsapp {
-            color: #25D366;
-        }
-
-        .contact-icon.email {
-            color: var(--primary);
-        }
-
-        .contact-icon.discord {
-            color: #5865F2;
-        }
-
-        .contact-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .contact-value {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .status-message {
-            text-align: center;
-            margin: 20px 0;
-            padding: 10px;
-            border-radius: var(--radius-md);
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .status-message i {
-            color: var(--primary);
-            margin-right: 8px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .refresh-btn {
+        /* ===== BOUTONS MÉDIAS (PETITS, EN BAS, SANS TEXTE) ===== */
+        .social-mini {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 14px;
-            background: transparent;
-            border: 2px solid var(--border-color);
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .social-mini-btn {
+            width: 40px; height: 40px;
             border-radius: var(--radius-full);
-            color: var(--text-primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 1.1rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .refresh-btn:hover {
+        .social-mini-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-mini-btn.whatsapp:hover {
+            background: #25D366;
+            border-color: #25D366;
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .social-mini-btn.email:hover {
+            background: var(--primary);
             border-color: var(--primary);
-            background: var(--bg-hover);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
         }
 
-        .refresh-btn i {
-            transition: transform 0.3s;
+        .social-mini-btn.discord:hover {
+            background: #5865F2;
+            border-color: #5865F2;
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
         }
 
-        .refresh-btn:hover i {
-            transform: rotate(180deg);
-        }
-
+        /* Footer */
         .footer {
             text-align: center;
-            margin-top: 32px;
+            margin-top: 16px;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
         .footer a {
-            color: var(--primary);
+            color: var(--primary-light);
             text-decoration: none;
+            transition: color 0.2s;
         }
 
         .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .floating-shape {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.1;
-            z-index: 0;
-        }
-
-        .shape-1 {
-            top: -200px;
-            left: -200px;
-            background: var(--primary);
-        }
-
-        .shape-2 {
-            bottom: -200px;
-            right: -200px;
-            background: var(--accent);
-        }
-
-        .loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            color: var(--primary);
         }
 
         @media (max-width: 768px) {
             .maintenance-card {
-                padding: 32px 20px;
+                padding: 24px 18px;
             }
-
             .maintenance-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
-
-            .maintenance-message {
-                font-size: 1rem;
-            }
-
-            .countdown {
-                gap: 10px;
-            }
-
-            .countdown-item {
-                min-width: 60px;
-            }
-
             .countdown-value {
-                font-size: 1.8rem;
+                font-size: 1.4rem;
             }
-
-            .contact-grid {
-                grid-template-columns: 1fr;
+            .countdown-item {
+                min-width: 45px;
+            }
+            .maintenance-icon-circle {
+                width: 72px; height: 72px;
+            }
+            .maintenance-icon-circle i {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Formes décoratives -->
-    <div class="floating-shape shape-1"></div>
-    <div class="floating-shape shape-2"></div>
+    <!-- Fond animé -->
+    <div class="bg-animation">
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+    </div>
 
     <div class="maintenance-container">
+        <!-- Logo KermHosting -->
+        <div class="logo-section">
+            <div class="kerm-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+        </div>
+
+        <!-- Carte -->
         <div class="maintenance-card">
-            <div class="maintenance-icon">
-                <i class="fas fa-tools"></i>
+            <!-- Icône -->
+            <div class="maintenance-icon-wrapper">
+                <div class="maintenance-icon-circle">
+                    <i class="fas fa-tools"></i>
+                </div>
             </div>
             
+            <!-- Titre -->
             <h1 class="maintenance-title" id="maintenanceTitle">Maintenance en cours</h1>
-            
-            <div class="maintenance-message" id="maintenanceMessage">
-                Chargement du message de maintenance...
+            <p class="maintenance-message" id="maintenanceMessage">
+                Nous améliorons votre expérience. Le site sera de retour très bientôt.
+            </p>
+
+            <!-- Statut -->
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Maintenance en cours</span>
             </div>
 
-            <!-- Statut de vérification -->
-            <div class="status-message" id="statusMessage">
-                <i class="fas fa-sync-alt fa-spin"></i>
-                <span>Vérification de l'état du serveur...</span>
+            <!-- Barre de progression -->
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-header">
+                    <span id="progressStart">Début</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+                </div>
             </div>
 
             <!-- Compte à rebours -->
             <div class="countdown-container" id="countdownContainer" style="display: none;">
-                <div class="countdown-title">Retour estimé</div>
+                <div class="countdown-title">Temps restant estimé</div>
                 <div class="countdown" id="countdown">
                     <div class="countdown-item">
                         <div class="countdown-value" id="days">00</div>
                         <div class="countdown-label">jours</div>
                     </div>
+                    <span class="countdown-separator">:</span>
                     <div class="countdown-item">
                         <div class="countdown-value" id="hours">00</div>
                         <div class="countdown-label">heures</div>
                     </div>
+                    <span class="countdown-separator">:</span>
                     <div class="countdown-item">
                         <div class="countdown-value" id="minutes">00</div>
-                        <div class="countdown-label">minutes</div>
+                        <div class="countdown-label">min</div>
                     </div>
+                    <span class="countdown-separator">:</span>
                     <div class="countdown-item">
                         <div class="countdown-value" id="seconds">00</div>
-                        <div class="countdown-label">secondes</div>
+                        <div class="countdown-label">sec</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Contacts -->
-            <div class="contact-grid" id="contactsContainer">
-                <a href="#" class="contact-item" id="whatsappLink" target="_blank">
-                    <div class="contact-icon whatsapp">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div class="contact-label">WhatsApp</div>
-                    <div class="contact-value" id="whatsappValue">Chargement...</div>
+            <!-- Boutons médias (petits, en bas, sans texte) -->
+            <div class="social-mini">
+                <a href="#" class="social-mini-btn whatsapp" id="whatsappLink" target="_blank" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
                 </a>
-                
-                <a href="#" class="contact-item" id="emailLink">
-                    <div class="contact-icon email">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="contact-label">Email</div>
-                    <div class="contact-value" id="emailValue">Chargement...</div>
+                <a href="#" class="social-mini-btn email" id="emailLink" title="Email">
+                    <i class="fas fa-envelope"></i>
                 </a>
-                
-                <a href="#" class="contact-item" id="discordLink" target="_blank">
-                    <div class="contact-icon discord">
-                        <i class="fab fa-discord"></i>
-                    </div>
-                    <div class="contact-label">Discord</div>
-                    <div class="contact-value" id="discordValue">Chargement...</div>
+                <a href="#" class="social-mini-btn discord" id="discordLink" target="_blank" title="Discord">
+                    <i class="fab fa-discord"></i>
                 </a>
             </div>
+        </div>
 
-            <!-- Bouton d'actualisation manuelle -->
-            <button class="refresh-btn" id="refreshBtn" onclick="checkMaintenanceStatus()">
-                <i class="fas fa-sync-alt"></i>
-                <span>Vérifier le statut</span>
-            </button>
-
-            <!-- Footer -->
-            <div class="footer">
-                <p>© 2024 KermHosting. Tous droits réservés.</p>
-                <p><a href="/" onclick="checkMaintenanceBeforeRedirect(event)">Retour à l'accueil</a></p>
-            </div>
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 KermHosting. <a href="#" onclick="checkBeforeRedirect(event)">Réessayer</a></p>
         </div>
     </div>
 
     <script>
         let checkInterval = null;
         let countdownInterval = null;
+        let wasActive = true;
+        let maintenanceStartTime = null;
+        let maintenanceEndTime = null;
 
-        // ===== VÉRIFIER SI LA MAINTENANCE EST TERMINÉE =====
         async function checkMaintenanceStatus() {
             try {
                 const response = await fetch('/api/maintenance-status');
                 const data = await response.json();
 
                 if (data.success) {
-                    // Mettre à jour l'affichage
-                    document.getElementById('maintenanceMessage').textContent = data.message || 'Site en maintenance. Nous revenons très bientôt !';
-                    
-                    document.getElementById('whatsappValue').textContent = data.support_whatsapp || '+237600000000';
-                    document.getElementById('emailValue').textContent = data.support_email || 'support@kermhosting.com';
-                    document.getElementById('discordValue').textContent = data.discord_link ? 'Rejoindre' : 'kermhosting';
+                    document.getElementById('maintenanceMessage').textContent = 
+                        data.message || 'Nous améliorons votre expérience. Le site sera de retour très bientôt.';
 
+                    // Mise à jour des liens de contact
                     if (data.support_whatsapp) {
                         document.getElementById('whatsappLink').href = `https://wa.me/${data.support_whatsapp.replace(/[^0-9]/g, '')}`;
                     }
@@ -522,133 +596,144 @@
                         document.getElementById('discordLink').href = data.discord_link;
                     }
 
-                    // Gestion du compte à rebours
-                    if (data.estimated_end_time) {
+                    // Gestion des timestamps pour la barre de progression
+                    if (data.estimated_start_time && data.estimated_end_time) {
+                        maintenanceStartTime = new Date(data.estimated_start_time).getTime();
+                        maintenanceEndTime = new Date(data.estimated_end_time).getTime();
+                        
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('countdownContainer').style.display = 'block';
+                        
+                        // Formater la date de début pour l'affichage
+                        const startDate = new Date(data.estimated_start_time);
+                        document.getElementById('progressStart').textContent = 
+                            `Début : ${startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`;
+                        
+                        updateProgressBar();
+                        startCountdown(data.estimated_end_time);
+                    } else if (data.estimated_end_time) {
+                        maintenanceEndTime = new Date(data.estimated_end_time).getTime();
+                        document.getElementById('progressSection').style.display = 'none';
                         document.getElementById('countdownContainer').style.display = 'block';
                         startCountdown(data.estimated_end_time);
                     } else {
+                        document.getElementById('progressSection').style.display = 'none';
                         document.getElementById('countdownContainer').style.display = 'none';
                     }
 
-                    // 👉 SI LA MAINTENANCE N'EST PLUS ACTIVE 👈
+                    // Vérifier si la maintenance est terminée
                     if (!data.is_active) {
-                        console.log('✅ Maintenance terminée, redirection...');
-                        document.getElementById('statusMessage').innerHTML = `
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                            <span>Maintenance terminée ! Redirection...</span>
-                        `;
-                        
-                        // Arrêter les intervalles
-                        if (checkInterval) {
-                            clearInterval(checkInterval);
-                            checkInterval = null;
+                        if (wasActive) {
+                            wasActive = false;
+                            document.getElementById('maintenanceTitle').textContent = 'C\'est prêt !';
+                            document.getElementById('maintenanceMessage').textContent = 'Le site est de nouveau accessible. Redirection...';
+                            document.getElementById('statusDot').classList.add('online');
+                            document.getElementById('statusText').textContent = 'En ligne';
+                            document.getElementById('countdownContainer').style.display = 'none';
+                            document.getElementById('progressSection').style.display = 'none';
+                            
+                            if (checkInterval) clearInterval(checkInterval);
+                            if (countdownInterval) clearInterval(countdownInterval);
+                            
+                            setTimeout(() => redirectAfterMaintenance(), 1500);
                         }
-                        if (countdownInterval) {
-                            clearInterval(countdownInterval);
-                            countdownInterval = null;
-                        }
-                        
-                        // Rediriger vers la page appropriée
-                        redirectAfterMaintenance();
                     } else {
-                        document.getElementById('statusMessage').innerHTML = `
-                            <i class="fas fa-sync-alt fa-spin"></i>
-                            <span>Maintenance en cours - Vérification automatique toutes les 30s</span>
-                        `;
+                        wasActive = true;
+                        document.getElementById('statusDot').classList.remove('online');
+                        document.getElementById('statusText').textContent = 'Maintenance en cours';
                     }
                 }
             } catch (error) {
-                console.error('Erreur vérification maintenance:', error);
-                document.getElementById('statusMessage').innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
-                    <span>Erreur de connexion, nouvelle tentative...</span>
-                `;
+                document.getElementById('statusText').textContent = 'Connexion en attente...';
             }
         }
 
-        // ===== REDIRECTION APRÈS MAINTENANCE =====
+        function updateProgressBar() {
+            if (!maintenanceStartTime || !maintenanceEndTime) return;
+            
+            const now = Date.now();
+            const totalDuration = maintenanceEndTime - maintenanceStartTime;
+            const elapsed = now - maintenanceStartTime;
+            
+            if (totalDuration <= 0) return;
+            
+            let percent = Math.min((elapsed / totalDuration) * 100, 100);
+            percent = Math.max(percent, 0);
+            
+            document.getElementById('progressBarFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
+        }
+
         function redirectAfterMaintenance() {
             const token = localStorage.getItem('token');
-            
-            if (token) {
-                // Utilisateur connecté → rediriger vers dashboard
-                window.location.href = '/dashboard';
-            } else {
-                // Utilisateur non connecté → rediriger vers accueil
-                window.location.href = '/';
-            }
+            window.location.href = token ? '/dashboard' : '/';
         }
 
-        // ===== VÉRIFIER AVANT DE REDIRIGER VERS L'ACCUEIL =====
         async function checkBeforeRedirect(event) {
             event.preventDefault();
-            
             try {
                 const response = await fetch('/api/maintenance-status');
                 const data = await response.json();
-                
                 if (data.success && !data.is_active) {
-                    window.location.href = '/';
-                } else {
-                    // Rester sur la page de maintenance
-                    alert('La maintenance est toujours en cours. Veuillez patienter.');
+                    redirectAfterMaintenance();
                 }
             } catch (error) {
-                window.location.href = '/';
+                redirectAfterMaintenance();
             }
         }
 
-        // ===== DÉMARRER LE COMPTE À REBOURS =====
         function startCountdown(endTime) {
             const endDate = new Date(endTime).getTime();
+            if (countdownInterval) clearInterval(countdownInterval);
 
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-
-            countdownInterval = setInterval(() => {
-                const now = new Date().getTime();
+            function update() {
+                const now = Date.now();
                 const distance = endDate - now;
 
                 if (distance < 0) {
                     clearInterval(countdownInterval);
                     document.getElementById('countdownContainer').style.display = 'none';
+                    if (maintenanceStartTime && maintenanceEndTime) {
+                        document.getElementById('progressBarFill').style.width = '100%';
+                        document.getElementById('progressPercent').textContent = '100%';
+                    }
                     return;
                 }
 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const days = Math.floor(distance / 86400000);
+                const hours = Math.floor((distance % 86400000) / 3600000);
+                const minutes = Math.floor((distance % 3600000) / 60000);
+                const seconds = Math.floor((distance % 60000) / 1000);
 
-                document.getElementById('days').textContent = days.toString().padStart(2, '0');
-                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-            }, 1000);
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+                // Mettre à jour la barre de progression si on a les deux timestamps
+                if (maintenanceStartTime && maintenanceEndTime) {
+                    updateProgressBar();
+                }
+
+                if (distance > 0) {
+                    countdownInterval = setTimeout(update, 1000);
+                }
+            }
+
+            countdownInterval = setTimeout(update, 0);
         }
 
-        // ===== INIT =====
+        // Init
         document.addEventListener('DOMContentLoaded', () => {
-            // Vérification initiale
             checkMaintenanceStatus();
-            
-            // Vérification toutes les 30 secondes
-            checkInterval = setInterval(checkMaintenanceStatus, 30000);
+            checkInterval = setInterval(checkMaintenanceStatus, 1000);
         });
 
-        // Nettoyer les intervalles à la fermeture
         window.addEventListener('beforeunload', () => {
-            if (checkInterval) {
-                clearInterval(checkInterval);
-            }
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
+            if (checkInterval) clearInterval(checkInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
         });
 
-        // Exposer les fonctions globalement
-        window.checkMaintenanceStatus = checkMaintenanceStatus;
         window.checkBeforeRedirect = checkBeforeRedirect;
     </script>
 </body>
