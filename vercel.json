@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/reset-password",
+      "dest": "/public/reset-password.html"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/index.js"
     },
