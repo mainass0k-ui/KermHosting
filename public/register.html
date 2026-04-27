@@ -16,7 +16,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <!-- Cloudflare Turnstile -->
@@ -50,9 +50,6 @@
             --border-color: #2D3748;
             --border-light: #374151;
             
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --shadow-glow: 0 0 15px var(--primary-glow);
             
             --radius-sm: 8px;
@@ -62,11 +59,7 @@
             --radius-full: 9999px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -78,39 +71,136 @@
             justify-content: center;
             padding: 16px;
             position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        body::before {
-            content: '';
+        /* ===== ICÔNES REGISTER EN BACKGROUND ===== */
+        .register-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 30% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 70% 80%, rgba(245, 158, 11, 0.15) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: -1;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
         }
 
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.05;
+            color: var(--primary-light);
+            animation: iconFloat 15s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; font-size: 2.8rem; }
+        .floating-icon:nth-child(2) { top: 18%; right: 10%; animation-delay: -2s; font-size: 2.2rem; }
+        .floating-icon:nth-child(3) { top: 55%; left: 8%; animation-delay: -4s; font-size: 3rem; }
+        .floating-icon:nth-child(4) { top: 70%; right: 6%; animation-delay: -6s; font-size: 2.5rem; }
+        .floating-icon:nth-child(5) { top: 30%; left: 55%; animation-delay: -8s; font-size: 2rem; }
+        .floating-icon:nth-child(6) { top: 8%; right: 35%; animation-delay: -10s; font-size: 3.2rem; }
+        .floating-icon:nth-child(7) { top: 80%; left: 45%; animation-delay: -12s; font-size: 2.4rem; }
+        .floating-icon:nth-child(8) { top: 40%; right: 25%; animation-delay: -14s; font-size: 2.6rem; }
+        .floating-icon:nth-child(9) { top: 15%; left: 75%; animation-delay: -3s; font-size: 2rem; }
+        .floating-icon:nth-child(10) { top: 85%; right: 55%; animation-delay: -5s; font-size: 2.3rem; }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.03; }
+            25% { transform: translateY(-30px) translateX(25px) rotate(8deg); opacity: 0.07; }
+            50% { transform: translateY(-15px) translateX(-15px) rotate(-4deg); opacity: 0.04; }
+            75% { transform: translateY(-40px) translateX(-25px) rotate(12deg); opacity: 0.06; }
+        }
+
+        /* Particules */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 30%; left: 70%; animation-delay: -1s; }
+        .particle:nth-child(3) { top: 55%; left: 10%; animation-delay: -2s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: -4s; }
+        .particle:nth-child(6) { top: 40%; left: 40%; animation-delay: -5s; }
+        .particle:nth-child(7) { top: 60%; left: 60%; animation-delay: -2.5s; }
+        .particle:nth-child(8) { top: 80%; left: 30%; animation-delay: -3.5s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { transform: translateY(-60px) translateX(20px) scale(2); opacity: 0.3; }
+            80% { opacity: 0.6; }
+        }
+
+        /* Grille subtile */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== CONTAINER ===== */
         .auth-container {
             width: 100%;
             max-width: 480px;
-            animation: fadeInUp 0.6s ease-out;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+            position: relative;
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Logo KermHosting */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .kerm-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .kerm-logo i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: cloudBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Carte transparente */
         .auth-card {
             background: transparent;
             border-radius: 0;
@@ -122,96 +212,72 @@
             overflow: visible;
         }
 
-        .auth-card::before {
-            display: none;
-        }
-
+        /* Header */
         .auth-header {
             text-align: left;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .auth-header-top {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .auth-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .auth-logo-img {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .auth-logo span {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            justify-content: flex-end;
+            margin-bottom: 6px;
         }
 
         .login-link {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
-        .login-link:hover {
-            color: var(--primary-light);
-        }
+        .login-link:hover { color: var(--primary-light); }
 
         .auth-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             color: var(--text-primary);
         }
 
         .auth-subtitle {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
+        /* Promo badge */
         .promo-badge {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(124, 58, 237, 0.1));
-            border: 1px solid var(--accent);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(124, 58, 237, 0.08));
+            border: 1px solid rgba(245, 158, 11, 0.3);
             border-radius: var(--radius-md);
-            padding: 12px 16px;
-            margin-bottom: 20px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: var(--accent);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        .promo-badge i {
-            font-size: 1.1rem;
-        }
+        .promo-badge i { font-size: 1rem; }
 
+        /* Formulaire */
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 16px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .form-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             color: var(--text-primary);
         }
@@ -220,65 +286,43 @@
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 12px 14px;
+            padding: 11px 14px;
             color: var(--text-primary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
             width: 100%;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
         }
 
-        .form-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.7;
-        }
+        .form-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+        .form-input.error { border-color: var(--danger); }
+        .form-input.valid { border-color: var(--success); }
 
-        .form-input.error {
-            border-color: var(--danger);
-        }
-
-        .form-input.valid {
-            border-color: var(--success);
-        }
-
-        /* Styles pour le feedback du username */
         .username-feedback {
-            font-size: 0.75rem;
-            margin-top: 4px;
+            font-size: 0.7rem;
+            margin-top: 2px;
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        .username-feedback.valid {
-            color: var(--success);
-        }
-        .username-feedback.error {
-            color: var(--danger);
-        }
-        .username-feedback.info {
-            color: var(--primary);
-        }
+        .username-feedback.valid { color: var(--success); }
+        .username-feedback.error { color: var(--danger); }
+        .username-feedback.info { color: var(--primary); }
 
         .email-hint {
-            font-size: 0.75rem;
-            margin-top: 4px;
+            font-size: 0.7rem;
+            margin-top: 2px;
             color: var(--text-secondary);
         }
+        .email-hint i { margin-right: 4px; color: var(--primary); }
 
-        .email-hint i {
-            margin-right: 4px;
-            color: var(--primary);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
+        .password-wrapper { position: relative; }
 
         .password-toggle {
             position: absolute;
@@ -292,12 +336,11 @@
         }
 
         .password-strength {
-            margin-top: 6px;
-            height: 4px;
+            margin-top: 4px;
+            height: 3px;
             background: var(--border-color);
             border-radius: var(--radius-full);
             overflow: hidden;
-            position: relative;
         }
 
         .strength-bar {
@@ -307,82 +350,74 @@
         }
 
         .strength-text {
-            font-size: 0.75rem;
-            margin-top: 4px;
+            font-size: 0.7rem;
+            margin-top: 2px;
             text-align: right;
         }
 
         .cf-turnstile {
             display: flex;
             justify-content: center;
-            margin: 6px 0;
+            margin: 4px 0;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 4px 0;
+            gap: 8px;
+            margin: 2px 0;
         }
 
         .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             accent-color: var(--primary);
             cursor: pointer;
         }
 
         .checkbox-group label {
             color: var(--text-secondary);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
+        .checkbox-group a { color: var(--primary); text-decoration: none; }
+        .checkbox-group a:hover { color: var(--primary-light); }
 
-        .checkbox-group a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .checkbox-group a:hover {
-            color: var(--primary-light);
-        }
-
+        /* Bouton */
         .auth-btn {
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: var(--radius-md);
-            padding: 12px;
+            border-radius: var(--radius-full);
+            padding: 13px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .auth-btn:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
         }
 
         .auth-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
+        /* Footer */
         .auth-links {
             text-align: center;
-            margin-top: 0;
-            padding-top: 0;
-            border-top: none;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-        }
-
-        .auth-links p {
-            display: inline;
-            margin: 0;
         }
 
         .auth-links a {
@@ -390,132 +425,101 @@
             text-decoration: none;
             font-weight: 600;
         }
-
-        .auth-links a:hover {
-            color: var(--primary-light);
-        }
+        .auth-links a:hover { color: var(--primary-light); }
 
         .auth-footer {
             text-align: center;
-            margin-top: 24px;
+            margin-top: 16px;
         }
 
         .legal-notice {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
         }
+        .legal-notice a { color: var(--text-secondary); text-decoration: underline; }
 
-        .legal-notice a {
-            color: var(--text-secondary);
-            text-decoration: underline;
-        }
-
+        /* Message */
         .message {
-            padding: 12px 14px;
+            padding: 10px 14px;
             border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            margin-bottom: 18px;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             animation: slideIn 0.3s ease-out;
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .message i {
-            font-size: 1.1rem;
-        }
-
-        .message.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .message.success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .message.info {
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
+        .message i { font-size: 1rem; }
+        .message.error { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+        .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .message.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--primary); color: var(--primary); }
 
         .loader {
             display: inline-block;
-            width: 18px;
-            height: 18px;
+            width: 16px; height: 16px;
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .floating-shape {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: var(--primary);
-            filter: blur(100px);
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        .shape-1 {
-            top: -100px;
-            left: -100px;
-            background: var(--primary);
-        }
-
-        .shape-2 {
-            bottom: -100px;
-            right: -100px;
-            background: var(--secondary);
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 480px) {
-            .auth-card {
-                padding: 0;
-            }
-            .auth-title {
-                font-size: 1.5rem;
-            }
-            .auth-btn {
-                padding: 12px;
-            }
+            .auth-title { font-size: 1.3rem; }
+            .auth-btn { padding: 12px; }
         }
     </style>
 </head>
 <body>
-    <div class="floating-shape shape-1"></div>
-    <div class="floating-shape shape-2"></div>
+    <!-- Background animé d'icônes register -->
+    <div class="register-bg">
+        <i class="fas fa-user-plus floating-icon"></i>
+        <i class="fas fa-gift floating-icon"></i>
+        <i class="fas fa-envelope-open-text floating-icon"></i>
+        <i class="fas fa-user-check floating-icon"></i>
+        <i class="fas fa-id-badge floating-icon"></i>
+        <i class="fas fa-star floating-icon"></i>
+        <i class="fas fa-rocket floating-icon"></i>
+        <i class="fas fa-crown floating-icon"></i>
+        <i class="fas fa-certificate floating-icon"></i>
+        <i class="fas fa-ticket-alt floating-icon"></i>
+    </div>
 
+    <!-- Grille -->
+    <div class="grid-bg"></div>
+
+    <!-- Particules -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Contenu -->
     <div class="auth-container">
+        <!-- Logo KermHosting -->
+        <div class="logo-section">
+            <div class="kerm-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+        </div>
+
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-header-top">
-                    <div class="auth-logo">
-                        <img src="https://i.ibb.co/Q3TLG1bv/temp.jpg" alt="KermHosting" class="auth-logo-img">
-                        <span>KermHosting</span>
-                    </div>
                     <a href="/login" class="login-link">Se connecter</a>
                 </div>
                 <h1 class="auth-title">Rejoignez l'aventure</h1>
@@ -533,7 +537,7 @@
                 <div class="form-group">
                     <label class="form-label">Nom d'utilisateur</label>
                     <input type="text" class="form-input" id="username" 
-                           placeholder="johndoe" required 
+                           placeholder="kermrayan" required 
                            minlength="3" maxlength="20"
                            pattern="[a-zA-Z0-9_]+"
                            title="Lettres, chiffres et underscore uniquement">
@@ -546,7 +550,7 @@
                            placeholder="exemple@gmail.com" required>
                     <div class="email-hint" id="emailHint">
                         <i class="fas fa-info-circle"></i>
-                        <span>Utilisez Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>
+                        <span>Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>
                     </div>
                 </div>
 
@@ -598,8 +602,7 @@
             </form>
 
             <div class="auth-links">
-                <p>Déjà un compte ?</p>
-                <a href="/login">Se connecter</a>
+                Déjà un compte ? <a href="/login">Se connecter</a>
             </div>
 
             <div class="auth-footer">
@@ -614,49 +617,26 @@
     </div>
 
     <script>
-        // Liste STRICTE des domaines d'email autorisés (uniquement les fournisseurs reconnus)
         const ALLOWED_EMAIL_DOMAINS = [
-            // Google
             'gmail.com', 'googlemail.com',
-            
-            // Microsoft
             'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'live.com', 'live.fr', 'msn.com',
-            
-            // Apple
             'icloud.com', 'me.com', 'mac.com',
-            
-            // Yahoo
             'yahoo.com', 'yahoo.fr', 'ymail.com', 'rocketmail.com',
-            
-            // Proton
             'protonmail.com', 'proton.me', 'pm.me',
-            
-            // Autres internationaux
             'aol.com', 'aim.com',
             'zoho.com', 'zohomail.com',
             'mail.com', 'email.com',
             'yandex.com', 'yandex.ru',
             'gmx.com', 'gmx.fr', 'gmx.de',
             'tutanota.com', 'tutamail.com', 'tuta.io',
-            'fastmail.com', 'fastmail.fm',
-            'hey.com',
-            
-            // Fournisseurs français
-            'laposte.net',
-            'orange.fr', 'wanadoo.fr',
-            'free.fr',
-            'sfr.fr', 'neuf.fr', 'cegetel.net',
-            'bbox.fr', 'bouyguestelecom.fr',
-            
-            // Pro/Éducation (domaines spécifiques uniquement, pas de wildcard)
-            'student.gla.ac.uk', 'ed.ac.uk', 'cam.ac.uk', 'ox.ac.uk',
+            'fastmail.com', 'fastmail.fm', 'hey.com',
+            'laposte.net', 'orange.fr', 'wanadoo.fr', 'free.fr',
+            'sfr.fr', 'neuf.fr', 'cegetel.net', 'bbox.fr', 'bouyguestelecom.fr',
             'harvard.edu', 'stanford.edu', 'mit.edu', 'berkeley.edu', 'yale.edu', 'princeton.edu', 'columbia.edu',
             'sorbonne-universite.fr', 'univ-paris.fr', 'univ-lyon.fr',
-            'polytechnique.edu', 'hec.edu', 'essec.edu', 'escp.eu',
-            'epfl.ch', 'ethz.ch'
+            'polytechnique.edu', 'hec.edu', 'essec.edu', 'escp.eu', 'epfl.ch', 'ethz.ch'
         ];
 
-        // Domaines jetables/temporaires à bloquer
         const BLOCKED_EMAIL_PATTERNS = [
             'temp', 'tmp', 'disposable', 'throwaway', 'trash', 'fake', 'spam', '10min', 'guerrilla', 
             'mailinator', 'yopmail', 'jetable', 'courrieljetable', 'trashmail', 'wegwerf', 'spambog', 
@@ -664,20 +644,15 @@
             'dispostable', 'maildrop', 'mailnesia', 'mintemail', 'mytrashmail', 'nwytg', 'objectmail',
             'obobbo', 'oneoffemail', 'owlymail', 'pookmail', 'safetymail', 'sendspam', 'sharklasers',
             'spam4', 'spamgourmet', 'spamhole', 'spamify', 'spaminator', 'spammotel', 'techemail',
-            'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail.fr', 'yopmail.net',
-            'arol.com'
+            'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail.fr', 'yopmail.net', 'arol.com'
         ];
 
         let emailValid = false;
-
-        // =============================================
-        // VÉRIFICATION EN TEMPS RÉEL DU NOM D'UTILISATEUR
-        // =============================================
-
         let usernameCheckTimeout = null;
         let usernameAvailable = false;
-        let usernameChecking = false;
         let usernameValidFormat = false;
+        let turnstileVerified = false;
+        let turnstileToken = null;
 
         async function checkUsernameAvailability(username) {
             const usernameInput = document.getElementById('username');
@@ -691,142 +666,107 @@
                 return;
             }
             
-            // Vérifier le format
             const usernameRegex = /^[a-zA-Z0-9_]+$/;
             if (username.length < 3) {
-                usernameAvailable = false;
-                usernameValidFormat = false;
+                usernameAvailable = false; usernameValidFormat = false;
                 updateUsernameFeedback('Minimum 3 caractères', false);
-                updateSubmitButton();
-                return;
+                updateSubmitButton(); return;
             }
-            
             if (username.length > 20) {
-                usernameAvailable = false;
-                usernameValidFormat = false;
+                usernameAvailable = false; usernameValidFormat = false;
                 updateUsernameFeedback('Maximum 20 caractères', false);
-                updateSubmitButton();
-                return;
+                updateSubmitButton(); return;
             }
-            
             if (!usernameRegex.test(username)) {
-                usernameAvailable = false;
-                usernameValidFormat = false;
-                updateUsernameFeedback('Caractères autorisés : lettres, chiffres et underscore (_)', false);
-                updateSubmitButton();
-                return;
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Lettres, chiffres et underscore (_) uniquement', false);
+                updateSubmitButton(); return;
             }
             
             usernameValidFormat = true;
-            usernameChecking = true;
             updateUsernameFeedback('Vérification...', false, 'info');
             
             try {
                 const response = await fetch(`/api/username/available?username=${encodeURIComponent(username)}`);
                 const data = await response.json();
-                
                 if (data.available) {
                     usernameAvailable = true;
-                    updateUsernameFeedback('✓ Nom d\'utilisateur disponible', true);
+                    updateUsernameFeedback('✓ Disponible', true);
                 } else {
                     usernameAvailable = false;
-                    updateUsernameFeedback(data.message || '✗ Ce nom d\'utilisateur est déjà pris', false);
+                    updateUsernameFeedback(data.message || '✗ Déjà pris', false);
                 }
             } catch (error) {
-                console.error('Erreur vérification username:', error);
                 usernameAvailable = false;
-                updateUsernameFeedback('Erreur de vérification, réessayez', false);
-            } finally {
-                usernameChecking = false;
-                updateSubmitButton();
+                updateUsernameFeedback('Erreur de vérification', false);
             }
+            updateSubmitButton();
         }
 
         function updateUsernameFeedback(message, isValid, type = '') {
             const usernameInput = document.getElementById('username');
             const feedbackDiv = document.getElementById('username-feedback');
-            
             if (!message) {
                 feedbackDiv.innerHTML = '';
                 feedbackDiv.className = 'username-feedback';
                 usernameInput.classList.remove('valid', 'error');
                 return;
             }
-            
             feedbackDiv.innerHTML = message;
-            
             if (isValid) {
                 feedbackDiv.className = 'username-feedback valid';
-                usernameInput.classList.remove('error');
-                usernameInput.classList.add('valid');
+                usernameInput.classList.remove('error'); usernameInput.classList.add('valid');
             } else if (type === 'info') {
                 feedbackDiv.className = 'username-feedback info';
                 usernameInput.classList.remove('valid', 'error');
             } else {
                 feedbackDiv.className = 'username-feedback error';
-                usernameInput.classList.remove('valid');
-                usernameInput.classList.add('error');
+                usernameInput.classList.remove('valid'); usernameInput.classList.add('error');
             }
         }
 
         function validateEmail(email) {
             const emailInput = document.getElementById('email');
             const emailHint = document.getElementById('emailHint');
-            
             if (!email || email.length === 0) {
                 emailValid = false;
                 emailInput.classList.remove('valid', 'error');
-                emailHint.innerHTML = `<i class="fas fa-info-circle"></i><span>Utilisez Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>`;
+                emailHint.innerHTML = `<i class="fas fa-info-circle"></i><span>Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>`;
                 emailHint.style.color = 'var(--text-secondary)';
                 return false;
             }
-
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 emailValid = false;
-                emailInput.classList.remove('valid');
-                emailInput.classList.add('error');
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
                 emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Format d'email invalide</span>`;
                 emailHint.style.color = 'var(--danger)';
                 return false;
             }
-
             const domain = email.split('@')[1]?.toLowerCase() || '';
-            
-            const isBlocked = BLOCKED_EMAIL_PATTERNS.some(pattern => 
-                domain.includes(pattern) || email.toLowerCase().includes(pattern)
-            );
-            
+            const isBlocked = BLOCKED_EMAIL_PATTERNS.some(pattern => domain.includes(pattern) || email.toLowerCase().includes(pattern));
             if (isBlocked) {
                 emailValid = false;
-                emailInput.classList.remove('valid');
-                emailInput.classList.add('error');
-                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Les adresses email jetables ou non reconnues ne sont pas autorisées</span>`;
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Les adresses email jetables ne sont pas autorisées</span>`;
                 emailHint.style.color = 'var(--danger)';
                 return false;
             }
-
             const isAllowed = ALLOWED_EMAIL_DOMAINS.includes(domain);
-            
             if (isAllowed) {
                 emailValid = true;
-                emailInput.classList.remove('error');
-                emailInput.classList.add('valid');
+                emailInput.classList.remove('error'); emailInput.classList.add('valid');
                 emailHint.innerHTML = `<i class="fas fa-check-circle"></i><span>Email valide</span>`;
                 emailHint.style.color = 'var(--success)';
                 return true;
             } else {
                 emailValid = false;
-                emailInput.classList.remove('valid');
-                emailInput.classList.add('error');
-                emailHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Domaine d'email non reconnu. Utilisez Gmail, iCloud, Yahoo, Outlook, etc.</span>`;
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Domaine non reconnu. Utilisez Gmail, iCloud, Yahoo, Outlook, etc.</span>`;
                 emailHint.style.color = 'var(--warning)';
                 return false;
             }
         }
-
-        let turnstileVerified = false;
-        let turnstileToken = null;
 
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
@@ -839,79 +779,51 @@
             const terms = document.getElementById('terms').checked;
             const username = document.getElementById('username').value;
             const usernameIsValid = usernameAvailable && usernameValidFormat && username.length >= 3;
-            
             if (turnstileVerified && terms && usernameIsValid && emailValid) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Créer mon compte</span>';
             } else {
                 submitBtn.disabled = true;
-                if (turnstileVerified) {
-                    submitBtn.innerHTML = '<span>Créer mon compte</span>';
-                } else {
-                    submitBtn.innerHTML = '<span>Vérification en cours...</span>';
-                }
+                submitBtn.innerHTML = turnstileVerified ? '<span>Créer mon compte</span>' : '<span>Vérification en cours...</span>';
             }
         }
 
         async function checkAlreadyLoggedIn() {
             const token = localStorage.getItem('token');
             if (!token) return false;
-            
             try {
-                const response = await fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.success && data.user) {
-                        window.location.href = '/dashboard';
-                        return true;
-                    }
+                    if (data.success && data.user) { window.location.href = '/dashboard'; return true; }
                 }
-            } catch (error) {
-                localStorage.removeItem('token');
-            }
+            } catch (error) { localStorage.removeItem('token'); }
             return false;
         }
 
         function togglePassword() {
             const password = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
-            
             if (password.type === 'password') {
                 password.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+                icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
             } else {
                 password.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye');
             }
         }
 
-        // Écouteurs d'événements
-        let usernameDebounceTimeout;
         document.getElementById('username').addEventListener('input', function(e) {
-            clearTimeout(usernameDebounceTimeout);
+            clearTimeout(usernameCheckTimeout);
             const username = e.target.value;
-            
-            // Mise à jour immédiate du format
             const usernameRegex = /^[a-zA-Z0-9_]*$/;
             if (username && !usernameRegex.test(username)) {
-                usernameAvailable = false;
-                usernameValidFormat = false;
-                updateUsernameFeedback('Caractères autorisés : lettres, chiffres et underscore (_)', false);
-                updateSubmitButton();
-                return;
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Lettres, chiffres et underscore (_) uniquement', false);
+                updateSubmitButton(); return;
             }
-            
             updateUsernameFeedback('', false);
-            
-            // Debounce pour l'appel API (300ms)
-            usernameDebounceTimeout = setTimeout(() => {
-                checkUsernameAvailability(username);
-            }, 300);
-            
+            usernameCheckTimeout = setTimeout(() => checkUsernameAvailability(username), 300);
             updateSubmitButton();
         });
 
@@ -919,34 +831,20 @@
             validateEmail(e.target.value);
             updateSubmitButton();
         });
-
-        document.getElementById('email').addEventListener('blur', function(e) {
-            validateEmail(e.target.value);
-        });
-
+        document.getElementById('email').addEventListener('blur', function(e) { validateEmail(e.target.value); });
         document.getElementById('terms').addEventListener('change', updateSubmitButton);
 
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
-            
-            if (password.length === 0) {
-                strengthBar.style.width = '0';
-                strengthText.textContent = '';
-                return;
-            }
-            
-            let strength = 0;
-            let color = '#EF4444';
-            let message = 'Très faible';
-            
-            if (password.length >= 6) strength += 1;
-            if (password.length >= 8) strength += 1;
-            if (/[A-Z]/.test(password)) strength += 1;
-            if (/[0-9]/.test(password)) strength += 1;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-            
+            if (password.length === 0) { strengthBar.style.width = '0'; strengthText.textContent = ''; return; }
+            let strength = 0, color = '#EF4444', message = 'Très faible';
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
             switch(strength) {
                 case 0: case 1: strength = 20; color = '#EF4444'; message = 'Très faible'; break;
                 case 2: strength = 40; color = '#F59E0B'; message = 'Faible'; break;
@@ -954,7 +852,6 @@
                 case 4: strength = 80; color = '#10B981'; message = 'Fort'; break;
                 case 5: strength = 100; color = '#10B981'; message = 'Très fort'; break;
             }
-            
             strengthBar.style.width = strength + '%';
             strengthBar.style.backgroundColor = color;
             strengthText.textContent = message;
@@ -963,24 +860,16 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
-        if (ref) {
-            document.getElementById('referral').value = ref;
-        }
+        if (ref) document.getElementById('referral').value = ref;
 
         function showMessage(type, text) {
             const container = document.getElementById('messageContainer');
             const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
-            container.innerHTML = `
-                <div class="message ${type}">
-                    <i class="fas ${icons[type]}"></i>
-                    <span>${text}</span>
-                </div>
-            `;
+            container.innerHTML = `<div class="message ${type}"><i class="fas ${icons[type]}"></i><span>${text}</span></div>`;
         }
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -989,25 +878,10 @@
             const newsletter = document.getElementById('newsletter').checked;
             const submitBtn = document.getElementById('submitBtn');
             
-            if (!terms) {
-                showMessage('error', 'Vous devez accepter les conditions d\'utilisation');
-                return;
-            }
-            
-            if (!usernameAvailable || !usernameValidFormat) {
-                showMessage('error', 'Veuillez choisir un nom d\'utilisateur valide et disponible');
-                return;
-            }
-            
-            if (!validateEmail(email)) {
-                showMessage('error', 'Veuillez utiliser une adresse email valide (Gmail, iCloud, Yahoo, Outlook, etc.)');
-                return;
-            }
-            
-            if (!turnstileVerified) {
-                showMessage('error', 'Veuillez compléter la vérification');
-                return;
-            }
+            if (!terms) { showMessage('error', 'Vous devez accepter les conditions d\'utilisation'); return; }
+            if (!usernameAvailable || !usernameValidFormat) { showMessage('error', 'Nom d\'utilisateur invalide ou déjà pris'); return; }
+            if (!validateEmail(email)) { showMessage('error', 'Adresse email non valide'); return; }
+            if (!turnstileVerified) { showMessage('error', 'Veuillez compléter la vérification'); return; }
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Création du compte</span><span class="loader"></span>';
@@ -1016,33 +890,19 @@
                 const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        username, email, password, 
-                        referral_code: referral, newsletter,
-                        'cf-turnstile-response': turnstileToken
-                    })
+                    body: JSON.stringify({ username, email, password, referral_code: referral, newsletter, 'cf-turnstile-response': turnstileToken })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     showMessage('success', 'Compte créé ! Redirection...');
-                    setTimeout(() => {
-                        window.location.href = `/email-verification?email=${encodeURIComponent(email)}`;
-                    }, 1500);
+                    setTimeout(() => { window.location.href = `/email-verification?email=${encodeURIComponent(email)}`; }, 1500);
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Créer mon compte</span>';
                     showMessage('error', data.error || 'Erreur lors de l\'inscription');
-                    
-                    turnstileVerified = false;
-                    turnstileToken = null;
+                    turnstileVerified = false; turnstileToken = null;
                     document.getElementById('submitBtn').disabled = true;
-                    document.getElementById('submitBtn').innerHTML = '<span>Créer mon compte</span>';
-                    
-                    if(window.turnstile) {
-                        turnstile.reset();
-                    }
+                    if (window.turnstile) turnstile.reset();
                 }
             } catch (error) {
                 submitBtn.disabled = false;
@@ -1051,14 +911,9 @@
             }
         });
 
-        document.querySelector('.auth-card').style.opacity = '0';
         window.addEventListener('load', async () => {
             await checkAlreadyLoggedIn();
-            document.querySelector('.auth-card').style.transition = 'opacity 0.5s';
-            document.querySelector('.auth-card').style.opacity = '1';
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const emailParam = urlParams.get('email');
+            const emailParam = new URLSearchParams(window.location.search).get('email');
             if (emailParam) {
                 document.getElementById('email').value = emailParam;
                 validateEmail(emailParam);
