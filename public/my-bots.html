@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Gérez vos bots WhatsApp déployés sur KermHosting">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <!-- Favicon / Icônes -->
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
+   <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
+
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Mes bots - KermHosting</title>
+    
+    <style>
+        /* ===== MÊME STYLE QUE L'ORIGINAL ===== */
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container { display: flex; min-height: 100vh; position: relative; padding-top: var(--safe-area-inset-top); padding-bottom: var(--safe-area-inset-bottom); }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+        .logo i { color: var(--primary); font-size: 1.5rem; }
+        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); transition: all 0.2s; }
+        .close-sidebar:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
+        .sidebar-user:hover { background: var(--bg-hover); }
+        .user-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav li { margin: 4px 8px; }
+        .sidebar-nav li.active { background: linear-gradient(90deg, var(--primary), transparent); border-radius: var(--radius-md); }
+        .sidebar-nav li.active a { color: white; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius-md); transition: all 0.2s; }
+        .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .sidebar-nav i { width: 20px; font-size: 1.1rem; }
+        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
+
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
+        .sidebar-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .stat { text-align: center; }
+        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { flex: 1; width: 100%; min-width: 0; }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); display: none; }
+        .menu-toggle:hover { background: var(--bg-hover); }
+        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+        .top-bar-logo i { color: var(--primary); font-size: 1.25rem; }
+        .top-bar-actions { display: flex; align-items: center; gap: 16px; }
+        .notification-btn { background: none; border: none; color: var(--text-primary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); position: relative; }
+        .notification-btn:hover { background: var(--bg-hover); }
+        .notification-badge { position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; font-size: 0.625rem; min-width: 18px; height: 18px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg-sidebar); }
+        .user-menu { cursor: pointer; text-decoration: none; display: block; }
+        .user-avatar-small { width: 40px; height: 40px; border-radius: var(--radius-full); border: 2px solid var(--primary); object-fit: cover; }
+
+        /* ===== NOTIFICATIONS PANEL ===== */
+        .notifications-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+        .notifications-panel.active { transform: translateX(0); }
+        .notifications-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .notifications-header h3 { font-size: 1.2rem; }
+        .notifications-list { flex: 1; overflow-y: auto; padding: 16px; }
+        .notification-item { display: flex; gap: 12px; padding: 16px; border-radius: var(--radius-md); background: var(--bg-hover); margin-bottom: 8px; border-left: 3px solid transparent; }
+        .notification-item.unread { border-left-color: var(--primary); background: linear-gradient(90deg, var(--primary-glow), transparent); }
+        .notification-icon { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--bg-card); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .notification-content { flex: 1; }
+        .notification-title { font-weight: 600; margin-bottom: 4px; }
+        .notification-message { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 4px; }
+        .notification-time { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+        /* ===== MY BOTS STYLES ===== */
+        .page-header {
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-title { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
+        .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .page-subtitle { color: var(--text-secondary); }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        .stat-info h3 { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-info p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .tab {
+            padding: 8px 20px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Bots Grid */
+        .bots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
+        }
+        .bot-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .bot-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+        .bot-card-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), transparent);
+        }
+        .bot-status {
+            margin-left: auto;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .bot-status.active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .bot-status.deploying { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .bot-status.stopped { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); }
+        .bot-status.suspended { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .bot-status.failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .bot-card-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            overflow: hidden;
+        }
+        .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .bot-card-info { flex: 1; }
+        .bot-card-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .bot-card-app { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; }
+
+        .bot-card-body { padding: 16px 20px; }
+        .bot-expiry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+        .expiry-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .expiry-date { font-weight: 600; font-size: 0.9rem; }
+        .expiry-warning { color: var(--warning); font-size: 0.7rem; }
+
+        .bot-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .action-btn.start { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .action-btn.start:hover { background: var(--success); color: white; }
+        .action-btn.stop { background: rgba(107, 114, 128, 0.15); color: var(--text-secondary); border: 1px solid rgba(107, 114, 128, 0.3); }
+        .action-btn.stop:hover { background: var(--text-secondary); color: white; }
+        .action-btn.restart { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .action-btn.restart:hover { background: var(--info); color: white; }
+        .action-btn.env { background: rgba(124, 58, 237, 0.15); color: var(--primary); border: 1px solid rgba(124, 58, 237, 0.3); }
+        .action-btn.env:hover { background: var(--primary); color: white; }
+        .action-btn.renew { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .action-btn.renew:hover { background: var(--warning); color: white; }
+        .action-btn.delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .action-btn.delete:hover { background: var(--danger); color: white; }
+
+        /* Auto-renew toggle */
+        .auto-renew-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .auto-renew-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: var(--bg-input);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-switch.active { background: var(--primary); }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+        .toggle-switch.active::after { left: 21px; }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+        }
+        .modal-header h2 { font-size: 1.3rem; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+        }
+        .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .modal-body { padding: 20px; }
+
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
+        .form-label i { color: var(--primary); margin-right: 6px; }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+        .env-item {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .env-key { font-family: monospace; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
+        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+        .env-value input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Loading & Empty */
+        .loading-spinner { text-align: center; padding: 60px; color: var(--text-secondary); }
+        .loading-spinner i { font-size: 2rem; animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .empty-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+        .empty-state i { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+
+        /* Logs Container */
+        .logs-container {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+        .log-line {
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 6px 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .log-line.error { color: var(--danger); }
+        .log-line.success { color: var(--success); }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
+
+        @media (max-width: 1024px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .bots-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .page-content { padding: 16px; }
+            .page-title { font-size: 1.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .bot-actions { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar" id="sidebarAvatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Invité</div>
+                    <div class="user-email" id="sidebarUserEmail">Non connecté</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li id="navDashboard" style="display: none;">
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>Tarifs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>Acheter des coins</span>
+                        </a>
+                    </li>
+                    <li id="navProfile" style="display: none;">
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/transactions">
+                            <i class="fas fa-history"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Bots</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/my-bots">
+                            <i class="fas fa-robot"></i>
+                            <span>Mes bots</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li id="navHome" style="display: block;">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li id="navLogin" style="display: block;">
+                        <a href="/login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    </li>
+                    <li id="navRegister" style="display: block;">
+                        <a href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Inscription</span>
+                        </a>
+                    </li>
+                    <li id="navLogout" style="display: none;">
+                        <a href="#" id="logoutLink">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarCoins">0</span>
+                        <span class="stat-label">Coins</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="sidebarServers">0</span>
+                        <span class="stat-label">Serveurs</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">0</span>
+                    </button>
+                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </a>
+                </div>
+            </header>
+
+            <!-- Notifications Panel -->
+            <div class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-header">
+                    <h3>Notifications</h3>
+                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="notifications-list" id="notificationsList">
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">Aucune notification</div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Mes <span class="gradient-text">bots</span></h1>
+                    <p class="page-subtitle">Gérez tous vos bots WhatsApp déployés sur KermHosting</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-robot"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalBots">0</h3>
+                            <p>Total bots</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="activeBots">0</h3>
+                            <p>Actifs</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="stat-info">
+                            <h3 id="expiringBots">0</h3>
+                            <p>Expire bientôt (J-3)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="all">Tous</div>
+                    <div class="tab" data-tab="active">Actifs</div>
+                    <div class="tab" data-tab="expired">Expirés/Suspendus</div>
+                </div>
+
+                <!-- Bots Grid -->
+                <div id="botsContainer" class="bots-grid">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Chargement de vos bots...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Env Modal -->
+    <div class="modal" id="envModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-code-branch"></i> Variables d'environnement</h2>
+                <button class="modal-close" id="closeEnvModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="envModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Logs Modal -->
+    <div class="modal" id="logsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-terminal"></i> Logs du bot</h2>
+                <button class="modal-close" id="closeLogsModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="logsModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Renew Modal -->
+    <div class="modal" id="renewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sync-alt"></i> Renouveler le bot</h2>
+                <button class="modal-close" id="closeRenewModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="renewModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== AVATAR MANAGER =====
+        const AvatarManager = {
+            getAvatar: function(username) {
+                const localAvatar = localStorage.getItem('user_avatar');
+                if (localAvatar) return localAvatar;
+                const sessionAvatar = sessionStorage.getItem('user_avatar');
+                if (sessionAvatar) return sessionAvatar;
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+            },
+            applyToPage: function(username) {
+                const avatar = this.getAvatar(username);
+                const userAvatarSmall = document.getElementById('userAvatarSmall');
+                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+                if (sidebarAvatar) {
+                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                }
+                if (username) localStorage.setItem('username', username);
+            }
+        };
+
+        // ===== TOAST =====
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ===== SIDEBAR FUNCTIONS =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        overlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== NOTIFICATIONS =====
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+        notificationBtn.addEventListener('click', () => notificationsPanel.classList.toggle('active'));
+        closeNotifications.addEventListener('click', () => notificationsPanel.classList.remove('active'));
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
+        // ===== AUTH =====
+        const token = localStorage.getItem('token');
+        let currentUser = null;
+        let allBots = [];
+
+        function checkAuth() {
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            fetch('/api/user/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('sidebarUserName').textContent = data.user.username;
+                    document.getElementById('sidebarUserEmail').textContent = data.user.email;
+                    document.getElementById('sidebarUserBadge').textContent = data.user.role;
+                    document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
+                    document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
+                    
+                    document.getElementById('navDashboard').style.display = 'block';
+                    document.getElementById('navProfile').style.display = 'block';
+                    document.getElementById('navHome').style.display = 'none';
+                    document.getElementById('navLogin').style.display = 'none';
+                    document.getElementById('navRegister').style.display = 'none';
+                    document.getElementById('navLogout').style.display = 'block';
+                    
+                    AvatarManager.applyToPage(data.user.username);
+                    loadMyBots();
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            });
+        }
+
+        document.getElementById('logoutLink')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+
+        // ===== LOAD MY BOTS =====
+        async function loadMyBots() {
+            const container = document.getElementById('botsContainer');
+            try {
+                const response = await fetch('/api/bots/my-bots', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (!data.success) throw new Error('Erreur chargement');
+                
+                allBots = data.bots || [];
+                updateStats();
+                renderBots('all');
+                
+            } catch (error) {
+                console.error('Erreur chargement bots:', error);
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
+            }
+        }
+
+        function updateStats() {
+            const total = allBots.length;
+            const active = allBots.filter(b => b.status === 'active').length;
+            const expiringSoon = allBots.filter(b => {
+                if (b.status !== 'active') return false;
+                const daysLeft = Math.ceil((new Date(b.expires_at) - new Date()) / (1000 * 60 * 60 * 24));
+                return daysLeft <= 3 && daysLeft > 0;
+            }).length;
+            
+            document.getElementById('totalBots').textContent = total;
+            document.getElementById('activeBots').textContent = active;
+            document.getElementById('expiringBots').textContent = expiringSoon;
+        }
+
+        function renderBots(filter) {
+            const container = document.getElementById('botsContainer');
+            let filteredBots = allBots;
+            
+            if (filter === 'active') {
+                filteredBots = allBots.filter(b => b.status === 'active');
+            } else if (filter === 'expired') {
+                filteredBots = allBots.filter(b => ['suspended', 'failed'].includes(b.status));
+            }
+            
+            if (filteredBots.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p><a href="/bot" style="color: var(--primary); margin-top: 12px; display: inline-block;">→ Découvrir la marketplace</a></div>`;
+                return;
+            }
+            
+            container.innerHTML = filteredBots.map(bot => {
+                const expiryDate = new Date(bot.expires_at);
+                const now = new Date();
+                const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+                const isExpiringSoon = daysLeft <= 3 && daysLeft > 0 && bot.status === 'active';
+                const statusText = {
+                    'active': 'Actif',
+                    'deploying': 'Déploiement...',
+                    'stopped': 'Arrêté',
+                    'suspended': 'Suspendu',
+                    'failed': 'Échec'
+                }[bot.status] || bot.status;
+                
+                return `
+                    <div class="bot-card" data-bot-id="${bot.id}">
+                        <div class="bot-card-header">
+                            <div class="bot-card-logo">
+                                ${bot.bot_templates?.logo_url ? `<img src="${bot.bot_templates.logo_url}" alt="${bot.bot_templates?.name}">` : '<i class="fab fa-whatsapp"></i>'}
+                            </div>
+                            <div class="bot-card-info">
+                                <div class="bot-card-name">${escapeHtml(bot.bot_templates?.name || 'Bot')}</div>
+                                <div class="bot-card-app">${escapeHtml(bot.heroku_app_name)}</div>
+                            </div>
+                            <div class="bot-status ${bot.status}">${statusText}</div>
+                        </div>
+                        <div class="bot-card-body">
+                            <div class="bot-expiry">
+                                <span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expiration</span>
+                                <span class="expiry-date ${isExpiringSoon ? 'expiry-warning' : ''}">
+                                    ${expiryDate.toLocaleDateString('fr-FR')}
+                                    ${isExpiringSoon ? ` (J-${daysLeft})` : ''}
+                                </span>
+                            </div>
+                            
+                            <div class="bot-actions">
+                                ${bot.status === 'stopped' ? `<button onclick="startBot('${bot.id}')" class="action-btn start"><i class="fas fa-play"></i> Démarrer</button>` : ''}
+                                ${bot.status === 'active' ? `<button onclick="stopBot('${bot.id}')" class="action-btn stop"><i class="fas fa-stop"></i> Arrêter</button>` : ''}
+                                ${bot.status === 'active' ? `<button onclick="restartBot('${bot.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i> Redémarrer</button>` : ''}
+                                <button onclick="openEnvModal('${bot.id}')" class="action-btn env"><i class="fas fa-cog"></i> Env</button>
+                                <button onclick="openLogsModal('${bot.id}')" class="action-btn env"><i class="fas fa-terminal"></i> Logs</button>
+                                ${bot.status !== 'active' && bot.status !== 'deploying' ? `<button onclick="renewBot('${bot.id}')" class="action-btn renew"><i class="fas fa-coins"></i> Renouveler</button>` : ''}
+                                <button onclick="deleteBot('${bot.id}')" class="action-btn delete"><i class="fas fa-trash"></i> Supprimer</button>
+                            </div>
+                            
+                            <div class="auto-renew-toggle">
+                                <span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span>
+                                <div class="toggle-switch ${bot.auto_renew ? 'active' : ''}" onclick="toggleAutoRenew('${bot.id}', ${!bot.auto_renew})"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== BOT ACTIONS =====
+        async function startBot(botId) {
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/start`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Bot démarré');
+                    loadMyBots();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors du démarrage');
+            }
+        }
+
+        async function stopBot(botId) {
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/stop`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Bot arrêté');
+                    loadMyBots();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors de l\'arrêt');
+            }
+        }
+
+        async function restartBot(botId) {
+            try {
+                showToast('info', 'Redémarrage en cours...');
+                const response = await fetch(`/api/bots/my-bots/${botId}/restart`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Bot redémarré');
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors du redémarrage');
+            }
+        }
+
+        async function deleteBot(botId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce bot ? Cette action est irréversible.')) return;
+            
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Bot supprimé');
+                    loadMyBots();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors de la suppression');
+            }
+        }
+
+        async function toggleAutoRenew(botId, enabled) {
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/auto-renew`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ enabled })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`);
+                    loadMyBots();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors du changement');
+            }
+        }
+
+        // ===== ENV MODAL =====
+        async function openEnvModal(botId) {
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error('Bot non trouvé');
+                
+                const bot = data.bot;
+                const env = bot.env_vars || {};
+                const khJson = bot.bot_templates?.kh_json || {};
+                const envConfig = khJson.env || {};
+                
+                const modalBody = document.getElementById('envModalBody');
+                modalBody.innerHTML = `
+                    <p style="margin-bottom: 16px; color: var(--text-secondary);">Modifiez les variables d'environnement ci-dessous. Après modification, le bot sera redémarré automatiquement.</p>
+                    ${Object.entries(envConfig).map(([key, config]) => `
+                        <div class="env-item">
+                            <div class="env-key">${escapeHtml(key)}</div>
+                            <div class="env-desc">${escapeHtml(config.description || 'Aucune description')}</div>
+                            <div class="env-value">
+                                <input type="${key === 'SESSION_ID' ? 'password' : 'text'}" 
+                                       id="env_${key}" 
+                                       value="${escapeHtml(env[key] || config.value || '')}"
+                                       placeholder="${escapeHtml(config.required ? 'Requis' : 'Optionnel')}">
+                            </div>
+                        </div>
+                    `).join('')}
+                    <button class="deploy-btn" id="saveEnvBtn" style="margin-top: 20px; width: 100%;">
+                        <i class="fas fa-save"></i> Sauvegarder et redémarrer
+                    </button>
+                `;
+                
+                document.getElementById('saveEnvBtn').onclick = async () => {
+                    const newEnvVars = {};
+                    for (const key of Object.keys(envConfig)) {
+                        const input = document.getElementById(`env_${key}`);
+                        if (input && input.value.trim()) {
+                            newEnvVars[key] = input.value.trim();
+                        }
+                    }
+                    
+                    try {
+                        const saveResponse = await fetch(`/api/bots/my-bots/${botId}/update-env`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ env_vars: newEnvVars })
+                        });
+                        const saveData = await saveResponse.json();
+                        if (saveData.success) {
+                            showToast('success', 'Variables mises à jour et bot redémarré');
+                            document.getElementById('envModal').classList.remove('active');
+                            loadMyBots();
+                        } else {
+                            showToast('error', saveData.error || 'Erreur');
+                        }
+                    } catch (error) {
+                        showToast('error', 'Erreur lors de la sauvegarde');
+                    }
+                };
+                
+                document.getElementById('envModal').classList.add('active');
+                
+            } catch (error) {
+                showToast('error', 'Erreur chargement des variables');
+            }
+        }
+
+        // ===== LOGS MODAL =====
+        async function openLogsModal(botId) {
+            const modalBody = document.getElementById('logsModalBody');
+            modalBody.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement des logs...</p></div>';
+            document.getElementById('logsModal').classList.add('active');
+            
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/logs`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.logs) {
+                    const logsHtml = data.logs.map(log => `<div class="log-line">${escapeHtml(log)}</div>`).join('');
+                    modalBody.innerHTML = `<div class="logs-container">${logsHtml || '<div class="log-line">Aucun log disponible</div>'}</div>`;
+                } else {
+                    modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-terminal"></i><p>Impossible de récupérer les logs</p></div>';
+                }
+            } catch (error) {
+                modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur chargement logs</p></div>';
+            }
+        }
+
+        // ===== RENEW MODAL =====
+        async function renewBot(botId) {
+            const bot = allBots.find(b => b.id === botId);
+            if (!bot) return;
+            
+            const template = bot.bot_templates;
+            const weeklyPrice = template?.price_weekly || 100;
+            const monthlyPrice = weeklyPrice * 4;
+            
+            const modalBody = document.getElementById('renewModalBody');
+            modalBody.innerHTML = `
+                <p style="margin-bottom: 16px;">Renouvelez votre bot pour prolonger son expiration.</p>
+                <div class="toggle-group" style="margin-bottom: 20px;">
+                    <div>
+                        <div class="toggle-label">Mode mensuel</div>
+                        <div class="toggle-sub">×4 coins (${monthlyPrice} coins pour 28 jours)</div>
+                    </div>
+                    <div class="toggle-switch" id="renewDurationToggle"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-coins"></i> Prix</label>
+                    <div style="background: var(--bg-input); padding: 12px; border-radius: var(--radius-md);">
+                        <span style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="renewPrice">${weeklyPrice}</span>
+                        <span> coins</span>
+                    </div>
+                </div>
+                <button class="deploy-btn" id="confirmRenewBtn" style="width: 100%;">
+                    <i class="fas fa-sync-alt"></i> Renouveler
+                </button>
+            `;
+            
+            let durationMode = 'weekly';
+            const toggle = document.getElementById('renewDurationToggle');
+            const priceSpan = document.getElementById('renewPrice');
+            
+            toggle.addEventListener('click', () => {
+                durationMode = durationMode === 'weekly' ? 'monthly' : 'weekly';
+                toggle.classList.toggle('active');
+                priceSpan.textContent = durationMode === 'weekly' ? weeklyPrice : monthlyPrice;
+            });
+            
+            document.getElementById('confirmRenewBtn').onclick = async () => {
+                const coinsNeeded = durationMode === 'weekly' ? weeklyPrice : monthlyPrice;
+                
+                if (currentUser.coins < coinsNeeded) {
+                    showToast('error', `Coins insuffisants. Besoin de ${coinsNeeded} coins.`);
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/bots/my-bots/${botId}/renew`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ duration_mode: durationMode })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('success', 'Bot renouvelé avec succès');
+                        document.getElementById('renewModal').classList.remove('active');
+                        loadMyBots();
+                        // Refresh user coins
+                        fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
+                                    currentUser = data.user;
+                                }
+                            });
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur lors du renouvellement');
+                }
+            };
+            
+            document.getElementById('renewModal').classList.add('active');
+        }
+
+        // ===== TAB MANAGEMENT =====
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderBots(tab.dataset.tab);
+            });
+        });
+
+        // ===== MODAL CLOSES =====
+        document.getElementById('closeEnvModal').addEventListener('click', () => {
+            document.getElementById('envModal').classList.remove('active');
+        });
+        document.getElementById('closeLogsModal').addEventListener('click', () => {
+            document.getElementById('logsModal').classList.remove('active');
+        });
+        document.getElementById('closeRenewModal').addEventListener('click', () => {
+            document.getElementById('renewModal').classList.remove('active');
+        });
+        
+        [document.getElementById('envModal'), document.getElementById('logsModal'), document.getElementById('renewModal')].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Setup avatar click redirect
+        function setupAvatarClickRedirect() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.style.cursor = 'pointer';
+                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
+            }
+            const sidebarUser = document.getElementById('sidebarUser');
+            if (sidebarUser) {
+                sidebarUser.style.cursor = 'pointer';
+                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
+            }
+        }
+
+        // Global functions for buttons
+        window.startBot = startBot;
+        window.stopBot = stopBot;
+        window.restartBot = restartBot;
+        window.deleteBot = deleteBot;
+        window.toggleAutoRenew = toggleAutoRenew;
+        window.openEnvModal = openEnvModal;
+        window.openLogsModal = openLogsModal;
+        window.renewBot = renewBot;
+        window.showToast = showToast;
+
+        // Init
+        checkAuth();
+        setupAvatarClickRedirect();
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) closeSidebarFunc();
+        });
+        
+        // Auto-refresh every 10 seconds
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                loadMyBots();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
