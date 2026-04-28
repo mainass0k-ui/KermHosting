@@ -1756,10 +1756,16 @@
                     </li>
                     <li>
                        <a href="/bot">
-                           <i class="fab fa-whatsapp"></i>
-                            <span>KERM MD V1</span>
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Bots</span>
                        </a>
                      </li>
+                    <li>
+                        <a href="/my-bots">
+                            <i class="fas fa-robot"></i>
+                            <span>Mes bots</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
@@ -1971,6 +1977,12 @@
                     </div>
                     <div class="tab" onclick="switchTab('minipay')">
                         <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>Minipay
+                    </div>
+                    <div class="tab" onclick="switchTab('bot-submissions')">
+                        <i class="fas fa-robot" style="color: var(--primary);"></i>Bots
+                    </div>
+                    <div class="tab" onclick="switchTab('heroku')">
+                        <i class="fab fa-salesforce"></i>Heroku
                     </div>
                     <div class="tab" onclick="switchTab('maintenance')">
                         <i class="fas fa-tools"></i>Maintenance
@@ -2295,7 +2307,7 @@
                                     <p>Chargement des transactions PayPal...</p>
                                   </td>
                             </tbody>
-                         </table>
+                         </td>
                     </div>
                 </div>
 
@@ -2345,6 +2357,136 @@
                                   </td>
                             </tbody>
                          </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Bots (Demandes d'ajout) -->
+                <div class="tab-pane" id="tab-bot-submissions">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botSearch" placeholder="Rechercher un bot..." onkeyup="filterBotSubmissions()">
+                            <select class="filter-select" id="botFilter" onchange="filterBotSubmissions()">
+                                <option value="pending">En attente</option>
+                                <option value="approved">Approuvés</option>
+                                <option value="rejected">Rejetés</option>
+                                <option value="all">Tous</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-robot" style="color: var(--primary);"></i>
+                            <span id="botSubmissionsCount">0</span> demandes
+                            <button class="clear-search" onclick="clearBotSearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadBotSubmissions()" style="margin-left: auto;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="botSubmissionsTable">
+                            <thead>
+                                <th>Date</th>
+                                <th>Utilisateur</th>
+                                <th>Nom du bot</th>
+                                <th>Repository</th>
+                                <th>Statut</th>
+                                <th>Kh.json</th>
+                                <th>Prix</th>
+                                <th>Actions</th>
+                             </thead>
+                            <tbody id="botSubmissionsTableBody">
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des demandes...</p>
+                                  </td>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Heroku (Gestion des comptes) -->
+                <div class="tab-pane" id="tab-heroku">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="herokuSearch" placeholder="Rechercher un compte..." onkeyup="filterHerokuAccounts()">
+                            <select class="filter-select" id="herokuFilter" onchange="filterHerokuAccounts()">
+                                <option value="all">Tous</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Inactifs</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fab fa-salesforce"></i>
+                            <span id="herokuAccountsCount">0</span> comptes Heroku
+                        </div>
+                        <button class="btn btn-success" onclick="showAddHerokuAccountModal()" style="margin-left: auto;">
+                            <i class="fas fa-plus"></i> Ajouter un compte
+                        </button>
+                        <button class="btn btn-primary" onclick="loadHerokuAccounts()">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fab fa-salesforce"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="herokuTotalAccounts">0</div>
+                            <div class="stat-label">Total comptes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="herokuActiveAccounts">0</div>
+                            <div class="stat-label">Actifs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="herokuTotalCapacity">0</div>
+                            <div class="stat-label">Capacité totale</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="herokuAvailableCapacity">0</div>
+                            <div class="stat-label">Disponible</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="herokuAccountsTable">
+                            <thead>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>API Key</th>
+                                <th>Max Bots</th>
+                                <th>Bots actifs</th>
+                                <th>Statut</th>
+                                <th>Dernière utilisation</th>
+                                <th>Actions</th>
+                             </thead>
+                            <tbody id="herokuAccountsTableBody">
+                                <td colspan="8" class="loading-state">
+                                    <i class="fas fa-circle-notch fa-spin"></i>
+                                    <p>Chargement des comptes Heroku...</p>
+                                  </td>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -2430,7 +2572,7 @@
                     </div>
                 </div>
 
-                <!-- Tab: Emails Massifs (CORRIGÉ AVEC ASYNC) -->
+                <!-- Tab: Emails Massifs -->
                 <div class="tab-pane" id="tab-email">
                     <div class="email-campaign-card">
                         <div class="email-campaign-title">
@@ -2513,7 +2655,7 @@
                                     <td colspan="9" class="loading-state">
                                         <i class="fas fa-circle-notch fa-spin"></i>
                                         <p>Chargement de l'historique...</p>
-                                    </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -2782,6 +2924,77 @@
         </div>
     </div>
 
+    <!-- MODAL: Ajouter compte Heroku -->
+    <div class="modal" id="addHerokuAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fab fa-salesforce"></i> Ajouter un compte Heroku</h2>
+                <button class="modal-close" onclick="closeModal('addHerokuAccountModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form-group">
+                    <label>Email du compte Heroku</label>
+                    <input type="email" class="modal-input" id="herokuEmail" placeholder="exemple@email.com">
+                </div>
+                <div class="modal-form-group">
+                    <label>API Key Heroku</label>
+                    <input type="password" class="modal-input" id="herokuApiKey" placeholder="API Key">
+                    <div class="form-hint" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">
+                        <a href="https://dashboard.heroku.com/account" target="_blank" style="color: var(--primary);">Obtenir l'API Key depuis le tableau de bord Heroku</a>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>Nombre maximum de bots</label>
+                    <input type="number" class="modal-input" id="herokuMaxBots" placeholder="50" value="50" min="1">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('addHerokuAccountModal')">Annuler</button>
+                <button class="btn btn-success" onclick="addHerokuAccount()">
+                    <i class="fas fa-plus"></i> Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Modifier compte Heroku -->
+    <div class="modal" id="editHerokuAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fab fa-salesforce"></i> Modifier compte Heroku</h2>
+                <button class="modal-close" onclick="closeModal('editHerokuAccountModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Email</span>
+                        <span class="modal-info-value" id="editHerokuEmail">-</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>Nombre maximum de bots</label>
+                    <input type="number" class="modal-input" id="editHerokuMaxBots" placeholder="50" value="50" min="1">
+                </div>
+                <div class="modal-form-group">
+                    <label>Statut</label>
+                    <select class="modal-select" id="editHerokuStatus">
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('editHerokuAccountModal')">Annuler</button>
+                <button class="btn btn-danger" id="deleteHerokuAccountBtn">Supprimer</button>
+                <button class="btn btn-primary" onclick="saveHerokuAccountChanges()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('token');
         if (!token) {
@@ -2796,11 +3009,16 @@
         let allLogs = [];
         let allPaypalTransactions = [];
         let allMinipayTransactions = [];
+        let allBotSubmissions = [];
+        let allHerokuAccounts = [];
+        let filteredBotSubmissions = [];
+        let filteredHerokuAccounts = [];
         let filteredMinipayTransactions = [];
         let filteredPaypalTransactions = [];
         let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
+        let currentHerokuAccountId = null;
         let charts = {};
         let fapshiBalanceInterval = null;
         let emailTemplates = [];
@@ -2939,6 +3157,8 @@
             document.getElementById(`tab-${tabId}`).classList.add('active');
             if (tabId === 'paypal') loadPaypalTransactions();
             if (tabId === 'minipay') loadMinipayTransactions();
+            if (tabId === 'bot-submissions') loadBotSubmissions();
+            if (tabId === 'heroku') loadHerokuAccounts();
             if (tabId === 'maintenance') loadMaintenanceConfig();
             if (tabId === 'email') {
                 loadEmailTemplates();
@@ -4225,7 +4445,7 @@
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
             if (!filteredLogs || filteredLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé<\/td></td>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Aucun log trouvé<\/td></tr>';
                 document.getElementById('logsPagination').style.display = 'none';
                 return;
             }
@@ -4698,6 +4918,372 @@
             openModal('confirmModal');
         }
 
+        // ===== BOT SUBMISSIONS FUNCTIONS =====
+        async function loadBotSubmissions() {
+            try {
+                const res = await fetch('/api/admin/bot-submissions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allBotSubmissions = data.submissions || [];
+                    filteredBotSubmissions = [...allBotSubmissions];
+                    document.getElementById('botSubmissionsCount').textContent = allBotSubmissions.length;
+                    displayBotSubmissions();
+                } else {
+                    showToast('error', 'Erreur chargement demandes');
+                }
+            } catch (error) {
+                console.error('Erreur chargement submissions:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function filterBotSubmissions() {
+            const search = document.getElementById('botSearch').value.toLowerCase();
+            const filter = document.getElementById('botFilter').value;
+            filteredBotSubmissions = allBotSubmissions.filter(sub => {
+                const matchesSearch = (sub.bot_name?.toLowerCase() || '').includes(search) ||
+                                    (sub.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (sub.repo_url || '').toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'all') return true;
+                return sub.status === filter;
+            });
+            displayBotSubmissions();
+        }
+
+        function clearBotSearch() {
+            document.getElementById('botSearch').value = '';
+            document.getElementById('botFilter').value = 'pending';
+            filteredBotSubmissions = [...allBotSubmissions];
+            displayBotSubmissions();
+        }
+
+        function displayBotSubmissions() {
+            const tbody = document.getElementById('botSubmissionsTableBody');
+            if (!filteredBotSubmissions || filteredBotSubmissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune demande trouvée<\/td></tr>';
+                return;
+            }
+            let html = '';
+            filteredBotSubmissions.forEach(sub => {
+                let statusBadge = '';
+                if (sub.status === 'pending') statusBadge = '<span class="badge badge-warning">En attente</span>';
+                else if (sub.status === 'approved') statusBadge = '<span class="badge badge-success">Approuvé</span>';
+                else if (sub.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejeté</span>';
+                let actions = '';
+                if (sub.status === 'pending') {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn confirm" title="Approuver" onclick="approveBot('${sub.id}')"><i class="fas fa-check"></i></button>
+                            <button class="action-btn fail" title="Rejeter" onclick="rejectBot('${sub.id}')"><i class="fas fa-times"></i></button>
+                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    `;
+                } else {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    `;
+                }
+                html += `
+                    <tr>
+                        <td>${formatDateCameroon(sub.created_at)}</td>
+                        <td><strong>${sub.profiles?.username || 'Inconnu'}</strong><br><small>${sub.profiles?.email || ''}</small></td>
+                        <td><strong>${sub.bot_name}</strong></td>
+                        <td><a href="${sub.repo_url}" target="_blank" style="color: var(--primary);">Voir repo <i class="fas fa-external-link-alt"></i></a></td>
+                        <td>${statusBadge}</td>
+                        <td>${sub.kh_json ? '<span class="badge badge-success">✔️ Valide</span>' : '<span class="badge badge-danger">❌ Invalide</span>'}</td>
+                        <td><input type="number" id="price_${sub.id}" placeholder="Prix (coins)" class="modal-input" style="width: 100px; padding: 6px;" value="100"></td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function approveBot(submissionId) {
+            const priceWeekly = document.getElementById(`price_${submissionId}`).value;
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Approuver le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir approuver ce bot ? Il apparaîtra sur la marketplace.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Approbation en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ price_weekly: parseInt(priceWeekly) || 100 })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot approuvé avec succès !');
+                        loadBotSubmissions();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function rejectBot(submissionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Rejeter le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir rejeter ce bot ? L\'utilisateur recevra un email.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Traitement en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason: 'Non conforme aux règles' })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot rejeté');
+                        loadBotSubmissions();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        function viewBotSubmission(submissionId) {
+            const submission = allBotSubmissions.find(s => s.id === submissionId);
+            if (!submission) return;
+            const detailsDiv = document.getElementById('transactionDetails');
+            detailsDiv.innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Nom du bot</span>
+                    <span class="modal-info-value">${submission.bot_name}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Repository</span>
+                    <span class="modal-info-value"><a href="${submission.repo_url}" target="_blank" style="color: var(--primary);">${submission.repo_url}</a></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Soumis par</span>
+                    <span class="modal-info-value">${submission.profiles?.username} (${submission.profiles?.email})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de soumission</span>
+                    <span class="modal-info-value">${formatDateCameroon(submission.created_at)}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Statut</span>
+                    <span class="modal-info-value"><span class="badge ${submission.status === 'pending' ? 'badge-warning' : (submission.status === 'approved' ? 'badge-success' : 'badge-danger')}">${submission.status}</span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Kh.json</span>
+                    <span class="modal-info-value"><pre style="background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.7rem;">${JSON.stringify(submission.kh_json, null, 2)}</pre></span>
+                </div>
+            `;
+            openModal('transactionModal');
+        }
+
+        // ===== HEROKU ACCOUNTS FUNCTIONS =====
+        async function loadHerokuAccounts() {
+            try {
+                const res = await fetch('/api/admin/heroku/accounts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allHerokuAccounts = data.accounts || [];
+                    filteredHerokuAccounts = [...allHerokuAccounts];
+                    document.getElementById('herokuAccountsCount').textContent = allHerokuAccounts.length;
+                    updateHerokuStats();
+                    displayHerokuAccounts();
+                } else {
+                    showToast('error', 'Erreur chargement comptes Heroku');
+                }
+            } catch (error) {
+                console.error('Erreur chargement Heroku:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function updateHerokuStats() {
+            const total = allHerokuAccounts.length;
+            const active = allHerokuAccounts.filter(a => a.is_active).length;
+            const totalCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.max_bots || 0), 0);
+            const usedCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.current_bots || 0), 0);
+            const availableCapacity = totalCapacity - usedCapacity;
+            document.getElementById('herokuTotalAccounts').textContent = total;
+            document.getElementById('herokuActiveAccounts').textContent = active;
+            document.getElementById('herokuTotalCapacity').textContent = totalCapacity;
+            document.getElementById('herokuAvailableCapacity').textContent = availableCapacity;
+        }
+
+        function filterHerokuAccounts() {
+            const search = document.getElementById('herokuSearch').value.toLowerCase();
+            const filter = document.getElementById('herokuFilter').value;
+            filteredHerokuAccounts = allHerokuAccounts.filter(acc => {
+                const matchesSearch = (acc.email?.toLowerCase() || '').includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'active') return acc.is_active === true;
+                if (filter === 'inactive') return acc.is_active === false;
+                return true;
+            });
+            displayHerokuAccounts();
+        }
+
+        function displayHerokuAccounts() {
+            const tbody = document.getElementById('herokuAccountsTableBody');
+            if (!filteredHerokuAccounts || filteredHerokuAccounts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun compte Heroku trouvé<\/td></tr>';
+                return;
+            }
+            let html = '';
+            filteredHerokuAccounts.forEach(acc => {
+                const statusBadge = acc.is_active ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-danger">Inactif</span>';
+                const lastUsed = acc.last_used_at ? formatDateCameroon(acc.last_used_at) : 'Jamais';
+                html += `
+                    <tr>
+                        <td><code>${acc.id.substring(0, 8)}...</code></td>
+                        <td><strong>${acc.email}</strong></td>
+                        <td><input type="password" value="${acc.api_key.substring(0, 20)}..." readonly style="background: transparent; border: none; color: var(--text-secondary); font-family: monospace;" size="25"></td>
+                        <td>${acc.max_bots || 0}</td>
+                        <td>${acc.current_bots || 0} / ${acc.max_bots || 0} (${Math.round(((acc.current_bots || 0) / (acc.max_bots || 1)) * 100)}%)</td>
+                        <td>${statusBadge}</td>
+                        <td>${lastUsed}</td>
+                        <td>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editHerokuAccount('${acc.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteHerokuAccount('${acc.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function showAddHerokuAccountModal() {
+            document.getElementById('herokuEmail').value = '';
+            document.getElementById('herokuApiKey').value = '';
+            document.getElementById('herokuMaxBots').value = '50';
+            openModal('addHerokuAccountModal');
+        }
+
+        async function addHerokuAccount() {
+            const email = document.getElementById('herokuEmail').value.trim();
+            const apiKey = document.getElementById('herokuApiKey').value.trim();
+            const maxBots = parseInt(document.getElementById('herokuMaxBots').value) || 50;
+            if (!email || !apiKey) {
+                showToast('error', 'Email et API Key requis');
+                return;
+            }
+            showToast('info', 'Ajout en cours...');
+            try {
+                const res = await fetch('/api/admin/heroku/accounts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, api_key: apiKey, max_bots: maxBots })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku ajouté avec succès');
+                    closeModal('addHerokuAccountModal');
+                    loadHerokuAccounts();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de l\'ajout');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function editHerokuAccount(accountId) {
+            const account = allHerokuAccounts.find(a => a.id === accountId);
+            if (!account) return;
+            currentHerokuAccountId = accountId;
+            document.getElementById('editHerokuEmail').textContent = account.email;
+            document.getElementById('editHerokuMaxBots').value = account.max_bots || 50;
+            document.getElementById('editHerokuStatus').value = account.is_active ? 'true' : 'false';
+            const deleteBtn = document.getElementById('deleteHerokuAccountBtn');
+            deleteBtn.onclick = () => deleteHerokuAccount(accountId);
+            openModal('editHerokuAccountModal');
+        }
+
+        async function saveHerokuAccountChanges() {
+            const maxBots = parseInt(document.getElementById('editHerokuMaxBots').value) || 50;
+            const isActive = document.getElementById('editHerokuStatus').value === 'true';
+            try {
+                const res = await fetch(`/api/admin/heroku/accounts/${currentHerokuAccountId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ max_bots: maxBots, is_active: isActive })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku modifié');
+                    closeModal('editHerokuAccountModal');
+                    loadHerokuAccounts();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function deleteHerokuAccount(accountId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer compte Heroku';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Suppression...');
+                try {
+                    const res = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Compte Heroku supprimé');
+                        if (currentHerokuAccountId === accountId) closeModal('editHerokuAccountModal');
+                        loadHerokuAccounts();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
         // ===== BULK ACTIONS =====
         function showDeleteAllServersModal() {
             document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
@@ -4937,6 +5523,8 @@
             loadFapshiBalance();
             if (document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions();
             if (document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions();
+            if (document.getElementById('tab-bot-submissions').classList.contains('active')) loadBotSubmissions();
+            if (document.getElementById('tab-heroku').classList.contains('active')) loadHerokuAccounts();
             if (document.getElementById('tab-email').classList.contains('active')) {
                 loadEmailTemplates();
                 loadCampaignHistory();
@@ -5028,6 +5616,20 @@
         window.loadCampaignHistory = loadCampaignHistory;
         window.cancelCampaign = cancelCampaign;
         window.cancelCurrentCampaign = cancelCurrentCampaign;
+        // Nouvelles fonctions Bot et Heroku
+        window.loadBotSubmissions = loadBotSubmissions;
+        window.filterBotSubmissions = filterBotSubmissions;
+        window.clearBotSearch = clearBotSearch;
+        window.approveBot = approveBot;
+        window.rejectBot = rejectBot;
+        window.viewBotSubmission = viewBotSubmission;
+        window.loadHerokuAccounts = loadHerokuAccounts;
+        window.filterHerokuAccounts = filterHerokuAccounts;
+        window.showAddHerokuAccountModal = showAddHerokuAccountModal;
+        window.addHerokuAccount = addHerokuAccount;
+        window.editHerokuAccount = editHerokuAccount;
+        window.saveHerokuAccountChanges = saveHerokuAccountChanges;
+        window.deleteHerokuAccount = deleteHerokuAccount;
     </script>
 </body>
 </html>
