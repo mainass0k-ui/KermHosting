@@ -8894,16 +8894,27 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
         const { submissionId } = req.params;
         const { price_weekly } = req.body;
         
+        // Correction: ne pas utiliser INNER JOIN directement comme ça
         const { data: submission, error: fetchError } = await supabase
             .from('bot_submissions')
-            .select('*, profiles!inner(*)')
+            .select(`
+                *,
+                profiles:user_id (id, username, email)
+            `)
             .eq('id', submissionId)
             .single();
         
         if (fetchError || !submission) {
+            console.error('❌ Demande non trouvée:', fetchError);
             return res.status(404).json({ success: false, error: 'Demande non trouvée' });
         }
         
+        // Vérifier que la demande est bien en attente
+        if (submission.status !== 'pending') {
+            return res.status(400).json({ success: false, error: 'Cette demande a déjà été traitée' });
+        }
+        
+        // Créer le template
         const { data: template, error: insertError } = await supabase
             .from('bot_templates')
             .insert([{
@@ -8919,9 +8930,13 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             .select()
             .single();
         
-        if (insertError) throw insertError;
+        if (insertError) {
+            console.error('❌ Erreur création template:', insertError);
+            return res.status(500).json({ success: false, error: 'Erreur création template' });
+        }
         
-        await supabase
+        // Mettre à jour la demande
+        const { error: updateError } = await supabase
             .from('bot_submissions')
             .update({
                 status: 'approved',
@@ -8930,21 +8945,46 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             })
             .eq('id', submissionId);
         
-        const successHtml = `
-            <h2>✅ Votre bot a été approuvé !</h2>
-            <p>Bonjour ${submission.profiles?.username},</p>
-            <p>Félicitations ! Votre bot <strong>"${submission.bot_name}"</strong> a été approuvé et est maintenant disponible sur notre marketplace.</p>
-            <p>Prix de déploiement : ${price_weekly || 100} coins pour 7 jours</p>
-            <p>Chaque fois qu'un utilisateur déploiera votre bot, vous recevrez 5 coins !</p>
-            <a href="${SITE_CONFIG.url}/bot">Voir sur la marketplace</a>
-        `;
-        await sendEmail(submission.profiles?.email, '✅ Votre bot est approuvé !', getBaseEmailTemplate('Bot approuvé', successHtml));
+        if (updateError) {
+            console.error('❌ Erreur mise à jour demande:', updateError);
+        }
+        
+        // Récupérer l'email de l'utilisateur
+        let userEmail = submission.profiles?.email;
+        let username = submission.profiles?.username || submission.bot_name;
+        
+        // Si l'email n'est pas dans la relation, le chercher directement
+        if (!userEmail) {
+            const { data: userProfile } = await supabase
+                .from('profiles')
+                .select('email, username')
+                .eq('id', submission.user_id)
+                .single();
+            
+            if (userProfile) {
+                userEmail = userProfile.email;
+                username = userProfile.username;
+            }
+        }
+        
+        // Email de succès au créateur (seulement si on a l'email)
+        if (userEmail) {
+            const successHtml = `
+                <h2>✅ Votre bot a été approuvé !</h2>
+                <p>Bonjour ${username},</p>
+                <p>Félicitations ! Votre bot <strong>"${submission.bot_name}"</strong> a été approuvé et est maintenant disponible sur notre marketplace.</p>
+                <p>Prix de déploiement : ${price_weekly || 100} coins pour 7 jours</p>
+                <p>Chaque fois qu'un utilisateur déploiera votre bot, vous recevrez 5 coins !</p>
+                <a href="${SITE_CONFIG.url}/bot">Voir sur la marketplace</a>
+            `;
+            await sendEmail(userEmail, '✅ Votre bot est approuvé !', getBaseEmailTemplate('Bot approuvé', successHtml));
+        }
         
         res.json({ success: true, message: 'Bot approuvé avec succès', template });
         
     } catch (error) {
         console.error('❌ Erreur approbation bot:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ success: false, error: 'Erreur serveur: ' + error.message });
     }
 });
 
@@ -8953,17 +8993,26 @@ app.post('/api/admin/bot-submissions/:submissionId/reject', authenticateToken, r
         const { submissionId } = req.params;
         const { reason } = req.body;
         
+        // Correction de la requête
         const { data: submission, error: fetchError } = await supabase
             .from('bot_submissions')
-            .select('*, profiles!inner(*)')
+            .select(`
+                *,
+                profiles:user_id (id, username, email)
+            `)
             .eq('id', submissionId)
             .single();
         
         if (fetchError || !submission) {
+            console.error('❌ Demande non trouvée:', fetchError);
             return res.status(404).json({ success: false, error: 'Demande non trouvée' });
         }
         
-        await supabase
+        if (submission.status !== 'pending') {
+            return res.status(400).json({ success: false, error: 'Cette demande a déjà été traitée' });
+        }
+        
+        const { error: updateError } = await supabase
             .from('bot_submissions')
             .update({
                 status: 'rejected',
@@ -8973,22 +9022,43 @@ app.post('/api/admin/bot-submissions/:submissionId/reject', authenticateToken, r
             })
             .eq('id', submissionId);
         
-        const rejectHtml = `
-            <h2>❌ Votre bot n'a pas été approuvé</h2>
-            <p>Bonjour ${submission.profiles?.username},</p>
-            <p>Nous avons examiné votre demande pour le bot <strong>"${submission.bot_name}"</strong>.</p>
-            <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
-                <p><strong>Raison :</strong> ${reason || 'Non-conformité aux règles'}</p>
-            </div>
-            <p>Vous pouvez modifier votre bot et soumettre une nouvelle demande.</p>
-        `;
-        await sendEmail(submission.profiles?.email, '❌ Bot non approuvé', getBaseEmailTemplate('Bot refusé', rejectHtml));
+        if (updateError) throw updateError;
+        
+        // Récupérer l'email
+        let userEmail = submission.profiles?.email;
+        let username = submission.profiles?.username || submission.bot_name;
+        
+        if (!userEmail) {
+            const { data: userProfile } = await supabase
+                .from('profiles')
+                .select('email, username')
+                .eq('id', submission.user_id)
+                .single();
+            
+            if (userProfile) {
+                userEmail = userProfile.email;
+                username = userProfile.username;
+            }
+        }
+        
+        if (userEmail) {
+            const rejectHtml = `
+                <h2>❌ Votre bot n'a pas été approuvé</h2>
+                <p>Bonjour ${username},</p>
+                <p>Nous avons examiné votre demande pour le bot <strong>"${submission.bot_name}"</strong>.</p>
+                <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
+                    <p><strong>Raison :</strong> ${reason || 'Non-conformité aux règles'}</p>
+                </div>
+                <p>Vous pouvez modifier votre bot et soumettre une nouvelle demande.</p>
+            `;
+            await sendEmail(userEmail, '❌ Bot non approuvé', getBaseEmailTemplate('Bot refusé', rejectHtml));
+        }
         
         res.json({ success: true, message: 'Demande rejetée' });
         
     } catch (error) {
         console.error('❌ Erreur rejet bot:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ success: false, error: 'Erreur serveur: ' + error.message });
     }
 });
 
