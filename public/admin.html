@@ -1623,7 +1623,7 @@
             }
 
             .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(6, 1fr);
                 gap: 20px;
             }
 
@@ -1903,6 +1903,34 @@
                             <span id="statBannedPercent">0%</span>
                         </div>
                     </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fab fa-salesforce"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="herokuTotalAccountsStat">0</div>
+                        <div class="stat-label">Comptes Heroku</div>
+                        <div class="stat-change">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="herokuActiveAccountsStat">0 actifs</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="botTotalTemplatesStat">0</div>
+                        <div class="stat-label">Templates bots</div>
+                        <div class="stat-change">
+                            <i class="fas fa-rocket"></i>
+                            <span id="botActiveBotsStat">0 déployés</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Financial Stats -->
@@ -1976,13 +2004,19 @@
                         <i class="fab fa-paypal"></i>PayPal
                     </div>
                     <div class="tab" onclick="switchTab('minipay')">
-                        <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>Minipay
+                        <i class="fas fa-mobile-alt"></i>Minipay
                     </div>
                     <div class="tab" onclick="switchTab('bot-submissions')">
-                        <i class="fas fa-robot" style="color: var(--primary);"></i>Bots
+                        <i class="fas fa-robot"></i>Demandes Bots
+                    </div>
+                    <div class="tab" onclick="switchTab('bot-templates')">
+                        <i class="fas fa-boxes"></i>Templates Bots
+                    </div>
+                    <div class="tab" onclick="switchTab('deployed-bots')">
+                        <i class="fas fa-rocket"></i>Bots Déployés
                     </div>
                     <div class="tab" onclick="switchTab('heroku')">
-                        <i class="fab fa-salesforce"></i>Heroku
+                        <i class="fab fa-salesforce"></i>Comptes Heroku
                     </div>
                     <div class="tab" onclick="switchTab('maintenance')">
                         <i class="fas fa-tools"></i>Maintenance
@@ -2028,21 +2062,25 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Email</th>
-                                <th>Rôle</th>
-                                <th>Coins</th>
-                                <th>Serveurs</th>
-                                <th>Statut</th>
-                                <th>Inscription</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Coins</th>
+                                    <th>Serveurs</th>
+                                    <th>Statut</th>
+                                    <th>Inscription</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="usersTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des utilisateurs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des utilisateurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2084,20 +2122,24 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Propriétaire</th>
-                                <th>Plan</th>
-                                <th>Statut</th>
-                                <th>Création</th>
-                                <th>Expiration</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Propriétaire</th>
+                                    <th>Plan</th>
+                                    <th>Statut</th>
+                                    <th>Création</th>
+                                    <th>Expiration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="serversTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des serveurs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des serveurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2137,20 +2179,24 @@
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant</th>
-                                <th>Statut</th>
-                                <th>Moyen</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Moyen</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="transactionsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2219,6 +2265,8 @@
                                 <option value="role">Changements rôle</option>
                                 <option value="coins">Ajouts/retraits coins</option>
                                 <option value="server">Actions serveurs</option>
+                                <option value="bot">Actions bots</option>
+                                <option value="heroku">Actions Heroku</option>
                                 <option value="delete">Suppressions</option>
                             </select>
                             <button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left: auto;">
@@ -2235,20 +2283,24 @@
                     <div class="table-container">
                         <table id="logsTable">
                             <thead>
-                                <th>Date (Cameroun)</th>
-                                <th>Admin</th>
-                                <th>Action</th>
-                                <th>Cible</th>
-                                <th>Détails</th>
-                                <th>IP</th>
-                             </thead>
+                                <tr>
+                                    <th>Date (Cameroun)</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Cible</th>
+                                    <th>Détails</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
                             <tbody id="logsTableBody">
-                                <td colspan="6" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des logs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="6" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des logs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
 
                     <div class="pagination" id="logsPagination">
@@ -2291,23 +2343,27 @@
                     <div class="table-container">
                         <table id="paypalTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant (FCFA)</th>
-                                <th>Montant (devise)</th>
-                                <th>Email PayPal</th>
-                                <th>Nom complet</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant (FCFA)</th>
+                                    <th>Montant (devise)</th>
+                                    <th>Email PayPal</th>
+                                    <th>Nom complet</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="paypalTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions PayPal...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions PayPal...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </td>
+                        </table>
                     </div>
                 </div>
 
@@ -2325,7 +2381,7 @@
                             </select>
                         </div>
                         <div class="search-badge">
-                            <i class="fas fa-mobile-alt" style="color: var(--minipay);"></i>
+                            <i class="fas fa-mobile-alt"></i>
                             <span id="minipayCount">0</span> transactions Minipay
                             <button class="clear-search" onclick="clearMinipaySearch()" title="Effacer recherche">
                                 <i class="fas fa-times"></i>
@@ -2339,32 +2395,36 @@
                     <div class="table-container">
                         <table id="minipayTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Pack</th>
-                                <th>Coins</th>
-                                <th>Montant (local)</th>
-                                <th>Pays</th>
-                                <th>Téléphone</th>
-                                <th>Statut</th>
-                                <th>Capture</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Pack</th>
+                                    <th>Coins</th>
+                                    <th>Montant (local)</th>
+                                    <th>Pays</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut</th>
+                                    <th>Capture</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="minipayTableBody">
-                                <td colspan="10" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions Minipay...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="10" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions Minipay...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Tab: Bots (Demandes d'ajout) -->
+                <!-- Tab: Demandes Bots -->
                 <div class="tab-pane" id="tab-bot-submissions">
                     <div class="search-bar">
                         <div class="search-row">
-                            <input type="text" class="search-input" id="botSearch" placeholder="Rechercher un bot..." onkeyup="filterBotSubmissions()">
+                            <input type="text" class="search-input" id="botSearch" placeholder="Rechercher une demande..." onkeyup="filterBotSubmissions()">
                             <select class="filter-select" id="botFilter" onchange="filterBotSubmissions()">
                                 <option value="pending">En attente</option>
                                 <option value="approved">Approuvés</option>
@@ -2373,7 +2433,7 @@
                             </select>
                         </div>
                         <div class="search-badge">
-                            <i class="fas fa-robot" style="color: var(--primary);"></i>
+                            <i class="fas fa-robot"></i>
                             <span id="botSubmissionsCount">0</span> demandes
                             <button class="clear-search" onclick="clearBotSearch()" title="Effacer recherche">
                                 <i class="fas fa-times"></i>
@@ -2387,26 +2447,136 @@
                     <div class="table-container">
                         <table id="botSubmissionsTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Nom du bot</th>
-                                <th>Repository</th>
-                                <th>Statut</th>
-                                <th>Kh.json</th>
-                                <th>Prix</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Nom du bot</th>
+                                    <th>Repository</th>
+                                    <th>Statut</th>
+                                    <th>Kh.json</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="botSubmissionsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des demandes...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des demandes...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Tab: Heroku (Gestion des comptes) -->
+                <!-- Tab: Templates Bots (Marketplace) -->
+                <div class="tab-pane" id="tab-bot-templates">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botTemplateSearch" placeholder="Rechercher un template..." onkeyup="filterBotTemplates()">
+                            <select class="filter-select" id="botTemplateFilter" onchange="filterBotTemplates()">
+                                <option value="all">Tous</option>
+                                <option value="approved">Approuvés</option>
+                                <option value="pending">En attente</option>
+                                <option value="rejected">Rejetés</option>
+                                <option value="deleted">Supprimés</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-boxes"></i>
+                            <span id="botTemplatesCount">0</span> templates
+                            <button class="clear-search" onclick="clearBotTemplateSearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadBotTemplates()" style="margin-left: auto;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="botTemplatesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Créateur</th>
+                                    <th>Repository</th>
+                                    <th>Prix (coins)</th>
+                                    <th>Déploiements</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="botTemplatesTableBody">
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des templates...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Bots Déployés -->
+                <div class="tab-pane" id="tab-deployed-bots">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="deployedBotSearch" placeholder="Rechercher un bot déployé..." onkeyup="filterDeployedBots()">
+                            <select class="filter-select" id="deployedBotFilter" onchange="filterDeployedBots()">
+                                <option value="all">Tous</option>
+                                <option value="active">Actifs</option>
+                                <option value="deploying">En déploiement</option>
+                                <option value="stopped">Arrêtés</option>
+                                <option value="suspended">Suspendus</option>
+                                <option value="failed">Échoués</option>
+                                <option value="weekly">Hebdomadaire</option>
+                                <option value="monthly">Mensuel</option>
+                            </select>
+                        </div>
+                        <div class="search-badge">
+                            <i class="fas fa-rocket"></i>
+                            <span id="deployedBotsCount">0</span> bots déployés
+                            <button class="clear-search" onclick="clearDeployedBotSearch()" title="Effacer recherche">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadDeployedBots()" style="margin-left: auto;">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="deployedBotsTable">
+                            <thead>
+                                <tr>
+                                    <th>Date déploiement</th>
+                                    <th>Nom app Heroku</th>
+                                    <th>Template</th>
+                                    <th>Utilisateur</th>
+                                    <th>Durée</th>
+                                    <th>Expiration</th>
+                                    <th>Statut</th>
+                                    <th>Auto-renew</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deployedBotsTableBody">
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des bots déployés...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Comptes Heroku -->
                 <div class="tab-pane" id="tab-heroku">
                     <div class="search-bar">
                         <div class="search-row">
@@ -2429,62 +2599,27 @@
                         </button>
                     </div>
 
-                    <div class="stats-grid" style="margin-bottom: 20px;">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fab fa-salesforce"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="herokuTotalAccounts">0</div>
-                            <div class="stat-label">Total comptes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="herokuActiveAccounts">0</div>
-                            <div class="stat-label">Actifs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-microchip"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="herokuTotalCapacity">0</div>
-                            <div class="stat-label">Capacité totale</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                            <div class="stat-value" id="herokuAvailableCapacity">0</div>
-                            <div class="stat-label">Disponible</div>
-                        </div>
-                    </div>
-
                     <div class="table-container">
                         <table id="herokuAccountsTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Email</th>
-                                <th>API Key</th>
-                                <th>Max Bots</th>
-                                <th>Bots actifs</th>
-                                <th>Statut</th>
-                                <th>Dernière utilisation</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>API Key</th>
+                                    <th>Max Bots</th>
+                                    <th>Bots actifs</th>
+                                    <th>Statut</th>
+                                    <th>Dernière utilisation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="herokuAccountsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des comptes Heroku...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des comptes Heroku...</p>
+                                    </tr>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2641,20 +2776,24 @@
                         <div class="table-container">
                             <table id="campaignsTable">
                                 <thead>
-                                    <th>Date</th>
-                                    <th>Admin</th>
-                                    <th>Sujet</th>
-                                    <th>Template</th>
-                                    <th>Destinataires</th>
-                                    <th>Succès</th>
-                                    <th>Échecs</th>
-                                    <th>Statut</th>
-                                    <th>Action</th>
-                                 </thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Admin</th>
+                                        <th>Sujet</th>
+                                        <th>Template</th>
+                                        <th>Destinataires</th>
+                                        <th>Succès</th>
+                                        <th>Échecs</th>
+                                        <th>Statut</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="campaignsTableBody">
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement de l'historique...</p>
+                                    <tr>
+                                        <td colspan="9" class="loading-state">
+                                            <i class="fas fa-circle-notch fa-spin"></i>
+                                            <p>Chargement de l'historique...</p>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -2813,6 +2952,134 @@
                 <button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button>
                 <button class="btn btn-danger" id="deleteServerBtn" onclick="deleteServer(currentServerId)">Supprimer</button>
                 <button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Édition template bot -->
+    <div class="modal" id="botTemplateEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-box"></i> Édition template bot</h2>
+                <button class="modal-close" onclick="closeModal('botTemplateEditModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">ID</span>
+                        <span class="modal-info-value" id="editTemplateId">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Nom</span>
+                        <span class="modal-info-value" id="editTemplateName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Créateur</span>
+                        <span class="modal-info-value" id="editTemplateCreator">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Repository</span>
+                        <span class="modal-info-value" id="editTemplateRepo">-</span>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Prix (coins / semaine)</label>
+                    <input type="number" class="modal-input" id="editTemplatePrice" min="0" step="10">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Statut</label>
+                    <select class="modal-select" id="editTemplateStatus">
+                        <option value="approved">Approuvé</option>
+                        <option value="pending">En attente</option>
+                        <option value="rejected">Rejeté</option>
+                        <option value="deleted">Supprimé</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Description (optionnel)</label>
+                    <textarea class="modal-textarea" id="editTemplateDescription" placeholder="Description du bot..."></textarea>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Logo URL (optionnel)</label>
+                    <input type="text" class="modal-input" id="editTemplateLogo" placeholder="https://...">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Raison de rejet (si statut = rejeté)</label>
+                    <textarea class="modal-textarea" id="editTemplateRejectReason" placeholder="Raison du rejet..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('botTemplateEditModal')">Annuler</button>
+                <button class="btn btn-danger" onclick="deleteBotTemplate(currentTemplateId)">Supprimer</button>
+                <button class="btn btn-primary" onclick="saveBotTemplateChanges()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Édition bot déployé -->
+    <div class="modal" id="deployedBotEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-rocket"></i> Édition bot déployé</h2>
+                <button class="modal-close" onclick="closeModal('deployedBotEditModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">ID</span>
+                        <span class="modal-info-value" id="editDeployedBotId">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Nom Heroku</span>
+                        <span class="modal-info-value" id="editDeployedBotName">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Template</span>
+                        <span class="modal-info-value" id="editDeployedBotTemplate">-</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Utilisateur</span>
+                        <span class="modal-info-value" id="editDeployedBotUser">-</span>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Statut</label>
+                    <select class="modal-select" id="editDeployedBotStatus">
+                        <option value="active">Actif</option>
+                        <option value="stopped">Arrêté</option>
+                        <option value="suspended">Suspendu</option>
+                        <option value="failed">Échoué</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Date d'expiration</label>
+                    <input type="datetime-local" class="modal-input" id="editDeployedBotExpiry">
+                </div>
+
+                <div class="modal-form-group">
+                    <label>Auto-renouvellement</label>
+                    <select class="modal-select" id="editDeployedBotAutoRenew">
+                        <option value="true">Activé</option>
+                        <option value="false">Désactivé</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('deployedBotEditModal')">Annuler</button>
+                <button class="btn btn-warning" onclick="forceRenewDeployedBot()">Forcer renouvellement</button>
+                <button class="btn btn-danger" onclick="deleteDeployedBot(currentDeployedBotId)">Supprimer</button>
+                <button class="btn btn-primary" onclick="saveDeployedBotChanges()">Enregistrer</button>
             </div>
         </div>
     </div>
@@ -3010,14 +3277,20 @@
         let allPaypalTransactions = [];
         let allMinipayTransactions = [];
         let allBotSubmissions = [];
+        let allBotTemplates = [];
+        let allDeployedBots = [];
         let allHerokuAccounts = [];
         let filteredBotSubmissions = [];
+        let filteredBotTemplates = [];
+        let filteredDeployedBots = [];
         let filteredHerokuAccounts = [];
         let filteredMinipayTransactions = [];
         let filteredPaypalTransactions = [];
         let financialStats = null;
         let currentUserId = null;
         let currentServerId = null;
+        let currentTemplateId = null;
+        let currentDeployedBotId = null;
         let currentHerokuAccountId = null;
         let charts = {};
         let fapshiBalanceInterval = null;
@@ -3038,6 +3311,8 @@
         let currentLogsPage = 1;
         let currentPaypalPage = 1;
         let currentMinipayPage = 1;
+        let currentBotTemplatePage = 1;
+        let currentDeployedBotPage = 1;
 
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
@@ -3158,6 +3433,8 @@
             if (tabId === 'paypal') loadPaypalTransactions();
             if (tabId === 'minipay') loadMinipayTransactions();
             if (tabId === 'bot-submissions') loadBotSubmissions();
+            if (tabId === 'bot-templates') loadBotTemplates();
+            if (tabId === 'deployed-bots') loadDeployedBots();
             if (tabId === 'heroku') loadHerokuAccounts();
             if (tabId === 'maintenance') loadMaintenanceConfig();
             if (tabId === 'email') {
@@ -3224,7 +3501,7 @@
                     const campaigns = data.campaigns || [];
                     const tbody = document.getElementById('campaignsTableBody');
                     if (campaigns.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune campagne trouvée<\/td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune campagne trouvée</td></tr>';
                         document.getElementById('globalSuccessRate').textContent = '0%';
                         return;
                     }
@@ -3541,7 +3818,7 @@
         function displayMinipayTransactions() {
             const tbody = document.getElementById('minipayTableBody');
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td></td>';
                 return;
             }
             const totalPages = Math.ceil(filteredMinipayTransactions.length / itemsPerPage);
@@ -3868,7 +4145,7 @@
         function displayPaypalTransactions() {
             const tbody = document.getElementById('paypalTableBody');
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td></td>';
                 return;
             }
             const totalPages = Math.ceil(filteredPaypalTransactions.length / itemsPerPage);
@@ -4220,6 +4497,30 @@
                     const bannedPercent = statsData.stats.total_users ? Math.round((statsData.stats.banned_users / statsData.stats.total_users) * 100) : 0;
                     document.getElementById('statBannedPercent').textContent = bannedPercent + '%';
                 }
+                
+                // Charger les stats bots
+                const botStatsRes = await fetch('/api/admin/bots/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const botStatsData = await botStatsRes.json();
+                if (botStatsData.success) {
+                    document.getElementById('botTotalTemplatesStat').textContent = botStatsData.stats.total_templates || 0;
+                    document.getElementById('botActiveBotsStat').textContent = (botStatsData.stats.active_bots || 0) + ' déployés';
+                }
+                
+                // Charger les stats Heroku
+                const herokuRes = await fetch('/api/admin/heroku/accounts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const herokuData = await herokuRes.json();
+                if (herokuData.success) {
+                    const accounts = herokuData.accounts || [];
+                    const totalAccounts = accounts.length;
+                    const activeAccounts = accounts.filter(a => a.is_active).length;
+                    document.getElementById('herokuTotalAccountsStat').textContent = totalAccounts;
+                    document.getElementById('herokuActiveAccountsStat').textContent = activeAccounts + ' actifs';
+                }
+                
                 const usersRes = await fetch('/api/admin/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -4231,6 +4532,7 @@
                     currentUserPage = 1;
                     displayUsers();
                 }
+                
                 const serversRes = await fetch('/api/admin/servers', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -4242,6 +4544,7 @@
                     currentServerPage = 1;
                     displayServers();
                 }
+                
                 const transRes = await fetch('/api/admin/transactions', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -4253,6 +4556,7 @@
                     currentTransactionPage = 1;
                     displayTransactions();
                 }
+                
                 const logsRes = await fetch('/api/admin/logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -4264,6 +4568,7 @@
                     currentLogsPage = 1;
                     displayLogs();
                 }
+                
                 await loadFinancialStats();
             } catch (error) {
                 console.error('Erreur chargement admin:', error);
@@ -4271,11 +4576,883 @@
             }
         }
 
+        // ===== LOAD BOT TEMPLATES =====
+        async function loadBotTemplates() {
+            try {
+                const res = await fetch('/api/admin/bots/all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allBotTemplates = data.data.templates || [];
+                    filteredBotTemplates = [...allBotTemplates];
+                    document.getElementById('botTemplatesCount').textContent = allBotTemplates.length;
+                    currentBotTemplatePage = 1;
+                    displayBotTemplates();
+                }
+            } catch (error) {
+                console.error('Erreur chargement templates:', error);
+                showToast('error', 'Erreur de chargement des templates');
+            }
+        }
+
+        function filterBotTemplates() {
+            const search = document.getElementById('botTemplateSearch').value.toLowerCase();
+            const filter = document.getElementById('botTemplateFilter').value;
+            filteredBotTemplates = allBotTemplates.filter(t => {
+                const matchesSearch = (t.name?.toLowerCase() || '').includes(search) ||
+                                    (t.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (t.repo_url || '').toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'all') return true;
+                return t.status === filter;
+            });
+            currentBotTemplatePage = 1;
+            document.getElementById('botTemplatesCount').textContent = filteredBotTemplates.length;
+            displayBotTemplates();
+        }
+
+        function clearBotTemplateSearch() {
+            document.getElementById('botTemplateSearch').value = '';
+            document.getElementById('botTemplateFilter').value = 'all';
+            filteredBotTemplates = [...allBotTemplates];
+            currentBotTemplatePage = 1;
+            document.getElementById('botTemplatesCount').textContent = allBotTemplates.length;
+            displayBotTemplates();
+        }
+
+        function displayBotTemplates() {
+            const tbody = document.getElementById('botTemplatesTableBody');
+            if (!filteredBotTemplates || filteredBotTemplates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun template trouvé<\/td></tr>';
+                return;
+            }
+            const totalPages = Math.ceil(filteredBotTemplates.length / itemsPerPage);
+            const startIndex = (currentBotTemplatePage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredBotTemplates.length);
+            const paginatedTemplates = filteredBotTemplates.slice(startIndex, endIndex);
+            let html = '';
+            paginatedTemplates.forEach(template => {
+                let statusBadge = '';
+                if (template.status === 'approved') statusBadge = '<span class="badge badge-success">Approuvé</span>';
+                else if (template.status === 'pending') statusBadge = '<span class="badge badge-warning">En attente</span>';
+                else if (template.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejeté</span>';
+                else if (template.status === 'deleted') statusBadge = '<span class="badge badge-danger">Supprimé</span>';
+                else statusBadge = `<span class="badge badge-info">${template.status}</span>`;
+                
+                html += `
+                    </tr>
+                        <td><code>${template.id.substring(0, 8)}...</code></td>
+                        <td><strong>${template.name}</strong></td>
+                        <td>${template.profiles?.username || 'Inconnu'}</td>
+                        <td><a href="${template.repo_url}" target="_blank" style="color: var(--primary);">Voir <i class="fas fa-external-link-alt"></i></a></td>
+                        <td>${template.price_weekly || 100} coins/semaine</span></td>
+                        <td>${template.total_deploys || 0}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editBotTemplate('${template.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn sync" title="Synchroniser avec GitHub" onclick="syncBotTemplate('${template.id}')"><i class="fas fa-sync-alt"></i></button>
+                                <button class="action-btn view" title="Voir utilisateur" onclick="editUser('${template.user_id}')"><i class="fas fa-user"></i></button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteBotTemplate('${template.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function editBotTemplate(templateId) {
+            const template = allBotTemplates.find(t => t.id === templateId);
+            if (!template) return;
+            currentTemplateId = templateId;
+            document.getElementById('editTemplateId').textContent = template.id;
+            document.getElementById('editTemplateName').textContent = template.name;
+            document.getElementById('editTemplateCreator').textContent = template.profiles?.username || 'Inconnu';
+            document.getElementById('editTemplateRepo').innerHTML = `<a href="${template.repo_url}" target="_blank" style="color: var(--primary);">${template.repo_url}</a>`;
+            document.getElementById('editTemplatePrice').value = template.price_weekly || 100;
+            document.getElementById('editTemplateStatus').value = template.status || 'pending';
+            document.getElementById('editTemplateDescription').value = template.description || '';
+            document.getElementById('editTemplateLogo').value = template.logo_url || '';
+            document.getElementById('editTemplateRejectReason').value = template.rejected_reason || '';
+            openModal('botTemplateEditModal');
+        }
+
+        async function saveBotTemplateChanges() {
+            const priceWeekly = parseInt(document.getElementById('editTemplatePrice').value) || 100;
+            const status = document.getElementById('editTemplateStatus').value;
+            const description = document.getElementById('editTemplateDescription').value;
+            const logoUrl = document.getElementById('editTemplateLogo').value;
+            const rejectReason = document.getElementById('editTemplateRejectReason').value;
+            
+            try {
+                const res = await fetch(`/api/admin/bots/templates/${currentTemplateId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        price_weekly: priceWeekly, 
+                        status, 
+                        description, 
+                        logo_url: logoUrl,
+                        rejected_reason: rejectReason 
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Template modifié avec succès');
+                    closeModal('botTemplateEditModal');
+                    loadBotTemplates();
+                    loadAdminData();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la modification');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function syncBotTemplate(templateId) {
+            showToast('info', 'Synchronisation en cours...');
+            try {
+                const res = await fetch(`/api/admin/bots/templates/${templateId}/sync`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Template synchronisé avec succès');
+                    loadBotTemplates();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la synchronisation');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function deleteBotTemplate(templateId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer le template';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce template ? Cette action est irréversible.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    const res = await fetch(`/api/admin/bots/templates/${templateId}?permanent=true`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Template supprimé');
+                        if (currentTemplateId === templateId) closeModal('botTemplateEditModal');
+                        loadBotTemplates();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        // ===== LOAD DEPLOYED BOTS =====
+        async function loadDeployedBots() {
+            try {
+                const res = await fetch('/api/admin/bots/deployed', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allDeployedBots = data.bots || [];
+                    filteredDeployedBots = [...allDeployedBots];
+                    document.getElementById('deployedBotsCount').textContent = allDeployedBots.length;
+                    currentDeployedBotPage = 1;
+                    displayDeployedBots();
+                }
+            } catch (error) {
+                console.error('Erreur chargement bots déployés:', error);
+                showToast('error', 'Erreur de chargement des bots déployés');
+            }
+        }
+
+        function filterDeployedBots() {
+            const search = document.getElementById('deployedBotSearch').value.toLowerCase();
+            const filter = document.getElementById('deployedBotFilter').value;
+            filteredDeployedBots = allDeployedBots.filter(bot => {
+                const matchesSearch = (bot.heroku_app_name?.toLowerCase() || '').includes(search) ||
+                                    (bot.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (bot.bot_templates?.name?.toLowerCase() || '').includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'all') return true;
+                if (filter === 'weekly') return bot.duration_mode === 'weekly';
+                if (filter === 'monthly') return bot.duration_mode === 'monthly';
+                return bot.status === filter;
+            });
+            currentDeployedBotPage = 1;
+            document.getElementById('deployedBotsCount').textContent = filteredDeployedBots.length;
+            displayDeployedBots();
+        }
+
+        function clearDeployedBotSearch() {
+            document.getElementById('deployedBotSearch').value = '';
+            document.getElementById('deployedBotFilter').value = 'all';
+            filteredDeployedBots = [...allDeployedBots];
+            currentDeployedBotPage = 1;
+            document.getElementById('deployedBotsCount').textContent = allDeployedBots.length;
+            displayDeployedBots();
+        }
+
+        function displayDeployedBots() {
+            const tbody = document.getElementById('deployedBotsTableBody');
+            if (!filteredDeployedBots || filteredDeployedBots.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun bot déployé trouvé<\/td></tr>';
+                return;
+            }
+            const totalPages = Math.ceil(filteredDeployedBots.length / itemsPerPage);
+            const startIndex = (currentDeployedBotPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredDeployedBots.length);
+            const paginatedBots = filteredDeployedBots.slice(startIndex, endIndex);
+            let html = '';
+            paginatedBots.forEach(bot => {
+                const now = new Date();
+                const expiry = new Date(bot.expires_at);
+                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                let statusBadge = '';
+                let statusText = '';
+                if (bot.status === 'active') {
+                    statusBadge = daysLeft < 0 ? 'badge-danger' : (daysLeft <= 3 ? 'badge-warning' : 'badge-success');
+                    statusText = daysLeft < 0 ? 'Expiré' : (daysLeft <= 3 ? 'Expire bientôt' : 'Actif');
+                } else if (bot.status === 'deploying') {
+                    statusBadge = 'badge-warning';
+                    statusText = 'En déploiement';
+                } else if (bot.status === 'stopped') {
+                    statusBadge = 'badge-warning';
+                    statusText = 'Arrêté';
+                } else if (bot.status === 'suspended') {
+                    statusBadge = 'badge-danger';
+                    statusText = 'Suspendu';
+                } else if (bot.status === 'failed') {
+                    statusBadge = 'badge-danger';
+                    statusText = 'Échoué';
+                }
+                const durationText = bot.duration_mode === 'monthly' ? 'Mensuel' : 'Hebdomadaire';
+                const autoRenewBadge = bot.auto_renew ? '<span class="badge badge-success">Activé</span>' : '<span class="badge badge-secondary">Désactivé</span>';
+                
+                html += `
+                    <tr>
+                        <td>${formatDateCameroon(bot.created_at)}</td>
+                        <td><strong>${bot.heroku_app_name}</strong></td>
+                        <td>${bot.bot_templates?.name || '-'}</td>
+                        <td>${bot.profiles?.username || 'Inconnu'}<br><small>${bot.profiles?.email || ''}</small></td>
+                        <td>${durationText}</td>
+                        <td>${formatDateCameroon(bot.expires_at)} (${daysLeft}j)</td>
+                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                        <td>${autoRenewBadge}</td>
+                        <td>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editDeployedBot('${bot.id}')"><i class="fas fa-edit"></i></button>
+                                ${bot.status === 'active' ? 
+                                    `<button class="action-btn suspend" title="Suspendre" onclick="suspendDeployedBot('${bot.id}')"><i class="fas fa-pause"></i></button>` : 
+                                    bot.status === 'suspended' ? 
+                                    `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendDeployedBot('${bot.id}')"><i class="fas fa-play"></i></button>` :
+                                    bot.status === 'stopped' ?
+                                    `<button class="action-btn unsuspend" title="Démarrer" onclick="startDeployedBot('${bot.id}')"><i class="fas fa-play"></i></button>` : ''
+                                }
+                                <button class="action-btn view" title="Voir utilisateur" onclick="editUser('${bot.user_id}')"><i class="fas fa-user"></i></button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteDeployedBot('${bot.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function editDeployedBot(botId) {
+            const bot = allDeployedBots.find(b => b.id === botId);
+            if (!bot) return;
+            currentDeployedBotId = botId;
+            document.getElementById('editDeployedBotId').textContent = bot.id;
+            document.getElementById('editDeployedBotName').textContent = bot.heroku_app_name;
+            document.getElementById('editDeployedBotTemplate').textContent = bot.bot_templates?.name || '-';
+            document.getElementById('editDeployedBotUser').textContent = `${bot.profiles?.username || 'Inconnu'} (${bot.profiles?.email || ''})`;
+            document.getElementById('editDeployedBotStatus').value = bot.status;
+            const expiryDate = new Date(bot.expires_at);
+            const formattedDate = expiryDate.toISOString().slice(0, 16);
+            document.getElementById('editDeployedBotExpiry').value = formattedDate;
+            document.getElementById('editDeployedBotAutoRenew').value = bot.auto_renew ? 'true' : 'false';
+            openModal('deployedBotEditModal');
+        }
+
+        async function saveDeployedBotChanges() {
+            const status = document.getElementById('editDeployedBotStatus').value;
+            const expiry = document.getElementById('editDeployedBotExpiry').value;
+            const autoRenew = document.getElementById('editDeployedBotAutoRenew').value === 'true';
+            
+            try {
+                const res = await fetch(`/api/admin/bots/deployed/${currentDeployedBotId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status, expires_at: expiry, auto_renew: autoRenew })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Bot modifié avec succès');
+                    closeModal('deployedBotEditModal');
+                    loadDeployedBots();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de la modification');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function forceRenewDeployedBot() {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-sync-alt" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Forcer le renouvellement';
+            document.getElementById('confirmMessage').textContent = 'Ajouter 7 jours à ce bot ?';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Renouvellement en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bots/deployed/${currentDeployedBotId}/renew`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ days_to_add: 7 })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot renouvelé avec succès');
+                        loadDeployedBots();
+                        closeModal('deployedBotEditModal');
+                    } else {
+                        showToast('error', data.error || 'Erreur lors du renouvellement');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function suspendDeployedBot(botId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Suspendre le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce bot ?';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    const res = await fetch(`/api/admin/bots/deployed/${botId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: 'suspended' })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot suspendu');
+                        loadDeployedBots();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function unsuspendDeployedBot(botId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Réactiver le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce bot ?';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    const res = await fetch(`/api/admin/bots/deployed/${botId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: 'active' })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot réactivé');
+                        loadDeployedBots();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function startDeployedBot(botId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Démarrer le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir démarrer ce bot ?';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    const res = await fetch(`/api/admin/bots/deployed/${botId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: 'active' })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot démarré');
+                        loadDeployedBots();
+                    } else {
+                        showToast('error', data.error);
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function deleteDeployedBot(botId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce bot ? Cette action est irréversible.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Suppression en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bots/deployed/${botId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot supprimé');
+                        if (currentDeployedBotId === botId) closeModal('deployedBotEditModal');
+                        loadDeployedBots();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        // ===== LOAD BOT SUBMISSIONS =====
+        async function loadBotSubmissions() {
+            try {
+                const res = await fetch('/api/admin/bot-submissions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allBotSubmissions = data.submissions || [];
+                    filteredBotSubmissions = [...allBotSubmissions];
+                    document.getElementById('botSubmissionsCount').textContent = allBotSubmissions.length;
+                    displayBotSubmissions();
+                } else {
+                    showToast('error', 'Erreur chargement demandes');
+                }
+            } catch (error) {
+                console.error('Erreur chargement submissions:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function filterBotSubmissions() {
+            const search = document.getElementById('botSearch').value.toLowerCase();
+            const filter = document.getElementById('botFilter').value;
+            filteredBotSubmissions = allBotSubmissions.filter(sub => {
+                const matchesSearch = (sub.bot_name?.toLowerCase() || '').includes(search) ||
+                                    (sub.profiles?.username?.toLowerCase() || '').includes(search) ||
+                                    (sub.repo_url || '').toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'all') return true;
+                return sub.status === filter;
+            });
+            displayBotSubmissions();
+        }
+
+        function clearBotSearch() {
+            document.getElementById('botSearch').value = '';
+            document.getElementById('botFilter').value = 'pending';
+            filteredBotSubmissions = [...allBotSubmissions];
+            displayBotSubmissions();
+        }
+
+        function displayBotSubmissions() {
+            const tbody = document.getElementById('botSubmissionsTableBody');
+            if (!filteredBotSubmissions || filteredBotSubmissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune demande trouvée<\/td></tr>';
+                return;
+            }
+            let html = '';
+            filteredBotSubmissions.forEach(sub => {
+                let statusBadge = '';
+                if (sub.status === 'pending') statusBadge = '<span class="badge badge-warning">En attente</span>';
+                else if (sub.status === 'approved') statusBadge = '<span class="badge badge-success">Approuvé</span>';
+                else if (sub.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejeté</span>';
+                let actions = '';
+                if (sub.status === 'pending') {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn confirm" title="Approuver" onclick="approveBot('${sub.id}')"><i class="fas fa-check"></i></button>
+                            <button class="action-btn fail" title="Rejeter" onclick="rejectBot('${sub.id}')"><i class="fas fa-times"></i></button>
+                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    `;
+                } else {
+                    actions = `
+                        <div class="action-group">
+                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    `;
+                }
+                html += `
+                    <tr>
+                        <td>${formatDateCameroon(sub.created_at)}</td>
+                        <td><strong>${sub.profiles?.username || 'Inconnu'}</strong><br><small>${sub.profiles?.email || ''}</small></td>
+                        <td><strong>${sub.bot_name}</strong></td>
+                        <td><a href="${sub.repo_url}" target="_blank" style="color: var(--primary);">Voir repo <i class="fas fa-external-link-alt"></i></a></td>
+                        <td>${statusBadge}</td>
+                        <td>${sub.kh_json ? '<span class="badge badge-success">✔️ Valide</span>' : '<span class="badge badge-danger">❌ Invalide</span>'}</td>
+                        <td><input type="number" id="price_${sub.id}" placeholder="Prix (coins)" class="modal-input" style="width: 100px; padding: 6px;" value="100"></td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function approveBot(submissionId) {
+            const priceWeekly = document.getElementById(`price_${submissionId}`).value;
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Approuver le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir approuver ce bot ? Il apparaîtra sur la marketplace.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Approbation en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ price_weekly: parseInt(priceWeekly) || 100 })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot approuvé avec succès !');
+                        loadBotSubmissions();
+                        loadBotTemplates();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        async function rejectBot(submissionId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Rejeter le bot';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir rejeter ce bot ? L\'utilisateur recevra un email.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Traitement en cours...');
+                try {
+                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason: 'Non conforme aux règles' })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Bot rejeté');
+                        loadBotSubmissions();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
+        function viewBotSubmission(submissionId) {
+            const submission = allBotSubmissions.find(s => s.id === submissionId);
+            if (!submission) return;
+            const detailsDiv = document.getElementById('transactionDetails');
+            detailsDiv.innerHTML = `
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Nom du bot</span>
+                    <span class="modal-info-value">${submission.bot_name}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Repository</span>
+                    <span class="modal-info-value"><a href="${submission.repo_url}" target="_blank" style="color: var(--primary);">${submission.repo_url}</a></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Soumis par</span>
+                    <span class="modal-info-value">${submission.profiles?.username} (${submission.profiles?.email})</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Date de soumission</span>
+                    <span class="modal-info-value">${formatDateCameroon(submission.created_at)}</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Statut</span>
+                    <span class="modal-info-value"><span class="badge ${submission.status === 'pending' ? 'badge-warning' : (submission.status === 'approved' ? 'badge-success' : 'badge-danger')}">${submission.status}</span></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Kh.json</span>
+                    <span class="modal-info-value"><pre style="background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.7rem;">${JSON.stringify(submission.kh_json, null, 2)}</pre></span>
+                </div>
+            `;
+            openModal('transactionModal');
+        }
+
+        // ===== HEROKU ACCOUNTS FUNCTIONS =====
+        async function loadHerokuAccounts() {
+            try {
+                const res = await fetch('/api/admin/heroku/accounts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allHerokuAccounts = data.accounts || [];
+                    filteredHerokuAccounts = [...allHerokuAccounts];
+                    document.getElementById('herokuAccountsCount').textContent = allHerokuAccounts.length;
+                    updateHerokuStats();
+                    displayHerokuAccounts();
+                } else {
+                    showToast('error', 'Erreur chargement comptes Heroku');
+                }
+            } catch (error) {
+                console.error('Erreur chargement Heroku:', error);
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function updateHerokuStats() {
+            const total = allHerokuAccounts.length;
+            const active = allHerokuAccounts.filter(a => a.is_active).length;
+            const totalCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.max_bots || 0), 0);
+            const usedCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.current_bots || 0), 0);
+            const availableCapacity = totalCapacity - usedCapacity;
+            document.getElementById('herokuTotalAccounts').textContent = total;
+            document.getElementById('herokuActiveAccounts').textContent = active;
+            document.getElementById('herokuTotalCapacity').textContent = totalCapacity;
+            document.getElementById('herokuAvailableCapacity').textContent = availableCapacity;
+            document.getElementById('herokuTotalAccountsStat').textContent = total;
+            document.getElementById('herokuActiveAccountsStat').textContent = active + ' actifs';
+        }
+
+        function filterHerokuAccounts() {
+            const search = document.getElementById('herokuSearch').value.toLowerCase();
+            const filter = document.getElementById('herokuFilter').value;
+            filteredHerokuAccounts = allHerokuAccounts.filter(acc => {
+                const matchesSearch = (acc.email?.toLowerCase() || '').includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'active') return acc.is_active === true;
+                if (filter === 'inactive') return acc.is_active === false;
+                return true;
+            });
+            displayHerokuAccounts();
+        }
+
+        function displayHerokuAccounts() {
+            const tbody = document.getElementById('herokuAccountsTableBody');
+            if (!filteredHerokuAccounts || filteredHerokuAccounts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun compte Heroku trouvé<\/td></tr>';
+                return;
+            }
+            let html = '';
+            filteredHerokuAccounts.forEach(acc => {
+                const statusBadge = acc.is_active ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-danger">Inactif</span>';
+                const lastUsed = acc.last_used_at ? formatDateCameroon(acc.last_used_at) : 'Jamais';
+                html += `
+                    <tr>
+                        <td><code>${acc.id.substring(0, 8)}...</code></td>
+                        <td><strong>${acc.email}</strong></td>
+                        <td><input type="password" value="${acc.api_key.substring(0, 20)}..." readonly style="background: transparent; border: none; color: var(--text-secondary); font-family: monospace;" size="25"></td>
+                        <td>${acc.max_bots || 0}</td>
+                        <td>${acc.current_bots || 0} / ${acc.max_bots || 0} (${Math.round(((acc.current_bots || 0) / (acc.max_bots || 1)) * 100)}%)</td>
+                        <td>${statusBadge}</td>
+                        <td>${lastUsed}</td>
+                        <td>
+                            <div class="action-group">
+                                <button class="action-btn edit" title="Modifier" onclick="editHerokuAccount('${acc.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" title="Supprimer" onclick="deleteHerokuAccount('${acc.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function showAddHerokuAccountModal() {
+            document.getElementById('herokuEmail').value = '';
+            document.getElementById('herokuApiKey').value = '';
+            document.getElementById('herokuMaxBots').value = '50';
+            openModal('addHerokuAccountModal');
+        }
+
+        async function addHerokuAccount() {
+            const email = document.getElementById('herokuEmail').value.trim();
+            const apiKey = document.getElementById('herokuApiKey').value.trim();
+            const maxBots = parseInt(document.getElementById('herokuMaxBots').value) || 50;
+            if (!email || !apiKey) {
+                showToast('error', 'Email et API Key requis');
+                return;
+            }
+            showToast('info', 'Ajout en cours...');
+            try {
+                const res = await fetch('/api/admin/heroku/accounts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, api_key: apiKey, max_bots: maxBots })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku ajouté avec succès');
+                    closeModal('addHerokuAccountModal');
+                    loadHerokuAccounts();
+                    loadAdminData();
+                } else {
+                    showToast('error', data.error || 'Erreur lors de l\'ajout');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        function editHerokuAccount(accountId) {
+            const account = allHerokuAccounts.find(a => a.id === accountId);
+            if (!account) return;
+            currentHerokuAccountId = accountId;
+            document.getElementById('editHerokuEmail').textContent = account.email;
+            document.getElementById('editHerokuMaxBots').value = account.max_bots || 50;
+            document.getElementById('editHerokuStatus').value = account.is_active ? 'true' : 'false';
+            const deleteBtn = document.getElementById('deleteHerokuAccountBtn');
+            deleteBtn.onclick = () => deleteHerokuAccount(accountId);
+            openModal('editHerokuAccountModal');
+        }
+
+        async function saveHerokuAccountChanges() {
+            const maxBots = parseInt(document.getElementById('editHerokuMaxBots').value) || 50;
+            const isActive = document.getElementById('editHerokuStatus').value === 'true';
+            try {
+                const res = await fetch(`/api/admin/heroku/accounts/${currentHerokuAccountId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ max_bots: maxBots, is_active: isActive })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku modifié');
+                    closeModal('editHerokuAccountModal');
+                    loadHerokuAccounts();
+                    loadAdminData();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur réseau');
+            }
+        }
+
+        async function deleteHerokuAccount(accountId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Supprimer compte Heroku';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.';
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                showToast('info', 'Suppression...');
+                try {
+                    const res = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('success', 'Compte Heroku supprimé');
+                        if (currentHerokuAccountId === accountId) closeModal('editHerokuAccountModal');
+                        loadHerokuAccounts();
+                        loadAdminData();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur réseau');
+                }
+            };
+            openModal('confirmModal');
+        }
+
         // ===== DISPLAY USERS =====
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             if (!filteredUsers || filteredUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td></td>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun utilisateur trouvé<\/td></tr>';
                 document.getElementById('userPagination').style.display = 'none';
                 return;
             }
@@ -4324,11 +5501,44 @@
             displayUsers();
         }
 
+        function filterUsers() {
+            const search = document.getElementById('userSearch').value.toLowerCase();
+            const filter = document.getElementById('userFilter').value;
+            filteredUsers = allUsers.filter(user => {
+                const matchesSearch = (user.username?.toLowerCase() || '').includes(search) ||
+                                    (user.email?.toLowerCase() || '').includes(search) ||
+                                    (user.id || '').toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                switch(filter) {
+                    case 'verified': return user.email_verified;
+                    case 'unverified': return !user.email_verified;
+                    case 'banned': return user.banned;
+                    case 'admin': return user.role === 'admin';
+                    case 'superadmin': return user.role === 'superadmin';
+                    case 'withCoins': return user.coins > 0;
+                    case 'withServers': return (user.servers_count || 0) > 0;
+                    default: return true;
+                }
+            });
+            currentUserPage = 1;
+            document.getElementById('userCount').textContent = filteredUsers.length;
+            displayUsers();
+        }
+
+        function clearUserSearch() {
+            document.getElementById('userSearch').value = '';
+            document.getElementById('userFilter').value = 'all';
+            filteredUsers = [...allUsers];
+            currentUserPage = 1;
+            document.getElementById('userCount').textContent = allUsers.length;
+            displayUsers();
+        }
+
         // ===== DISPLAY SERVERS =====
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
             if (!filteredServers || filteredServers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td></td>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun serveur trouvé<\/td></tr>';
                 document.getElementById('serverPagination').style.display = 'none';
                 return;
             }
@@ -4388,11 +5598,39 @@
             displayServers();
         }
 
+        function filterServers() {
+            const search = document.getElementById('serverSearch').value.toLowerCase();
+            const filter = document.getElementById('serverFilter').value;
+            filteredServers = allServers.filter(server => {
+                const matchesSearch = (server.server_name?.toLowerCase() || '').includes(search) ||
+                                    (server.owner_username || '').toLowerCase().includes(search) ||
+                                    (server.id || '').includes(search);
+                if (!matchesSearch) return false;
+                const now = new Date();
+                const expiry = new Date(server.expires_at);
+                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                switch(filter) {
+                    case 'active': return daysLeft > 0 && server.status === 'active';
+                    case 'expired': return daysLeft < 0;
+                    case 'expiring': return daysLeft > 0 && daysLeft <= 3 && server.status === 'active';
+                    case 'free': return server.server_type === 'free';
+                    case '1gb': return server.server_type === '1gb';
+                    case '2gb': return server.server_type === '2gb';
+                    case '4gb': return server.server_type === '4gb';
+                    case '8gb': return server.server_type === '8gb';
+                    default: return true;
+                }
+            });
+            currentServerPage = 1;
+            document.getElementById('serverCount').textContent = filteredServers.length;
+            displayServers();
+        }
+
         // ===== DISPLAY TRANSACTIONS =====
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></td>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -4441,6 +5679,28 @@
             displayTransactions();
         }
 
+        function filterTransactions() {
+            const search = document.getElementById('transactionSearch').value.toLowerCase();
+            const filter = document.getElementById('transactionFilter').value;
+            filteredTransactions = allTransactions.filter(trans => {
+                const matchesSearch = (trans.id || '').includes(search) ||
+                                    (trans.user_username || '').toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                switch(filter) {
+                    case 'completed': return trans.status === 'successful';
+                    case 'pending': return trans.status === 'pending';
+                    case 'failed': return trans.status === 'failed';
+                    case 'coins': return trans.type === 'coins_purchase';
+                    case 'server': return trans.type === 'server_purchase';
+                    case 'renewal': return trans.type === 'server_renewal';
+                    default: return true;
+                }
+            });
+            currentTransactionPage = 1;
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
+            displayTransactions();
+        }
+
         // ===== DISPLAY LOGS =====
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
@@ -4480,90 +5740,6 @@
             displayLogs();
         }
 
-        // ===== FILTER FUNCTIONS =====
-        function filterUsers() {
-            const search = document.getElementById('userSearch').value.toLowerCase();
-            const filter = document.getElementById('userFilter').value;
-            filteredUsers = allUsers.filter(user => {
-                const matchesSearch = (user.username?.toLowerCase() || '').includes(search) ||
-                                    (user.email?.toLowerCase() || '').includes(search) ||
-                                    (user.id || '').toLowerCase().includes(search);
-                if (!matchesSearch) return false;
-                switch(filter) {
-                    case 'verified': return user.email_verified;
-                    case 'unverified': return !user.email_verified;
-                    case 'banned': return user.banned;
-                    case 'admin': return user.role === 'admin';
-                    case 'superadmin': return user.role === 'superadmin';
-                    case 'withCoins': return user.coins > 0;
-                    case 'withServers': return (user.servers_count || 0) > 0;
-                    default: return true;
-                }
-            });
-            currentUserPage = 1;
-            document.getElementById('userCount').textContent = filteredUsers.length;
-            displayUsers();
-        }
-
-        function clearUserSearch() {
-            document.getElementById('userSearch').value = '';
-            document.getElementById('userFilter').value = 'all';
-            filteredUsers = [...allUsers];
-            currentUserPage = 1;
-            document.getElementById('userCount').textContent = allUsers.length;
-            displayUsers();
-        }
-
-        function filterServers() {
-            const search = document.getElementById('serverSearch').value.toLowerCase();
-            const filter = document.getElementById('serverFilter').value;
-            filteredServers = allServers.filter(server => {
-                const matchesSearch = (server.server_name?.toLowerCase() || '').includes(search) ||
-                                    (server.owner_username || '').toLowerCase().includes(search) ||
-                                    (server.id || '').includes(search);
-                if (!matchesSearch) return false;
-                const now = new Date();
-                const expiry = new Date(server.expires_at);
-                const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-                switch(filter) {
-                    case 'active': return daysLeft > 0 && server.status === 'active';
-                    case 'expired': return daysLeft < 0;
-                    case 'expiring': return daysLeft > 0 && daysLeft <= 3 && server.status === 'active';
-                    case 'free': return server.server_type === 'free';
-                    case '1gb': return server.server_type === '1gb';
-                    case '2gb': return server.server_type === '2gb';
-                    case '4gb': return server.server_type === '4gb';
-                    case '8gb': return server.server_type === '8gb';
-                    default: return true;
-                }
-            });
-            currentServerPage = 1;
-            document.getElementById('serverCount').textContent = filteredServers.length;
-            displayServers();
-        }
-
-        function filterTransactions() {
-            const search = document.getElementById('transactionSearch').value.toLowerCase();
-            const filter = document.getElementById('transactionFilter').value;
-            filteredTransactions = allTransactions.filter(trans => {
-                const matchesSearch = (trans.id || '').includes(search) ||
-                                    (trans.user_username || '').toLowerCase().includes(search);
-                if (!matchesSearch) return false;
-                switch(filter) {
-                    case 'completed': return trans.status === 'successful';
-                    case 'pending': return trans.status === 'pending';
-                    case 'failed': return trans.status === 'failed';
-                    case 'coins': return trans.type === 'coins_purchase';
-                    case 'server': return trans.type === 'server_purchase';
-                    case 'renewal': return trans.type === 'server_renewal';
-                    default: return true;
-                }
-            });
-            currentTransactionPage = 1;
-            document.getElementById('transactionCount').textContent = filteredTransactions.length;
-            displayTransactions();
-        }
-
         function filterLogs() {
             const search = document.getElementById('logSearch').value.toLowerCase();
             const filter = document.getElementById('logFilter').value;
@@ -4576,6 +5752,8 @@
                     case 'role': return (log.action_type || '').includes('role');
                     case 'coins': return (log.action_type || '').includes('coins');
                     case 'server': return (log.action_type || '').includes('server');
+                    case 'bot': return (log.action_type || '').includes('bot') || (log.action_type || '').includes('template') || (log.action_type || '').includes('deployed_bot');
+                    case 'heroku': return (log.action_type || '').includes('heroku');
                     case 'delete': return (log.action_type || '').includes('delete');
                     default: return true;
                 }
@@ -4787,6 +5965,8 @@
         }
 
         // ===== SERVER ACTIONS =====
+        let currentServerId = null;
+
         function editServer(serverId) {
             const server = allServers.find(s => s.id === serverId);
             if (!server) return;
@@ -4910,372 +6090,6 @@
                         loadAdminData();
                     } else {
                         showToast('error', data.error || 'Erreur lors de la réactivation');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                }
-            };
-            openModal('confirmModal');
-        }
-
-        // ===== BOT SUBMISSIONS FUNCTIONS =====
-        async function loadBotSubmissions() {
-            try {
-                const res = await fetch('/api/admin/bot-submissions', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    allBotSubmissions = data.submissions || [];
-                    filteredBotSubmissions = [...allBotSubmissions];
-                    document.getElementById('botSubmissionsCount').textContent = allBotSubmissions.length;
-                    displayBotSubmissions();
-                } else {
-                    showToast('error', 'Erreur chargement demandes');
-                }
-            } catch (error) {
-                console.error('Erreur chargement submissions:', error);
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        function filterBotSubmissions() {
-            const search = document.getElementById('botSearch').value.toLowerCase();
-            const filter = document.getElementById('botFilter').value;
-            filteredBotSubmissions = allBotSubmissions.filter(sub => {
-                const matchesSearch = (sub.bot_name?.toLowerCase() || '').includes(search) ||
-                                    (sub.profiles?.username?.toLowerCase() || '').includes(search) ||
-                                    (sub.repo_url || '').toLowerCase().includes(search);
-                if (!matchesSearch) return false;
-                if (filter === 'all') return true;
-                return sub.status === filter;
-            });
-            displayBotSubmissions();
-        }
-
-        function clearBotSearch() {
-            document.getElementById('botSearch').value = '';
-            document.getElementById('botFilter').value = 'pending';
-            filteredBotSubmissions = [...allBotSubmissions];
-            displayBotSubmissions();
-        }
-
-        function displayBotSubmissions() {
-            const tbody = document.getElementById('botSubmissionsTableBody');
-            if (!filteredBotSubmissions || filteredBotSubmissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune demande trouvée<\/td></tr>';
-                return;
-            }
-            let html = '';
-            filteredBotSubmissions.forEach(sub => {
-                let statusBadge = '';
-                if (sub.status === 'pending') statusBadge = '<span class="badge badge-warning">En attente</span>';
-                else if (sub.status === 'approved') statusBadge = '<span class="badge badge-success">Approuvé</span>';
-                else if (sub.status === 'rejected') statusBadge = '<span class="badge badge-danger">Rejeté</span>';
-                let actions = '';
-                if (sub.status === 'pending') {
-                    actions = `
-                        <div class="action-group">
-                            <button class="action-btn confirm" title="Approuver" onclick="approveBot('${sub.id}')"><i class="fas fa-check"></i></button>
-                            <button class="action-btn fail" title="Rejeter" onclick="rejectBot('${sub.id}')"><i class="fas fa-times"></i></button>
-                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
-                        </div>
-                    `;
-                } else {
-                    actions = `
-                        <div class="action-group">
-                            <button class="action-btn view" title="Voir détails" onclick="viewBotSubmission('${sub.id}')"><i class="fas fa-info-circle"></i></button>
-                        </div>
-                    `;
-                }
-                html += `
-                    <tr>
-                        <td>${formatDateCameroon(sub.created_at)}</td>
-                        <td><strong>${sub.profiles?.username || 'Inconnu'}</strong><br><small>${sub.profiles?.email || ''}</small></td>
-                        <td><strong>${sub.bot_name}</strong></td>
-                        <td><a href="${sub.repo_url}" target="_blank" style="color: var(--primary);">Voir repo <i class="fas fa-external-link-alt"></i></a></td>
-                        <td>${statusBadge}</td>
-                        <td>${sub.kh_json ? '<span class="badge badge-success">✔️ Valide</span>' : '<span class="badge badge-danger">❌ Invalide</span>'}</td>
-                        <td><input type="number" id="price_${sub.id}" placeholder="Prix (coins)" class="modal-input" style="width: 100px; padding: 6px;" value="100"></td>
-                        <td>${actions}</td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-        }
-
-        async function approveBot(submissionId) {
-            const priceWeekly = document.getElementById(`price_${submissionId}`).value;
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Approuver le bot';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir approuver ce bot ? Il apparaîtra sur la marketplace.';
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-success';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                showToast('info', 'Approbation en cours...');
-                try {
-                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ price_weekly: parseInt(priceWeekly) || 100 })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast('success', 'Bot approuvé avec succès !');
-                        loadBotSubmissions();
-                    } else {
-                        showToast('error', data.error || 'Erreur');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                }
-            };
-            openModal('confirmModal');
-        }
-
-        async function rejectBot(submissionId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Rejeter le bot';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir rejeter ce bot ? L\'utilisateur recevra un email.';
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-danger';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                showToast('info', 'Traitement en cours...');
-                try {
-                    const res = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ reason: 'Non conforme aux règles' })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast('success', 'Bot rejeté');
-                        loadBotSubmissions();
-                    } else {
-                        showToast('error', data.error || 'Erreur');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur réseau');
-                }
-            };
-            openModal('confirmModal');
-        }
-
-        function viewBotSubmission(submissionId) {
-            const submission = allBotSubmissions.find(s => s.id === submissionId);
-            if (!submission) return;
-            const detailsDiv = document.getElementById('transactionDetails');
-            detailsDiv.innerHTML = `
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Nom du bot</span>
-                    <span class="modal-info-value">${submission.bot_name}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Repository</span>
-                    <span class="modal-info-value"><a href="${submission.repo_url}" target="_blank" style="color: var(--primary);">${submission.repo_url}</a></span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Soumis par</span>
-                    <span class="modal-info-value">${submission.profiles?.username} (${submission.profiles?.email})</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Date de soumission</span>
-                    <span class="modal-info-value">${formatDateCameroon(submission.created_at)}</span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Statut</span>
-                    <span class="modal-info-value"><span class="badge ${submission.status === 'pending' ? 'badge-warning' : (submission.status === 'approved' ? 'badge-success' : 'badge-danger')}">${submission.status}</span></span>
-                </div>
-                <div class="modal-info-item">
-                    <span class="modal-info-label">Kh.json</span>
-                    <span class="modal-info-value"><pre style="background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.7rem;">${JSON.stringify(submission.kh_json, null, 2)}</pre></span>
-                </div>
-            `;
-            openModal('transactionModal');
-        }
-
-        // ===== HEROKU ACCOUNTS FUNCTIONS =====
-        async function loadHerokuAccounts() {
-            try {
-                const res = await fetch('/api/admin/heroku/accounts', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    allHerokuAccounts = data.accounts || [];
-                    filteredHerokuAccounts = [...allHerokuAccounts];
-                    document.getElementById('herokuAccountsCount').textContent = allHerokuAccounts.length;
-                    updateHerokuStats();
-                    displayHerokuAccounts();
-                } else {
-                    showToast('error', 'Erreur chargement comptes Heroku');
-                }
-            } catch (error) {
-                console.error('Erreur chargement Heroku:', error);
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        function updateHerokuStats() {
-            const total = allHerokuAccounts.length;
-            const active = allHerokuAccounts.filter(a => a.is_active).length;
-            const totalCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.max_bots || 0), 0);
-            const usedCapacity = allHerokuAccounts.reduce((sum, a) => sum + (a.current_bots || 0), 0);
-            const availableCapacity = totalCapacity - usedCapacity;
-            document.getElementById('herokuTotalAccounts').textContent = total;
-            document.getElementById('herokuActiveAccounts').textContent = active;
-            document.getElementById('herokuTotalCapacity').textContent = totalCapacity;
-            document.getElementById('herokuAvailableCapacity').textContent = availableCapacity;
-        }
-
-        function filterHerokuAccounts() {
-            const search = document.getElementById('herokuSearch').value.toLowerCase();
-            const filter = document.getElementById('herokuFilter').value;
-            filteredHerokuAccounts = allHerokuAccounts.filter(acc => {
-                const matchesSearch = (acc.email?.toLowerCase() || '').includes(search);
-                if (!matchesSearch) return false;
-                if (filter === 'active') return acc.is_active === true;
-                if (filter === 'inactive') return acc.is_active === false;
-                return true;
-            });
-            displayHerokuAccounts();
-        }
-
-        function displayHerokuAccounts() {
-            const tbody = document.getElementById('herokuAccountsTableBody');
-            if (!filteredHerokuAccounts || filteredHerokuAccounts.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucun compte Heroku trouvé<\/td></tr>';
-                return;
-            }
-            let html = '';
-            filteredHerokuAccounts.forEach(acc => {
-                const statusBadge = acc.is_active ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-danger">Inactif</span>';
-                const lastUsed = acc.last_used_at ? formatDateCameroon(acc.last_used_at) : 'Jamais';
-                html += `
-                    <tr>
-                        <td><code>${acc.id.substring(0, 8)}...</code></td>
-                        <td><strong>${acc.email}</strong></td>
-                        <td><input type="password" value="${acc.api_key.substring(0, 20)}..." readonly style="background: transparent; border: none; color: var(--text-secondary); font-family: monospace;" size="25"></td>
-                        <td>${acc.max_bots || 0}</td>
-                        <td>${acc.current_bots || 0} / ${acc.max_bots || 0} (${Math.round(((acc.current_bots || 0) / (acc.max_bots || 1)) * 100)}%)</td>
-                        <td>${statusBadge}</td>
-                        <td>${lastUsed}</td>
-                        <td>
-                            <div class="action-group">
-                                <button class="action-btn edit" title="Modifier" onclick="editHerokuAccount('${acc.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn delete" title="Supprimer" onclick="deleteHerokuAccount('${acc.id}')"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-        }
-
-        function showAddHerokuAccountModal() {
-            document.getElementById('herokuEmail').value = '';
-            document.getElementById('herokuApiKey').value = '';
-            document.getElementById('herokuMaxBots').value = '50';
-            openModal('addHerokuAccountModal');
-        }
-
-        async function addHerokuAccount() {
-            const email = document.getElementById('herokuEmail').value.trim();
-            const apiKey = document.getElementById('herokuApiKey').value.trim();
-            const maxBots = parseInt(document.getElementById('herokuMaxBots').value) || 50;
-            if (!email || !apiKey) {
-                showToast('error', 'Email et API Key requis');
-                return;
-            }
-            showToast('info', 'Ajout en cours...');
-            try {
-                const res = await fetch('/api/admin/heroku/accounts', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, api_key: apiKey, max_bots: maxBots })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Compte Heroku ajouté avec succès');
-                    closeModal('addHerokuAccountModal');
-                    loadHerokuAccounts();
-                } else {
-                    showToast('error', data.error || 'Erreur lors de l\'ajout');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        function editHerokuAccount(accountId) {
-            const account = allHerokuAccounts.find(a => a.id === accountId);
-            if (!account) return;
-            currentHerokuAccountId = accountId;
-            document.getElementById('editHerokuEmail').textContent = account.email;
-            document.getElementById('editHerokuMaxBots').value = account.max_bots || 50;
-            document.getElementById('editHerokuStatus').value = account.is_active ? 'true' : 'false';
-            const deleteBtn = document.getElementById('deleteHerokuAccountBtn');
-            deleteBtn.onclick = () => deleteHerokuAccount(accountId);
-            openModal('editHerokuAccountModal');
-        }
-
-        async function saveHerokuAccountChanges() {
-            const maxBots = parseInt(document.getElementById('editHerokuMaxBots').value) || 50;
-            const isActive = document.getElementById('editHerokuStatus').value === 'true';
-            try {
-                const res = await fetch(`/api/admin/heroku/accounts/${currentHerokuAccountId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ max_bots: maxBots, is_active: isActive })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('success', 'Compte Heroku modifié');
-                    closeModal('editHerokuAccountModal');
-                    loadHerokuAccounts();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur réseau');
-            }
-        }
-
-        async function deleteHerokuAccount(accountId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Supprimer compte Heroku';
-            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.';
-            const confirmBtn = document.getElementById('confirmActionBtn');
-            confirmBtn.className = 'btn btn-danger';
-            confirmBtn.onclick = async () => {
-                closeModal('confirmModal');
-                showToast('info', 'Suppression...');
-                try {
-                    const res = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast('success', 'Compte Heroku supprimé');
-                        if (currentHerokuAccountId === accountId) closeModal('editHerokuAccountModal');
-                        loadHerokuAccounts();
-                    } else {
-                        showToast('error', data.error || 'Erreur');
                     }
                 } catch (error) {
                     showToast('error', 'Erreur réseau');
@@ -5524,6 +6338,8 @@
             if (document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions();
             if (document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions();
             if (document.getElementById('tab-bot-submissions').classList.contains('active')) loadBotSubmissions();
+            if (document.getElementById('tab-bot-templates').classList.contains('active')) loadBotTemplates();
+            if (document.getElementById('tab-deployed-bots').classList.contains('active')) loadDeployedBots();
             if (document.getElementById('tab-heroku').classList.contains('active')) loadHerokuAccounts();
             if (document.getElementById('tab-email').classList.contains('active')) {
                 loadEmailTemplates();
@@ -5616,13 +6432,30 @@
         window.loadCampaignHistory = loadCampaignHistory;
         window.cancelCampaign = cancelCampaign;
         window.cancelCurrentCampaign = cancelCurrentCampaign;
-        // Nouvelles fonctions Bot et Heroku
+        // Nouvelles fonctions Bot, Templates, Deployed Bots et Heroku
         window.loadBotSubmissions = loadBotSubmissions;
         window.filterBotSubmissions = filterBotSubmissions;
         window.clearBotSearch = clearBotSearch;
         window.approveBot = approveBot;
         window.rejectBot = rejectBot;
         window.viewBotSubmission = viewBotSubmission;
+        window.loadBotTemplates = loadBotTemplates;
+        window.filterBotTemplates = filterBotTemplates;
+        window.clearBotTemplateSearch = clearBotTemplateSearch;
+        window.editBotTemplate = editBotTemplate;
+        window.saveBotTemplateChanges = saveBotTemplateChanges;
+        window.syncBotTemplate = syncBotTemplate;
+        window.deleteBotTemplate = deleteBotTemplate;
+        window.loadDeployedBots = loadDeployedBots;
+        window.filterDeployedBots = filterDeployedBots;
+        window.clearDeployedBotSearch = clearDeployedBotSearch;
+        window.editDeployedBot = editDeployedBot;
+        window.saveDeployedBotChanges = saveDeployedBotChanges;
+        window.forceRenewDeployedBot = forceRenewDeployedBot;
+        window.suspendDeployedBot = suspendDeployedBot;
+        window.unsuspendDeployedBot = unsuspendDeployedBot;
+        window.startDeployedBot = startDeployedBot;
+        window.deleteDeployedBot = deleteDeployedBot;
         window.loadHerokuAccounts = loadHerokuAccounts;
         window.filterHerokuAccounts = filterHerokuAccounts;
         window.showAddHerokuAccountModal = showAddHerokuAccountModal;
