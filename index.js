@@ -1,6 +1,6 @@
 // =============================================
 // index.js - KERMHOSTING BACKEND ULTIME - VERSION COMPLÈTE
-// AVEC WEBSOCKET TEMPS RÉEL, STATS, LOGOUT-ALL
+// AVEC WEBSOCKET TEMPS RÉEL, STATS, LOGOUT-ALL, BOTS ET HEROKU
 // =============================================
 
 import express from 'express';
@@ -78,6 +78,7 @@ const SMTP_CONFIG = {
 };
 
 let smtpTransporter = null;
+let lastEmailSentCache = new Map();
 
 function getSmtpTransporter() {
     if (!smtpTransporter && SMTP_CONFIG.auth.user && SMTP_CONFIG.auth.pass) {
@@ -102,6 +103,20 @@ function getSmtpTransporter() {
         });
     }
     return smtpTransporter;
+}
+
+// Fonction pour éviter les doublons d'emails
+function hasEmailBeenSentRecently(email, type, serverId, hours = 24) {
+    const key = `${email}:${type}:${serverId || ''}`;
+    const lastSent = lastEmailSentCache.get(key);
+    if (lastSent) {
+        const hoursSinceLast = (Date.now() - lastSent) / (1000 * 60 * 60);
+        if (hoursSinceLast < hours) {
+            return true;
+        }
+    }
+    lastEmailSentCache.set(key, Date.now());
+    return false;
 }
 
 async function sendMassEmailViaSMTP(to, subject, htmlContent) {
@@ -599,8 +614,6 @@ const maintenanceCheck = async (req, res, next) => {
 
 app.use(maintenanceCheck);
 
-
-
 // =============================================
 // SERVEUR STATIQUE
 // =============================================
@@ -940,7 +953,7 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
     return getBaseEmailTemplate('✅ Confirmation de création de serveur', content);
 }
 
-// 💰 Template de confirmation d'achat de coins (CORRIGÉ)
+// 💰 Template de confirmation d'achat de coins
 function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
     const packName = pack?.name || 'Pack de coins';
     const packCoins = pack?.coins || 0;
@@ -974,7 +987,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
                      <tr>
                         <td style="color: #666;">Bonus offert :</td>
                         <td style="font-weight: bold; color: #27ae60;">+${packBonus} coins</td>
-                       </tr>
+                      </tr>
                     ` : ''}
                      <tr>
                         <td style="color: #666;">Montant payé :</td>
@@ -998,7 +1011,7 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
     return getBaseEmailTemplate('💰 Achat de coins confirmé', content);
 }
 
-// 🎁 Template de notification de parrainage (MODIFIÉ: 10 coins)
+// 🎁 Template de notification de parrainage
 function getReferralNotificationHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Nouveau filleul !</h2>
@@ -1024,7 +1037,7 @@ function getReferralNotificationHtml(username, referrerName, referralLink) {
     return getBaseEmailTemplate('🎁 Nouveau filleul !', content);
 }
 
-// 🎁 Template de bienvenue pour filleul (MODIFIÉ: 5 coins)
+// 🎁 Template de bienvenue pour filleul
 function getReferralWelcomeHtml(username, referrerName, referralLink) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🎁 Bienvenue sur KermHosting !</h2>
@@ -1149,7 +1162,7 @@ function getServerDeletedHtml(username, server) {
     return getBaseEmailTemplate('🗑️ Serveur supprimé', content);
 }
 
-// 🆓 Template pour serveur free - expiration dans 12h (NOUVEAU)
+// 🆓 Template pour serveur free - expiration dans 12h
 function getFreeServerExpiringHtml(username, server) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">⚠️ Votre serveur gratuit expire dans 12h</h2>
@@ -1170,7 +1183,7 @@ function getFreeServerExpiringHtml(username, server) {
     return getBaseEmailTemplate('⚠️ Serveur gratuit - expiration dans 12h', content);
 }
 
-// 🗑️ Template pour serveur free - suppression à 24h (NOUVEAU)
+// 🗑️ Template pour serveur free - suppression à 24h
 function getFreeServerDeletedHtml(username, server) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Votre serveur gratuit a été supprimé</h2>
@@ -1345,7 +1358,7 @@ function getMinipayAdminNotificationHtml(user, pack, transaction, proofUrl) {
 }
 
 // =============================================
-// FONCTIONS PTERODACTYL (CORRIGÉES)
+// FONCTIONS PTERODACTYL
 // =============================================
 
 async function callPterodactylAPI(endpoint, method = 'GET', data = null) {
@@ -1872,7 +1885,7 @@ async function fapshiBalance() {
 }
 
 // =============================================
-// MIDDLEWARE AUTH (MODIFIÉ AVEC LOGOUT-ALL)
+// MIDDLEWARE AUTH
 // =============================================
 
 const authenticateToken = async (req, res, next) => {
@@ -2870,7 +2883,7 @@ async function createDefaultSuperAdmin() {
 }
 
 // =============================================
-// FONCTIONS AUTO-RENOUVELLEMENT (MODIFIÉES - J-1)
+// FONCTIONS AUTO-RENOUVELLEMENT
 // =============================================
 
 async function processAutoRenewBeforeExpiry(server) {
@@ -2894,16 +2907,21 @@ async function processAutoRenewBeforeExpiry(server) {
             return false;
         }
 
-        await supabase
-            .from('auto_renew_logs')
-            .insert([{
-                server_id: server.id,
-                user_id: server.user_id,
-                status: 'attempting_before_expiry',
-                coins_required: coinsNeeded,
-                coins_available: user.coins,
-                created_at: new Date().toISOString()
-            }]);
+        // Vérifier si un email a déjà été envoyé récemment pour ce serveur
+        if (hasEmailBeenSentRecently(user.email, 'auto_renew', server.id, 24)) {
+            console.log(`⏭️ Skip auto-renew email pour ${server.server_name} - déjà envoyé récemment`);
+        } else {
+            await supabase
+                .from('auto_renew_logs')
+                .insert([{
+                    server_id: server.id,
+                    user_id: server.user_id,
+                    status: 'attempting_before_expiry',
+                    coins_required: coinsNeeded,
+                    coins_available: user.coins,
+                    created_at: new Date().toISOString()
+                }]);
+        }
 
         if (user.coins >= coinsNeeded) {
             await supabase
@@ -2982,19 +3000,22 @@ async function processAutoRenewBeforeExpiry(server) {
                     created_at: new Date().toISOString()
                 }]);
 
-            const html = `
-                <h2 style="color: #333; margin: 0 0 15px 0;">🔄 Auto-renouvellement réussi</h2>
-                <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
-                <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été automatiquement renouvelé.</p>
-                <div style="background-color: #f0f7ff; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><strong>📅 Ancienne date d'expiration :</strong> ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
-                    <p style="margin: 5px 0;"><strong>📅 Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
-                    <p style="margin: 5px 0;"><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
-                    <p style="margin: 5px 0;"><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
-                </div>
-                <p style="color: #10B981;">✅ L'auto-renouvellement a été effectué avant l'expiration, votre serveur reste actif sans interruption.</p>
-            `;
-            await sendEmail(user.email, '🔄 Auto-renouvellement réussi', getBaseEmailTemplate('Auto-renouvellement réussi', html));
+            // Vérifier avant d'envoyer l'email
+            if (!hasEmailBeenSentRecently(user.email, 'auto_renew_success', server.id, 1)) {
+                const html = `
+                    <h2 style="color: #333; margin: 0 0 15px 0;">🔄 Auto-renouvellement réussi</h2>
+                    <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
+                    <p style="color: #555; line-height: 1.6;">Votre serveur <strong>"${server.server_name}"</strong> a été automatiquement renouvelé.</p>
+                    <div style="background-color: #f0f7ff; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                        <p style="margin: 5px 0;"><strong>📅 Ancienne date d'expiration :</strong> ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
+                        <p style="margin: 5px 0;"><strong>📅 Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+                        <p style="margin: 5px 0;"><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
+                        <p style="margin: 5px 0;"><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
+                    </div>
+                    <p style="color: #10B981;">✅ L'auto-renouvellement a été effectué avant l'expiration, votre serveur reste actif sans interruption.</p>
+                `;
+                await sendEmail(user.email, '🔄 Auto-renouvellement réussi', getBaseEmailTemplate('Auto-renouvellement réussi', html));
+            }
 
             console.log(`✅ Auto-renouvellement réussi (J-1) pour le serveur ${server.id} (${server.server_name})`);
             return true;
@@ -3031,22 +3052,25 @@ async function processAutoRenewBeforeExpiry(server) {
                     description: `Échec auto-renouvellement (J-1) du serveur "${server.server_name}" : coins insuffisants (besoin: ${coinsNeeded}, disponible: ${user.coins})`
                 }]);
 
-            const html = `
-                <h2 style="color: #333; margin: 0 0 15px 0;">⚠️ Auto-renouvellement échoué</h2>
-                <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
-                <p style="color: #555; line-height: 1.6;">Le serveur <strong>"${server.server_name}"</strong> devait être renouvelé automatiquement, mais vous n'avez pas assez de coins.</p>
-                <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><strong>💰 Coins nécessaires :</strong> ${coinsNeeded} coins</p>
-                    <p style="margin: 5px 0;"><strong>💳 Votre solde :</strong> ${user.coins} coins</p>
-                    <p style="margin: 5px 0;"><strong>⚠️ Coins manquants :</strong> ${missingCoins} coins</p>
-                </div>
-                <p><strong>Action requise :</strong> Pour éviter la suspension de votre serveur, veuillez recharger vos coins avant le <strong>${new Date(server.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
-                <div style="text-align: center; margin: 20px 0;">
-                    <a href="${SITE_CONFIG.url}/buy-coins" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Acheter des coins</a>
-                </div>
-                <p style="color: #666; font-size: 13px;">L'auto-renouvellement a été désactivé pour ce serveur suite à cet échec. Vous pouvez le réactiver manuellement après avoir rechargé vos coins.</p>
-            `;
-            await sendEmail(user.email, '⚠️ Auto-renouvellement échoué - Coins insuffisants', getBaseEmailTemplate('Auto-renouvellement échoué', html));
+            // Vérifier avant d'envoyer l'email
+            if (!hasEmailBeenSentRecently(user.email, 'auto_renew_failed', server.id, 24)) {
+                const html = `
+                    <h2 style="color: #333; margin: 0 0 15px 0;">⚠️ Auto-renouvellement échoué</h2>
+                    <p style="color: #555; line-height: 1.6;">Bonjour ${user.username},</p>
+                    <p style="color: #555; line-height: 1.6;">Le serveur <strong>"${server.server_name}"</strong> devait être renouvelé automatiquement, mais vous n'avez pas assez de coins.</p>
+                    <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 15px; margin: 20px 0;">
+                        <p style="margin: 5px 0;"><strong>💰 Coins nécessaires :</strong> ${coinsNeeded} coins</p>
+                        <p style="margin: 5px 0;"><strong>💳 Votre solde :</strong> ${user.coins} coins</p>
+                        <p style="margin: 5px 0;"><strong>⚠️ Coins manquants :</strong> ${missingCoins} coins</p>
+                    </div>
+                    <p><strong>Action requise :</strong> Pour éviter la suspension de votre serveur, veuillez recharger vos coins avant le <strong>${new Date(server.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <a href="${SITE_CONFIG.url}/buy-coins" style="display: inline-block; background-color: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Acheter des coins</a>
+                    </div>
+                    <p style="color: #666; font-size: 13px;">L'auto-renouvellement a été désactivé pour ce serveur suite à cet échec. Vous pouvez le réactiver manuellement après avoir rechargé vos coins.</p>
+                `;
+                await sendEmail(user.email, '⚠️ Auto-renouvellement échoué - Coins insuffisants', getBaseEmailTemplate('Auto-renouvellement échoué', html));
+            }
 
             console.log(`❌ Auto-renouvellement échoué (J-1) pour le serveur ${server.id}: coins insuffisants`);
             return false;
@@ -3198,7 +3222,7 @@ app.get('/api/servers/:serverId/auto-renew', authenticateToken, async (req, res)
 });
 
 // =============================================
-// ROUTE LOGOUT-ALL (NOUVELLE)
+// ROUTE LOGOUT-ALL
 // =============================================
 
 app.post('/api/user/logout-all', authenticateToken, async (req, res) => {
@@ -3390,7 +3414,7 @@ app.get('/api/servers/:serverId/allocations', authenticateToken, async (req, res
 });
 
 // =============================================
-// NOUVEAU CRON JOB PRINCIPAL - TOUTES LES 15 SECONDES (MODIFIÉ)
+// CRON JOB UNIQUE - TOUTES LES 15 SECONDES
 // =============================================
 setInterval(async () => {
     console.log(`🔄 Vérification des serveurs - ${new Date().toISOString()}`);
@@ -3409,31 +3433,35 @@ setInterval(async () => {
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
         
         if (hoursSinceCreation >= 12 && !server.free_notification_sent) {
-            console.log(`📧 Free server notification: ${server.server_name} (12h)`);
-            await sendEmail(
-                server.profiles.email,
-                '⚠️ Votre serveur gratuit expire dans 12h',
-                getFreeServerExpiringHtml(server.profiles.username, server)
-            );
-            await supabase
-                .from('servers')
-                .update({ free_notification_sent: true })
-                .eq('id', server.id);
+            if (!hasEmailBeenSentRecently(server.profiles.email, 'free_expiring', server.id, 12)) {
+                console.log(`📧 Free server notification: ${server.server_name} (12h)`);
+                await sendEmail(
+                    server.profiles.email,
+                    '⚠️ Votre serveur gratuit expire dans 12h',
+                    getFreeServerExpiringHtml(server.profiles.username, server)
+                );
+                await supabase
+                    .from('servers')
+                    .update({ free_notification_sent: true })
+                    .eq('id', server.id);
+            }
         }
         
         if (hoursSinceCreation >= 24) {
             console.log(`🗑️ Suppression serveur free: ${server.server_name}`);
             await deletePterodactylServer(server.pterodactyl_id);
             await supabase.from('servers').delete().eq('id', server.id);
-            await sendEmail(
-                server.profiles.email,
-                '🗑️ Votre serveur gratuit a été supprimé',
-                getFreeServerDeletedHtml(server.profiles.username, server)
-            );
+            if (!hasEmailBeenSentRecently(server.profiles.email, 'free_deleted', server.id, 24)) {
+                await sendEmail(
+                    server.profiles.email,
+                    '🗑️ Votre serveur gratuit a été supprimé',
+                    getFreeServerDeletedHtml(server.profiles.username, server)
+                );
+            }
         }
     }
     
-    // 2. AUTO-RENOUVELLEMENT (J-1 avant expiration) - MODIFIÉ
+    // 2. AUTO-RENOUVELLEMENT (J-1 avant expiration)
     const oneDayFromNow = new Date();
     oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
     
@@ -3449,7 +3477,6 @@ setInterval(async () => {
     for (const server of serversToAutoRenew || []) {
         const daysLeft = Math.ceil((new Date(server.expires_at) - now) / (1000 * 60 * 60 * 24));
         console.log(`🔄 Auto-renouvellement J-${daysLeft}: ${server.server_name}`);
-        
         await processAutoRenewBeforeExpiry(server);
     }
     
@@ -3468,11 +3495,13 @@ setInterval(async () => {
             .from('servers')
             .update({ status: 'suspended' })
             .eq('id', server.id);
-        await sendEmail(
-            server.profiles.email,
-            '🔴 Votre serveur a été suspendu',
-            getServerSuspendedHtml(server.profiles.username, server)
-        );
+        if (!hasEmailBeenSentRecently(server.profiles.email, 'suspended', server.id, 24)) {
+            await sendEmail(
+                server.profiles.email,
+                '🔴 Votre serveur a été suspendu',
+                getServerSuspendedHtml(server.profiles.username, server)
+            );
+        }
     }
     
     // 4. Suppression définitive après 3 jours (serveurs suspendus)
@@ -3490,11 +3519,13 @@ setInterval(async () => {
         console.log(`🗑️ Suppression définitive: ${server.server_name}`);
         await deletePterodactylServer(server.pterodactyl_id);
         await supabase.from('servers').delete().eq('id', server.id);
-        await sendEmail(
-            server.profiles.email,
-            '🗑️ Votre serveur a été supprimé définitivement',
-            getServerDeletedHtml(server.profiles.username, server)
-        );
+        if (!hasEmailBeenSentRecently(server.profiles.email, 'deleted', server.id, 24)) {
+            await sendEmail(
+                server.profiles.email,
+                '🗑️ Votre serveur a été supprimé définitivement',
+                getServerDeletedHtml(server.profiles.username, server)
+            );
+        }
     }
     
     // 5. Notification J-3 pour serveurs actifs
@@ -3512,19 +3543,21 @@ setInterval(async () => {
 
     for (const server of expiringSoon || []) {
         const daysLeft = Math.ceil((new Date(server.expires_at) - now) / (1000 * 60 * 60 * 24));
-        console.log(`📧 Envoi notification J-${daysLeft}: ${server.server_name}`);
-        await sendEmail(
-            server.profiles.email,
-            '⚠️ Votre serveur expire bientôt',
-            getServerExpiringHtml(server.profiles.username, server, daysLeft)
-        );
-        await supabase
-            .from('servers')
-            .update({ warning_sent: true })
-            .eq('id', server.id);
+        if (!hasEmailBeenSentRecently(server.profiles.email, 'expiring_soon', server.id, 72)) {
+            console.log(`📧 Envoi notification J-${daysLeft}: ${server.server_name}`);
+            await sendEmail(
+                server.profiles.email,
+                '⚠️ Votre serveur expire bientôt',
+                getServerExpiringHtml(server.profiles.username, server, daysLeft)
+            );
+            await supabase
+                .from('servers')
+                .update({ warning_sent: true })
+                .eq('id', server.id);
+        }
     }
     
-}, 15000); // MODIFIÉ: 15 secondes au lieu de 30
+}, 15000);
 
 // =============================================
 // WEBSOCKET AMÉLIORÉ AVEC STATS TEMPS RÉEL
@@ -3755,7 +3788,7 @@ wss.on('connection', (ws, req) => {
 });
 
 // =============================================
-// ROUTES AUTH (MODIFIÉES POUR COINS)
+// ROUTES AUTH
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -3877,19 +3910,23 @@ app.post('/api/register', async (req, res) => {
             
             if (referrerEmail) {
                 const referrerLink = `${SITE_CONFIG.url}/register?ref=${referrerEmail.referral_code}`;
-                await sendEmail(
-                    referrerEmail.email,
-                    '🎁 Nouveau filleul sur KermHosting',
-                    getReferralNotificationHtml(referrerName, username, referrerLink)
-                );
+                if (!hasEmailBeenSentRecently(referrerEmail.email, 'referral_notification', null, 1)) {
+                    await sendEmail(
+                        referrerEmail.email,
+                        '🎁 Nouveau filleul sur KermHosting',
+                        getReferralNotificationHtml(referrerName, username, referrerLink)
+                    );
+                }
             }
 
             const userLink = `${SITE_CONFIG.url}/register?ref=${newUser.referral_code}`;
-            await sendEmail(
-                email,
-                '🎁 Bienvenue sur KermHosting',
-                getReferralWelcomeHtml(username, referrerName, userLink)
-            );
+            if (!hasEmailBeenSentRecently(email, 'referral_welcome', null, 1)) {
+                await sendEmail(
+                    email,
+                    '🎁 Bienvenue sur KermHosting',
+                    getReferralWelcomeHtml(username, referrerName, userLink)
+                );
+            }
         }
 
         res.json({ 
@@ -5726,7 +5763,7 @@ app.get('/api/referral/info', authenticateToken, async (req, res) => {
 });
 
 // =============================================
-// ROUTES RÉCOMPENSE QUOTIDIENNE (MODIFIÉE: 1 coin)
+// ROUTES RÉCOMPENSE QUOTIDIENNE
 // =============================================
 
 app.post('/api/daily-reward', authenticateToken, async (req, res) => {
@@ -6363,11 +6400,13 @@ app.post('/api/admin/users/:userId/ban', authenticateToken, requireAdmin, async 
             .eq('id', userId);
 
         if (banned && user) {
-            await sendEmail(
-                user.email,
-                '🔒 Votre compte KermHosting a été suspendu',
-                getAccountSuspendedHtml(user.username, 'Non-respect des conditions d\'utilisation')
-            );
+            if (!hasEmailBeenSentRecently(user.email, 'account_banned', userId, 24)) {
+                await sendEmail(
+                    user.email,
+                    '🔒 Votre compte KermHosting a été suspendu',
+                    getAccountSuspendedHtml(user.username, 'Non-respect des conditions d\'utilisation')
+                );
+            }
         }
 
         await supabase
@@ -6530,11 +6569,13 @@ app.delete('/api/admin/users/:userId', authenticateToken, requireAdmin, async (r
         if (error) throw error;
 
         if (user) {
-            await sendEmail(
-                user.email,
-                '🗑️ Votre compte KermHosting a été supprimé',
-                getAccountDeletedHtml(user.username)
-            );
+            if (!hasEmailBeenSentRecently(user.email, 'account_deleted', userId, 24)) {
+                await sendEmail(
+                    user.email,
+                    '🗑️ Votre compte KermHosting a été supprimé',
+                    getAccountDeletedHtml(user.username)
+                );
+            }
         }
 
         await supabase
@@ -7530,11 +7571,13 @@ app.post('/api/admin/servers/:serverId/suspend', authenticateToken, requireAdmin
             }]);
 
         if (server.profiles && server.profiles.email) {
-            await sendEmail(
-                server.profiles.email,
-                '🔴 Votre serveur a été suspendu par un administrateur',
-                getServerSuspendedHtml(server.profiles.username, server)
-            );
+            if (!hasEmailBeenSentRecently(server.profiles.email, 'manual_suspend', serverId, 24)) {
+                await sendEmail(
+                    server.profiles.email,
+                    '🔴 Votre serveur a été suspendu par un administrateur',
+                    getServerSuspendedHtml(server.profiles.username, server)
+                );
+            }
         }
 
         res.json({ 
@@ -7631,6 +7674,1525 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
             success: false, 
             error: 'Erreur serveur' 
         });
+    }
+});
+
+// =============================================
+// ROUTES ADMIN - GESTION DES BOTS ET HEROKU
+// =============================================
+
+async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
+    try {
+        const url = `https://api.heroku.com${endpoint}`;
+        const options = {
+            method,
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Accept': 'application/vnd.heroku+json; version=3',
+                'Content-Type': 'application/json'
+            }
+        };
+        if (data) options.data = data;
+        
+        const response = await axios(url, options);
+        return response.data;
+    } catch (error) {
+        console.error('❌ Erreur Heroku API:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+async function getAvailableHerokuAccount() {
+    try {
+        const { data: accounts, error } = await supabase
+            .from('heroku_accounts')
+            .select('*')
+            .eq('is_active', true)
+            .lt('current_bots', supabase.raw('max_bots'))
+            .order('last_used_at', { ascending: true, nullsFirst: true });
+        
+        if (error) throw error;
+        
+        if (!accounts || accounts.length === 0) {
+            return null;
+        }
+        
+        const selectedAccount = accounts[0];
+        
+        await supabase
+            .from('heroku_accounts')
+            .update({ 
+                last_used_at: new Date().toISOString(),
+                current_bots: supabase.raw('current_bots + 1')
+            })
+            .eq('id', selectedAccount.id);
+        
+        return selectedAccount;
+    } catch (error) {
+        console.error('❌ Erreur récupération compte Heroku:', error);
+        return null;
+    }
+}
+
+async function releaseHerokuAccount(accountId) {
+    try {
+        await supabase
+            .from('heroku_accounts')
+            .update({ current_bots: supabase.raw('current_bots - 1') })
+            .eq('id', accountId);
+    } catch (error) {
+        console.error('❌ Erreur libération compte Heroku:', error);
+    }
+}
+
+async function createHerokuApp(apiKey, appName, repoUrl) {
+    try {
+        const app = await callHerokuAPI(apiKey, '/apps', 'POST', {
+            name: appName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+            region: 'eu'
+        });
+        
+        await callHerokuAPI(apiKey, `/apps/${app.name}/buildpack-installations`, 'PUT', {
+            updates: [{ buildpack: 'heroku/nodejs' }]
+        });
+        
+        await callHerokuAPI(apiKey, `/apps/${app.name}/github`, 'PATCH', {
+            repo: repoUrl.replace('https://github.com/', ''),
+            automatic_deploys: false
+        });
+        
+        return app;
+    } catch (error) {
+        console.error('❌ Erreur création app Heroku:', error);
+        throw error;
+    }
+}
+
+async function setHerokuEnvVars(apiKey, appName, envVars) {
+    try {
+        const configVars = {};
+        for (const [key, value] of Object.entries(envVars)) {
+            if (value !== undefined && value !== null) {
+                configVars[key] = value;
+            }
+        }
+        
+        await callHerokuAPI(apiKey, `/apps/${appName}/config-vars`, 'PATCH', configVars);
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur configuration env Heroku:', error);
+        throw error;
+    }
+}
+
+async function deployHerokuApp(apiKey, appName, branch = 'main') {
+    try {
+        const result = await callHerokuAPI(apiKey, `/apps/${appName}/github`, 'POST', {
+            source_blob: { branch }
+        });
+        return result;
+    } catch (error) {
+        console.error('❌ Erreur déploiement Heroku:', error);
+        throw error;
+    }
+}
+
+async function restartHerokuDynos(apiKey, appName) {
+    try {
+        await callHerokuAPI(apiKey, `/apps/${appName}/dynos`, 'DELETE');
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur redémarrage Heroku:', error);
+        return false;
+    }
+}
+
+async function deleteHerokuApp(apiKey, appName) {
+    try {
+        await callHerokuAPI(apiKey, `/apps/${appName}`, 'DELETE');
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur suppression app Heroku:', error);
+        return false;
+    }
+}
+
+async function getHerokuAppLogs(apiKey, appName, lines = 100) {
+    try {
+        const logs = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
+            lines,
+            tail: false
+        });
+        return logs;
+    } catch (error) {
+        console.error('❌ Erreur récupération logs:', error);
+        return null;
+    }
+}
+
+async function validateKhJsonFromRepo(repoUrl) {
+    try {
+        let cleanRepo = repoUrl.replace('https://github.com/', '').replace('.git', '');
+        const rawKhUrl = `https://raw.githubusercontent.com/${cleanRepo}/main/kh.json`;
+        
+        console.log(`🔍 Vérification kh.json: ${rawKhUrl}`);
+        
+        const response = await axios.get(rawKhUrl, { timeout: 10000 });
+        
+        if (response.status !== 200) {
+            return { valid: false, error: 'kh.json non trouvé à la racine du repo' };
+        }
+        
+        const khJson = response.data;
+        
+        if (!khJson['bot-name']) {
+            return { valid: false, error: 'kh.json: "bot-name" requis' };
+        }
+        if (!khJson.env || typeof khJson.env !== 'object') {
+            return { valid: false, error: 'kh.json: "env" objet requis' };
+        }
+        
+        return { valid: true, khJson };
+        
+    } catch (error) {
+        console.error('❌ Erreur validation kh.json:', error.message);
+        return { valid: false, error: 'Impossible de récupérer kh.json' };
+    }
+}
+
+async function processBotAutoRenew(bot) {
+    try {
+        const template = await supabase
+            .from('bot_templates')
+            .select('price_weekly')
+            .eq('id', bot.template_id)
+            .single();
+        
+        let coinsNeeded = template.data?.price_weekly || 100;
+        if (bot.duration_mode === 'monthly') {
+            coinsNeeded *= 4;
+        }
+        
+        const { data: user, error: userError } = await supabase
+            .from('profiles')
+            .select('coins, username, email')
+            .eq('id', bot.user_id)
+            .single();
+        
+        if (userError || !user) return false;
+        
+        if (hasEmailBeenSentRecently(user.email, 'bot_auto_renew', bot.id, 24)) {
+            console.log(`⏭️ Skip auto-renew email pour bot ${bot.id}`);
+            return false;
+        }
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: bot.id,
+                action: 'auto_renew_attempt',
+                status: 'pending',
+                message: `Tentative auto-renouvellement (${bot.duration_mode}) - besoin: ${coinsNeeded} coins`
+            }]);
+        
+        if (user.coins >= coinsNeeded) {
+            await supabase
+                .from('profiles')
+                .update({ coins: user.coins - coinsNeeded })
+                .eq('id', bot.user_id);
+            
+            const currentExpiry = new Date(bot.expires_at);
+            const now = new Date();
+            let newExpiry;
+            
+            if (currentExpiry < now) {
+                newExpiry = new Date();
+            } else {
+                newExpiry = new Date(currentExpiry);
+            }
+            
+            const daysToAdd = bot.duration_mode === 'monthly' ? 28 : 7;
+            newExpiry.setDate(newExpiry.getDate() + daysToAdd);
+            
+            await supabase
+                .from('user_bots')
+                .update({
+                    expires_at: newExpiry.toISOString(),
+                    warning_sent: false,
+                    auto_renew_attempts: 0,
+                    auto_renew_error: null,
+                    status: 'active'
+                })
+                .eq('id', bot.id);
+            
+            const transactionId = generateTransactionId();
+            await supabase
+                .from('transactions')
+                .insert([{
+                    id: transactionId,
+                    user_id: bot.user_id,
+                    type: 'bot_renewal',
+                    amount: coinsNeeded,
+                    currency: 'COINS',
+                    status: 'completed',
+                    completed_at: new Date().toISOString(),
+                    metadata: { 
+                        bot_id: bot.id,
+                        bot_name: bot.heroku_app_name,
+                        duration_mode: bot.duration_mode,
+                        auto_renew: true
+                    }
+                }]);
+            
+            await supabase
+                .from('bot_deployment_logs')
+                .insert([{
+                    bot_id: bot.id,
+                    action: 'auto_renew_success',
+                    status: 'success',
+                    message: `Auto-renouvellement réussi (${coinsNeeded} coins) - nouvelle expiration: ${newExpiry.toLocaleDateString('fr-FR')}`
+                }]);
+            
+            const html = `
+                <h2>🔄 Auto-renouvellement réussi</h2>
+                <p>Bonjour ${user.username},</p>
+                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été automatiquement renouvelé.</p>
+                <div style="background: #f0f7ff; padding: 15px; border-radius: 8px;">
+                    <p><strong>📅 Nouvelle expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+                    <p><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
+                    <p><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
+                </div>
+            `;
+            await sendEmail(user.email, '🔄 Auto-renouvellement bot réussi', getBaseEmailTemplate('Auto-renouvellement', html));
+            
+            return true;
+        } else {
+            const missingCoins = coinsNeeded - user.coins;
+            
+            await supabase
+                .from('user_bots')
+                .update({
+                    auto_renew_error: `Auto-renouvellement échoué: ${missingCoins} coins manquants`,
+                    auto_renew: false
+                })
+                .eq('id', bot.id);
+            
+            await supabase
+                .from('bot_deployment_logs')
+                .insert([{
+                    bot_id: bot.id,
+                    action: 'auto_renew_failed',
+                    status: 'failed',
+                    message: `Coins insuffisants: besoin ${coinsNeeded}, disponible ${user.coins}`
+                }]);
+            
+            const html = `
+                <h2>⚠️ Auto-renouvellement échoué</h2>
+                <p>Bonjour ${user.username},</p>
+                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> devait être renouvelé, mais vous n'avez pas assez de coins.</p>
+                <div style="background: #fff9e6; padding: 15px; border-left: 4px solid #fbbf24;">
+                    <p><strong>💰 Coins nécessaires :</strong> ${coinsNeeded}</p>
+                    <p><strong>💳 Votre solde :</strong> ${user.coins}</p>
+                    <p><strong>⚠️ Manque :</strong> ${missingCoins} coins</p>
+                </div>
+                <p>Pour éviter la suspension de votre bot, rechargez vos coins avant le <strong>${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
+            `;
+            await sendEmail(user.email, '⚠️ Auto-renouvellement bot échoué', getBaseEmailTemplate('Auto-renouvellement échoué', html));
+            
+            return false;
+        }
+    } catch (error) {
+        console.error(`❌ Erreur auto-renew bot ${bot.id}:`, error);
+        return false;
+    }
+}
+
+app.get('/api/bots/templates', authenticateToken, async (req, res) => {
+    try {
+        const { data: templates, error } = await supabase
+            .from('bot_templates')
+            .select('*')
+            .eq('status', 'approved')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, templates: templates || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération templates:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/bots/templates/:templateId', authenticateToken, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        
+        const { data: template, error } = await supabase
+            .from('bot_templates')
+            .select('*')
+            .eq('id', templateId)
+            .single();
+        
+        if (error || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+        
+        res.json({ success: true, template });
+    } catch (error) {
+        console.error('❌ Erreur récupération template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/bots/submit', authenticateToken, async (req, res) => {
+    try {
+        const { bot_name, repo_url } = req.body;
+        
+        if (!bot_name || !repo_url) {
+            return res.status(400).json({ success: false, error: 'Nom et repo requis' });
+        }
+        
+        const validation = await validateKhJsonFromRepo(repo_url);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ 
+                success: false, 
+                error: validation.error,
+                guide: 'Ajoutez un fichier kh.json à la racine de votre repo. Format requis: { "bot-name": "...", "env": {...} }'
+            });
+        }
+        
+        const { data: existing } = await supabase
+            .from('bot_submissions')
+            .select('id')
+            .eq('repo_url', repo_url)
+            .eq('user_id', req.user.id)
+            .in('status', ['pending', 'approved'])
+            .maybeSingle();
+        
+        if (existing) {
+            return res.status(400).json({ success: false, error: 'Ce bot a déjà été soumis' });
+        }
+        
+        const { data: submission, error } = await supabase
+            .from('bot_submissions')
+            .insert([{
+                user_id: req.user.id,
+                bot_name: bot_name,
+                repo_url: repo_url,
+                kh_json: validation.khJson,
+                status: 'pending'
+            }])
+            .select()
+            .single();
+        
+        if (error) throw error;
+        
+        const adminHtml = `
+            <h2>🤖 Nouvelle demande d'ajout de bot</h2>
+            <p><strong>Bot :</strong> ${bot_name}</p>
+            <p><strong>Repo :</strong> ${repo_url}</p>
+            <p><strong>Soumis par :</strong> ${req.user.username} (${req.user.email})</p>
+            <p>Accédez au panel admin pour approuver ou refuser cette demande.</p>
+            <a href="${SITE_CONFIG.url}/admin">Traiter la demande</a>
+        `;
+        await sendEmail('bookmakerp@gmail.com', '🤖 Nouvelle demande de bot', getBaseEmailTemplate('Nouvelle demande bot', adminHtml));
+        
+        res.json({ 
+            success: true, 
+            message: 'Bot soumis avec succès. En attente d\'approbation par un administrateur.',
+            submission_id: submission.id
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur soumission bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/bots/my-submissions', authenticateToken, async (req, res) => {
+    try {
+        const { data: submissions, error } = await supabase
+            .from('bot_submissions')
+            .select('*')
+            .eq('user_id', req.user.id)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, submissions: submissions || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération soumissions:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/bots/check-app-name', authenticateToken, async (req, res) => {
+    try {
+        const { app_name } = req.body;
+        
+        if (!app_name || app_name.length < 3 || app_name.length > 30) {
+            return res.json({ success: true, available: false, message: 'Nom doit contenir 3-30 caractères' });
+        }
+        
+        if (!/^[a-z0-9-]+$/.test(app_name)) {
+            return res.json({ success: true, available: false, message: 'Caractères autorisés: a-z, 0-9, -' });
+        }
+        
+        const { data: existing } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name')
+            .eq('heroku_app_name', app_name.toLowerCase())
+            .maybeSingle();
+        
+        if (existing) {
+            return res.json({ success: true, available: false, message: 'Nom déjà utilisé' });
+        }
+        
+        const suggestions = [];
+        for (let i = 1; i <= 3; i++) {
+            suggestions.push(`${app_name}-${Math.floor(Math.random() * 1000)}`);
+        }
+        
+        res.json({ success: true, available: true, suggestions });
+        
+    } catch (error) {
+        console.error('❌ Erreur vérification nom:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async (req, res) => {
+    try {
+        const { template_id, app_name, duration_mode, env_vars } = req.body;
+        
+        const { data: template, error: templateError } = await supabase
+            .from('bot_templates')
+            .select('*')
+            .eq('id', template_id)
+            .eq('status', 'approved')
+            .single();
+        
+        if (templateError || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé ou non approuvé' });
+        }
+        
+        if (req.user.total_bot_deploys >= req.user.bot_quota) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Quota atteint (max ${req.user.bot_quota} bots). Contactez le support pour augmenter votre quota.` 
+            });
+        }
+        
+        let coinsNeeded = template.price_weekly;
+        let daysToAdd = 7;
+        if (duration_mode === 'monthly') {
+            coinsNeeded *= 4;
+            daysToAdd = 28;
+        }
+        
+        if (req.user.coins < coinsNeeded) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Coins insuffisants. Besoin de ${coinsNeeded} coins.` 
+            });
+        }
+        
+        const herokuAccount = await getAvailableHerokuAccount();
+        if (!herokuAccount) {
+            return res.status(503).json({ 
+                success: false, 
+                error: 'Aucun serveur disponible pour le déploiement. Réessayez plus tard.' 
+            });
+        }
+        
+        const cleanAppName = app_name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + daysToAdd);
+        
+        const { data: bot, error: botError } = await supabase
+            .from('user_bots')
+            .insert([{
+                user_id: req.user.id,
+                template_id: template_id,
+                heroku_app_name: cleanAppName,
+                heroku_account_id: herokuAccount.id,
+                status: 'deploying',
+                duration_mode: duration_mode,
+                expires_at: expiresAt.toISOString(),
+                env_vars: env_vars || template.kh_json.env,
+                created_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+        
+        if (botError) {
+            await releaseHerokuAccount(herokuAccount.id);
+            throw botError;
+        }
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: bot.id,
+                action: 'deploy_start',
+                status: 'pending',
+                message: 'Déploiement en cours...'
+            }]);
+        
+        deployBotAsync(bot.id, template, herokuAccount, cleanAppName, env_vars, coinsNeeded);
+        
+        res.json({ 
+            success: true, 
+            message: 'Déploiement initié. Vous serez notifié par email une fois terminé.',
+            bot_id: bot.id,
+            status: 'deploying'
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur déploiement bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur lors du déploiement' });
+    }
+});
+
+async function deployBotAsync(botId, template, herokuAccount, appName, envVars, coinsNeeded) {
+    try {
+        console.log(`🚀 Déploiement bot ${botId} sur Heroku avec compte ${herokuAccount.email}`);
+        
+        const { data: botInfo } = await supabase
+            .from('user_bots')
+            .select('user_id, expires_at')
+            .eq('id', botId)
+            .single();
+        
+        const userId = botInfo?.user_id;
+        const expiresAt = botInfo?.expires_at;
+        
+        const herokuApp = await createHerokuApp(herokuAccount.api_key, appName, template.repo_url);
+        
+        await setHerokuEnvVars(herokuAccount.api_key, herokuApp.name, envVars);
+        
+        await deployHerokuApp(herokuAccount.api_key, herokuApp.name);
+        
+        await supabase
+            .from('user_bots')
+            .update({
+                heroku_app_id: herokuApp.id,
+                status: 'active',
+                last_deploy_at: new Date().toISOString()
+            })
+            .eq('id', botId);
+        
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('coins, username, email')
+            .eq('id', userId)
+            .single();
+        
+        if (user) {
+            await supabase
+                .from('profiles')
+                .update({ 
+                    coins: user.coins - coinsNeeded,
+                    total_bot_deploys: supabase.raw('total_bot_deploys + 1')
+                })
+                .eq('id', userId);
+            
+            await supabase
+                .from('transactions')
+                .insert([{
+                    id: generateTransactionId(),
+                    user_id: userId,
+                    type: 'bot_deployment',
+                    amount: coinsNeeded,
+                    currency: 'COINS',
+                    status: 'completed',
+                    completed_at: new Date().toISOString(),
+                    metadata: { bot_id: botId, bot_name: appName, template_name: template.name }
+                }]);
+        }
+        
+        if (template.user_id && template.user_id !== userId) {
+            const { data: creator } = await supabase
+                .from('profiles')
+                .select('coins')
+                .eq('id', template.user_id)
+                .single();
+            
+            if (creator) {
+                await supabase
+                    .from('profiles')
+                    .update({ coins: creator.coins + 5 })
+                    .eq('id', template.user_id);
+                
+                await supabase
+                    .from('bot_creator_rewards')
+                    .insert([{
+                        creator_id: template.user_id,
+                        deployer_id: userId,
+                        bot_id: botId,
+                        template_id: template.id,
+                        coins_earned: 5
+                    }]);
+                
+                const { data: creatorProfile } = await supabase
+                    .from('profiles')
+                    .select('email, username')
+                    .eq('id', template.user_id)
+                    .single();
+                
+                if (creatorProfile && !hasEmailBeenSentRecently(creatorProfile.email, 'bot_creator_reward', botId, 24)) {
+                    const rewardHtml = `
+                        <h2>🎉 Quelqu'un a déployé votre bot !</h2>
+                        <p>Bonjour ${creatorProfile.username},</p>
+                        <p>Votre bot <strong>"${template.name}"</strong> a été déployé par un autre utilisateur.</p>
+                        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                            <p><strong>💰 Récompense :</strong> +5 coins</p>
+                        </div>
+                    `;
+                    await sendEmail(creatorProfile.email, '🎉 Votre bot a été déployé !', getBaseEmailTemplate('Récompense créateur', rewardHtml));
+                }
+            }
+        }
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'deploy_success',
+                status: 'success',
+                message: `Déploiement réussi ! Bot actif sur Heroku (${herokuApp.web_url || 'https://' + herokuApp.name + '.herokuapp.com'})`
+            }]);
+        
+        if (user?.email && !hasEmailBeenSentRecently(user.email, 'bot_deploy_success', botId, 1)) {
+            const successHtml = `
+                <h2>✅ Votre bot a été déployé avec succès !</h2>
+                <p>Bonjour ${user?.username || 'utilisateur'},</p>
+                <p>Votre bot <strong>"${appName}"</strong> est maintenant actif.</p>
+                <div style="background: #f0f7ff; padding: 15px; border-radius: 8px;">
+                    <p><strong>📅 Expiration :</strong> ${new Date(expiresAt).toLocaleDateString('fr-FR')}</p>
+                    <p><strong>🔗 URL :</strong> https://${herokuApp.name}.herokuapp.com</p>
+                </div>
+                <p>Accédez à l'onglet "Mes bots" pour voir les logs et gérer votre bot.</p>
+            `;
+            await sendEmail(user.email, '✅ Votre bot WhatsApp est déployé !', getBaseEmailTemplate('Déploiement réussi', successHtml));
+        }
+        
+    } catch (error) {
+        console.error(`❌ Erreur déploiement async bot ${botId}:`, error);
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'failed' })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'deploy_failed',
+                status: 'failed',
+                message: `Erreur: ${error.message}`
+            }]);
+        
+        if (herokuAccount?.id) {
+            await releaseHerokuAccount(herokuAccount.id);
+        }
+    }
+}
+
+app.get('/api/bots/my-bots', authenticateToken, async (req, res) => {
+    try {
+        const { data: bots, error } = await supabase
+            .from('user_bots')
+            .select(`
+                *,
+                bot_templates!user_bots_template_id_fkey (
+                    name,
+                    logo_url,
+                    kh_json
+                )
+            `)
+            .eq('user_id', req.user.id)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, bots: bots || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération bots:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/bots/my-bots/:botId', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('*, bot_templates(*)')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        res.json({ success: true, bot });
+    } catch (error) {
+        console.error('❌ Erreur récupération bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/bots/my-bots/:botId/logs', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { lines = 100 } = req.query;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.status !== 'active') {
+            return res.json({ 
+                success: true, 
+                logs: [{ message: `Bot ${bot.status} - logs non disponibles`, timestamp: new Date().toISOString() }] 
+            });
+        }
+        
+        const { data: herokuAccount } = await supabase
+            .from('heroku_accounts')
+            .select('api_key')
+            .eq('id', bot.heroku_account_id)
+            .single();
+        
+        if (!herokuAccount) {
+            return res.json({ 
+                success: true, 
+                logs: [{ message: 'Impossible de récupérer les logs', timestamp: new Date().toISOString() }] 
+            });
+        }
+        
+        try {
+            const logs = await getHerokuAppLogs(herokuAccount.api_key, bot.heroku_app_name, parseInt(lines));
+            res.json({ success: true, logs: logs?.lines || [] });
+        } catch (logError) {
+            res.json({ 
+                success: true, 
+                logs: [{ message: 'Logs temporairement indisponibles', timestamp: new Date().toISOString() }] 
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur récupération logs bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/bots/my-bots/:botId/deployment-logs', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: logs, error } = await supabase
+            .from('bot_deployment_logs')
+            .select('*')
+            .eq('bot_id', botId)
+            .order('created_at', { ascending: false })
+            .limit(50);
+        
+        if (error) throw error;
+        
+        res.json({ success: true, logs: logs || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération logs déploiement:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/restart', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.status !== 'active') {
+            return res.status(400).json({ success: false, error: 'Bot non actif' });
+        }
+        
+        const { data: herokuAccount } = await supabase
+            .from('heroku_accounts')
+            .select('api_key')
+            .eq('id', bot.heroku_account_id)
+            .single();
+        
+        if (!herokuAccount) {
+            return res.status(500).json({ success: false, error: 'Erreur configuration' });
+        }
+        
+        await restartHerokuDynos(herokuAccount.api_key, bot.heroku_app_name);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'restart',
+                status: 'success',
+                message: 'Bot redémarré avec succès'
+            }]);
+        
+        res.json({ success: true, message: 'Bot redémarré avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur redémarrage bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur redémarrage' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/stop', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.status !== 'active') {
+            return res.status(400).json({ success: false, error: 'Bot déjà arrêté' });
+        }
+        
+        const { data: herokuAccount } = await supabase
+            .from('heroku_accounts')
+            .select('api_key')
+            .eq('id', bot.heroku_account_id)
+            .single();
+        
+        if (herokuAccount) {
+            await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                updates: [{ type: 'web', quantity: 0 }]
+            });
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'stopped' })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'stop',
+                status: 'success',
+                message: 'Bot arrêté'
+            }]);
+        
+        res.json({ success: true, message: 'Bot arrêté avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur arrêt bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur arrêt' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/start', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.status !== 'stopped') {
+            return res.status(400).json({ success: false, error: 'Bot déjà actif' });
+        }
+        
+        const { data: herokuAccount } = await supabase
+            .from('heroku_accounts')
+            .select('api_key')
+            .eq('id', bot.heroku_account_id)
+            .single();
+        
+        if (herokuAccount) {
+            await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                updates: [{ type: 'web', quantity: 1 }]
+            });
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'active' })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'start',
+                status: 'success',
+                message: 'Bot démarré'
+            }]);
+        
+        res.json({ success: true, message: 'Bot démarré avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur démarrage bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur démarrage' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/update-env', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { env_vars } = req.body;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        const { data: herokuAccount } = await supabase
+            .from('heroku_accounts')
+            .select('api_key')
+            .eq('id', bot.heroku_account_id)
+            .single();
+        
+        if (!herokuAccount) {
+            return res.status(500).json({ success: false, error: 'Erreur configuration' });
+        }
+        
+        await setHerokuEnvVars(herokuAccount.api_key, bot.heroku_app_name, env_vars);
+        
+        await restartHerokuDynos(herokuAccount.api_key, bot.heroku_app_name);
+        
+        await supabase
+            .from('user_bots')
+            .update({ 
+                env_vars: env_vars,
+                last_deploy_at: new Date().toISOString()
+            })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'env_update',
+                status: 'success',
+                message: 'Variables d\'environnement mises à jour et bot redémarré'
+            }]);
+        
+        res.json({ success: true, message: 'Variables mises à jour avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur mise à jour env:', error);
+        res.status(500).json({ success: false, error: 'Erreur mise à jour' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/change-duration', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { duration_mode } = req.body;
+        
+        if (!['weekly', 'monthly'].includes(duration_mode)) {
+            return res.status(400).json({ success: false, error: 'Mode invalide' });
+        }
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('duration_mode, expires_at, template_id')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.duration_mode === duration_mode) {
+            return res.json({ success: true, message: 'Déjà sur ce mode' });
+        }
+        
+        const daysToAdd = duration_mode === 'monthly' ? 28 : 7;
+        let newExpiry = new Date(bot.expires_at);
+        newExpiry.setDate(newExpiry.getDate() + daysToAdd);
+        
+        await supabase
+            .from('user_bots')
+            .update({ 
+                duration_mode: duration_mode,
+                expires_at: newExpiry.toISOString()
+            })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'duration_change',
+                status: 'success',
+                message: `Mode changé en ${duration_mode === 'weekly' ? 'hebdomadaire' : 'mensuel'}. Nouvelle expiration: ${newExpiry.toLocaleDateString('fr-FR')}`
+            }]);
+        
+        res.json({ 
+            success: true, 
+            message: `Mode changé en ${duration_mode === 'weekly' ? 'hebdomadaire' : 'mensuel'}`,
+            new_expiry: newExpiry.toISOString()
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur changement durée:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/bots/my-bots/:botId/auto-renew', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { enabled } = req.body;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('id')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ 
+                auto_renew: enabled,
+                auto_renew_error: enabled ? null : undefined
+            })
+            .eq('id', botId);
+        
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'auto_renew_toggle',
+                status: 'success',
+                message: `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}`
+            }]);
+        
+        res.json({ 
+            success: true, 
+            message: `Auto-renouvellement ${enabled ? 'activé' : 'désactivé'}` 
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur auto-renew toggle:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.delete('/api/bots/my-bots/:botId', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id, status')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+        
+        if (error || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                await deleteHerokuApp(herokuAccount.api_key, bot.heroku_app_name);
+                await releaseHerokuAccount(bot.heroku_account_id);
+            }
+        }
+        
+        await supabase.from('user_bots').delete().eq('id', botId);
+        
+        res.json({ success: true, message: 'Bot supprimé avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur suppression bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur suppression' });
+    }
+});
+
+app.get('/api/admin/bot-submissions', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: submissions, error } = await supabase
+            .from('bot_submissions')
+            .select(`
+                *,
+                profiles!bot_submissions_user_id_fkey (username, email)
+            `)
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, submissions: submissions || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération demandes:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { submissionId } = req.params;
+        const { price_weekly } = req.body;
+        
+        const { data: submission, error: fetchError } = await supabase
+            .from('bot_submissions')
+            .select('*, profiles!inner(*)')
+            .eq('id', submissionId)
+            .single();
+        
+        if (fetchError || !submission) {
+            return res.status(404).json({ success: false, error: 'Demande non trouvée' });
+        }
+        
+        const { data: template, error: insertError } = await supabase
+            .from('bot_templates')
+            .insert([{
+                user_id: submission.user_id,
+                name: submission.bot_name,
+                repo_url: submission.repo_url,
+                kh_json: submission.kh_json,
+                price_weekly: price_weekly || 100,
+                status: 'approved',
+                approved_by: req.user.id,
+                approved_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+        
+        if (insertError) throw insertError;
+        
+        await supabase
+            .from('bot_submissions')
+            .update({
+                status: 'approved',
+                processed_at: new Date().toISOString(),
+                processed_by: req.user.id
+            })
+            .eq('id', submissionId);
+        
+        const successHtml = `
+            <h2>✅ Votre bot a été approuvé !</h2>
+            <p>Bonjour ${submission.profiles?.username},</p>
+            <p>Félicitations ! Votre bot <strong>"${submission.bot_name}"</strong> a été approuvé et est maintenant disponible sur notre marketplace.</p>
+            <p>Prix de déploiement : ${price_weekly || 100} coins pour 7 jours</p>
+            <p>Chaque fois qu'un utilisateur déploiera votre bot, vous recevrez 5 coins !</p>
+            <a href="${SITE_CONFIG.url}/bot">Voir sur la marketplace</a>
+        `;
+        await sendEmail(submission.profiles?.email, '✅ Votre bot est approuvé !', getBaseEmailTemplate('Bot approuvé', successHtml));
+        
+        res.json({ success: true, message: 'Bot approuvé avec succès', template });
+        
+    } catch (error) {
+        console.error('❌ Erreur approbation bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/bot-submissions/:submissionId/reject', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { submissionId } = req.params;
+        const { reason } = req.body;
+        
+        const { data: submission, error: fetchError } = await supabase
+            .from('bot_submissions')
+            .select('*, profiles!inner(*)')
+            .eq('id', submissionId)
+            .single();
+        
+        if (fetchError || !submission) {
+            return res.status(404).json({ success: false, error: 'Demande non trouvée' });
+        }
+        
+        await supabase
+            .from('bot_submissions')
+            .update({
+                status: 'rejected',
+                admin_notes: reason,
+                processed_at: new Date().toISOString(),
+                processed_by: req.user.id
+            })
+            .eq('id', submissionId);
+        
+        const rejectHtml = `
+            <h2>❌ Votre bot n'a pas été approuvé</h2>
+            <p>Bonjour ${submission.profiles?.username},</p>
+            <p>Nous avons examiné votre demande pour le bot <strong>"${submission.bot_name}"</strong>.</p>
+            <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
+                <p><strong>Raison :</strong> ${reason || 'Non-conformité aux règles'}</p>
+            </div>
+            <p>Vous pouvez modifier votre bot et soumettre une nouvelle demande.</p>
+        `;
+        await sendEmail(submission.profiles?.email, '❌ Bot non approuvé', getBaseEmailTemplate('Bot refusé', rejectHtml));
+        
+        res.json({ success: true, message: 'Demande rejetée' });
+        
+    } catch (error) {
+        console.error('❌ Erreur rejet bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/admin/heroku/accounts', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: accounts, error } = await supabase
+            .from('heroku_accounts')
+            .select('*, profiles!heroku_accounts_updated_by_fkey(username)')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, accounts: accounts || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération comptes Heroku:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/heroku/accounts', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { email, api_key, max_bots } = req.body;
+        
+        if (!email || !api_key) {
+            return res.status(400).json({ success: false, error: 'Email et API key requis' });
+        }
+        
+        try {
+            await callHerokuAPI(api_key, '/account', 'GET');
+        } catch (testError) {
+            return res.status(400).json({ success: false, error: 'API Key Heroku invalide' });
+        }
+        
+        const { data: account, error } = await supabase
+            .from('heroku_accounts')
+            .insert([{
+                email,
+                api_key,
+                max_bots: max_bots || 50,
+                current_bots: 0,
+                is_active: true,
+                updated_by: req.user.id
+            }])
+            .select()
+            .single();
+        
+        if (error) throw error;
+        
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'heroku_account_add',
+                target_type: 'heroku_account',
+                target_id: account.id,
+                description: `Ajout compte Heroku: ${email}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        res.json({ success: true, message: 'Compte Heroku ajouté', account });
+        
+    } catch (error) {
+        console.error('❌ Erreur ajout compte Heroku:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.put('/api/admin/heroku/accounts/:accountId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        const { max_bots, is_active } = req.body;
+        
+        const updates = {};
+        if (max_bots !== undefined) updates.max_bots = max_bots;
+        if (is_active !== undefined) updates.is_active = is_active;
+        updates.updated_by = req.user.id;
+        
+        const { error } = await supabase
+            .from('heroku_accounts')
+            .update(updates)
+            .eq('id', accountId);
+        
+        if (error) throw error;
+        
+        res.json({ success: true, message: 'Compte Heroku modifié' });
+        
+    } catch (error) {
+        console.error('❌ Erreur modification compte Heroku:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.delete('/api/admin/heroku/accounts/:accountId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { accountId } = req.params;
+        
+        const { count: botCount } = await supabase
+            .from('user_bots')
+            .select('*', { count: 'exact', head: true })
+            .eq('heroku_account_id', accountId);
+        
+        if (botCount > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Impossible de supprimer: ${botCount} bots sont encore associés à ce compte` 
+            });
+        }
+        
+        await supabase
+            .from('heroku_accounts')
+            .delete()
+            .eq('id', accountId);
+        
+        res.json({ success: true, message: 'Compte Heroku supprimé' });
+        
+    } catch (error) {
+        console.error('❌ Erreur suppression compte Heroku:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.put('/api/admin/users/:userId/bot-quota', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { bot_quota } = req.body;
+        
+        if (!bot_quota || bot_quota < 0) {
+            return res.status(400).json({ success: false, error: 'Quota invalide' });
+        }
+        
+        await supabase
+            .from('profiles')
+            .update({ bot_quota: bot_quota })
+            .eq('id', userId);
+        
+        res.json({ success: true, message: `Quota utilisateur mis à jour: ${bot_quota}` });
+        
+    } catch (error) {
+        console.error('❌ Erreur mise à jour quota:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/admin/bots/stats', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { count: totalTemplates } = await supabase
+            .from('bot_templates')
+            .select('*', { count: 'exact', head: true });
+        
+        const { count: pendingSubmissions } = await supabase
+            .from('bot_submissions')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pending');
+        
+        const { count: activeBots } = await supabase
+            .from('user_bots')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'active');
+        
+        const { count: totalDeploys } = await supabase
+            .from('user_bots')
+            .select('*', { count: 'exact', head: true });
+        
+        const { data: herokuAccounts } = await supabase
+            .from('heroku_accounts')
+            .select('current_bots, max_bots');
+        
+        const totalHerokuCapacity = herokuAccounts?.reduce((sum, a) => sum + (a.max_bots - a.current_bots), 0) || 0;
+        
+        res.json({
+            success: true,
+            stats: {
+                total_templates: totalTemplates || 0,
+                pending_submissions: pendingSubmissions || 0,
+                active_bots: activeBots || 0,
+                total_deploys: totalDeploys || 0,
+                available_heroku_capacity: totalHerokuCapacity
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur stats bots:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.get('/api/admin/bots/deployed', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: bots, error } = await supabase
+            .from('user_bots')
+            .select(`
+                *,
+                profiles!user_bots_user_id_fkey (username, email),
+                bot_templates!user_bots_template_id_fkey (name)
+            `)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, bots: bots || [] });
+    } catch (error) {
+        console.error('❌ Erreur récupération bots déployés:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
 
@@ -7805,7 +9367,6 @@ app.get('/api/username/available', async (req, res) => {
 
         const cleanUsername = username.trim().toLowerCase();
         
-        // Validation du format
         if (cleanUsername.length < 3) {
             return res.json({ 
                 success: true, 
@@ -7830,7 +9391,6 @@ app.get('/api/username/available', async (req, res) => {
             });
         }
 
-        // Vérifier dans la table profiles
         const { data: existingUser, error } = await supabase
             .from('profiles')
             .select('id, username')
