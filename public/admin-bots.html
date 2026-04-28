@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#7C3AED">
-    <meta name="description" content="Administration des bots - KermHosting">
-    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+    <meta name="description" content="Administration des bots WhatsApp - KermHosting">
 
     <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -21,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <title>Admin Bots - KermHosting</title>
+    <title>Administration Bots - KermHosting</title>
     
     <style>
         /* ===== MÊME STYLE QUE L'ORIGINAL ===== */
@@ -61,9 +60,6 @@
             --radius-lg: 16px;
             --radius-xl: 24px;
             --radius-full: 9999px;
-            
-            --safe-area-inset-top: env(safe-area-inset-top, 0px);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -142,7 +138,6 @@
         .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; }
-        .user-badge.admin { background: var(--danger); }
 
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
         .sidebar-nav ul { list-style: none; }
@@ -155,6 +150,10 @@
         .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
 
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
+        .sidebar-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .stat { text-align: center; }
+        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
 
         /* ===== MAIN CONTENT ===== */
         .main-content { flex: 1; width: 100%; min-width: 0; }
@@ -183,35 +182,27 @@
         .user-menu { cursor: pointer; text-decoration: none; display: block; }
         .user-avatar-small { width: 40px; height: 40px; border-radius: var(--radius-full); border: 2px solid var(--primary); object-fit: cover; }
 
+        /* Admin Badge */
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
         /* ===== PAGE CONTENT ===== */
         .page-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
         /* ===== ADMIN STYLES ===== */
         .page-header { margin-bottom: 32px; animation: fadeInUp 0.6s ease-out; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
         .page-title { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .page-subtitle { color: var(--text-secondary); }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .tab {
-            padding: 8px 20px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
 
         /* Stats Cards */
         .stats-grid {
@@ -243,63 +234,99 @@
         .stat-info h3 { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
         .stat-info p { font-size: 0.8rem; color: var(--text-secondary); }
 
-        /* Cards */
-        .submissions-grid, .bots-grid, .accounts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .submission-card, .bot-card, .account-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        .card-header {
-            padding: 16px;
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
             border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), transparent);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
         }
-        .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
-        .card-subtitle { font-size: 0.7rem; color: var(--text-muted); }
-        .card-body { padding: 16px; }
-        .card-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-        
-        .badge {
+        .tab {
+            padding: 8px 20px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0,0,0,0.2);
+        }
+        tr:hover { background: var(--bg-hover); }
+        td { color: var(--text-primary); font-size: 0.9rem; }
+
+        .status-badge {
             display: inline-block;
             padding: 4px 10px;
             border-radius: var(--radius-full);
             font-size: 0.7rem;
             font-weight: 600;
         }
-        .badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .badge.approved { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge.rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .badge.active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge.inactive { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-badge.approved { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .status-badge.active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-badge.deploying { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-badge.suspended { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-        .btn-sm {
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
             padding: 6px 12px;
             border-radius: var(--radius-sm);
             font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
-            border: none;
             transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn-sm.approve { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .btn-sm.approve:hover { background: var(--success); color: white; }
-        .btn-sm.reject { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .btn-sm.reject:hover { background: var(--danger); color: white; }
-        .btn-sm.edit { background: rgba(59, 130, 246, 0.15); color: var(--info); }
-        .btn-sm.edit:hover { background: var(--info); color: white; }
-        .btn-sm.delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .btn-sm.delete:hover { background: var(--danger); color: white; }
-        .btn-sm.primary { background: rgba(124, 58, 237, 0.15); color: var(--primary); }
-        .btn-sm.primary:hover { background: var(--primary); color: white; }
+        .action-btn.approve { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .action-btn.approve:hover { background: var(--success); color: white; }
+        .action-btn.reject { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .action-btn.reject:hover { background: var(--danger); color: white; }
+        .action-btn.view { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .action-btn.view:hover { background: var(--info); color: white; }
+        .action-btn.delete { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .action-btn.delete:hover { background: var(--danger); color: white; }
+        .action-btn.edit { background: rgba(124, 58, 237, 0.15); color: var(--primary); }
+        .action-btn.edit:hover { background: var(--primary); color: white; }
 
-        /* Form */
+        /* Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -354,10 +381,11 @@
         .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
         .modal-body { padding: 20px; }
 
+        /* Form */
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
         .form-label i { color: var(--primary); margin-right: 6px; }
-        .form-input, .form-textarea, .form-select {
+        .form-input, .form-textarea {
             width: 100%;
             background: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -366,38 +394,68 @@
             color: var(--text-primary);
             font-size: 0.9rem;
         }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
+        .form-input:focus, .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: var(--shadow-glow);
         }
+        .form-textarea { resize: vertical; min-height: 100px; }
 
-        /* Loading & Empty */
+        /* Heroku Account Card */
+        .heroku-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .heroku-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+        .heroku-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .heroku-email {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .heroku-email i { color: var(--primary); }
+        .heroku-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+        .heroku-progress {
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .heroku-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        /* Loading */
         .loading-spinner { text-align: center; padding: 60px; color: var(--text-secondary); }
         .loading-spinner i { font-size: 2rem; animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
         .empty-state { text-align: center; padding: 60px; color: var(--text-secondary); }
         .empty-state i { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
-
-        /* Access Denied */
-        .access-denied {
-            text-align: center;
-            padding: 100px 20px;
-        }
-        .access-denied i {
-            font-size: 5rem;
-            color: var(--danger);
-            margin-bottom: 20px;
-        }
-        .access-denied h2 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-        }
-        .access-denied p {
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-        }
 
         /* Toast */
         .toast {
@@ -424,13 +482,13 @@
             .menu-toggle { display: block; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
-            .submissions-grid, .bots-grid, .accounts-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
             .page-content { padding: 16px; }
             .page-title { font-size: 1.5rem; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .tabs { overflow-x: auto; flex-wrap: nowrap; }
+            th, td { padding: 12px 8px; }
+            .action-buttons { flex-direction: column; }
         }
     </style>
 </head>
@@ -482,7 +540,7 @@
                             <span>Acheter des coins</span>
                         </a>
                     </li>
-                    <li id="navProfile">
+                    <li>
                         <a href="/profile">
                             <i class="fas fa-user"></i>
                             <span>Profil</span>
@@ -506,12 +564,6 @@
                             <span>Mes bots</span>
                         </a>
                     </li>
-                    <li id="navAdmin" style="display: none;">
-                        <a href="/admin-bots">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Admin Bots</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="/support">
                             <i class="fas fa-headset"></i>
@@ -519,22 +571,22 @@
                         </a>
                     </li>
                     <li class="divider"></li>
+                    <li id="navAdminBots" class="active">
+                        <a href="/admin/bots">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Admin Bots</span>
+                        </a>
+                    </li>
+                    <li id="navAdminHeroku">
+                        <a href="#" id="herokuTabLink">
+                            <i class="fab fa-heroku"></i>
+                            <span>Heroku</span>
+                        </a>
+                    </li>
                     <li id="navHome">
                         <a href="/">
                             <i class="fas fa-home"></i>
                             <span>Accueil</span>
-                        </a>
-                    </li>
-                    <li id="navLogin" style="display: none;">
-                        <a href="/login">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Connexion</span>
-                        </a>
-                    </li>
-                    <li id="navRegister" style="display: none;">
-                        <a href="/register">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Inscription</span>
                         </a>
                     </li>
                     <li id="navLogout">
@@ -561,7 +613,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content" id="mainContent">
+        <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
                 <button class="menu-toggle" id="menuToggle">
@@ -570,6 +622,7 @@
                 <div class="top-bar-logo">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>KermHosting</span>
+                    <span class="admin-badge" id="adminBadge">Admin</span>
                 </div>
                 <div class="top-bar-actions">
                     <button class="notification-btn" id="notificationBtn">
@@ -582,220 +635,63 @@
                 </div>
             </header>
 
-            <!-- Page Content (will be shown if admin) -->
-            <div class="page-content" id="adminContent">
-                <div class="page-header">
-                    <h1 class="page-title">Administration <span class="gradient-text">des bots</span></h1>
-                    <p class="page-subtitle">Gérez les templates, comptes Heroku et surveillez les déploiements</p>
+            <!-- Notifications Panel -->
+            <div class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-header">
+                    <h3>Notifications</h3>
+                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
                 </div>
-
-                <!-- Stats -->
-                <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-info">
-                            <h3 id="pendingSubmissions">0</h3>
-                            <p>Demandes en attente</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-robot"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalTemplates">0</h3>
-                            <p>Templates approuvés</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
-                        <div class="stat-info">
-                            <h3 id="activeBots">0</h3>
-                            <p>Bots actifs</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-server"></i></div>
-                        <div class="stat-info">
-                            <h3 id="herokuCapacity">0</h3>
-                            <p>Capacity Heroku (place)</p>
-                        </div>
-                    </div>
+                <div class="notifications-list" id="notificationsList">
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">Aucune notification</div>
                 </div>
+            </div>
 
-                <!-- Tabs -->
-                <div class="tabs">
-                    <div class="tab active" data-tab="submissions">📋 Demandes (pending)</div>
-                    <div class="tab" data-tab="accounts">🔑 Comptes Heroku</div>
-                    <div class="tab" data-tab="bots">🤖 Tous les bots déployés</div>
-                    <div class="tab" data-tab="users">👥 Quotas utilisateurs</div>
-                </div>
-
-                <!-- Submissions Tab -->
-                <div id="submissionsTab">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3>Demandes d'ajout de bots</h3>
-                    </div>
-                    <div id="submissionsContainer" class="submissions-grid">
-                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>
-                    </div>
-                </div>
-
-                <!-- Accounts Tab (hidden by default) -->
-                <div id="accountsTab" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3>Comptes Heroku</h3>
-                        <button class="btn-sm primary" id="addHerokuBtn" style="padding: 8px 16px;"><i class="fas fa-plus"></i> Ajouter un compte</button>
-                    </div>
-                    <div id="accountsContainer" class="accounts-grid">
-                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>
-                    </div>
-                </div>
-
-                <!-- Bots Tab (hidden by default) -->
-                <div id="botsTab" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3>Tous les bots déployés</h3>
-                        <input type="text" id="searchBots" placeholder="Rechercher..." style="background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-full); padding: 8px 16px; color: var(--text-primary); width: 250px;">
-                    </div>
-                    <div id="allBotsContainer" class="bots-grid">
-                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>
-                    </div>
-                </div>
-
-                <!-- Users Tab (hidden by default) -->
-                <div id="usersTab" style="display: none;">
-                    <div style="margin-bottom: 16px;">
-                        <h3>Modifier les quotas utilisateurs</h3>
-                        <p style="color: var(--text-secondary); font-size: 0.8rem;">Les utilisateurs peuvent déployer jusqu'à leur quota maximum de bots</p>
-                    </div>
-                    <div id="usersContainer">
-                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>
-                    </div>
+            <!-- Page Content -->
+            <div class="page-content" id="pageContent">
+                <!-- Content loaded dynamically -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Chargement...</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Approve/Reject Modal -->
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="actionModalTitle">Action</h2>
+                <button class="modal-close" id="closeActionModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="actionModalBody"></div>
+        </div>
+    </div>
+
     <!-- Add Heroku Account Modal -->
-    <div class="modal" id="addHerokuModal">
+    <div class="modal" id="herokuModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fab fa-heroku"></i> Ajouter un compte Heroku</h2>
-                <button class="modal-close" id="closeAddHerokuModal"><i class="fas fa-times"></i></button>
+                <button class="modal-close" id="closeHerokuModal"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <form id="addHerokuForm">
+                <form id="herokuForm">
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" class="form-input" id="herokuEmail" required>
+                        <input type="email" class="form-input" id="herokuEmail" required placeholder="exemple@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label"><i class="fas fa-key"></i> API Key</label>
-                        <input type="password" class="form-input" id="herokuApiKey" required>
-                        <div class="form-hint">Obtenez votre API key sur Heroku Dashboard → Account Settings → API Key</div>
+                        <input type="password" class="form-input" id="herokuApiKey" required placeholder="Heroku API Key">
+                        <div class="form-hint" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Obtenez votre API key depuis votre compte Heroku</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label"><i class="fas fa-chart-line"></i> Quota max de bots</label>
-                        <input type="number" class="form-input" id="herokuMaxBots" value="50" required>
+                        <label class="form-label"><i class="fas fa-chart-line"></i> Quota maximum de bots</label>
+                        <input type="number" class="form-input" id="herokuMaxBots" value="50" min="1" max="500">
                     </div>
-                    <button type="submit" class="deploy-btn" style="width: 100%; margin-top: 20px;">
+                    <button type="submit" class="deploy-btn" style="width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;">
                         <i class="fas fa-plus"></i> Ajouter le compte
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Heroku Account Modal -->
-    <div class="modal" id="editHerokuModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fab fa-heroku"></i> Modifier le compte Heroku</h2>
-                <button class="modal-close" id="closeEditHerokuModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="editHerokuForm">
-                    <input type="hidden" id="editHerokuId">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-chart-line"></i> Quota max de bots</label>
-                        <input type="number" class="form-input" id="editHerokuMaxBots" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-power-off"></i> Actif</label>
-                        <select class="form-select" id="editHerokuActive">
-                            <option value="true">Oui</option>
-                            <option value="false">Non</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="deploy-btn" style="width: 100%; margin-top: 20px;">
-                        <i class="fas fa-save"></i> Enregistrer
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Approve Modal -->
-    <div class="modal" id="approveModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-check-circle"></i> Approuver le bot</h2>
-                <button class="modal-close" id="closeApproveModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="approveForm">
-                    <input type="hidden" id="approveSubmissionId">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-coins"></i> Prix hebdomadaire (coins)</label>
-                        <input type="number" class="form-input" id="approvePrice" value="100" required>
-                        <div class="form-hint">Prix pour 7 jours. Le prix mensuel sera x4 automatiquement</div>
-                    </div>
-                    <button type="submit" class="deploy-btn" style="width: 100%; margin-top: 20px; background: var(--success);">
-                        <i class="fas fa-check"></i> Approuver
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reject Modal -->
-    <div class="modal" id="rejectModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-times-circle"></i> Rejeter le bot</h2>
-                <button class="modal-close" id="closeRejectModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="rejectForm">
-                    <input type="hidden" id="rejectSubmissionId">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-comment"></i> Raison du refus</label>
-                        <textarea class="form-textarea" id="rejectReason" rows="3" placeholder="Expliquez pourquoi le bot est refusé..."></textarea>
-                    </div>
-                    <button type="submit" class="deploy-btn" style="width: 100%; margin-top: 20px; background: var(--danger);">
-                        <i class="fas fa-times"></i> Rejeter
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Quota Modal -->
-    <div class="modal" id="userQuotaModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-users"></i> Modifier le quota utilisateur</h2>
-                <button class="modal-close" id="closeUserQuotaModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="userQuotaForm">
-                    <input type="hidden" id="quotaUserId">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-robot"></i> Quota de bots</label>
-                        <input type="number" class="form-input" id="quotaValue" required min="0" max="100">
-                        <div class="form-hint">Nombre maximum de bots que l'utilisateur peut déployer</div>
-                    </div>
-                    <button type="submit" class="deploy-btn" style="width: 100%; margin-top: 20px;">
-                        <i class="fas fa-save"></i> Enregistrer
                     </button>
                 </form>
             </div>
@@ -832,7 +728,7 @@
             }, 3000);
         }
 
-        // ===== SIDEBAR FUNCTIONS =====
+        // ===== SIDEBAR =====
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const menuToggle = document.getElementById('menuToggle');
@@ -842,6 +738,13 @@
         menuToggle.addEventListener('click', openSidebar);
         closeSidebar.addEventListener('click', closeSidebarFunc);
         overlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== NOTIFICATIONS =====
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+        notificationBtn.addEventListener('click', () => notificationsPanel.classList.toggle('active'));
+        closeNotifications.addEventListener('click', () => notificationsPanel.classList.remove('active'));
 
         // ===== AUTH & ADMIN CHECK =====
         const token = localStorage.getItem('token');
@@ -855,470 +758,45 @@
             }
             
             try {
-                const response = await fetch('/api/admin/check', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                
-                if (!data.success || !data.isAdmin) {
-                    document.getElementById('adminContent').innerHTML = `
-                        <div class="access-denied">
-                            <i class="fas fa-shield-alt"></i>
-                            <h2>Accès refusé</h2>
-                            <p>Vous n'avez pas les droits d'administration pour accéder à cette page.</p>
-                            <a href="/dashboard" style="color: var(--primary);">← Retour au tableau de bord</a>
-                        </div>
-                    `;
-                    return false;
-                }
-                
-                isAdmin = true;
-                document.getElementById('navAdmin').style.display = 'block';
-                document.getElementById('sidebarUserBadge').classList.add('admin');
-                await loadUserData();
-                await loadStats();
-                await loadSubmissions();
-                await loadHerokuAccounts();
-                await loadAllBots();
-                await loadUsers();
-                return true;
-                
-            } catch (error) {
-                console.error('Erreur vérification admin:', error);
-                window.location.href = '/login';
-                return false;
-            }
-        }
-
-        async function loadUserData() {
-            try {
                 const response = await fetch('/api/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                if (data.success) {
-                    currentUser = data.user;
-                    document.getElementById('sidebarUserName').textContent = data.user.username;
-                    document.getElementById('sidebarUserEmail').textContent = data.user.email;
-                    document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                    document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
-                    document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
-                    AvatarManager.applyToPage(data.user.username);
-                }
-            } catch (error) {}
-        }
-
-        // ===== STATS =====
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/admin/bots/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('pendingSubmissions').textContent = data.stats.pending_submissions || 0;
-                    document.getElementById('totalTemplates').textContent = data.stats.total_templates || 0;
-                    document.getElementById('activeBots').textContent = data.stats.active_bots || 0;
-                    document.getElementById('herokuCapacity').textContent = data.stats.available_heroku_capacity || 0;
-                }
-            } catch (error) {}
-        }
-
-        // ===== SUBMISSIONS =====
-        async function loadSubmissions() {
-            const container = document.getElementById('submissionsContainer');
-            try {
-                const response = await fetch('/api/admin/bot-submissions', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
                 
-                if (!data.success || !data.submissions || data.submissions.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande en attente</p></div>`;
+                if (!data.success) {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
                     return;
                 }
                 
-                container.innerHTML = data.submissions.map(sub => `
-                    <div class="submission-card">
-                        <div class="card-header">
-                            <div class="card-title">${escapeHtml(sub.bot_name)}</div>
-                            <div class="card-subtitle">par ${escapeHtml(sub.profiles?.username || 'Inconnu')} • ${new Date(sub.created_at).toLocaleDateString('fr-FR')}</div>
-                        </div>
-                        <div class="card-body">
-                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
-                                <i class="fab fa-github"></i> ${escapeHtml(sub.repo_url)}
-                            </p>
-                            ${sub.kh_json ? `<div class="badge pending" style="margin-bottom: 12px;">kh.json ✓</div>` : '<div class="badge reject" style="margin-bottom: 12px;">kh.json manquant</div>'}
-                            <div class="card-actions">
-                                <button onclick="openApproveModal('${sub.id}')" class="btn-sm approve"><i class="fas fa-check"></i> Approuver</button>
-                                <button onclick="openRejectModal('${sub.id}')" class="btn-sm reject"><i class="fas fa-times"></i> Rejeter</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                currentUser = data.user;
+                isAdmin = currentUser.role === 'admin' || currentUser.role === 'superadmin';
                 
-            } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
-            }
-        }
-
-        function openApproveModal(submissionId) {
-            document.getElementById('approveSubmissionId').value = submissionId;
-            document.getElementById('approveModal').classList.add('active');
-        }
-
-        function openRejectModal(submissionId) {
-            document.getElementById('rejectSubmissionId').value = submissionId;
-            document.getElementById('rejectModal').classList.add('active');
-        }
-
-        document.getElementById('approveForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submissionId = document.getElementById('approveSubmissionId').value;
-            const price = document.getElementById('approvePrice').value;
-            
-            try {
-                const response = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ price_weekly: parseInt(price) })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Bot approuvé !');
-                    document.getElementById('approveModal').classList.remove('active');
-                    loadSubmissions();
-                    loadStats();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de l\'approbation');
-            }
-        });
-
-        document.getElementById('rejectForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submissionId = document.getElementById('rejectSubmissionId').value;
-            const reason = document.getElementById('rejectReason').value;
-            
-            try {
-                const response = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ reason })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Bot rejeté');
-                    document.getElementById('rejectModal').classList.remove('active');
-                    loadSubmissions();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors du rejet');
-            }
-        });
-
-        // ===== HEROKU ACCOUNTS =====
-        async function loadHerokuAccounts() {
-            const container = document.getElementById('accountsContainer');
-            try {
-                const response = await fetch('/api/admin/heroku/accounts', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                
-                if (!data.success || !data.accounts || data.accounts.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Aucun compte Heroku configuré</p><button class="btn-sm primary" onclick="document.getElementById('addHerokuModal').classList.add('active')" style="margin-top: 12px;">+ Ajouter un compte</button></div>`;
+                if (!isAdmin) {
+                    showToast('error', 'Accès non autorisé. Zone administrateur.');
+                    setTimeout(() => { window.location.href = '/'; }, 2000);
                     return;
                 }
                 
-                container.innerHTML = data.accounts.map(acc => `
-                    <div class="account-card">
-                        <div class="card-header">
-                            <div class="card-title"><i class="fab fa-heroku"></i> ${escapeHtml(acc.email)}</div>
-                            <div class="card-subtitle">${acc.current_bots || 0}/${acc.max_bots} bots</div>
-                        </div>
-                        <div class="card-body">
-                            <div><span class="badge ${acc.is_active ? 'active' : 'inactive'}">${acc.is_active ? 'Actif' : 'Inactif'}</span></div>
-                            <div class="card-actions">
-                                <button onclick="openEditHerokuModal('${acc.id}', ${acc.max_bots}, ${acc.is_active})" class="btn-sm edit"><i class="fas fa-edit"></i> Modifier</button>
-                                <button onclick="deleteHerokuAccount('${acc.id}')" class="btn-sm delete"><i class="fas fa-trash"></i> Supprimer</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                // Update UI
+                document.getElementById('sidebarUserName').textContent = currentUser.username;
+                document.getElementById('sidebarUserEmail').textContent = currentUser.email;
+                document.getElementById('sidebarUserBadge').textContent = currentUser.role;
+                document.getElementById('sidebarCoins').textContent = currentUser.coins || 0;
+                document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
+                document.getElementById('adminBadge').style.display = 'inline-block';
+                
+                AvatarManager.applyToPage(currentUser.username);
+                
+                // Load content
+                loadSubmissions();
+                loadStats();
                 
             } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
+                console.error('Auth error:', error);
+                window.location.href = '/login';
             }
         }
-
-        document.getElementById('addHerokuForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('herokuEmail').value;
-            const api_key = document.getElementById('herokuApiKey').value;
-            const max_bots = parseInt(document.getElementById('herokuMaxBots').value);
-            
-            try {
-                const response = await fetch('/api/admin/heroku/accounts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ email, api_key, max_bots })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Compte Heroku ajouté');
-                    document.getElementById('addHerokuModal').classList.remove('active');
-                    document.getElementById('addHerokuForm').reset();
-                    loadHerokuAccounts();
-                    loadStats();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de l\'ajout');
-            }
-        });
-
-        function openEditHerokuModal(id, maxBots, isActive) {
-            document.getElementById('editHerokuId').value = id;
-            document.getElementById('editHerokuMaxBots').value = maxBots;
-            document.getElementById('editHerokuActive').value = isActive;
-            document.getElementById('editHerokuModal').classList.add('active');
-        }
-
-        document.getElementById('editHerokuForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editHerokuId').value;
-            const max_bots = parseInt(document.getElementById('editHerokuMaxBots').value);
-            const is_active = document.getElementById('editHerokuActive').value === 'true';
-            
-            try {
-                const response = await fetch(`/api/admin/heroku/accounts/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ max_bots, is_active })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Compte modifié');
-                    document.getElementById('editHerokuModal').classList.remove('active');
-                    loadHerokuAccounts();
-                    loadStats();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de la modification');
-            }
-        });
-
-        async function deleteHerokuAccount(id) {
-            if (!confirm('Supprimer ce compte Heroku ? Tous les bots associés deviendront inaccessibles.')) return;
-            try {
-                const response = await fetch(`/api/admin/heroku/accounts/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Compte supprimé');
-                    loadHerokuAccounts();
-                    loadStats();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de la suppression');
-            }
-        }
-
-        // ===== ALL BOTS =====
-        async function loadAllBots() {
-            const container = document.getElementById('allBotsContainer');
-            try {
-                const response = await fetch('/api/admin/bots/deployed', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                
-                if (!data.success || !data.bots || data.bots.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot déployé</p></div>`;
-                    return;
-                }
-                
-                container.innerHTML = data.bots.map(bot => `
-                    <div class="bot-card">
-                        <div class="card-header">
-                            <div class="card-title">${escapeHtml(bot.heroku_app_name)}</div>
-                            <div class="card-subtitle">${escapeHtml(bot.profiles?.username || 'Inconnu')} • ${new Date(bot.created_at).toLocaleDateString('fr-FR')}</div>
-                        </div>
-                        <div class="card-body">
-                            <div><span class="badge ${bot.status === 'active' ? 'active' : 'inactive'}">${bot.status}</span></div>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">
-                                Expire le ${new Date(bot.expires_at).toLocaleDateString('fr-FR')}
-                            </p>
-                            <div class="card-actions">
-                                <button onclick="deleteBot('${bot.id}')" class="btn-sm delete"><i class="fas fa-trash"></i> Supprimer</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
-            }
-        }
-
-        async function deleteBot(botId) {
-            if (!confirm('Supprimer ce bot définitivement ?')) return;
-            try {
-                const response = await fetch(`/api/bots/my-bots/${botId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Bot supprimé');
-                    loadAllBots();
-                    loadStats();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de la suppression');
-            }
-        }
-
-        // ===== USERS QUOTA =====
-        async function loadUsers() {
-            const container = document.getElementById('usersContainer');
-            try {
-                const response = await fetch('/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                
-                if (!data.success || !data.users) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><p>Erreur chargement</p></div>`;
-                    return;
-                }
-                
-                container.innerHTML = `
-                    <div class="submissions-grid">
-                        ${data.users.map(user => `
-                            <div class="submission-card">
-                                <div class="card-header">
-                                    <div class="card-title">${escapeHtml(user.username)}</div>
-                                    <div class="card-subtitle">${escapeHtml(user.email)}</div>
-                                </div>
-                                <div class="card-body">
-                                    <p><strong>Quota bots:</strong> ${user.bot_quota || 5}</p>
-                                    <p><strong>Déploiements:</strong> ${user.total_bot_deploys || 0}</p>
-                                    <div class="card-actions">
-                                        <button onclick="openUserQuotaModal('${user.id}', ${user.bot_quota || 5})" class="btn-sm edit"><i class="fas fa-edit"></i> Modifier quota</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                
-            } catch (error) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
-            }
-        }
-
-        function openUserQuotaModal(userId, currentQuota) {
-            document.getElementById('quotaUserId').value = userId;
-            document.getElementById('quotaValue').value = currentQuota;
-            document.getElementById('userQuotaModal').classList.add('active');
-        }
-
-        document.getElementById('userQuotaForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('quotaUserId').value;
-            const quota = parseInt(document.getElementById('quotaValue').value);
-            
-            try {
-                const response = await fetch(`/api/admin/users/${userId}/bot-quota`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ bot_quota: quota })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Quota modifié');
-                    document.getElementById('userQuotaModal').classList.remove('active');
-                    loadUsers();
-                } else {
-                    showToast('error', data.error || 'Erreur');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de la modification');
-            }
-        });
-
-        // ===== TABS =====
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                const tabName = tab.dataset.tab;
-                document.getElementById('submissionsTab').style.display = tabName === 'submissions' ? 'block' : 'none';
-                document.getElementById('accountsTab').style.display = tabName === 'accounts' ? 'block' : 'none';
-                document.getElementById('botsTab').style.display = tabName === 'bots' ? 'block' : 'none';
-                document.getElementById('usersTab').style.display = tabName === 'users' ? 'block' : 'none';
-                
-                if (tabName === 'submissions') loadSubmissions();
-                if (tabName === 'accounts') loadHerokuAccounts();
-                if (tabName === 'bots') loadAllBots();
-                if (tabName === 'users') loadUsers();
-            });
-        });
-
-        // Search bots
-        document.getElementById('searchBots')?.addEventListener('input', (e) => {
-            const search = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('#allBotsContainer .bot-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(search) ? 'block' : 'none';
-            });
-        });
-
-        // Modal closes
-        document.getElementById('addHerokuBtn').addEventListener('click', () => {
-            document.getElementById('addHerokuModal').classList.add('active');
-        });
-        
-        document.getElementById('closeAddHerokuModal').addEventListener('click', () => {
-            document.getElementById('addHerokuModal').classList.remove('active');
-        });
-        document.getElementById('closeEditHerokuModal').addEventListener('click', () => {
-            document.getElementById('editHerokuModal').classList.remove('active');
-        });
-        document.getElementById('closeApproveModal').addEventListener('click', () => {
-            document.getElementById('approveModal').classList.remove('active');
-        });
-        document.getElementById('closeRejectModal').addEventListener('click', () => {
-            document.getElementById('rejectModal').classList.remove('active');
-        });
-        document.getElementById('closeUserQuotaModal').addEventListener('click', () => {
-            document.getElementById('userQuotaModal').classList.remove('active');
-        });
-        
-        [document.getElementById('addHerokuModal'), document.getElementById('editHerokuModal'), 
-         document.getElementById('approveModal'), document.getElementById('rejectModal'),
-         document.getElementById('userQuotaModal')].forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('active');
-            });
-        });
 
         document.getElementById('logoutLink')?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1326,6 +804,464 @@
             window.location.href = '/';
         });
 
+        // ===== LOAD DATA =====
+        let currentTab = 'submissions';
+        let submissions = [];
+        let deployedBots = [];
+        let herokuAccounts = [];
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/bots/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('statTotalTemplates').textContent = data.stats.total_templates || 0;
+                    document.getElementById('statPendingSubmissions').textContent = data.stats.pending_submissions || 0;
+                    document.getElementById('statActiveBots').textContent = data.stats.active_bots || 0;
+                    document.getElementById('statHerokuCapacity').textContent = data.stats.available_heroku_capacity || 0;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadSubmissions() {
+            try {
+                const response = await fetch('/api/admin/bot-submissions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                submissions = data.submissions || [];
+                renderSubmissions();
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+            }
+        }
+
+        async function loadDeployedBots() {
+            try {
+                const response = await fetch('/api/admin/bots/deployed', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                deployedBots = data.bots || [];
+                renderDeployedBots();
+            } catch (error) {
+                console.error('Error loading deployed bots:', error);
+            }
+        }
+
+        async function loadHerokuAccounts() {
+            try {
+                const response = await fetch('/api/admin/heroku/accounts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                herokuAccounts = data.accounts || [];
+                renderHerokuAccounts();
+            } catch (error) {
+                console.error('Error loading Heroku accounts:', error);
+            }
+        }
+
+        // ===== RENDER FUNCTIONS =====
+        function renderSubmissions() {
+            const container = document.getElementById('dynamicContent');
+            if (!container) return;
+            
+            if (submissions.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune demande en attente</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Bot</th><th>Soumis par</th><th>Repository</th><th>Date</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            ${submissions.map(sub => `
+                                <tr>
+                                    <td><strong>${escapeHtml(sub.bot_name)}</strong></td>
+                                    <td>${escapeHtml(sub.profiles?.username || 'Inconnu')}<br><small style="color: var(--text-muted);">${escapeHtml(sub.profiles?.email || '')}</small></td>
+                                    <td><a href="${escapeHtml(sub.repo_url)}" target="_blank" style="color: var(--primary);">${escapeHtml(sub.repo_url.substring(0, 40))}...</a></td>
+                                    <td>${new Date(sub.created_at).toLocaleDateString('fr-FR')}</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn approve" onclick="openApproveModal('${sub.id}', '${escapeHtml(sub.bot_name)}')"><i class="fas fa-check"></i> Approuver</button>
+                                        <button class="action-btn reject" onclick="openRejectModal('${sub.id}', '${escapeHtml(sub.bot_name)}')"><i class="fas fa-times"></i> Refuser</button>
+                                        <button class="action-btn view" onclick="viewKhJson('${escapeHtml(JSON.stringify(sub.kh_json || {}))}')"><i class="fas fa-file-code"></i> Voir kh.json</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderDeployedBots() {
+            const container = document.getElementById('dynamicContent');
+            if (!container) return;
+            
+            if (deployedBots.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot déployé</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Bot</th><th>Propriétaire</th><th>Template</th><th>Statut</th><th>Expiration</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            ${deployedBots.map(bot => `
+                                <tr>
+                                    <td><strong>${escapeHtml(bot.heroku_app_name)}</strong></td>
+                                    <td>${escapeHtml(bot.profiles?.username || 'Inconnu')}</td>
+                                    <td>${escapeHtml(bot.bot_templates?.name || 'N/A')}</td>
+                                    <td><span class="status-badge ${bot.status}">${bot.status}</span></td>
+                                    <td>${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</td>
+                                    <td class="action-buttons">
+                                        <button class="action-btn delete" onclick="deleteBotDeploy('${bot.id}')"><i class="fas fa-trash"></i> Supprimer</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderHerokuAccounts() {
+            const container = document.getElementById('dynamicContent');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 20px; text-align: right;">
+                    <button class="action-btn approve" id="addHerokuBtn" style="background: var(--primary); color: white;">
+                        <i class="fas fa-plus"></i> Ajouter un compte Heroku
+                    </button>
+                </div>
+                <div class="heroku-grid">
+                    ${herokuAccounts.map(acc => `
+                        <div class="heroku-card">
+                            <div class="heroku-card-header">
+                                <div class="heroku-email">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>${escapeHtml(acc.email)}</span>
+                                </div>
+                                <button class="action-btn delete" onclick="deleteHerokuAccount('${acc.id}')" style="padding: 4px 8px;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="heroku-stats">
+                                <span><i class="fas fa-robot"></i> ${acc.current_bots || 0} / ${acc.max_bots || 50}</span>
+                                <span><i class="fas ${acc.is_active ? 'fa-check-circle' : 'fa-pause-circle'}" style="color: ${acc.is_active ? 'var(--success)' : 'var(--danger)'}"></i> ${acc.is_active ? 'Actif' : 'Inactif'}</span>
+                            </div>
+                            <div class="heroku-progress">
+                                <div class="heroku-progress-bar" style="width: ${((acc.current_bots || 0) / (acc.max_bots || 50)) * 100}%"></div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                <button class="action-btn edit" onclick="toggleHerokuStatus('${acc.id}', ${!acc.is_active})" style="flex: 1;">
+                                    <i class="fas ${acc.is_active ? 'fa-pause' : 'fa-play'}"></i> ${acc.is_active ? 'Désactiver' : 'Activer'}
+                                </button>
+                                <button class="action-btn edit" onclick="editHerokuQuota('${acc.id}', ${acc.max_bots || 50})" style="flex: 1;">
+                                    <i class="fas fa-chart-line"></i> Modifier quota
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${herokuAccounts.length === 0 ? '<div class="empty-state"><i class="fab fa-heroku"></i><p>Aucun compte Heroku configuré</p></div>' : ''}
+            `;
+            
+            document.getElementById('addHerokuBtn')?.addEventListener('click', () => {
+                document.getElementById('herokuModal').classList.add('active');
+            });
+        }
+
+        // ===== MODAL ACTIONS =====
+        function openApproveModal(submissionId, botName) {
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('actionModalTitle');
+            const modalBody = document.getElementById('actionModalBody');
+            
+            modalTitle.innerHTML = '<i class="fas fa-check-circle"></i> Approuver le bot';
+            modalBody.innerHTML = `
+                <p>Approuver le bot <strong>${escapeHtml(botName)}</strong> ?</p>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-coins"></i> Prix (coins / semaine)</label>
+                    <input type="number" class="form-input" id="priceWeekly" value="100" min="10">
+                </div>
+                <button class="deploy-btn" id="confirmApproveBtn" style="width: 100%; background: var(--success);">
+                    <i class="fas fa-check"></i> Approuver
+                </button>
+            `;
+            
+            modal.classList.add('active');
+            
+            document.getElementById('confirmApproveBtn').onclick = async () => {
+                const priceWeekly = document.getElementById('priceWeekly').value;
+                try {
+                    const response = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ price_weekly: parseInt(priceWeekly) })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('success', 'Bot approuvé avec succès');
+                        modal.classList.remove('active');
+                        loadSubmissions();
+                        loadStats();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur lors de l\'approbation');
+                }
+            };
+        }
+        
+        function openRejectModal(submissionId, botName) {
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('actionModalTitle');
+            const modalBody = document.getElementById('actionModalBody');
+            
+            modalTitle.innerHTML = '<i class="fas fa-times-circle"></i> Refuser le bot';
+            modalBody.innerHTML = `
+                <p>Refuser le bot <strong>${escapeHtml(botName)}</strong> ?</p>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-comment"></i> Raison du refus</label>
+                    <textarea class="form-textarea" id="rejectReason" placeholder="Expliquez pourquoi le bot est refusé..."></textarea>
+                </div>
+                <button class="deploy-btn" id="confirmRejectBtn" style="width: 100%; background: var(--danger);">
+                    <i class="fas fa-times"></i> Refuser
+                </button>
+            `;
+            
+            modal.classList.add('active');
+            
+            document.getElementById('confirmRejectBtn').onclick = async () => {
+                const reason = document.getElementById('rejectReason').value;
+                try {
+                    const response = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ reason })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('success', 'Bot refusé');
+                        modal.classList.remove('active');
+                        loadSubmissions();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur lors du refus');
+                }
+            };
+        }
+        
+        function viewKhJson(khJsonStr) {
+            try {
+                const khJson = JSON.parse(khJsonStr);
+                const modal = document.getElementById('actionModal');
+                const modalTitle = document.getElementById('actionModalTitle');
+                const modalBody = document.getElementById('actionModalBody');
+                
+                modalTitle.innerHTML = '<i class="fas fa-file-code"></i> kh.json';
+                modalBody.innerHTML = `
+                    <pre style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.8rem; color: var(--text-primary);">${escapeHtml(JSON.stringify(khJson, null, 2))}</pre>
+                    <button class="modal-close" id="closeViewBtn" style="margin-top: 16px; width: 100%; background: var(--primary); color: white; padding: 10px; border-radius: var(--radius-md); border: none; cursor: pointer;">Fermer</button>
+                `;
+                
+                modal.classList.add('active');
+                document.getElementById('closeViewBtn').onclick = () => modal.classList.remove('active');
+            } catch (e) {
+                showToast('error', 'Erreur lecture kh.json');
+            }
+        }
+        
+        async function deleteBotDeploy(botId) {
+            if (!confirm('Supprimer ce bot définitivement ?')) return;
+            try {
+                const response = await fetch(`/api/admin/servers/${botId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Bot supprimé');
+                    loadDeployedBots();
+                    loadStats();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors de la suppression');
+            }
+        }
+        
+        async function deleteHerokuAccount(accountId) {
+            if (!confirm('Supprimer ce compte Heroku ? Les bots associés ne seront pas supprimés.')) return;
+            try {
+                const response = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku supprimé');
+                    loadHerokuAccounts();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors de la suppression');
+            }
+        }
+        
+        async function toggleHerokuStatus(accountId, activate) {
+            try {
+                const response = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ is_active: activate })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', `Compte ${activate ? 'activé' : 'désactivé'}`);
+                    loadHerokuAccounts();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur');
+            }
+        }
+        
+        function editHerokuQuota(accountId, currentQuota) {
+            const modal = document.getElementById('actionModal');
+            const modalTitle = document.getElementById('actionModalTitle');
+            const modalBody = document.getElementById('actionModalBody');
+            
+            modalTitle.innerHTML = '<i class="fas fa-chart-line"></i> Modifier le quota';
+            modalBody.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Nouveau quota maximum</label>
+                    <input type="number" class="form-input" id="newQuota" value="${currentQuota}" min="1" max="500">
+                </div>
+                <button class="deploy-btn" id="confirmQuotaBtn" style="width: 100%; background: var(--primary);">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            `;
+            
+            modal.classList.add('active');
+            
+            document.getElementById('confirmQuotaBtn').onclick = async () => {
+                const newQuota = document.getElementById('newQuota').value;
+                try {
+                    const response = await fetch(`/api/admin/heroku/accounts/${accountId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ max_bots: parseInt(newQuota) })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('success', 'Quota mis à jour');
+                        modal.classList.remove('active');
+                        loadHerokuAccounts();
+                    } else {
+                        showToast('error', data.error || 'Erreur');
+                    }
+                } catch (error) {
+                    showToast('error', 'Erreur');
+                }
+            };
+        }
+        
+        // ===== TAB MANAGEMENT =====
+        function setActiveTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`)?.classList.add('active');
+            
+            const container = document.getElementById('dynamicContent');
+            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>';
+            
+            if (tabId === 'submissions') {
+                loadSubmissions();
+            } else if (tabId === 'deployed') {
+                loadDeployedBots();
+            } else if (tabId === 'heroku') {
+                loadHerokuAccounts();
+            }
+        }
+        
+        function renderMainContent() {
+            const pageContent = document.getElementById('pageContent');
+            pageContent.innerHTML = `
+                <div class="page-header">
+                    <h1 class="page-title">Administration <span class="gradient-text">Bots</span></h1>
+                    <p class="page-subtitle">Gérez les templates, les déploiements et les comptes Heroku</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-info"><h3 id="statTotalTemplates">0</h3><p>Templates</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><h3 id="statPendingSubmissions">0</h3><p>En attente</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-play-circle"></i></div><div class="stat-info"><h3 id="statActiveBots">0</h3><p>Bots actifs</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fab fa-heroku"></i></div><div class="stat-info"><h3 id="statHerokuCapacity">0</h3><p>Capacity Heroku</p></div></div>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" id="tabSubmissions" data-tab="submissions"><i class="fas fa-inbox"></i> Demandes (${submissions.length})</div>
+                    <div class="tab" id="tabDeployed" data-tab="deployed"><i class="fas fa-robot"></i> Bots déployés</div>
+                    <div class="tab" id="tabHeroku" data-tab="heroku"><i class="fab fa-heroku"></i> Comptes Heroku</div>
+                </div>
+                
+                <div id="dynamicContent"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div></div>
+            `;
+            
+            document.getElementById('tabSubmissions').addEventListener('click', () => setActiveTab('submissions'));
+            document.getElementById('tabDeployed').addEventListener('click', () => setActiveTab('deployed'));
+            document.getElementById('tabHeroku').addEventListener('click', () => setActiveTab('heroku'));
+            
+            setActiveTab('submissions');
+        }
+        
+        // ===== HEROKU FORM =====
+        document.getElementById('herokuForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('herokuEmail').value;
+            const apiKey = document.getElementById('herokuApiKey').value;
+            const maxBots = document.getElementById('herokuMaxBots').value;
+            
+            try {
+                const response = await fetch('/api/admin/heroku/accounts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ email, api_key: apiKey, max_bots: parseInt(maxBots) })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('success', 'Compte Heroku ajouté');
+                    document.getElementById('herokuModal').classList.remove('active');
+                    document.getElementById('herokuForm').reset();
+                    loadHerokuAccounts();
+                } else {
+                    showToast('error', data.error || 'Erreur');
+                }
+            } catch (error) {
+                showToast('error', 'Erreur lors de l\'ajout');
+            }
+        });
+        
         function escapeHtml(str) {
             if (!str) return '';
             return String(str).replace(/[&<>]/g, function(m) {
@@ -1335,38 +1271,50 @@
                 return m;
             });
         }
-
+        
+        // Close modals
+        document.getElementById('closeActionModal')?.addEventListener('click', () => {
+            document.getElementById('actionModal').classList.remove('active');
+        });
+        document.getElementById('closeHerokuModal')?.addEventListener('click', () => {
+            document.getElementById('herokuModal').classList.remove('active');
+        });
+        [document.getElementById('actionModal'), document.getElementById('herokuModal')].forEach(modal => {
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.remove('active');
+                });
+            }
+        });
+        
+        // Setup avatar click redirect
         function setupAvatarClickRedirect() {
             const userMenu = document.getElementById('userMenu');
             if (userMenu) {
-                userMenu.style.cursor = 'pointer';
                 userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
             }
             const sidebarUser = document.getElementById('sidebarUser');
             if (sidebarUser) {
-                sidebarUser.style.cursor = 'pointer';
                 sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
             }
         }
-
+        
         // Init
-        setupAvatarClickRedirect();
         checkAdminAccess();
+        setupAvatarClickRedirect();
+        renderMainContent();
+        
+        window.openApproveModal = openApproveModal;
+        window.openRejectModal = openRejectModal;
+        window.viewKhJson = viewKhJson;
+        window.deleteBotDeploy = deleteBotDeploy;
+        window.deleteHerokuAccount = deleteHerokuAccount;
+        window.toggleHerokuStatus = toggleHerokuStatus;
+        window.editHerokuQuota = editHerokuQuota;
         
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) closeSidebarFunc();
         });
-        
-        // Auto-refresh every 10 seconds
-        setInterval(() => {
-            if (document.visibilityState === 'visible' && isAdmin) {
-                loadStats();
-                if (document.querySelector('.tab.active')?.dataset.tab === 'submissions') loadSubmissions();
-                if (document.querySelector('.tab.active')?.dataset.tab === 'accounts') loadHerokuAccounts();
-                if (document.querySelector('.tab.active')?.dataset.tab === 'bots') loadAllBots();
-                if (document.querySelector('.tab.active')?.dataset.tab === 'users') loadUsers();
-            }
-        }, 10000);
     </script>
 </body>
 </html>
