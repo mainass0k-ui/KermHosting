@@ -1090,7 +1090,7 @@ function getServerExpiringHtml(username, server, daysLeft) {
                         <td style="color: #666;">Date d'expiration :</td>
                         <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
                       </tr>
-                     <tr>
+                     <td>
                         <td style="color: #666;">Prix de renouvellement :</td>
                         <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
                       </tr>
@@ -1311,7 +1311,7 @@ function getMinipayPendingHtml(username, pack, convertedAmount, currencySymbol) 
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">📋 Récapitulatif :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                         <tr>
+                         <td>
                             <td style="color: #666;">Pack :</td>
                             <td style="font-weight: bold;">${pack.name}</td>
                           </tr>
@@ -8336,24 +8336,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
                         template_id: template.id,
                         coins_earned: 5
                     }]);
-                
-                const { data: creatorProfile } = await supabase
-                    .from('profiles')
-                    .select('email, username')
-                    .eq('id', template.user_id)
-                    .single();
-                
-                if (creatorProfile && !hasEmailBeenSentRecently(creatorProfile.email, 'bot_creator_reward', botId, 24)) {
-                    const rewardHtml = `
-                        <h2>🎉 Quelqu'un a déployé votre bot !</h2>
-                        <p>Bonjour ${creatorProfile.username},</p>
-                        <p>Votre bot <strong>"${template.name}"</strong> a été déployé par un autre utilisateur.</p>
-                        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
-                            <p><strong>💰 Récompense :</strong> +5 coins</p>
-                        </div>
-                    `;
-                    await sendEmail(creatorProfile.email, '🎉 Votre bot a été déployé !', getBaseEmailTemplate('Récompense créateur', rewardHtml));
-                }
             }
         }
         
@@ -8365,20 +8347,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
                 status: 'success',
                 message: `Déploiement réussi ! Bot actif sur Heroku (${herokuApp.web_url || 'https://' + herokuApp.name + '.herokuapp.com'})`
             }]);
-        
-        if (user?.email && !hasEmailBeenSentRecently(user.email, 'bot_deploy_success', botId, 1)) {
-            const successHtml = `
-                <h2>✅ Votre bot a été déployé avec succès !</h2>
-                <p>Bonjour ${user?.username || 'utilisateur'},</p>
-                <p>Votre bot <strong>"${appName}"</strong> est maintenant actif.</p>
-                <div style="background: #f0f7ff; padding: 15px; border-radius: 8px;">
-                    <p><strong>📅 Expiration :</strong> ${new Date(expiresAt).toLocaleDateString('fr-FR')}</p>
-                    <p><strong>🔗 URL :</strong> https://${herokuApp.name}.herokuapp.com</p>
-                </div>
-                <p>Accédez à l'onglet "Mes bots" pour voir les logs et gérer votre bot.</p>
-            `;
-            await sendEmail(user.email, '✅ Votre bot WhatsApp est déployé !', getBaseEmailTemplate('Déploiement réussi', successHtml));
-        }
         
     } catch (error) {
         console.error(`❌ Erreur déploiement async bot ${botId}:`, error);
@@ -8894,7 +8862,6 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
         const { submissionId } = req.params;
         const { price_weekly } = req.body;
         
-        // Correction: ne pas utiliser INNER JOIN directement comme ça
         const { data: submission, error: fetchError } = await supabase
             .from('bot_submissions')
             .select(`
@@ -8909,12 +8876,10 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             return res.status(404).json({ success: false, error: 'Demande non trouvée' });
         }
         
-        // Vérifier que la demande est bien en attente
         if (submission.status !== 'pending') {
             return res.status(400).json({ success: false, error: 'Cette demande a déjà été traitée' });
         }
         
-        // Créer le template
         const { data: template, error: insertError } = await supabase
             .from('bot_templates')
             .insert([{
@@ -8935,7 +8900,6 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             return res.status(500).json({ success: false, error: 'Erreur création template' });
         }
         
-        // Mettre à jour la demande
         const { error: updateError } = await supabase
             .from('bot_submissions')
             .update({
@@ -8949,11 +8913,9 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             console.error('❌ Erreur mise à jour demande:', updateError);
         }
         
-        // Récupérer l'email de l'utilisateur
         let userEmail = submission.profiles?.email;
         let username = submission.profiles?.username || submission.bot_name;
         
-        // Si l'email n'est pas dans la relation, le chercher directement
         if (!userEmail) {
             const { data: userProfile } = await supabase
                 .from('profiles')
@@ -8967,7 +8929,6 @@ app.post('/api/admin/bot-submissions/:submissionId/approve', authenticateToken, 
             }
         }
         
-        // Email de succès au créateur (seulement si on a l'email)
         if (userEmail) {
             const successHtml = `
                 <h2>✅ Votre bot a été approuvé !</h2>
@@ -8993,7 +8954,6 @@ app.post('/api/admin/bot-submissions/:submissionId/reject', authenticateToken, r
         const { submissionId } = req.params;
         const { reason } = req.body;
         
-        // Correction de la requête
         const { data: submission, error: fetchError } = await supabase
             .from('bot_submissions')
             .select(`
@@ -9024,7 +8984,6 @@ app.post('/api/admin/bot-submissions/:submissionId/reject', authenticateToken, r
         
         if (updateError) throw updateError;
         
-        // Récupérer l'email
         let userEmail = submission.profiles?.email;
         let username = submission.profiles?.username || submission.bot_name;
         
