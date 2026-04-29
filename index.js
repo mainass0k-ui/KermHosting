@@ -7704,6 +7704,86 @@ async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
     }
 }
 
+async function createHerokuApp(apiKey, appName, repoUrl) {
+    try {
+        const app = await callHerokuAPI(apiKey, '/apps', 'POST', {
+            name: appName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+            region: 'eu'
+        });
+        
+        await callHerokuAPI(apiKey, `/apps/${app.name}/buildpack-installations`, 'PUT', {
+            updates: [{ buildpack: 'heroku/nodejs' }]
+        });
+        
+        console.log(`✅ App créée: ${app.name}`);
+        return app;
+    } catch (error) {
+        console.error('❌ Erreur création app:', error);
+        throw error;
+    }
+}
+
+async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
+    try {
+        // 1. Créer un build via Heroku API
+        const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
+            source_blob: {
+                url: `https://github.com/${repoUrl.replace('https://github.com/', '').replace('.git', '')}/archive/refs/heads/${branch}.tar.gz`
+            }
+        });
+        
+        console.log(`✅ Déploiement automatique déclenché pour ${appName}`);
+        return build;
+    } catch (error) {
+        console.error('❌ Erreur déploiement auto:', error);
+        
+        // Fallback: donner les infos pour déploiement manuel
+        console.log(`⚠️ Déploiement manuel: git push https://git.heroku.com/${appName}.git ${branch}`);
+        return null;
+    }
+}
+
+async function setHerokuEnvVars(apiKey, appName, envVars) {
+    try {
+        await callHerokuAPI(apiKey, `/apps/${appName}/config-vars`, 'PATCH', envVars);
+        console.log(`✅ Variables d'env configurées pour ${appName}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Erreur set env vars:', error);
+        return false;
+    }
+}
+
+async function deleteHerokuApp(apiKey, appName) {
+    try {
+        await callHerokuAPI(apiKey, `/apps/${appName}`, 'DELETE');
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function restartHerokuDynos(apiKey, appName) {
+    try {
+        await callHerokuAPI(apiKey, `/apps/${appName}/dynos`, 'DELETE');
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function getHerokuAppLogs(apiKey, appName, lines = 100) {
+    try {
+        const logs = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
+            lines,
+            tail: false
+        });
+        return logs;
+    } catch (error) {
+        return null;
+    }
+}
+
 async function getAvailableHerokuAccount() {
     try {
         // 1. Récupérer TOUS les comptes actifs
