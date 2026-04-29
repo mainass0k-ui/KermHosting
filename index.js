@@ -7706,26 +7706,29 @@ async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
 
 async function getAvailableHerokuAccount() {
     try {
+        // Récupérer tous les comptes actifs
         const { data: accounts, error } = await supabase
             .from('heroku_accounts')
             .select('*')
             .eq('is_active', true)
-            .lt('current_bots', supabase.raw('max_bots'))
             .order('last_used_at', { ascending: true, nullsFirst: true });
         
         if (error) throw error;
         
-        if (!accounts || accounts.length === 0) {
+        // Filtrer ceux qui ont de la place
+        const available = accounts?.filter(acc => acc.current_bots < acc.max_bots) || [];
+        
+        if (available.length === 0) {
             return null;
         }
         
-        const selectedAccount = accounts[0];
+        const selectedAccount = available[0];
         
         await supabase
             .from('heroku_accounts')
             .update({ 
                 last_used_at: new Date().toISOString(),
-                current_bots: supabase.raw('current_bots + 1')
+                current_bots: supabase.sql`current_bots + 1`  // ✅ Ceci fonctionne !
             })
             .eq('id', selectedAccount.id);
         
