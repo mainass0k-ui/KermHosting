@@ -7796,33 +7796,6 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
     }
 }
 
-async function deployHerokuApp(apiKey, appName, branch = 'main') {
-    try {
-        const sourceBlob = await callHerokuAPI(apiKey, `/apps/${appName}/sources`, 'POST');
-        
-        const repoClean = repoUrl.replace('https://github.com/', '').replace('.git', '');
-        const tarballUrl = `https://api.github.com/repos/${repoClean}/tarball/${branch}`;
-        
-        const tarballResponse = await axios.get(tarballUrl, {
-            responseType: 'arraybuffer',
-            headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-        
-        await axios.put(sourceBlob.source_blob.put_url, tarballResponse.data, {
-            headers: { 'Content-Type': 'application/x-gzip' }
-        });
-        
-        const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
-            source_blob: { url: sourceBlob.source_blob.url }
-        });
-        
-        return build;
-    } catch (error) {
-        console.error('❌ Erreur déploiement:', error);
-        return null;
-    }
-}
-
 async function setHerokuEnvVars(apiKey, appName, envVars) {
     try {
         const configVars = {};
@@ -7840,15 +7813,30 @@ async function setHerokuEnvVars(apiKey, appName, envVars) {
     }
 }
 
-async function deployHerokuApp(apiKey, appName, branch = 'main') {
+async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
     try {
-        const result = await callHerokuAPI(apiKey, `/apps/${appName}/github`, 'POST', {
-            source_blob: { branch }
+        const sourceBlob = await callHerokuAPI(apiKey, `/apps/${appName}/sources`, 'POST');
+        
+        const repoClean = repoUrl.replace('https://github.com/', '').replace('.git', '');
+        const tarballUrl = `https://github.com/${repoClean}/archive/refs/heads/${branch}.tar.gz`;
+        
+        const tarballResponse = await axios.get(tarballUrl, {
+            responseType: 'arraybuffer'
         });
-        return result;
+        
+        await axios.put(sourceBlob.source_blob.put_url, tarballResponse.data, {
+            headers: { 'Content-Type': 'application/x-gzip' }
+        });
+        
+        const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
+            source_blob: { url: sourceBlob.source_blob.url }
+        });
+        
+        console.log(`✅ Build déclenché: ${build.id}`);
+        return build;
     } catch (error) {
-        console.error('❌ Erreur déploiement Heroku:', error);
-        throw error;
+        console.error('❌ Erreur déploiement:', error);
+        return null;
     }
 }
 
@@ -8329,7 +8317,7 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
         
         await setHerokuEnvVars(herokuAccount.api_key, herokuApp.name, envVars);
         
-        await deployHerokuApp(herokuAccount.api_key, herokuApp.name);
+        await deployHerokuApp(herokuAccount.api_key, herokuApp.name, template.repo_url);
         
         await supabase
             .from('user_bots')
