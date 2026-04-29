@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
-
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,70 +22,19 @@
     
     <style>
         :root {
-            --primary: #7C3AED;
-            --primary-light: #9D6CFF;
-            --primary-dark: #5B2AB0;
-            --primary-glow: rgba(124, 58, 237, 0.3);
-            --secondary: #10B981;
-            --secondary-light: #34D399;
-            --accent: #F59E0B;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --success: #10B981;
-            --info: #3B82F6;
-            
-            --bg-dark: #0B1120;
-            --bg-card: #1A2332;
-            --bg-sidebar: #111827;
-            --bg-hover: #1F2937;
-            --bg-input: #1E293B;
-            
-            --text-primary: #F3F4F6;
-            --text-secondary: #9CA3AF;
-            --text-muted: #6B7280;
-            
-            --border-color: #2D3748;
-            --border-light: #374151;
-            
-            --shadow-glow: 0 0 15px var(--primary-glow);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --radius-full: 9999px;
+            --primary: #7C3AED; --primary-light: #9D6CFF; --primary-dark: #5B2AB0; --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981; --secondary-light: #34D399; --accent: #F59E0B; --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6;
+            --bg-dark: #0B1120; --bg-card: #1A2332; --bg-sidebar: #111827; --bg-hover: #1F2937; --bg-input: #1E293B;
+            --text-primary: #F3F4F6; --text-secondary: #9CA3AF; --text-muted: #6B7280; --border-color: #2D3748;
+            --shadow-glow: 0 0 15px var(--primary-glow); --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.5;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
-            pointer-events: none; z-index: -1;
-        }
-
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; }
 
         /* SIDEBAR */
-        .sidebar {
-            position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
-            background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
-            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
@@ -94,10 +42,9 @@
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
         .logo i { color: var(--primary); font-size: 1.5rem; }
         .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
-        .close-sidebar:hover { background: var(--bg-hover); color: var(--text-primary); }
         .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .sidebar-user:hover { background: var(--bg-hover); }
-        .user-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-info { flex: 1; min-width: 0; }
         .user-name { font-weight: 600; font-size: 1rem; }
@@ -121,52 +68,35 @@
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
         /* TOP BAR */
-        .top-bar {
-            position: sticky; top: 0; z-index: 100; background: rgba(11, 17, 32, 0.95);
-            backdrop-filter: blur(12px); padding: 10px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11, 17, 32, 0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
         .top-bar-left { display: flex; align-items: center; gap: 12px; }
         .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
         .top-bar-actions { display: flex; align-items: center; gap: 10px; }
-        .btn-submit-bot {
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white; border: none; padding: 8px 16px;
-            border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem;
-            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;
-            white-space: nowrap;
-        }
+        .btn-submit-bot { background: linear-gradient(135deg, #25D366, #128C7E); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
         .btn-submit-bot:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
-        .notification-btn { background: none; border: none; color: var(--text-primary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); position: relative; }
-        .notification-badge { position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; font-size: 0.625rem; min-width: 18px; height: 18px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg-sidebar); }
-        .user-avatar-small { width: 36px; height: 36px; border-radius: var(--radius-full); border: 2px solid var(--primary); object-fit: cover; }
+        .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
 
-        /* PAGE CONTENT */
+        /* PAGE */
         .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
-
-        /* HEADER */
-        .marketplace-header { text-align: center; margin-bottom: 28px; }
-        .marketplace-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: var(--radius-full); margin-bottom: 16px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
-        .marketplace-title { font-size: 2.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
+        .marketplace-header { text-align: center; margin-bottom: 24px; }
+        .marketplace-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: var(--radius-full); margin-bottom: 14px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
+        .marketplace-title { font-size: 2.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 6px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .marketplace-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
-
-        /* SEARCH */
-        .search-section { margin-bottom: 24px; }
+        .search-section { margin-bottom: 20px; }
         .search-bar { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
         .search-input { flex: 1; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-full); padding: 12px 18px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; }
-        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(124,58,237,0.1); }
         .search-input::placeholder { color: var(--text-muted); }
 
         /* BOTS GRID */
-        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; }
-        .bot-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px -10px rgba(124, 58, 237, 0.3); }
-        .bot-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124, 58, 237, 0.06), transparent); }
-        .bot-card-logo { width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
+        .bot-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px -10px rgba(124,58,237,0.3); }
+        .bot-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent); }
+        .bot-card-logo { width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; flex-shrink: 0; }
         .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
         .bot-card-info { flex: 1; }
         .bot-card-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
@@ -176,451 +106,227 @@
         .bot-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
         .bot-tag { background: var(--bg-hover); padding: 3px 8px; border-radius: var(--radius-full); font-size: 0.65rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
         .bot-price { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border-color); }
-        .price-coins { display: flex; align-items: center; gap: 4px; font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .price-coins { display: flex; align-items: baseline; gap: 4px; font-size: 1rem; font-weight: 700; color: var(--primary); }
         .price-coins i { font-size: 0.9rem; color: var(--accent); }
-        .price-period { font-size: 0.7rem; color: var(--text-muted); }
+        .price-period { font-size: 0.7rem; color: var(--text-muted); margin-left: 2px; }
         .deploy-count { font-size: 0.7rem; color: var(--text-muted); }
 
-        /* MODAL PLEIN ÉCRAN */
-        .modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            z-index: 2000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s; padding: 0;
-        }
+        /* MODAL FULLSCREEN */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 0; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: var(--bg-card); border-radius: 0;
-            width: 100%; height: 100%; max-width: 100%; max-height: 100%;
-            overflow-y: auto; border: none;
-            transform: scale(0.95); transition: transform 0.3s;
-        }
+        .modal-content { background: var(--bg-card); width: 100%; height: 100%; max-width: 100%; max-height: 100%; overflow-y: auto; border: none; transform: scale(0.95); transition: transform 0.3s; }
         .modal.active .modal-content { transform: scale(1); }
-        .modal-header {
-            padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; background: var(--bg-card); z-index: 10;
-        }
+        .modal-header { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; }
         .modal-header h2 { font-size: 1.3rem; }
         .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); }
-        .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .modal-close:hover { background: var(--bg-hover); }
         .modal-body { padding: 20px 24px 40px; max-width: 700px; margin: 0 auto; }
 
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85rem; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.85rem; }
         .form-label i { color: var(--primary); margin-right: 6px; }
-        .form-input, .form-textarea, .form-select { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
         .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        .form-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); padding: 12px 14px; margin: 12px 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--danger); }
+        .form-error i { font-size: 1.2rem; flex-shrink: 0; }
+        .form-error a { color: var(--primary-light); margin-left: auto; font-size: 0.8rem; text-decoration: none; white-space: nowrap; }
+        .form-error a:hover { text-decoration: underline; }
 
-        /* SESSION ID BUTTON */
-        .session-btn-wrapper { text-align: center; margin: 8px 0 16px; }
+        /* SESSION ID BTN */
+        .session-btn-wrapper { text-align: center; margin: 6px 0 14px; }
         .session-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 10px 24px; border-radius: var(--radius-full); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.3s; }
-        .session-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+        .session-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,211,102,0.4); }
 
-        /* TOGGLE PRO */
-        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; margin-bottom: 4px; }
+        /* TOGGLE */
+        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; margin-bottom: 2px; }
         .toggle-label { font-weight: 600; font-size: 0.9rem; }
         .toggle-sub { font-size: 0.7rem; color: var(--text-muted); display: block; }
-        .toggle-switch { position: relative; width: 52px; height: 28px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 2px solid var(--border-color); }
+        .toggle-switch { position: relative; width: 52px; height: 28px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 2px solid var(--border-color); flex-shrink: 0; }
         .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
         .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .toggle-switch.active::after { left: 24px; }
 
-        /* ENV SECTION */
-        .env-section { margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px; }
-        .env-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--border-color); }
-        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 4px; font-size: 0.85rem; }
-        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+        /* ENV */
+        .env-section { margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 14px; }
+        .env-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 7px; border: 1px solid var(--border-color); }
+        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 3px; font-size: 0.85rem; }
+        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; }
         .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: monospace; font-size: 0.85rem; }
         .env-value input:focus { outline: none; border-color: var(--primary); }
         .env-required { color: var(--danger); font-size: 0.65rem; margin-left: 6px; }
 
-        /* DEPLOY BUTTON */
-        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 16px; }
+        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 14px; }
         .deploy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .deploy-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        /* EMPTY STATE */
+        .price-display { background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); margin-top: 14px; text-align: center; font-size: 0.9rem; }
+        .price-display .amount { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+        .price-display .duration { color: var(--text-secondary); }
+
         .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
         .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
-
-        /* TOAST */
         .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 10px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 350px; font-size: 0.9rem; }
-        .toast.success { background: rgba(16, 185, 129, 0.95); }
-        .toast.error { background: rgba(239, 68, 68, 0.95); }
-        .toast.info { background: rgba(59, 130, 246, 0.95); }
+        .toast.success { background: rgba(16,185,129,0.95); }
+        .toast.error { background: rgba(239,68,68,0.95); }
+        .toast.info { background: rgba(59,130,246,0.95); }
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
-
         .loading-spinner { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
         .loading-spinner i { font-size: 2rem; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media (max-width: 1024px) {
-            .menu-toggle { display: flex; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .bots-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-        }
-        @media (max-width: 768px) {
-            .page-content { padding: 12px; }
-            .marketplace-title { font-size: 1.6rem; }
-            .top-bar { padding: 8px 12px; }
-            .btn-submit-bot { font-size: 0.75rem; padding: 6px 12px; }
-        }
+        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
+        @media (max-width: 768px) { .page-content { padding: 12px; } .marketplace-title { font-size: 1.6rem; } .top-bar { padding: 8px 12px; } .btn-submit-bot { font-size: 0.75rem; padding: 6px 12px; } }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
-                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div>
-                <div class="user-info">
-                    <div class="user-name" id="sidebarUserName">Invité</div>
-                    <div class="user-email" id="sidebarUserEmail">Non connecté</div>
-                </div>
-                <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li id="navDashboard" style="display:none;"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
-                    <li><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
-                    <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
-                    <li id="navProfile" style="display:none;"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
-                    <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
-                    <li class="active"><a href="/bot"><i class="fab fa-whatsapp"></i><span>Bots</span></a></li>
-                    <li id="navMyBots" style="display:none;"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
-                    <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
-                    <li class="divider"></li>
-                    <li id="navHome"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
-                    <li id="navLogin"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
-                    <li id="navRegister"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
-                    <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-stats">
-                    <div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div>
-                    <div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div>
-                </div>
-            </div>
+            <div class="sidebar-header"><div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div><button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button></div>
+            <div class="sidebar-user" id="sidebarUser"><div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div><div class="user-info"><div class="user-name" id="sidebarUserName">Invité</div><div class="user-email" id="sidebarUserEmail">Non connecté</div></div><div class="user-badge" id="sidebarUserBadge">Visiteur</div></div>
+            <nav class="sidebar-nav"><ul>
+                <li id="navDashboard" style="display:none;"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
+                <li><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
+                <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
+                <li id="navProfile" style="display:none;"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
+                <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
+                <li class="active"><a href="/bot"><i class="fab fa-whatsapp"></i><span>Bots</span></a></li>
+                <li id="navMyBots" style="display:none;"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
+                <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
+                <li class="divider"></li>
+                <li id="navHome"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+                <li id="navLogin"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
+                <li id="navRegister"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
+                <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+            </ul></nav>
+            <div class="sidebar-footer"><div class="sidebar-stats"><div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div><div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div></div></div>
         </aside>
 
         <main class="main-content">
             <header class="top-bar">
-                <div class="top-bar-left">
-                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                    <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
-                </div>
-                <div class="top-bar-actions">
-                    <button class="btn-submit-bot" id="submitBotBtnTop"><i class="fas fa-plus-circle"></i> Proposer un bot</button>
-                    <a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a>
-                </div>
+                <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
+                <div class="top-bar-actions"><button class="btn-submit-bot" id="submitBotBtnTop"><i class="fas fa-plus-circle"></i> Proposer un bot</button><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
-
             <div class="page-content">
-                <div class="marketplace-header">
-                    <div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div>
-                    <h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1>
-                    <p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p>
-                </div>
-
-                <div class="search-section">
-                    <div class="search-bar">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot...">
-                    </div>
-                </div>
-
-                <div id="botsContainer" class="bots-grid">
-                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement des bots...</p></div>
-                </div>
+                <div class="marketplace-header"><div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div><h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1><p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p></div>
+                <div class="search-section"><div class="search-bar"><input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot..."></div></div>
+                <div id="botsContainer" class="bots-grid"><div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement des bots...</p></div></div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL DÉPLOIEMENT PLEIN ÉCRAN -->
-    <div class="modal" id="deployModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Déployer un bot</h2>
-                <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
-        </div>
-    </div>
+    <!-- MODAL DÉPLOIEMENT -->
+    <div class="modal" id="deployModal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle">Déployer un bot</h2><button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
 
     <!-- MODAL SOUMISSION -->
-    <div class="modal" id="submitModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Proposer un bot</h2>
-                <button class="modal-close" id="closeSubmitModal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="submitForm">
-                    <div class="form-group">
-                        <label class="form-label"><i class="fas fa-tag"></i> Nom du bot</label>
-                        <input type="text" class="form-input" id="submitBotName" required placeholder="Ex: YANRA-MD">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label>
-                        <input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo">
-                        <div class="form-hint">Le repo doit contenir un fichier kh.json à la racine</div>
-                    </div>
-                    <button type="submit" class="deploy-btn" id="submitFormBtn"><i class="fas fa-paper-plane"></i> Soumettre</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="submitModal"><div class="modal-content"><div class="modal-header"><h2>Proposer un bot</h2><button class="modal-close" id="closeSubmitModal"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="submitForm">
+        <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom du bot</label><input type="text" class="form-input" id="submitBotName" required placeholder="Ex: KERM-MD-V1"></div>
+        <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo"><div class="form-hint">Le repo doit contenir un fichier <strong>kh.json</strong> à la racine. <a href="https://github.com/hostt11/Exemple/blob/main/kh.json" target="_blank" style="color:var(--primary-light);">Voir un exemple</a></div></div>
+        <div id="submitError" style="display:none;"></div>
+        <button type="submit" class="deploy-btn" id="submitFormBtn"><i class="fas fa-paper-plane"></i> Soumettre</button>
+    </form></div></div></div>
 
     <script>
         const AvatarManager = {
-            getAvatar: function(username) {
-                return localStorage.getItem('user_avatar') || sessionStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
-            },
-            applyToPage: function(username) {
-                const avatar = this.getAvatar(username);
-                const ua = document.getElementById('userAvatarSmall'); if (ua) { ua.src = avatar; ua.style.objectFit = 'cover'; }
-                const sa = document.getElementById('sidebarAvatar'); if (sa) sa.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-            }
+            getAvatar: function(u) { return localStorage.getItem('user_avatar') || sessionStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
+            applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const b=document.getElementById('sidebarAvatar'); if(b)b.innerHTML=`<img src="${a}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; }
         };
+        function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
+        function esc(s){ if(!s)return''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-        function showToast(type, message) {
-            const t = document.createElement('div'); t.className = `toast ${type}`;
-            t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(t);
-            setTimeout(() => { t.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => t.remove(), 300); }, 3000);
+        const sidebar=document.getElementById('sidebar'), overlay=document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.add('active');overlay.classList.add('active')});
+        document.getElementById('closeSidebar').addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
+        overlay.addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
+
+        const token=localStorage.getItem('token'); let currentUser=null;
+        function checkAuth(){
+            if(token){ fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{ if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=d.user.email; document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navMyBots','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); ['navHome','navLogin','navRegister'].forEach(i=>document.getElementById(i).style.display='none'); AvatarManager.applyToPage(d.user.username); } }).catch(()=>{localStorage.removeItem('token');showNotConnected()}) }else showNotConnected();
+        }
+        function showNotConnected(){ document.getElementById('sidebarUserName').textContent='Invité'; document.getElementById('sidebarUserEmail').textContent='Non connecté'; document.getElementById('sidebarUserBadge').textContent='Visiteur'; document.getElementById('sidebarCoins').textContent='0'; document.getElementById('sidebarServers').textContent='0'; }
+        document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.reload()});
+        document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href=token?'/profile':'/login'});
+
+        async function loadTemplates(){
+            const c=document.getElementById('botsContainer');
+            try{ const r=await fetch('/api/bots/templates',{headers:token?{'Authorization':`Bearer ${token}`}:{}}); const d=await r.json();
+                if(!d.success||!d.templates?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible.</p></div>'; return; }
+                c.innerHTML=d.templates.map(t=>`<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${t.logo_url?`<img src="${t.logo_url}" alt="${esc(t.name)}">`:`<i class="fab fa-whatsapp"></i>`}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div><div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id?'Communauté':'Officiel'}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys||0}</div></div></div></div>`).join('');
+            }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
         }
 
-        // Sidebar
-        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
-        document.getElementById('menuToggle').addEventListener('click', () => { sidebar.classList.add('active'); overlay.classList.add('active'); });
-        document.getElementById('closeSidebar').addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
-        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
-
-        // Auth
-        const token = localStorage.getItem('token');
-        let currentUser = null;
-
-        function checkAuth() {
-            if (token) {
-                fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        currentUser = data.user;
-                        document.getElementById('sidebarUserName').textContent = data.user.username;
-                        document.getElementById('sidebarUserEmail').textContent = data.user.email;
-                        document.getElementById('sidebarUserBadge').textContent = data.user.role;
-                        document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
-                        document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
-                        ['navDashboard','navProfile','navMyBots','navLogout'].forEach(id => document.getElementById(id).style.display = 'block');
-                        ['navHome','navLogin','navRegister'].forEach(id => document.getElementById(id).style.display = 'none');
-                        AvatarManager.applyToPage(data.user.username);
-                    }
-                }).catch(() => { localStorage.removeItem('token'); showNotConnected(); });
-            } else showNotConnected();
-        }
-        function showNotConnected() {
-            document.getElementById('sidebarUserName').textContent = 'Invité';
-            document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
-            document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
-            document.getElementById('sidebarCoins').textContent = '0';
-            document.getElementById('sidebarServers').textContent = '0';
-        }
-
-        document.getElementById('logoutLink')?.addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); location.reload(); });
-        document.getElementById('userMenu')?.addEventListener('click', e => { e.preventDefault(); location.href = token ? '/profile' : '/login'; });
-
-        // Load templates
-        async function loadTemplates() {
-            const container = document.getElementById('botsContainer');
-            try {
-                const res = await fetch('/api/bots/templates', { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
-                const data = await res.json();
-                if (!data.success || !data.templates?.length) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible pour le moment.</p></div>`;
-                    return;
-                }
-                container.innerHTML = data.templates.map(t => `
-                    <div class="bot-card" onclick="openDeployModal('${t.id}')">
-                        <div class="bot-card-header">
-                            <div class="bot-card-logo">${t.logo_url ? `<img src="${t.logo_url}" alt="${esc(t.name)}">` : `<i class="fab fa-whatsapp"></i>`}</div>
-                            <div class="bot-card-info">
-                                <div class="bot-card-name">${esc(t.name)}</div>
-                                <div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id ? 'Communauté' : 'Officiel'}</div>
-                            </div>
-                        </div>
-                        <div class="bot-card-body">
-                            <div class="bot-card-description">${esc(t.kh_json?.description || 'Aucune description')}</div>
-                            <div class="bot-tags">${(t.kh_json?.keywords || ['bot']).slice(0,3).map(k => `<span class="bot-tag">${esc(k)}</span>`).join('')}</div>
-                            <div class="bot-price">
-                                <div class="price-coins"><i class="fas fa-coins"></i><span>${t.price_weekly}</span><span class="price-period">/semaine</span></div>
-                                <div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys || 0}</div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch(e) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
-            }
-        }
-
-        // Deploy modal
-        let selectedTemplate = null, currentDurationMode = 'weekly', currentEnvVars = {};
-
-        async function openDeployModal(templateId) {
-            if (!token) { showToast('error', 'Connectez-vous pour déployer'); location.href = '/login'; return; }
-            try {
-                const res = await fetch(`/api/bots/templates/${templateId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                if (!data.success) throw new Error('Template non trouvé');
-                selectedTemplate = data.template;
-                currentEnvVars = {};
-                const khEnv = selectedTemplate.kh_json?.env || {};
-                for (const [key, config] of Object.entries(khEnv)) currentEnvVars[key] = config.value || '';
+        let selectedTemplate=null, currentDurationMode='weekly', currentEnvVars={};
+        async function openDeployModal(tid){
+            if(!token){showToast('error','Connectez-vous');location.href='/login';return}
+            try{ const r=await fetch(`/api/bots/templates/${tid}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Template non trouvé');
+                selectedTemplate=d.template; currentEnvVars={}; const env=selectedTemplate.kh_json?.env||{}; for(const[k,c]of Object.entries(env))currentEnvVars[k]=c.value||'';
                 renderDeployModal();
-            } catch(e) { showToast('error', 'Erreur chargement template'); }
+            }catch(e){showToast('error','Erreur chargement template')}
         }
 
-        function renderDeployModal() {
-            const khJson = selectedTemplate.kh_json || {}, env = khJson.env || {};
-            const price = currentDurationMode === 'weekly' ? selectedTemplate.price_weekly : selectedTemplate.price_weekly * 4;
-            
-            document.getElementById('modalTitle').textContent = `Déployer ${selectedTemplate.name}`;
-            document.getElementById('modalBody').innerHTML = `
-                <div class="form-group">
-                    <label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label>
-                    <input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')">
-                    <div class="form-hint" id="appNameHint"></div>
-                </div>
-                
-                <div class="toggle-group">
-                    <div>
-                        <div class="toggle-label">Mode mensuel</div>
-                        <div class="toggle-sub">${price} coins pour 28 jours (×4)</div>
-                    </div>
-                    <div class="toggle-switch ${currentDurationMode === 'monthly' ? 'active' : ''}" id="durationToggle"></div>
-                </div>
+        function renderDeployModal(){
+            const kh=selectedTemplate.kh_json||{}, env=kh.env||{};
+            const weekly=selectedTemplate.price_weekly, monthly=weekly*4;
+            const price=currentDurationMode==='weekly'?weekly:monthly;
+            const days=currentDurationMode==='weekly'?7:28;
 
-                <div class="session-btn-wrapper">
-                    <a href="${khJson['documentation-link'] || '#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a>
-                </div>
-
-                <div class="env-section">
-                    <div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>
-                    ${Object.entries(env).map(([key, config]) => `
-                        <div class="env-item">
-                            <div class="env-key">${esc(key)} ${config.required ? '<span class="env-required">(requis)</span>' : ''}</div>
-                            <div class="env-desc">${esc(config.description || '')}</div>
-                            <div class="env-value">
-                                <input type="text" id="env_${key}" value="${esc(currentEnvVars[key] || config.value || '')}" placeholder="${config.required ? 'Requis' : 'Optionnel'}" oninput="this.value=this.value.toLowerCase()">
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
+            document.getElementById('modalTitle').textContent=`Déployer ${selectedTemplate.name}`;
+            document.getElementById('modalBody').innerHTML=`
+                <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label><input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')"><div class="form-hint" id="appNameHint"></div></div>
                 
-                <div style="background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); margin-top: 16px; text-align: center;">
-                    <span style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">${price}</span>
-                    <span style="color: var(--text-secondary);"> coins — ${currentDurationMode === 'weekly' ? '7 jours' : '28 jours'}</span>
-                </div>
+                <div class="toggle-group"><div><div class="toggle-label">Mode mensuel</div><div class="toggle-sub">${monthly} coins pour 28 jours</div></div><div class="toggle-switch ${currentDurationMode==='monthly'?'active':''}" id="durationToggle"></div></div>
+
+                <div class="session-btn-wrapper"><a href="${kh['documentation-link']||'#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a></div>
+
+                <div class="env-section"><div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>${Object.entries(env).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(currentEnvVars[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" oninput="this.value=this.value.toLowerCase()"></div></div>`).join('')}</div>
+                
+                <div class="price-display"><span class="amount">${price}</span> coins — <span class="duration">${days} jours</span></div>
                 
                 <button class="deploy-btn" id="confirmDeployBtn"><i class="fas fa-rocket"></i> Déployer maintenant</button>
             `;
 
-            document.getElementById('durationToggle').addEventListener('click', () => {
-                currentDurationMode = currentDurationMode === 'weekly' ? 'monthly' : 'weekly';
-                document.getElementById('durationToggle').classList.toggle('active');
-                renderDeployModal();
-            });
+            document.getElementById('durationToggle').addEventListener('click',()=>{currentDurationMode=currentDurationMode==='weekly'?'monthly':'weekly';renderDeployModal()});
+            const app=document.getElementById('appName'), hint=document.getElementById('appNameHint'); let t;
+            app.addEventListener('input',()=>{clearTimeout(t);const n=app.value;if(n.length<3){hint.innerHTML='';return}t=setTimeout(async()=>{try{const r=await fetch('/api/bots/check-app-name',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({app_name:n})});const d=await r.json();hint.innerHTML=d.available?'<span style="color:var(--success)">✅ Disponible</span>':`<span style="color:var(--danger)">❌ ${d.message||'Indisponible'}</span>`}catch(e){hint.innerHTML=''}},500)});
 
-            const appNameInput = document.getElementById('appName');
-            const appNameHint = document.getElementById('appNameHint');
-            let checkTimeout;
-            appNameInput.addEventListener('input', () => {
-                clearTimeout(checkTimeout);
-                const name = appNameInput.value;
-                if (name.length < 3) { appNameHint.innerHTML = ''; return; }
-                checkTimeout = setTimeout(async () => {
-                    try {
-                        const res = await fetch('/api/bots/check-app-name', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ app_name: name }) });
-                        const data = await res.json();
-                        appNameHint.innerHTML = data.available ? '<span style="color:var(--success);">✅ Disponible</span>' : `<span style="color:var(--danger);">❌ ${data.message||'Indisponible'}</span>`;
-                    } catch(e) { appNameHint.innerHTML = ''; }
-                }, 500);
+            document.getElementById('confirmDeployBtn').addEventListener('click',async()=>{
+                const an=app.value.trim(); if(!an){showToast('error','Nom requis');return}
+                const ev={}; for(const k of Object.keys(env)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())ev[k]=i.value.trim()}
+                const miss=Object.entries(env).filter(([k,c])=>c.required&&!ev[k]); if(miss.length){showToast('error','Variables requises manquantes');return}
+                const b=document.getElementById('confirmDeployBtn'); b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Déploiement...';
+                try{const r=await fetch('/api/bots/deploy',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({template_id:selectedTemplate.id,app_name:an,duration_mode:currentDurationMode,env_vars:ev})});const d=await r.json();
+                    if(d.success){showToast('success','Déploiement initié !');setTimeout(()=>{document.getElementById('deployModal').classList.remove('active');location.href='/my-bots'},1500)}else showToast('error',d.error||'Erreur')
+                }catch(e){showToast('error','Erreur réseau')}finally{b.disabled=false;b.innerHTML='<i class="fas fa-rocket"></i> Déployer maintenant'}
             });
-
-            document.getElementById('confirmDeployBtn').addEventListener('click', async () => {
-                const appName = document.getElementById('appName').value.trim();
-                if (!appName) { showToast('error', 'Nom d\'application requis'); return; }
-                const envVars = {};
-                for (const key of Object.keys(env)) {
-                    const input = document.getElementById(`env_${key}`);
-                    if (input?.value.trim()) envVars[key] = input.value.trim();
-                }
-                const missing = Object.entries(env).filter(([k, c]) => c.required && !envVars[k]);
-                if (missing.length) { showToast('error', `Variables requises : ${missing.map(([k])=>k).join(', ')}`); return; }
-                
-                const btn = document.getElementById('confirmDeployBtn');
-                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Déploiement...';
-                try {
-                    const res = await fetch('/api/bots/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ template_id: selectedTemplate.id, app_name: appName, duration_mode: currentDurationMode, env_vars: envVars }) });
-                    const data = await res.json();
-                    if (data.success) { showToast('success', 'Déploiement initié !'); setTimeout(() => { document.getElementById('deployModal').classList.remove('active'); location.href = '/my-bots'; }, 1500); }
-                    else showToast('error', data.error || 'Erreur');
-                } catch(e) { showToast('error', 'Erreur réseau'); }
-                finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rocket"></i> Déployer maintenant'; }
-            });
-
             document.getElementById('deployModal').classList.add('active');
         }
 
-        // Submit bot
-        document.getElementById('submitBotBtnTop').addEventListener('click', () => {
-            if (!token) { showToast('error', 'Connectez-vous'); location.href = '/login'; return; }
-            document.getElementById('submitModal').classList.add('active');
-        });
-        document.getElementById('closeSubmitModal').addEventListener('click', () => document.getElementById('submitModal').classList.remove('active'));
-        document.getElementById('submitForm').addEventListener('submit', async e => {
-            e.preventDefault();
-            const botName = document.getElementById('submitBotName').value.trim();
-            const repoUrl = document.getElementById('submitRepoUrl').value.trim();
-            if (!botName || !repoUrl) { showToast('error', 'Tous les champs requis'); return; }
-            const btn = document.getElementById('submitFormBtn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
-            try {
-                const res = await fetch('/api/bots/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ bot_name: botName, repo_url: repoUrl }) });
-                const data = await res.json();
-                if (data.success) { showToast('success', 'Bot soumis ! En attente d\'approbation'); document.getElementById('submitModal').classList.remove('active'); document.getElementById('submitForm').reset(); }
-                else showToast('error', data.error || 'Erreur');
-            } catch(e) { showToast('error', 'Erreur réseau'); }
-            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Soumettre'; }
+        // Submit
+        document.getElementById('submitBotBtnTop').addEventListener('click',()=>{if(!token){showToast('error','Connectez-vous');location.href='/login';return}document.getElementById('submitModal').classList.add('active')});
+        document.getElementById('closeSubmitModal').addEventListener('click',()=>document.getElementById('submitModal').classList.remove('active'));
+        document.getElementById('submitForm').addEventListener('submit',async e=>{
+            e.preventDefault(); const n=document.getElementById('submitBotName').value.trim(),u=document.getElementById('submitRepoUrl').value.trim(); if(!n||!u){showToast('error','Tous les champs requis');return}
+            const b=document.getElementById('submitFormBtn'), errDiv=document.getElementById('submitError'); b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...';errDiv.style.display='none';
+            try{ const r=await fetch('/api/bots/submit',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({bot_name:n,repo_url:u})});const d=await r.json();
+                if(d.success){showToast('success','Bot soumis !');document.getElementById('submitModal').classList.remove('active');document.getElementById('submitForm').reset()}
+                else{ errDiv.style.display='block';errDiv.innerHTML=`<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>${d.error||'Erreur'}</span>${d.error?.includes('existe')?`<a href="${u}" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le repo</a>`:''}</div>` }
+            }catch(e){ errDiv.style.display='block';errDiv.innerHTML='<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>Erreur réseau</span></div>' }
+            finally{b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Soumettre'}
         });
 
         // Close modals
-        document.getElementById('closeModal').addEventListener('click', () => document.getElementById('deployModal').classList.remove('active'));
-        document.getElementById('deployModal').addEventListener('click', e => { if (e.target === document.getElementById('deployModal')) document.getElementById('deployModal').classList.remove('active'); });
-        document.getElementById('submitModal').addEventListener('click', e => { if (e.target === document.getElementById('submitModal')) document.getElementById('submitModal').classList.remove('active'); });
+        document.getElementById('closeModal').addEventListener('click',()=>document.getElementById('deployModal').classList.remove('active'));
+        document.getElementById('deployModal').addEventListener('click',e=>{if(e.target===document.getElementById('deployModal'))document.getElementById('deployModal').classList.remove('active')});
+        document.getElementById('submitModal').addEventListener('click',e=>{if(e.target===document.getElementById('submitModal'))document.getElementById('submitModal').classList.remove('active')});
 
-        // Search
-        document.getElementById('searchInput').addEventListener('input', e => {
-            const s = e.target.value.toLowerCase();
-            document.querySelectorAll('.bot-card').forEach(c => c.style.display = c.textContent.toLowerCase().includes(s) ? '' : 'none');
-        });
+        document.getElementById('searchInput').addEventListener('input',e=>{const s=e.target.value.toLowerCase();document.querySelectorAll('.bot-card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(s)?'':'none')});
 
-        function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-        checkAuth(); loadTemplates();
-        window.addEventListener('resize', () => { if (window.innerWidth > 1024) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } });
-        window.openDeployModal = openDeployModal;
+        checkAuth();loadTemplates();
+        window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
+        window.openDeployModal=openDeployModal;
     </script>
 </body>
 </html>
