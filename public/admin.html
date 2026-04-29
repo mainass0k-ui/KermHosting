@@ -1903,6 +1903,63 @@
                             <span id="statBannedPercent">0%</span>
                         </div>
                     </div>
+
+                    <!-- Nouvelle carte: Bots / Heroku -->
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statTotalBots">0</div>
+                        <div class="stat-label">Bots déployés</div>
+                        <div class="stat-change">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="statActiveBots">0 actifs</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fab fa-salesforce"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statHerokuAccounts">0</div>
+                        <div class="stat-label">Comptes Heroku</div>
+                        <div class="stat-change">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="statActiveHeroku">0 actifs</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statBotTemplates">0</div>
+                        <div class="stat-label">Templates bots</div>
+                        <div class="stat-change">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="statApprovedTemplates">0 approuvés</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statBotSubmissions">0</div>
+                        <div class="stat-label">Demandes bots</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock"></i>
+                            <span id="statPendingSubmissions">0 en attente</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Financial Stats -->
@@ -2034,21 +2091,25 @@
                     <div class="table-container">
                         <table id="usersTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Email</th>
-                                <th>Rôle</th>
-                                <th>Coins</th>
-                                <th>Serveurs</th>
-                                <th>Statut</th>
-                                <th>Inscription</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Coins</th>
+                                    <th>Serveurs</th>
+                                    <th>Statut</th>
+                                    <th>Inscription</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="usersTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des utilisateurs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des utilisateurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2090,22 +2151,26 @@
                     <div class="table-container">
                         <table id="serversTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Propriétaire</th>
-                                <th>Plan</th>
-                                <th>Statut</th>
-                                <th>Création</th>
-                                <th>Expiration</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Propriétaire</th>
+                                    <th>Plan</th>
+                                    <th>Statut</th>
+                                    <th>Création</th>
+                                    <th>Expiration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="serversTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des serveurs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des serveurs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                        </table>
+                        <table>
                     </div>
 
                     <div class="pagination" id="serverPagination">
@@ -2143,20 +2208,24 @@
                     <div class="table-container">
                         <table id="transactionsTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant</th>
-                                <th>Statut</th>
-                                <th>Moyen</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Moyen</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="transactionsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2243,20 +2312,24 @@
                     <div class="table-container">
                         <table id="logsTable">
                             <thead>
-                                <th>Date (Cameroun)</th>
-                                <th>Admin</th>
-                                <th>Action</th>
-                                <th>Cible</th>
-                                <th>Détails</th>
-                                <th>IP</th>
-                             </thead>
+                                <tr>
+                                    <th>Date (Cameroun)</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Cible</th>
+                                    <th>Détails</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
                             <tbody id="logsTableBody">
-                                <td colspan="6" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des logs...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="6" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des logs...</p>
+                                    </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
 
                     <div class="pagination" id="logsPagination">
@@ -2299,23 +2372,27 @@
                     <div class="table-container">
                         <table id="paypalTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Type</th>
-                                <th>Montant (FCFA)</th>
-                                <th>Montant (devise)</th>
-                                <th>Email PayPal</th>
-                                <th>Nom complet</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Montant (FCFA)</th>
+                                    <th>Montant (devise)</th>
+                                    <th>Email PayPal</th>
+                                    <th>Nom complet</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="paypalTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions PayPal...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions PayPal...</p>
+                                      </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
                 </div>
 
@@ -2347,24 +2424,28 @@
                     <div class="table-container">
                         <table id="minipayTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Pack</th>
-                                <th>Coins</th>
-                                <th>Montant (local)</th>
-                                <th>Pays</th>
-                                <th>Téléphone</th>
-                                <th>Statut</th>
-                                <th>Capture</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Pack</th>
+                                    <th>Coins</th>
+                                    <th>Montant (local)</th>
+                                    <th>Pays</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut</th>
+                                    <th>Capture</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="minipayTableBody">
-                                <td colspan="10" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des transactions Minipay...</p>
-                                  </table>
+                                <tr>
+                                    <td colspan="10" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des transactions Minipay...</p>
+                                      </td>
+                                </tr>
                             </tbody>
-                         </table>
+                        </table>
                     </div>
                 </div>
 
@@ -2395,22 +2476,26 @@
                     <div class="table-container">
                         <table id="botSubmissionsTable">
                             <thead>
-                                <th>Date</th>
-                                <th>Utilisateur</th>
-                                <th>Nom du bot</th>
-                                <th>Repository</th>
-                                <th>Statut</th>
-                                <th>Kh.json</th>
-                                <th>Prix</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Utilisateur</th>
+                                    <th>Nom du bot</th>
+                                    <th>Repository</th>
+                                    <th>Statut</th>
+                                    <th>Kh.json</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="botSubmissionsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des demandes...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des demandes...</p>
+                                      </td>
+                                </tr>
                             </tbody>
-                        <tr>
+                        </table>
                     </div>
                 </div>
 
@@ -2442,20 +2527,24 @@
                     <div class="table-container">
                         <table id="botTemplatesTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Créateur</th>
-                                <th>Repository</th>
-                                <th>Prix (coins)</th>
-                                <th>Déploiements</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Créateur</th>
+                                    <th>Repository</th>
+                                    <th>Prix (coins)</th>
+                                    <th>Déploiements</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="botTemplatesTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des templates...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des templates...</p>
+                                      </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2492,21 +2581,25 @@
                     <div class="table-container">
                         <table id="deployedBotsTable">
                             <thead>
-                                <th>Date déploiement</th>
-                                <th>Nom app Heroku</th>
-                                <th>Template</th>
-                                <th>Utilisateur</th>
-                                <th>Durée</th>
-                                <th>Expiration</th>
-                                <th>Statut</th>
-                                <th>Auto-renew</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>Date déploiement</th>
+                                    <th>Nom app Heroku</th>
+                                    <th>Template</th>
+                                    <th>Utilisateur</th>
+                                    <th>Durée</th>
+                                    <th>Expiration</th>
+                                    <th>Statut</th>
+                                    <th>Auto-renew</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="deployedBotsTableBody">
-                                <td colspan="9" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des bots déployés...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="9" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des bots déployés...</p>
+                                      </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2577,20 +2670,24 @@
                     <div class="table-container">
                         <table id="herokuAccountsTable">
                             <thead>
-                                <th>ID</th>
-                                <th>Email</th>
-                                <th>API Key</th>
-                                <th>Max Bots</th>
-                                <th>Bots actifs</th>
-                                <th>Statut</th>
-                                <th>Dernière utilisation</th>
-                                <th>Actions</th>
-                             </thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>API Key</th>
+                                    <th>Max Bots</th>
+                                    <th>Bots actifs</th>
+                                    <th>Statut</th>
+                                    <th>Dernière utilisation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="herokuAccountsTableBody">
-                                <td colspan="8" class="loading-state">
-                                    <i class="fas fa-circle-notch fa-spin"></i>
-                                    <p>Chargement des comptes Heroku...</p>
-                                  </td>
+                                <tr>
+                                    <td colspan="8" class="loading-state">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <p>Chargement des comptes Heroku...</p>
+                                      </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2747,23 +2844,26 @@
                         <div class="table-container">
                             <table id="campaignsTable">
                                 <thead>
-                                    <th>Date</th>
-                                    <th>Admin</th>
-                                    <th>Sujet</th>
-                                    <th>Template</th>
-                                    <th>Destinataires</th>
-                                    <th>Succès</th>
-                                    <th>Échecs</th>
-                                    <th>Statut</th>
-                                    <th>Action</th>
-                                 </thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Admin</th>
+                                        <th>Sujet</th>
+                                        <th>Template</th>
+                                        <th>Destinataires</th>
+                                        <th>Succès</th>
+                                        <th>Échecs</th>
+                                        <th>Statut</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="campaignsTableBody">
-                                    <td colspan="9" class="loading-state">
-                                        <i class="fas fa-circle-notch fa-spin"></i>
-                                        <p>Chargement de l'historique...</p>
-                                    </td>
-                                </tbody>
-                            </table>
+                                    <tr>
+                                        <td colspan="9" class="loading-state">
+                                            <i class="fas fa-circle-notch fa-spin"></i>
+                                            <p>Chargement de l'historique...</p>
+                                          </td>
+                                    </tbody>
+                                </table>
                         </div>
                         <div class="campaign-stats" style="margin-top: 12px;">
                             <span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span>
@@ -3281,6 +3381,15 @@
         let currentBotTemplatePage = 1;
         let currentDeployedBotPage = 1;
 
+        // PLANS data
+        window.PLANS = {
+            'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300 },
+            '1gb': { name: 'Starter', memory: 1024, disk: 10240, cpu: 100 },
+            '2gb': { name: 'Basic', memory: 2048, disk: 20480, cpu: 200 },
+            '4gb': { name: 'Pro', memory: 4096, disk: 40960, cpu: 400 },
+            '8gb': { name: 'Business', memory: 8192, disk: 81920, cpu: 800 }
+        };
+
         // ===== SIDEBAR FUNCTIONS =====
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -3468,7 +3577,7 @@
                     const campaigns = data.campaigns || [];
                     const tbody = document.getElementById('campaignsTableBody');
                     if (campaigns.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune campagne trouvée<\/td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune campagne trouvée</td></tr>';
                         document.getElementById('globalSuccessRate').textContent = '0%';
                         return;
                     }
@@ -3785,7 +3894,7 @@
         function displayMinipayTransactions() {
             const tbody = document.getElementById('minipayTableBody');
             if (!filteredMinipayTransactions || filteredMinipayTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune transaction Minipay trouvée</td></tr>';
                 return;
             }
             const totalPages = Math.ceil(filteredMinipayTransactions.length / itemsPerPage);
@@ -4112,7 +4221,7 @@
         function displayPaypalTransactions() {
             const tbody = document.getElementById('paypalTableBody');
             if (!filteredPaypalTransactions || filteredPaypalTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucune transaction PayPal trouvée<\/td></td>';
                 return;
             }
             const totalPages = Math.ceil(filteredPaypalTransactions.length / itemsPerPage);
@@ -4163,8 +4272,8 @@
                         <td>${formatDateCameroon(transaction.created_at)}</td>
                         <td><strong>${transaction.profiles?.username || 'Inconnu'}</strong><br><small>${transaction.profiles?.email || ''}</small></td>
                         <td><span class="badge badge-info">${typeText}</span></td>
-                        <td>${transaction.amount.toLocaleString()} FCFA</td>
-<td><span class="badge badge-primary">${amountDisplay}</span></td>
+                        <td>${transaction.amount.toLocaleString()} FCFA</span></td>
+                        <td><span class="badge badge-primary">${amountDisplay}</span></td>
                         <td>${transaction.paypal_email || '-'}</td>
                         <td>${transaction.paypal_name || '-'}</td>
                         <td>${statusBadge}</td>
@@ -4471,8 +4580,19 @@
                 });
                 const botStatsData = await botStatsRes.json();
                 if (botStatsData.success) {
-                    document.getElementById('botTotalTemplatesStat').textContent = botStatsData.stats.total_templates || 0;
-                    document.getElementById('botActiveBotsStat').textContent = (botStatsData.stats.active_bots || 0) + ' déployés';
+                    const totalBots = botStatsData.stats.total_deployed || 0;
+                    const activeBots = botStatsData.stats.active_deployed || 0;
+                    const totalTemplates = botStatsData.stats.total_templates || 0;
+                    const approvedTemplates = botStatsData.stats.approved_templates || 0;
+                    const totalSubmissions = botStatsData.stats.total_submissions || 0;
+                    const pendingSubmissions = botStatsData.stats.pending_submissions || 0;
+                    
+                    document.getElementById('statTotalBots').textContent = totalBots;
+                    document.getElementById('statActiveBots').textContent = activeBots + ' actifs';
+                    document.getElementById('statBotTemplates').textContent = totalTemplates;
+                    document.getElementById('statApprovedTemplates').textContent = approvedTemplates + ' approuvés';
+                    document.getElementById('statBotSubmissions').textContent = totalSubmissions;
+                    document.getElementById('statPendingSubmissions').textContent = pendingSubmissions + ' en attente';
                 }
                 
                 // Charger les stats Heroku
@@ -4484,8 +4604,16 @@
                     const accounts = herokuData.accounts || [];
                     const totalAccounts = accounts.length;
                     const activeAccounts = accounts.filter(a => a.is_active).length;
-                    document.getElementById('herokuTotalAccountsStat').textContent = totalAccounts;
-                    document.getElementById('herokuActiveAccountsStat').textContent = activeAccounts + ' actifs';
+                    document.getElementById('statHerokuAccounts').textContent = totalAccounts;
+                    document.getElementById('statActiveHeroku').textContent = activeAccounts + ' actifs';
+                    document.getElementById('herokuTotalAccounts').textContent = totalAccounts;
+                    document.getElementById('herokuActiveAccounts').textContent = activeAccounts;
+                    
+                    const totalCapacity = accounts.reduce((sum, a) => sum + (a.max_bots || 0), 0);
+                    const usedCapacity = accounts.reduce((sum, a) => sum + (a.current_bots || 0), 0);
+                    const availableCapacity = totalCapacity - usedCapacity;
+                    document.getElementById('herokuTotalCapacity').textContent = totalCapacity;
+                    document.getElementById('herokuAvailableCapacity').textContent = availableCapacity;
                 }
                 
                 const usersRes = await fetch('/api/admin/users', {
@@ -4780,7 +4908,7 @@
         function displayDeployedBots() {
             const tbody = document.getElementById('deployedBotsTableBody');
             if (!filteredDeployedBots || filteredDeployedBots.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun bot déployé trouvé<\/td></td>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Aucun bot déployé trouvé<\/td></tr>';
                 return;
             }
             const totalPages = Math.ceil(filteredDeployedBots.length / itemsPerPage);
@@ -5087,7 +5215,7 @@
         function displayBotSubmissions() {
             const tbody = document.getElementById('botSubmissionsTableBody');
             if (!filteredBotSubmissions || filteredBotSubmissions.length === 0) {
-                tbody.innerHTML = '<td><td colspan="8" style="text-align: center;">Aucune demande trouvée<\/td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune demande trouvée<\/td></tr>';
                 return;
             }
             let html = '';
@@ -5260,8 +5388,6 @@
             document.getElementById('herokuActiveAccounts').textContent = active;
             document.getElementById('herokuTotalCapacity').textContent = totalCapacity;
             document.getElementById('herokuAvailableCapacity').textContent = availableCapacity;
-            document.getElementById('herokuTotalAccountsStat').textContent = total;
-            document.getElementById('herokuActiveAccountsStat').textContent = active + ' actifs';
         }
 
         function filterHerokuAccounts() {
@@ -5288,12 +5414,12 @@
                 const statusBadge = acc.is_active ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-danger">Inactif</span>';
                 const lastUsed = acc.last_used_at ? formatDateCameroon(acc.last_used_at) : 'Jamais';
                 html += `
-                    </table>
+                    <tr>
                         <td><code>${acc.id.substring(0, 8)}...</code></td>
                         <td><strong>${acc.email}</strong></td>
                         <td><input type="password" value="${acc.api_key.substring(0, 20)}..." readonly style="background: transparent; border: none; color: var(--text-secondary); font-family: monospace;" size="25"></td>
                         <td>${acc.max_bots || 0}</td>
-                        <td>${acc.current_bots || 0} / ${acc.max_bots || 0} (${Math.round(((acc.current_bots || 0) / (acc.max_bots || 1)) * 100)}%)</td>
+                        <td>${acc.current_bots || 0} / ${acc.max_bots || 0} (${Math.round(((acc.current_bots || 0) / (acc.max_bots || 1)) * 100)}%)</span></td>
                         <td>${statusBadge}</td>
                         <td>${lastUsed}</td>
                         <td>
@@ -5442,7 +5568,7 @@
                         <td><strong>${user.username}</strong></td>
                         <td>${user.email}</td>
                         <td><span class="badge ${roleClass}">${user.role}</span></td>
-                        <td>${user.coins} coins</td>
+                        <td>${user.coins} coins</span></td>
                         <td>${user.servers_count || 0}</td>
                         <td><span class="badge ${statusClass}">${status}</span></td>
                         <td>${new Date(user.created_at).toLocaleDateString('fr-FR')}</td>
@@ -5537,14 +5663,14 @@
                         <td><code>${server.id.substring(0, 8)}...</code></td>
                         <td><strong>${server.server_name}</strong></td>
                         <td>${server.owner_username || 'Inconnu'}</td>
-                        <td>${window.PLANS?.[server.server_type]?.name || server.server_type}</td>
+                        <td>${window.PLANS[server.server_type]?.name || server.server_type}</td>
                         <td><span class="badge ${statusClass}">${statusText}</span></td>
                         <td>${new Date(server.created_at).toLocaleDateString('fr-FR')}</td>
                         <td>${new Date(server.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td>
                         <td>
                             <div class="action-group">
                                 <button class="action-btn edit" title="Modifier" onclick="editServer('${server.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn view" title="Voir propriétaire" onclick="viewUser('${server.user_id}')"><i class="fas fa-user"></i></button>
+                                <button class="action-btn view" title="Voir propriétaire" onclick="editUser('${server.user_id}')"><i class="fas fa-user"></i></button>
                                 ${server.status === 'suspended' ? 
                                     `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendServer('${server.id}')"><i class="fas fa-play"></i></button>` : 
                                     `<button class="action-btn suspend" title="Suspendre" onclick="suspendServer('${server.id}')"><i class="fas fa-pause"></i></button>`
@@ -5597,7 +5723,7 @@
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></tr>';
+                tbody.innerHTML = '</table><td colspan="8" style="text-align: center;">Aucune transaction trouvée<\/td></tr>';
                 document.getElementById('transactionPagination').style.display = 'none';
                 return;
             }
@@ -5630,7 +5756,7 @@
                         <td>
                             <div class="action-group">
                                 <button class="action-btn view" title="Détails" onclick="viewTransaction('${transaction.id}')"><i class="fas fa-info-circle"></i></button>
-                                <button class="action-btn view" title="Voir utilisateur" onclick="viewUser('${transaction.user_id}')"><i class="fas fa-user"></i></button>
+                                <button class="action-btn view" title="Voir utilisateur" onclick="editUser('${transaction.user_id}')"><i class="fas fa-user"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -5753,7 +5879,7 @@
                         <div class="server-mini-card">
                             <div class="server-mini-info">
                                 <h4>${server.server_name}</h4>
-                                <p>${window.PLANS?.[server.server_type]?.name || server.server_type} - Expire: ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
+                                <p>${window.PLANS[server.server_type]?.name || server.server_type} - Expire: ${new Date(server.expires_at).toLocaleDateString('fr-FR')}</p>
                             </div>
                             <div class="server-mini-actions">
                                 <button class="action-btn edit" onclick="editServer('${server.id}')"><i class="fas fa-edit"></i></button>
@@ -5780,10 +5906,6 @@
             document.getElementById('transactionSearch').value = userId;
             filterTransactions();
             closeModal('userEditModal');
-        }
-
-        function viewUser(userId) {
-            editUser(userId);
         }
 
         function viewTransaction(transactionId) {
@@ -5875,6 +5997,8 @@
                     showToast('success', `${amount} coins ajoutés`);
                     document.getElementById('editCoinsAmount').value = '';
                     loadAdminData();
+                    const user = allUsers.find(u => u.id === currentUserId);
+                    if (user) document.getElementById('editCoins').textContent = (user.coins + parseInt(amount)) + ' coins';
                 } else {
                     showToast('error', data.error);
                 }
@@ -5900,6 +6024,8 @@
                     showToast('success', `${amount} coins retirés`);
                     document.getElementById('editCoinsAmount').value = '';
                     loadAdminData();
+                    const user = allUsers.find(u => u.id === currentUserId);
+                    if (user) document.getElementById('editCoins').textContent = (user.coins - parseInt(amount)) + ' coins';
                 } else {
                     showToast('error', data.error);
                 }
@@ -5932,8 +6058,6 @@
         }
 
         // ===== SERVER ACTIONS =====
-        let currentServerId = null;
-
         function editServer(serverId) {
             const server = allServers.find(s => s.id === serverId);
             if (!server) return;
@@ -6321,15 +6445,6 @@
             window.location.href = '/';
         });
 
-        // ===== PLANS DATA =====
-        window.PLANS = {
-            'free': { name: 'Free', memory: 2048, disk: 4096, cpu: 300 },
-            '1gb': { name: 'Starter', memory: 1024, disk: 10240, cpu: 100 },
-            '2gb': { name: 'Basic', memory: 2048, disk: 20480, cpu: 200 },
-            '4gb': { name: 'Pro', memory: 4096, disk: 40960, cpu: 400 },
-            '8gb': { name: 'Business', memory: 8192, disk: 81920, cpu: 800 }
-        };
-
         // ===== RESPONSIVE =====
         window.addEventListener('resize', () => {
             if (window.innerWidth > 1024) closeSidebarFunc();
@@ -6363,7 +6478,6 @@
         window.editUser = editUser;
         window.viewUserServers = viewUserServers;
         window.viewUserTransactions = viewUserTransactions;
-        window.viewUser = viewUser;
         window.viewTransaction = viewTransaction;
         window.toggleBan = toggleBan;
         window.deleteUser = deleteUser;
@@ -6399,7 +6513,6 @@
         window.loadCampaignHistory = loadCampaignHistory;
         window.cancelCampaign = cancelCampaign;
         window.cancelCurrentCampaign = cancelCurrentCampaign;
-        // Nouvelles fonctions Bot, Templates, Deployed Bots et Heroku
         window.loadBotSubmissions = loadBotSubmissions;
         window.filterBotSubmissions = filterBotSubmissions;
         window.clearBotSearch = clearBotSearch;
