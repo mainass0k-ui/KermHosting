@@ -7789,15 +7789,37 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
             updates: [{ buildpack: 'heroku/nodejs' }]
         });
         
-        await callHerokuAPI(apiKey, `/apps/${app.name}/github`, 'PATCH', {
-            repo: repoUrl.replace('https://github.com/', ''),
-            automatic_deploys: false
-        });
-        
         return app;
     } catch (error) {
         console.error('❌ Erreur création app Heroku:', error);
         throw error;
+    }
+}
+
+async function deployHerokuApp(apiKey, appName, branch = 'main') {
+    try {
+        const sourceBlob = await callHerokuAPI(apiKey, `/apps/${appName}/sources`, 'POST');
+        
+        const repoClean = repoUrl.replace('https://github.com/', '').replace('.git', '');
+        const tarballUrl = `https://api.github.com/repos/${repoClean}/tarball/${branch}`;
+        
+        const tarballResponse = await axios.get(tarballUrl, {
+            responseType: 'arraybuffer',
+            headers: { 'Authorization': `token ${process.env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        
+        await axios.put(sourceBlob.source_blob.put_url, tarballResponse.data, {
+            headers: { 'Content-Type': 'application/x-gzip' }
+        });
+        
+        const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
+            source_blob: { url: sourceBlob.source_blob.url }
+        });
+        
+        return build;
+    } catch (error) {
+        console.error('❌ Erreur déploiement:', error);
+        return null;
     }
 }
 
