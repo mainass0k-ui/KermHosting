@@ -9461,6 +9461,84 @@ app.delete('/api/admin/bots/templates/:templateId', authenticateToken, requireAd
     }
 });
 
+// POST /api/bots/resync/:templateId
+// Resynchronise un template avec son repo GitHub
+router.post('/bots/resync/:templateId', authenticateToken, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        const userId = req.user.id;
+
+        // Récupérer le template
+        const { data: template, error: templateError } = await supabase
+            .from('bot_templates')
+            .select('*')
+            .eq('id', templateId)
+            .single();
+
+        if (templateError || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+
+        // Vérifier que l'utilisateur est le propriétaire ou admin
+        const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', userId)
+            .single();
+
+        const isOwner = template.user_id === userId;
+        const isAdmin = userProfile?.role === 'admin';
+
+        if (!isOwner && !isAdmin) {
+            return res.status(403).json({ success: false, error: 'Non autorisé' });
+        }
+
+        // Re-valider le kh.json depuis GitHub
+        const validation = await validateKhJsonFromRepo(template.repo_url);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Échec de la synchronisation : ${validation.error}` 
+            });
+        }
+
+        const khJson = validation.khJson;
+
+        // Mettre à jour le template avec les nouvelles données
+        const { data: updated, error: updateError } = await supabase
+            .from('bot_templates')
+            .update({
+                name: khJson['bot-name'] || template.name,
+                description: khJson.description || template.description,
+                logo_url: khJson.logo || template.logo_url,
+                kh_json: khJson,
+                synced_at: new Date().toISOString(),
+                updated_by: userId
+            })
+            .eq('id', templateId)
+            .select()
+            .single();
+
+        if (updateError) {
+            console.error('Erreur mise à jour template:', updateError);
+            return res.status(500).json({ success: false, error: 'Erreur lors de la mise à jour' });
+        }
+
+        console.log(`✅ Template ${templateId} resynchronisé avec succès`);
+        
+        return res.json({
+            success: true,
+            message: 'Template resynchronisé avec succès',
+            template: updated
+        });
+
+    } catch (error) {
+        console.error('Erreur resync template:', error);
+        return res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
 // =============================================
 // ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
