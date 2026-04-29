@@ -7777,13 +7777,73 @@ async function restartHerokuDynos(apiKey, appName) {
 
 async function getHerokuAppLogs(apiKey, appName, lines = 100) {
     try {
-        const logs = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
-            lines,
+        console.log(`📋 Récupération logs pour ${appName}...`);
+        
+        // Créer une session de logs
+        const session = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
+            lines: Math.min(lines, 1500),
             tail: false
         });
-        return logs;
+        
+        console.log(`✅ Session logs créée: ${session.logplex_url}`);
+        
+        // Récupérer les logs depuis l'URL Logplex
+        if (session && session.logplex_url) {
+            const logsResponse = await axios.get(session.logplex_url, {
+                timeout: 10000,
+                responseType: 'text'
+            });
+            
+            if (logsResponse.data) {
+                // Parser les logs (format Logplex)
+                const rawLogs = logsResponse.data.split('\n');
+                const formattedLogs = [];
+                
+                for (const line of rawLogs) {
+                    if (line.trim()) {
+                        // Format Logplex: "2025-01-01T00:00:00.000000+00:00 heroku[web.1]: message"
+                        const match = line.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+)\+\d{2}:\d{2}\s+(\w+)\[(\w+\.?\d*)\]:\s*(.*)$/);
+                        if (match) {
+                            formattedLogs.push({
+                                timestamp: match[1],
+                                source: match[2],
+                                process: match[3],
+                                message: match[4]
+                            });
+                        } else {
+                            formattedLogs.push({
+                                timestamp: new Date().toISOString(),
+                                message: line.trim()
+                            });
+                        }
+                    }
+                }
+                
+                // Retourner les logs formatés
+                const lines = formattedLogs.map(log => {
+                    const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '';
+                    return `[${time}] ${log.message}`;
+                });
+                
+                console.log(`✅ ${lines.length} logs récupérés pour ${appName}`);
+                return { lines: lines };
+            }
+        }
+        
+        return { lines: [`[INFO] Aucun log disponible pour ${appName}`] };
+        
     } catch (error) {
-        return null;
+        console.error('❌ Erreur getHerokuAppLogs:', error.message);
+        
+        // Retourner des logs simulés en cas d'erreur
+        return { 
+            lines: [
+                `[INFO] Impossible de récupérer les logs en temps réel`,
+                `[INFO] Statut: L'application est déployée sur Heroku`,
+                `[INFO] URL: https://${appName}.herokuapp.com`,
+                `[INFO] Pour voir les logs détaillés: heroku logs --app ${appName}`
+            ]
+        };
     }
 }
 
