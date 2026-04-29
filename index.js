@@ -7706,33 +7706,61 @@ async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
 
 async function getAvailableHerokuAccount() {
     try {
-        // Récupérer tous les comptes actifs
+        // 1. Récupérer TOUS les comptes actifs
         const { data: accounts, error } = await supabase
             .from('heroku_accounts')
             .select('*')
-            .eq('is_active', true)
-            .order('last_used_at', { ascending: true, nullsFirst: true });
+            .eq('is_active', true);
         
         if (error) throw error;
         
-        // Filtrer ceux qui ont de la place
-        const available = accounts?.filter(acc => acc.current_bots < acc.max_bots) || [];
-        
-        if (available.length === 0) {
+        if (!accounts || accounts.length === 0) {
+            console.log('⚠️ Aucun compte Heroku actif trouvé');
             return null;
         }
         
-        const selectedAccount = available[0];
+        // 2. Filtrer ceux qui ont de la place (côté JavaScript, pas SQL)
+        const availableAccounts = accounts.filter(acc => {
+            const hasSpace = acc.current_bots < acc.max_bots;
+            if (!hasSpace) {
+                console.log(`📊 Compte ${acc.email}: ${acc.current_bots}/${acc.max_bots} bots - COMPLET`);
+            }
+            return hasSpace;
+        });
         
-        await supabase
+        if (availableAccounts.length === 0) {
+            console.log('⚠️ Tous les comptes Heroku sont saturés');
+            return null;
+        }
+        
+        // 3. Trier par date d'utilisation (le plus ancien en premier)
+        availableAccounts.sort((a, b) => {
+            if (!a.last_used_at) return -1;
+            if (!b.last_used_at) return 1;
+            return new Date(a.last_used_at) - new Date(b.last_used_at);
+        });
+        
+        // 4. Prendre le premier disponible
+        const selectedAccount = availableAccounts[0];
+        
+        console.log(`✅ Compte Heroku sélectionné: ${selectedAccount.email} (${selectedAccount.current_bots}/${selectedAccount.max_bots} bots)`);
+        
+        // 5. Mettre à jour le compteur (incrémentation)
+        const { error: updateError } = await supabase
             .from('heroku_accounts')
             .update({ 
                 last_used_at: new Date().toISOString(),
-                current_bots: supabase.sql`current_bots + 1`  // ✅ Ceci fonctionne !
+                current_bots: selectedAccount.current_bots + 1
             })
             .eq('id', selectedAccount.id);
         
+        if (updateError) {
+            console.error('❌ Erreur mise à jour compteur:', updateError);
+            // On retourne quand même le compte même si l'update échoue
+        }
+        
         return selectedAccount;
+        
     } catch (error) {
         console.error('❌ Erreur récupération compte Heroku:', error);
         return null;
