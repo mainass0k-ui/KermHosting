@@ -7706,8 +7706,11 @@ async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
 
 async function createHerokuApp(apiKey, appName, repoUrl) {
     try {
+        // Générer un nom unique avec timestamp
+        const uniqueName = `${appName.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-${Date.now().toString().slice(-6)}`;
+        
         const app = await callHerokuAPI(apiKey, '/apps', 'POST', {
-            name: appName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+            name: uniqueName,
             region: 'eu'
         });
         
@@ -7715,9 +7718,14 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
             updates: [{ buildpack: 'heroku/nodejs' }]
         });
         
-        console.log(`✅ App Heroku créée: ${app.name}`);
+        console.log(`✅ App créée: ${app.name}`);
         return app;
     } catch (error) {
+        if (error.response?.data?.message?.includes('already taken')) {
+            // Réessayer avec un autre nom
+            const newName = `${appName.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-${Math.random().toString(36).substring(2, 8)}`;
+            return createHerokuApp(apiKey, newName, repoUrl);
+        }
         console.error('❌ Erreur création app:', error);
         throw error;
     }
@@ -7847,12 +7855,20 @@ async function getAvailableHerokuAccount() {
 
 async function releaseHerokuAccount(accountId) {
     try {
-        await supabase
+        const { data: account } = await supabase
             .from('heroku_accounts')
-            .update({ current_bots: supabase.raw('current_bots - 1') })
-            .eq('id', accountId);
+            .select('current_bots')
+            .eq('id', accountId)
+            .single();
+        
+        if (account) {
+            await supabase
+                .from('heroku_accounts')
+                .update({ current_bots: account.current_bots - 1 })
+                .eq('id', accountId);
+        }
     } catch (error) {
-        console.error('❌ Erreur libération compte Heroku:', error);
+        console.error('❌ Erreur libération compte:', error);
     }
 }
 
