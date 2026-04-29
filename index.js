@@ -7680,7 +7680,7 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
 });
 
 // =============================================
-// ROUTES ADMIN - GESTION DES BOTS ET HEROKU
+// FONCTIONS HEROKU API - VERSION UNIQUE
 // =============================================
 
 async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
@@ -7715,7 +7715,7 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
             updates: [{ buildpack: 'heroku/nodejs' }]
         });
         
-        console.log(`✅ App créée: ${app.name}`);
+        console.log(`✅ App Heroku créée: ${app.name}`);
         return app;
     } catch (error) {
         console.error('❌ Erreur création app:', error);
@@ -7725,20 +7725,18 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
 
 async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
     try {
-        // 1. Créer un build via Heroku API
+        const repoClean = repoUrl.replace('https://github.com/', '').replace('.git', '');
+        
         const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
             source_blob: {
-                url: `https://github.com/${repoUrl.replace('https://github.com/', '').replace('.git', '')}/archive/refs/heads/${branch}.tar.gz`
+                url: `https://github.com/${repoClean}/archive/refs/heads/${branch}.tar.gz`
             }
         });
         
         console.log(`✅ Déploiement automatique déclenché pour ${appName}`);
         return build;
     } catch (error) {
-        console.error('❌ Erreur déploiement auto:', error);
-        
-        // Fallback: donner les infos pour déploiement manuel
-        console.log(`⚠️ Déploiement manuel: git push https://git.heroku.com/${appName}.git ${branch}`);
+        console.error('❌ Erreur déploiement:', error);
         return null;
     }
 }
@@ -7746,7 +7744,7 @@ async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
 async function setHerokuEnvVars(apiKey, appName, envVars) {
     try {
         await callHerokuAPI(apiKey, `/apps/${appName}/config-vars`, 'PATCH', envVars);
-        console.log(`✅ Variables d'env configurées pour ${appName}`);
+        console.log(`✅ Variables d'env configurées`);
         return true;
     } catch (error) {
         console.error('❌ Erreur set env vars:', error);
@@ -7855,101 +7853,6 @@ async function releaseHerokuAccount(accountId) {
             .eq('id', accountId);
     } catch (error) {
         console.error('❌ Erreur libération compte Heroku:', error);
-    }
-}
-
-async function createHerokuApp(apiKey, appName, repoUrl) {
-    try {
-        const app = await callHerokuAPI(apiKey, '/apps', 'POST', {
-            name: appName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-            region: 'eu'
-        });
-        
-        await callHerokuAPI(apiKey, `/apps/${app.name}/buildpack-installations`, 'PUT', {
-            updates: [{ buildpack: 'heroku/nodejs' }]
-        });
-        
-        return app;
-    } catch (error) {
-        console.error('❌ Erreur création app Heroku:', error);
-        throw error;
-    }
-}
-
-async function setHerokuEnvVars(apiKey, appName, envVars) {
-    try {
-        const configVars = {};
-        for (const [key, value] of Object.entries(envVars)) {
-            if (value !== undefined && value !== null) {
-                configVars[key] = value;
-            }
-        }
-        
-        await callHerokuAPI(apiKey, `/apps/${appName}/config-vars`, 'PATCH', configVars);
-        return true;
-    } catch (error) {
-        console.error('❌ Erreur configuration env Heroku:', error);
-        throw error;
-    }
-}
-
-async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
-    try {
-        const sourceBlob = await callHerokuAPI(apiKey, `/apps/${appName}/sources`, 'POST');
-        
-        const repoClean = repoUrl.replace('https://github.com/', '').replace('.git', '');
-        const tarballUrl = `https://github.com/${repoClean}/archive/refs/heads/${branch}.tar.gz`;
-        
-        const tarballResponse = await axios.get(tarballUrl, {
-            responseType: 'arraybuffer'
-        });
-        
-        await axios.put(sourceBlob.source_blob.put_url, tarballResponse.data, {
-            headers: { 'Content-Type': 'application/x-gzip' }
-        });
-        
-        const build = await callHerokuAPI(apiKey, `/apps/${appName}/builds`, 'POST', {
-            source_blob: { url: sourceBlob.source_blob.url }
-        });
-        
-        console.log(`✅ Build déclenché: ${build.id}`);
-        return build;
-    } catch (error) {
-        console.error('❌ Erreur déploiement:', error);
-        return null;
-    }
-}
-
-async function restartHerokuDynos(apiKey, appName) {
-    try {
-        await callHerokuAPI(apiKey, `/apps/${appName}/dynos`, 'DELETE');
-        return true;
-    } catch (error) {
-        console.error('❌ Erreur redémarrage Heroku:', error);
-        return false;
-    }
-}
-
-async function deleteHerokuApp(apiKey, appName) {
-    try {
-        await callHerokuAPI(apiKey, `/apps/${appName}`, 'DELETE');
-        return true;
-    } catch (error) {
-        console.error('❌ Erreur suppression app Heroku:', error);
-        return false;
-    }
-}
-
-async function getHerokuAppLogs(apiKey, appName, lines = 100) {
-    try {
-        const logs = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
-            lines,
-            tail: false
-        });
-        return logs;
-    } catch (error) {
-        console.error('❌ Erreur récupération logs:', error);
-        return null;
     }
 }
 
