@@ -9541,6 +9541,57 @@ router.post('/bots/resync/:templateId', authenticateToken, async (req, res) => {
     }
 });
 
+// GET /api/bots/check-kh-changed?templateId=xxx
+// Vérifie si le kh.json a changé sur GitHub
+router.get('/bots/check-kh-changed', authenticateToken, async (req, res) => {
+    try {
+        const { templateId } = req.query;
+        if (!templateId) return res.status(400).json({ success: false, error: 'templateId requis' });
+
+        const { data: template, error } = await supabase
+            .from('bot_templates')
+            .select('id, repo_url, synced_at')
+            .eq('id', templateId)
+            .single();
+
+        if (error || !template) return res.status(404).json({ success: false, error: 'Template non trouvé' });
+
+        // Vérifier le kh.json sur GitHub
+        const validation = await validateKhJsonFromRepo(template.repo_url);
+        if (!validation.valid) return res.json({ changed: false });
+
+        const khJson = validation.khJson;
+
+        // Vérifier si changé (comparer avec synced_at)
+        // Si synced_at est null, c'est que le template n'a jamais été sync
+        const lastSync = template.synced_at ? new Date(template.synced_at).getTime() : 0;
+        const now = Date.now();
+
+        // Si ça fait plus d'une seconde, on considère qu'il faut resync
+        const changed = (now - lastSync) > 1000;
+
+        if (changed) {
+            // Mettre à jour le template
+            await supabase
+                .from('bot_templates')
+                .update({
+                    name: khJson['bot-name'] || template.name,
+                    description: khJson.description || template.description,
+                    logo_url: khJson.logo || template.logo_url,
+                    kh_json: khJson,
+                    synced_at: new Date().toISOString()
+                })
+                .eq('id', templateId);
+
+            return res.json({ changed: true, template: { ...template, kh_json: khJson, logo_url: khJson.logo || template.logo_url } });
+        }
+
+        return res.json({ changed: false });
+    } catch (error) {
+        return res.json({ changed: false });
+    }
+});
+
 // =============================================
 // ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
