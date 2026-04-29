@@ -7,7 +7,6 @@
     <meta name="description" content="Marketplace de bots WhatsApp - Déployez des bots en quelques clics avec KermHosting">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
@@ -15,7 +14,6 @@
 
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -24,7 +22,6 @@
     <title>Bots WhatsApp - Marketplace | KermHosting</title>
     
     <style>
-        /* ===== MÊME STYLE QUE L'ORIGINAL ===== */
         :root {
             --primary: #7C3AED;
             --primary-light: #9D6CFF;
@@ -51,9 +48,6 @@
             --border-color: #2D3748;
             --border-light: #374151;
             
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             --shadow-glow: 0 0 15px var(--primary-glow);
             
             --radius-sm: 8px;
@@ -61,9 +55,6 @@
             --radius-lg: 16px;
             --radius-xl: 24px;
             --radius-full: 9999px;
-            
-            --safe-area-inset-top: env(safe-area-inset-top, 0px);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -80,69 +71,38 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 30%);
-            pointer-events: none;
-            z-index: -1;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
+            pointer-events: none; z-index: -1;
         }
 
-        .app-container { display: flex; min-height: 100vh; position: relative; padding-top: var(--safe-area-inset-top); padding-bottom: var(--safe-area-inset-bottom); }
+        .app-container { display: flex; min-height: 100vh; }
 
-        /* ===== SIDEBAR ===== */
+        /* SIDEBAR */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
+            position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
+            background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
+            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-
         .sidebar.active { transform: translateX(0); }
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
-
         .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
         .logo i { color: var(--primary); font-size: 1.5rem; }
-        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); transition: all 0.2s; }
+        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
         .close-sidebar:hover { background: var(--bg-hover); color: var(--text-primary); }
-
-        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
+        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .sidebar-user:hover { background: var(--bg-hover); }
         .user-avatar { width: 48px; height: 48px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; }
-
+        .user-name { font-weight: 600; font-size: 1rem; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); }
+        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
         .sidebar-nav ul { list-style: none; }
         .sidebar-nav li { margin: 4px 8px; }
@@ -152,839 +112,256 @@
         .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
         .sidebar-nav i { width: 20px; font-size: 1.1rem; }
         .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
-
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
-        .sidebar-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .sidebar-stats { display: flex; justify-content: space-between; }
         .stat { text-align: center; }
         .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
         .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
-        .sidebar-social { display: flex; justify-content: center; gap: 16px; }
-        .sidebar-social a { color: var(--text-secondary); font-size: 1.25rem; transition: all 0.2s; }
-        .sidebar-social a:hover { color: var(--primary); transform: translateY(-2px); }
 
-        /* ===== MAIN CONTENT ===== */
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
-        /* ===== TOP BAR ===== */
+        /* TOP BAR */
         .top-bar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--bg-sidebar);
-            backdrop-filter: blur(10px);
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100; background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(12px); padding: 10px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); display: none; }
-        .menu-toggle:hover { background: var(--bg-hover); }
-        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .top-bar-logo i { color: var(--primary); font-size: 1.25rem; }
-        .top-bar-actions { display: flex; align-items: center; gap: 16px; }
+        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
+        .top-bar-left { display: flex; align-items: center; gap: 12px; }
+        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
+        .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
+        .top-bar-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-submit-bot {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white; border: none; padding: 8px 16px;
+            border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+        }
+        .btn-submit-bot:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
         .notification-btn { background: none; border: none; color: var(--text-primary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); position: relative; }
-        .notification-btn:hover { background: var(--bg-hover); }
         .notification-badge { position: absolute; top: 4px; right: 4px; background: var(--danger); color: white; font-size: 0.625rem; min-width: 18px; height: 18px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg-sidebar); }
-        .user-menu { cursor: pointer; text-decoration: none; display: block; }
-        .user-avatar-small { width: 40px; height: 40px; border-radius: var(--radius-full); border: 2px solid var(--primary); object-fit: cover; }
+        .user-avatar-small { width: 36px; height: 36px; border-radius: var(--radius-full); border: 2px solid var(--primary); object-fit: cover; }
 
-        /* ===== NOTIFICATIONS PANEL ===== */
-        .notifications-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 350px;
-            background: var(--bg-card);
-            border-left: 1px solid var(--border-color);
-            transform: translateX(100%);
-            transition: transform 0.3s;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-        }
-        .notifications-panel.active { transform: translateX(0); }
-        .notifications-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .notifications-header h3 { font-size: 1.2rem; }
-        .notifications-list { flex: 1; overflow-y: auto; padding: 16px; }
-        .notification-item { display: flex; gap: 12px; padding: 16px; border-radius: var(--radius-md); background: var(--bg-hover); margin-bottom: 8px; transition: all 0.2s; border-left: 3px solid transparent; }
-        .notification-item.unread { border-left-color: var(--primary); background: linear-gradient(90deg, var(--primary-glow), transparent); }
-        .notification-icon { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--bg-card); display: flex; align-items: center; justify-content: center; color: var(--primary); }
-        .notification-content { flex: 1; }
-        .notification-title { font-weight: 600; margin-bottom: 4px; }
-        .notification-message { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 4px; }
-        .notification-time { font-size: 0.75rem; color: var(--text-muted); }
+        /* PAGE CONTENT */
+        .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
 
-        /* ===== PAGE CONTENT ===== */
-        .page-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
-
-        /* ===== BOT MARKETPLACE STYLES ===== */
-        .marketplace-header {
-            text-align: center;
-            margin-bottom: 48px;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .marketplace-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 8px 16px;
-            border-radius: var(--radius-full);
-            margin-bottom: 24px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: var(--shadow-glow);
-        }
-        .marketplace-title { font-size: 3rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 16px; }
+        /* HEADER */
+        .marketplace-header { text-align: center; margin-bottom: 28px; }
+        .marketplace-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: var(--radius-full); margin-bottom: 16px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
+        .marketplace-title { font-size: 2.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 8px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .marketplace-subtitle { font-size: 1.2rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 32px; }
+        .marketplace-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
 
-        /* Search & Filter */
-        .search-section {
-            margin-bottom: 40px;
-        }
-        .search-bar {
-            display: flex;
-            gap: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .search-input {
-            flex: 1;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            padding: 14px 20px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
+        /* SEARCH */
+        .search-section { margin-bottom: 24px; }
+        .search-bar { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
+        .search-input { flex: 1; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-full); padding: 12px 18px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
         .search-input::placeholder { color: var(--text-muted); }
 
-        /* Bot Grid */
-        .bots-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 48px;
-        }
-        .bot-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .bot-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
-        .bot-card-header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), transparent);
-        }
-        .bot-card-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-lg);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            overflow: hidden;
-        }
-        .bot-card-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        /* BOTS GRID */
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; }
+        .bot-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px -10px rgba(124, 58, 237, 0.3); }
+        .bot-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124, 58, 237, 0.06), transparent); }
+        .bot-card-logo { width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
+        .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
         .bot-card-info { flex: 1; }
-        .bot-card-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
-        .bot-card-creator { font-size: 0.75rem; color: var(--text-muted); }
-        .bot-card-creator i { color: var(--primary); margin-right: 4px; }
+        .bot-card-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
+        .bot-card-creator { font-size: 0.7rem; color: var(--text-muted); }
+        .bot-card-body { padding: 14px 16px; }
+        .bot-card-description { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .bot-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .bot-tag { background: var(--bg-hover); padding: 3px 8px; border-radius: var(--radius-full); font-size: 0.65rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .bot-price { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border-color); }
+        .price-coins { display: flex; align-items: center; gap: 4px; font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .price-coins i { font-size: 0.9rem; color: var(--accent); }
+        .price-period { font-size: 0.7rem; color: var(--text-muted); }
+        .deploy-count { font-size: 0.7rem; color: var(--text-muted); }
 
-        .bot-card-body { padding: 20px; }
-        .bot-card-description {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 16px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .bot-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .bot-tag {
-            background: var(--bg-hover);
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-        .bot-price {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-        .price-coins {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .price-coins i { font-size: 1rem; color: var(--accent); }
-        .price-period { font-size: 0.75rem; color: var(--text-muted); }
-        .deploy-count {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        .deploy-count i { color: var(--primary); margin-right: 4px; }
-
-        /* Modal */
+        /* MODAL PLEIN ÉCRAN */
         .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s; padding: 0;
         }
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal.active { opacity: 1; visibility: visible; }
         .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            transform: scale(0.9);
-            transition: transform 0.3s;
+            background: var(--bg-card); border-radius: 0;
+            width: 100%; height: 100%; max-width: 100%; max-height: 100%;
+            overflow-y: auto; border: none;
+            transform: scale(0.95); transition: transform 0.3s;
         }
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
+        .modal.active .modal-content { transform: scale(1); }
         .modal-header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            background: var(--bg-card);
-            z-index: 10;
+            position: sticky; top: 0; background: var(--bg-card); z-index: 10;
         }
-        .modal-header h2 { font-size: 1.5rem; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-full);
-        }
+        .modal-header h2 { font-size: 1.3rem; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); }
         .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .modal-body { padding: 20px; }
+        .modal-body { padding: 20px 24px 40px; max-width: 700px; margin: 0 auto; }
 
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85rem; }
         .form-label i { color: var(--primary); margin-right: 6px; }
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 12px 16px;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
-        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-input, .form-textarea, .form-select { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
         .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
 
-        /* Toggle Switch */
-        .toggle-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .toggle-label { font-weight: 500; }
+        /* SESSION ID BUTTON */
+        .session-btn-wrapper { text-align: center; margin: 8px 0 16px; }
+        .session-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 10px 24px; border-radius: var(--radius-full); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.3s; }
+        .session-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+
+        /* TOGGLE PRO */
+        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; margin-bottom: 4px; }
+        .toggle-label { font-weight: 600; font-size: 0.9rem; }
         .toggle-sub { font-size: 0.7rem; color: var(--text-muted); display: block; }
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: var(--bg-input);
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .toggle-switch.active { background: var(--primary); }
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 3px;
-            transition: all 0.3s;
-        }
-        .toggle-switch.active::after { left: 25px; }
+        .toggle-switch { position: relative; width: 52px; height: 28px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 2px solid var(--border-color); }
+        .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .toggle-switch.active::after { left: 24px; }
 
-        /* Env Vars Section */
-        .env-section {
-            margin-top: 24px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-        .env-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        .env-item {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-color);
-        }
-        .env-key {
-            font-family: monospace;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        .env-desc { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
-        .env-value input {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            color: var(--text-primary);
-            font-family: monospace;
-            font-size: 0.85rem;
-        }
-        .env-required {
-            color: var(--danger);
-            font-size: 0.7rem;
-            margin-left: 8px;
-        }
+        /* ENV SECTION */
+        .env-section { margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px; }
+        .env-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--border-color); }
+        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 4px; font-size: 0.85rem; }
+        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: monospace; font-size: 0.85rem; }
+        .env-value input:focus { outline: none; border-color: var(--primary); }
+        .env-required { color: var(--danger); font-size: 0.65rem; margin-left: 6px; }
 
-        /* Session Button */
-        .session-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 10px 20px;
-            border-radius: var(--radius-full);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-        }
-        .session-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
+        /* DEPLOY BUTTON */
+        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 16px; }
+        .deploy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .deploy-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        /* Deploy Button */
-        .deploy-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-        }
-        .deploy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-        .deploy-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
 
-        /* Submit Bot Section */
-        .submit-section {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
-            border-radius: var(--radius-xl);
-            padding: 32px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            margin-top: 40px;
-        }
-        .submit-title { font-size: 1.5rem; margin-bottom: 12px; }
-        .submit-subtitle { color: var(--text-secondary); margin-bottom: 20px; }
-        .submit-btn {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 12px 32px;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .submit-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            text-align: center;
-            padding: 60px;
-            color: var(--text-secondary);
-        }
-        .loading-spinner i {
-            font-size: 2rem;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            color: var(--text-secondary);
-        }
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-            max-width: 350px;
-        }
+        /* TOAST */
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 10px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 350px; font-size: 0.9rem; }
         .toast.success { background: rgba(16, 185, 129, 0.95); }
         .toast.error { background: rgba(239, 68, 68, 0.95); }
         .toast.info { background: rgba(59, 130, 246, 0.95); }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(30px); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
-        /* Footer */
-        .footer {
-            margin-top: 60px;
-            border-top: 1px solid var(--border-color);
-            padding: 40px 16px 20px;
-        }
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            margin-bottom: 32px;
-        }
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-        .footer-section p { color: var(--text-secondary); font-size: 0.9rem; }
-        .footer-links {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        .footer-column h4 { font-size: 0.9rem; margin-bottom: 12px; }
-        .footer-column ul { list-style: none; }
-        .footer-column li { margin-bottom: 8px; }
-        .footer-column a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 0.2s;
-        }
-        .footer-column a:hover { color: var(--primary); }
-        .footer-bottom {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .footer-social { display: flex; gap: 16px; }
-        .footer-social a { color: var(--text-secondary); font-size: 1.25rem; transition: all 0.2s; }
-        .footer-social a:hover { color: var(--primary); transform: translateY(-2px); }
+        .loading-spinner { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
+        .loading-spinner i { font-size: 2rem; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 1024px) {
-            .menu-toggle { display: block; }
+            .menu-toggle { display: flex; }
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
-            .bots-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .bots-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
         }
         @media (max-width: 768px) {
-            .page-content { padding: 16px; }
-            .marketplace-title { font-size: 2rem; }
-            .search-bar { flex-direction: column; }
+            .page-content { padding: 12px; }
+            .marketplace-title { font-size: 1.6rem; }
+            .top-bar { padding: 8px 12px; }
+            .btn-submit-bot { font-size: 0.75rem; padding: 6px 12px; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
-                </div>
-                <button class="close-sidebar" id="closeSidebar">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
             </div>
-            
             <div class="sidebar-user" id="sidebarUser">
-                <div class="user-avatar" id="sidebarAvatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
+                <div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div>
                 <div class="user-info">
                     <div class="user-name" id="sidebarUserName">Invité</div>
                     <div class="user-email" id="sidebarUserEmail">Non connecté</div>
                 </div>
                 <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
             </div>
-            
             <nav class="sidebar-nav">
                 <ul>
-                    <li id="navDashboard" style="display: none;">
-                        <a href="/dashboard">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/pricing">
-                            <i class="fas fa-tags"></i>
-                            <span>Tarifs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/buy-coins">
-                            <i class="fas fa-coins"></i>
-                            <span>Acheter des coins</span>
-                        </a>
-                    </li>
-                    <li id="navProfile" style="display: none;">
-                        <a href="/profile">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/transactions">
-                            <i class="fas fa-history"></i>
-                            <span>Transactions</span>
-                        </a>
-                    </li>
-                    <li class="active">
-                        <a href="/bot">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>Bots</span>
-                        </a>
-                    </li>
-                    <li id="navMyBots" style="display: none;">
-                        <a href="/my-bots">
-                            <i class="fas fa-robot"></i>
-                            <span>Mes bots</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/support">
-                            <i class="fas fa-headset"></i>
-                            <span>Support</span>
-                        </a>
-                    </li>
+                    <li id="navDashboard" style="display:none;"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
+                    <li><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
+                    <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
+                    <li id="navProfile" style="display:none;"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
+                    <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
+                    <li class="active"><a href="/bot"><i class="fab fa-whatsapp"></i><span>Bots</span></a></li>
+                    <li id="navMyBots" style="display:none;"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
+                    <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
                     <li class="divider"></li>
-                    <li id="navHome" style="display: block;">
-                        <a href="/">
-                            <i class="fas fa-home"></i>
-                            <span>Accueil</span>
-                        </a>
-                    </li>
-                    <li id="navLogin" style="display: block;">
-                        <a href="/login">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Connexion</span>
-                        </a>
-                    </li>
-                    <li id="navRegister" style="display: block;">
-                        <a href="/register">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Inscription</span>
-                        </a>
-                    </li>
-                    <li id="navLogout" style="display: none;">
-                        <a href="#" id="logoutLink">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Déconnexion</span>
-                        </a>
-                    </li>
+                    <li id="navHome"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
+                    <li id="navLogin"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
+                    <li id="navRegister"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
+                    <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
                 </ul>
             </nav>
-            
             <div class="sidebar-footer">
                 <div class="sidebar-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="sidebarCoins">0</span>
-                        <span class="stat-label">Coins</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="sidebarServers">0</span>
-                        <span class="stat-label">Serveurs</span>
-                    </div>
+                    <div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div>
+                    <div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="top-bar-logo">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
+                <div class="top-bar-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
                 </div>
                 <div class="top-bar-actions">
-                    <button class="notification-btn" id="notificationBtn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notificationBadge">0</span>
-                    </button>
-                    <a href="/profile" class="user-menu" id="userMenu" style="text-decoration: none;">
-                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
-                    </a>
+                    <button class="btn-submit-bot" id="submitBotBtnTop"><i class="fas fa-plus-circle"></i> Proposer un bot</button>
+                    <a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a>
                 </div>
             </header>
 
-            <!-- Notifications Panel -->
-            <div class="notifications-panel" id="notificationsPanel">
-                <div class="notifications-header">
-                    <h3>Notifications</h3>
-                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="notifications-list" id="notificationsList">
-                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">Aucune notification</div>
-                </div>
-            </div>
-
-            <!-- Page Content -->
             <div class="page-content">
-                <!-- Header -->
                 <div class="marketplace-header">
-                    <div class="marketplace-badge">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>WhatsApp Bots Marketplace</span>
-                    </div>
-                    <h1 class="marketplace-title">
-                        Déployez des bots <span class="gradient-text">en 1 minute</span>
-                    </h1>
-                    <p class="marketplace-subtitle">
-                        Choisissez parmi des dizaines de templates, configurez vos variables d'environnement,
-                        et déployez instantanément sur Heroku avec vos coins.
-                    </p>
+                    <div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div>
+                    <h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1>
+                    <p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p>
                 </div>
 
-                <!-- Search -->
                 <div class="search-section">
                     <div class="search-bar">
                         <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot...">
                     </div>
                 </div>
 
-                <!-- Bots Grid -->
                 <div id="botsContainer" class="bots-grid">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Chargement des bots...</p>
-                    </div>
-                </div>
-
-                <!-- Submit Bot Section -->
-                <div class="submit-section" id="submitSection" style="display: none;">
-                    <h3 class="submit-title">Vous avez créé un bot ?</h3>
-                    <p class="submit-subtitle">Soumettez votre template et gagnez <strong>5 coins</strong> par déploiement</p>
-                    <button class="submit-btn" id="submitBotBtn">
-                        <i class="fas fa-plus"></i> Soumettre un bot
-                    </button>
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Chargement des bots...</p></div>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="footer-content">
-                    <div class="footer-section">
-                        <div class="footer-logo">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>KermHosting</span>
-                        </div>
-                        <p>Hébergement Node.js nouvelle génération, avec paiement en FCFA.</p>
-                    </div>
-                    
-                    <div class="footer-links">
-                        <div class="footer-column">
-                            <h4>Produit</h4>
-                            <ul>
-                                <li><a href="/pricing">Tarifs</a></li>
-                                <li><a href="/buy-coins">Acheter des coins</a></li>
-                                <li><a href="/bot">Bots</a></li>
-                                <li><a href="/my-bots">Mes bots</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4>Ressources</h4>
-                            <ul>
-                                <li><a href="/support">FAQ & Support</a></li>
-                                <li><a href="#">Documentation</a></li>
-                                <li><a href="#">Communauté</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4>Légal</h4>
-                            <ul>
-                                <li><a href="#">CGU</a></li>
-                                <li><a href="#">Confidentialité</a></li>
-                                <li><a href="#">Mentions</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="footer-bottom">
-                    <p>&copy; 2025 KermHosting. Tous droits réservés.</p>
-                    <div class="footer-social">
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-            </footer>
         </main>
     </div>
 
-    <!-- Deploy Modal -->
+    <!-- MODAL DÉPLOIEMENT PLEIN ÉCRAN -->
     <div class="modal" id="deployModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalTitle">Déployer un bot</h2>
                 <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Dynamic content -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
-    <!-- Submit Bot Modal -->
+    <!-- MODAL SOUMISSION -->
     <div class="modal" id="submitModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Soumettre un bot</h2>
+                <h2>Proposer un bot</h2>
                 <button class="modal-close" id="closeSubmitModal"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -998,90 +375,45 @@
                         <input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo">
                         <div class="form-hint">Le repo doit contenir un fichier kh.json à la racine</div>
                     </div>
-                    <button type="submit" class="deploy-btn" id="submitFormBtn">
-                        <i class="fas fa-paper-plane"></i> Soumettre la demande
-                    </button>
+                    <button type="submit" class="deploy-btn" id="submitFormBtn"><i class="fas fa-paper-plane"></i> Soumettre</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== AVATAR MANAGER =====
         const AvatarManager = {
             getAvatar: function(username) {
-                const localAvatar = localStorage.getItem('user_avatar');
-                if (localAvatar) return localAvatar;
-                const sessionAvatar = sessionStorage.getItem('user_avatar');
-                if (sessionAvatar) return sessionAvatar;
-                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
-            },
-            setAvatar: function(avatarData) {
-                localStorage.setItem('user_avatar', avatarData);
-                sessionStorage.setItem('user_avatar', avatarData);
-            },
-            reset: function(username) {
-                localStorage.removeItem('user_avatar');
-                sessionStorage.removeItem('user_avatar');
-                return `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
+                return localStorage.getItem('user_avatar') || sessionStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=7C3AED&color=fff&size=40`;
             },
             applyToPage: function(username) {
                 const avatar = this.getAvatar(username);
-                const userAvatarSmall = document.getElementById('userAvatarSmall');
-                if (userAvatarSmall) { userAvatarSmall.src = avatar; userAvatarSmall.style.objectFit = 'cover'; }
-                const sidebarAvatar = document.getElementById('sidebarAvatar');
-                if (sidebarAvatar) {
-                    sidebarAvatar.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-                }
-                if (username) localStorage.setItem('username', username);
+                const ua = document.getElementById('userAvatarSmall'); if (ua) { ua.src = avatar; ua.style.objectFit = 'cover'; }
+                const sa = document.getElementById('sidebarAvatar'); if (sa) sa.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
             }
         };
 
-        // ===== TOAST =====
         function showToast(type, message) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            const t = document.createElement('div'); t.className = `toast ${type}`;
+            t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(t);
+            setTimeout(() => { t.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => t.remove(), 300); }, 3000);
         }
 
-        // ===== SIDEBAR FUNCTIONS =====
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const menuToggle = document.getElementById('menuToggle');
-        const closeSidebar = document.getElementById('closeSidebar');
-        function openSidebar() { sidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeSidebarFunc() { sidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
-        menuToggle.addEventListener('click', openSidebar);
-        closeSidebar.addEventListener('click', closeSidebarFunc);
-        overlay.addEventListener('click', closeSidebarFunc);
+        // Sidebar
+        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle').addEventListener('click', () => { sidebar.classList.add('active'); overlay.classList.add('active'); });
+        document.getElementById('closeSidebar').addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
 
-        // ===== NOTIFICATIONS =====
-        const notificationBtn = document.getElementById('notificationBtn');
-        const notificationsPanel = document.getElementById('notificationsPanel');
-        const closeNotifications = document.getElementById('closeNotifications');
-        notificationBtn.addEventListener('click', () => notificationsPanel.classList.toggle('active'));
-        closeNotifications.addEventListener('click', () => notificationsPanel.classList.remove('active'));
-        document.addEventListener('click', (e) => {
-            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
-                notificationsPanel.classList.remove('active');
-            }
-        });
-
-        // ===== AUTH =====
+        // Auth
         const token = localStorage.getItem('token');
         let currentUser = null;
 
         function checkAuth() {
             if (token) {
-                fetch('/api/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-                .then(res => res.json())
+                fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
                         currentUser = data.user;
@@ -1090,423 +422,205 @@
                         document.getElementById('sidebarUserBadge').textContent = data.user.role;
                         document.getElementById('sidebarCoins').textContent = data.user.coins || 0;
                         document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
-                        
-                        document.getElementById('navDashboard').style.display = 'block';
-                        document.getElementById('navProfile').style.display = 'block';
-                        document.getElementById('navMyBots').style.display = 'block';
-                        document.getElementById('navHome').style.display = 'none';
-                        document.getElementById('navLogin').style.display = 'none';
-                        document.getElementById('navRegister').style.display = 'none';
-                        document.getElementById('navLogout').style.display = 'block';
-                        document.getElementById('submitSection').style.display = 'block';
-                        
+                        ['navDashboard','navProfile','navMyBots','navLogout'].forEach(id => document.getElementById(id).style.display = 'block');
+                        ['navHome','navLogin','navRegister'].forEach(id => document.getElementById(id).style.display = 'none');
                         AvatarManager.applyToPage(data.user.username);
                     }
-                })
-                .catch(() => {
-                    localStorage.removeItem('token');
-                    showNotConnected();
-                });
-            } else {
-                showNotConnected();
-            }
+                }).catch(() => { localStorage.removeItem('token'); showNotConnected(); });
+            } else showNotConnected();
         }
-
         function showNotConnected() {
             document.getElementById('sidebarUserName').textContent = 'Invité';
             document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
             document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
             document.getElementById('sidebarCoins').textContent = '0';
             document.getElementById('sidebarServers').textContent = '0';
-            document.getElementById('navMyBots').style.display = 'none';
-            document.getElementById('submitSection').style.display = 'none';
         }
 
-        document.getElementById('logoutLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            AvatarManager.reset();
-            window.location.reload();
-        });
+        document.getElementById('logoutLink')?.addEventListener('click', e => { e.preventDefault(); localStorage.removeItem('token'); location.reload(); });
+        document.getElementById('userMenu')?.addEventListener('click', e => { e.preventDefault(); location.href = token ? '/profile' : '/login'; });
 
-        // ===== LOAD TEMPLATES =====
+        // Load templates
         async function loadTemplates() {
             const container = document.getElementById('botsContainer');
             try {
-                const response = await fetch('/api/bots/templates', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const data = await response.json();
-                
-                if (!data.success || !data.templates || data.templates.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-robot"></i>
-                            <p>Aucun bot disponible pour le moment.</p>
-                        </div>
-                    `;
+                const res = await fetch('/api/bots/templates', { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+                const data = await res.json();
+                if (!data.success || !data.templates?.length) {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible pour le moment.</p></div>`;
                     return;
                 }
-                
-                container.innerHTML = data.templates.map(template => `
-                    <div class="bot-card" onclick="openDeployModal('${template.id}')">
+                container.innerHTML = data.templates.map(t => `
+                    <div class="bot-card" onclick="openDeployModal('${t.id}')">
                         <div class="bot-card-header">
-                            <div class="bot-card-logo">
-                                ${template.logo_url ? `<img src="${template.logo_url}" alt="${template.name}">` : `<i class="fab fa-whatsapp"></i>`}
-                            </div>
+                            <div class="bot-card-logo">${t.logo_url ? `<img src="${t.logo_url}" alt="${esc(t.name)}">` : `<i class="fab fa-whatsapp"></i>`}</div>
                             <div class="bot-card-info">
-                                <div class="bot-card-name">${escapeHtml(template.name)}</div>
-                                <div class="bot-card-creator"><i class="fas fa-user"></i> ${template.user_id ? 'Communauté' : 'Officiel'}</div>
+                                <div class="bot-card-name">${esc(t.name)}</div>
+                                <div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id ? 'Communauté' : 'Officiel'}</div>
                             </div>
                         </div>
                         <div class="bot-card-body">
-                            <div class="bot-card-description">${escapeHtml(template.kh_json?.description || 'Aucune description')}</div>
-                            <div class="bot-tags">
-                                ${(template.kh_json?.keywords || ['bot']).slice(0, 3).map(k => `<span class="bot-tag">${escapeHtml(k)}</span>`).join('')}
-                            </div>
+                            <div class="bot-card-description">${esc(t.kh_json?.description || 'Aucune description')}</div>
+                            <div class="bot-tags">${(t.kh_json?.keywords || ['bot']).slice(0,3).map(k => `<span class="bot-tag">${esc(k)}</span>`).join('')}</div>
                             <div class="bot-price">
-                                <div class="price-coins">
-                                    <i class="fas fa-coins"></i>
-                                    <span>${template.price_weekly}</span>
-                                    <span class="price-period">/ semaine</span>
-                                </div>
-                                <div class="deploy-count">
-                                    <i class="fas fa-download"></i> ${template.total_deploys || 0} déploiements
-                                </div>
+                                <div class="price-coins"><i class="fas fa-coins"></i><span>${t.price_weekly}</span><span class="price-period">/semaine</span></div>
+                                <div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys || 0}</div>
                             </div>
                         </div>
                     </div>
                 `).join('');
-                
-            } catch (error) {
-                console.error('Erreur chargement templates:', error);
-                container.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
+            } catch(e) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>`;
             }
         }
 
-        // ===== DEPLOY MODAL =====
-        let selectedTemplate = null;
-        let currentDurationMode = 'weekly';
-        let currentEnvVars = {};
+        // Deploy modal
+        let selectedTemplate = null, currentDurationMode = 'weekly', currentEnvVars = {};
 
         async function openDeployModal(templateId) {
-            if (!token) {
-                showToast('error', 'Veuillez vous connecter pour déployer un bot');
-                window.location.href = '/login';
-                return;
-            }
-            
+            if (!token) { showToast('error', 'Connectez-vous pour déployer'); location.href = '/login'; return; }
             try {
-                const response = await fetch(`/api/bots/templates/${templateId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
+                const res = await fetch(`/api/bots/templates/${templateId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
                 if (!data.success) throw new Error('Template non trouvé');
-                
                 selectedTemplate = data.template;
                 currentEnvVars = {};
-                
-                // Initialiser les env vars avec les valeurs par défaut
                 const khEnv = selectedTemplate.kh_json?.env || {};
-                for (const [key, config] of Object.entries(khEnv)) {
-                    currentEnvVars[key] = config.value || '';
-                }
-                
+                for (const [key, config] of Object.entries(khEnv)) currentEnvVars[key] = config.value || '';
                 renderDeployModal();
-                
-            } catch (error) {
-                showToast('error', 'Erreur chargement du template');
-            }
+            } catch(e) { showToast('error', 'Erreur chargement template'); }
         }
 
         function renderDeployModal() {
-            const khJson = selectedTemplate.kh_json || {};
-            const env = khJson.env || {};
+            const khJson = selectedTemplate.kh_json || {}, env = khJson.env || {};
+            const price = currentDurationMode === 'weekly' ? selectedTemplate.price_weekly : selectedTemplate.price_weekly * 4;
             
-            const weeklyPrice = selectedTemplate.price_weekly;
-            const monthlyPrice = weeklyPrice * 4;
-            const currentPrice = currentDurationMode === 'weekly' ? weeklyPrice : monthlyPrice;
-            
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `
-                <div style="margin-bottom: 20px;">
-                    <a href="${khJson['documentation-link'] || '#'}" target="_blank" class="session-btn">
-                        <i class="fas fa-qrcode"></i> Obtenir SESSION_ID
-                    </a>
-                </div>
-                
+            document.getElementById('modalTitle').textContent = `Déployer ${selectedTemplate.name}`;
+            document.getElementById('modalBody').innerHTML = `
                 <div class="form-group">
-                    <label class="form-label"><i class="fas fa-tag"></i> Nom de l'application</label>
-                    <input type="text" class="form-input" id="appName" placeholder="ex: mon-bot-wa" required>
-                    <div class="form-hint" id="appNameHint">Vérification en temps réel...</div>
+                    <label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label>
+                    <input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')">
+                    <div class="form-hint" id="appNameHint"></div>
                 </div>
                 
                 <div class="toggle-group">
                     <div>
                         <div class="toggle-label">Mode mensuel</div>
-                        <div class="toggle-sub">×4 coins (${monthlyPrice} coins pour 28 jours)</div>
+                        <div class="toggle-sub">${price} coins pour 28 jours (×4)</div>
                     </div>
                     <div class="toggle-switch ${currentDurationMode === 'monthly' ? 'active' : ''}" id="durationToggle"></div>
                 </div>
-                
+
+                <div class="session-btn-wrapper">
+                    <a href="${khJson['documentation-link'] || '#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a>
+                </div>
+
                 <div class="env-section">
                     <div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>
                     ${Object.entries(env).map(([key, config]) => `
                         <div class="env-item">
-                            <div class="env-key">${escapeHtml(key)} ${config.required ? '<span class="env-required">(requis)</span>' : ''}</div>
-                            <div class="env-desc">${escapeHtml(config.description || 'Aucune description')}</div>
+                            <div class="env-key">${esc(key)} ${config.required ? '<span class="env-required">(requis)</span>' : ''}</div>
+                            <div class="env-desc">${esc(config.description || '')}</div>
                             <div class="env-value">
-                                <input type="${key === 'SESSION_ID' ? 'password' : 'text'}" 
-                                       id="env_${key}" 
-                                       value="${escapeHtml(currentEnvVars[key] || config.value || '')}"
-                                       placeholder="${escapeHtml(config.required ? 'Requis' : 'Optionnel')}">
+                                <input type="text" id="env_${key}" value="${esc(currentEnvVars[key] || config.value || '')}" placeholder="${config.required ? 'Requis' : 'Optionnel'}" oninput="this.value=this.value.toLowerCase()">
                             </div>
                         </div>
                     `).join('')}
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label"><i class="fas fa-coins"></i> Prix total</label>
-                    <div style="background: var(--bg-input); padding: 12px; border-radius: var(--radius-md);">
-                        <span style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${currentPrice}</span>
-                        <span> coins</span>
-                        <span style="color: var(--text-muted); margin-left: 12px;">pour ${currentDurationMode === 'weekly' ? '7 jours' : '28 jours'}</span>
-                    </div>
+                <div style="background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); margin-top: 16px; text-align: center;">
+                    <span style="font-size: 1.3rem; font-weight: 700; color: var(--primary);">${price}</span>
+                    <span style="color: var(--text-secondary);"> coins — ${currentDurationMode === 'weekly' ? '7 jours' : '28 jours'}</span>
                 </div>
                 
-                <button class="deploy-btn" id="confirmDeployBtn">
-                    <i class="fas fa-rocket"></i> Déployer maintenant
-                </button>
+                <button class="deploy-btn" id="confirmDeployBtn"><i class="fas fa-rocket"></i> Déployer maintenant</button>
             `;
-            
-            // Duration toggle
-            const toggle = document.getElementById('durationToggle');
-            toggle.addEventListener('click', () => {
+
+            document.getElementById('durationToggle').addEventListener('click', () => {
                 currentDurationMode = currentDurationMode === 'weekly' ? 'monthly' : 'weekly';
-                toggle.classList.toggle('active');
+                document.getElementById('durationToggle').classList.toggle('active');
                 renderDeployModal();
             });
-            
-            // App name check
+
             const appNameInput = document.getElementById('appName');
             const appNameHint = document.getElementById('appNameHint');
             let checkTimeout;
-            
             appNameInput.addEventListener('input', () => {
                 clearTimeout(checkTimeout);
-                const name = appNameInput.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-                if (name.length < 3) {
-                    appNameHint.innerHTML = '<span style="color: var(--warning);">⚠️ Minimum 3 caractères</span>';
-                    return;
-                }
+                const name = appNameInput.value;
+                if (name.length < 3) { appNameHint.innerHTML = ''; return; }
                 checkTimeout = setTimeout(async () => {
                     try {
-                        const res = await fetch('/api/bots/check-app-name', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ app_name: name })
-                        });
+                        const res = await fetch('/api/bots/check-app-name', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ app_name: name }) });
                         const data = await res.json();
-                        if (data.available) {
-                            appNameHint.innerHTML = '<span style="color: var(--success);">✅ Disponible</span>';
-                            if (data.suggestions?.length) {
-                                appNameHint.innerHTML += `<span style="color: var(--text-muted); margin-left: 8px;">Suggestions: ${data.suggestions.join(', ')}</span>`;
-                            }
-                        } else {
-                            appNameHint.innerHTML = `<span style="color: var(--danger);">❌ ${data.message || 'Indisponible'}</span>`;
-                        }
-                    } catch (error) {
-                        appNameHint.innerHTML = '<span style="color: var(--warning);">⚠️ Vérification impossible</span>';
-                    }
+                        appNameHint.innerHTML = data.available ? '<span style="color:var(--success);">✅ Disponible</span>' : `<span style="color:var(--danger);">❌ ${data.message||'Indisponible'}</span>`;
+                    } catch(e) { appNameHint.innerHTML = ''; }
                 }, 500);
             });
-            
-            // Deploy button
+
             document.getElementById('confirmDeployBtn').addEventListener('click', async () => {
                 const appName = document.getElementById('appName').value.trim();
-                if (!appName) {
-                    showToast('error', 'Veuillez entrer un nom d\'application');
-                    return;
-                }
-                
-                // Collect env vars
+                if (!appName) { showToast('error', 'Nom d\'application requis'); return; }
                 const envVars = {};
                 for (const key of Object.keys(env)) {
                     const input = document.getElementById(`env_${key}`);
-                    if (input && input.value.trim()) {
-                        envVars[key] = input.value.trim();
-                    }
+                    if (input?.value.trim()) envVars[key] = input.value.trim();
                 }
+                const missing = Object.entries(env).filter(([k, c]) => c.required && !envVars[k]);
+                if (missing.length) { showToast('error', `Variables requises : ${missing.map(([k])=>k).join(', ')}`); return; }
                 
-                // Vérifier les variables requises
-                const missingRequired = Object.entries(env).filter(([key, config]) => config.required && !envVars[key]);
-                if (missingRequired.length > 0) {
-                    showToast('error', `Variables requises manquantes: ${missingRequired.map(([k]) => k).join(', ')}`);
-                    return;
-                }
-                
-                document.getElementById('confirmDeployBtn').disabled = true;
-                document.getElementById('confirmDeployBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Déploiement en cours...';
-                
+                const btn = document.getElementById('confirmDeployBtn');
+                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Déploiement...';
                 try {
-                    const response = await fetch('/api/bots/deploy', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({
-                            template_id: selectedTemplate.id,
-                            app_name: appName,
-                            duration_mode: currentDurationMode,
-                            env_vars: envVars
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    if (data.success) {
-                        showToast('success', 'Déploiement initié ! Consultez "Mes bots" pour suivre l\'avancement');
-                        setTimeout(() => {
-                            document.getElementById('deployModal').classList.remove('active');
-                            window.location.href = '/my-bots';
-                        }, 2000);
-                    } else {
-                        showToast('error', data.error || 'Erreur de déploiement');
-                    }
-                } catch (error) {
-                    showToast('error', 'Erreur lors du déploiement');
-                } finally {
-                    document.getElementById('confirmDeployBtn').disabled = false;
-                    document.getElementById('confirmDeployBtn').innerHTML = '<i class="fas fa-rocket"></i> Déployer maintenant';
-                }
+                    const res = await fetch('/api/bots/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ template_id: selectedTemplate.id, app_name: appName, duration_mode: currentDurationMode, env_vars: envVars }) });
+                    const data = await res.json();
+                    if (data.success) { showToast('success', 'Déploiement initié !'); setTimeout(() => { document.getElementById('deployModal').classList.remove('active'); location.href = '/my-bots'; }, 1500); }
+                    else showToast('error', data.error || 'Erreur');
+                } catch(e) { showToast('error', 'Erreur réseau'); }
+                finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rocket"></i> Déployer maintenant'; }
             });
-            
+
             document.getElementById('deployModal').classList.add('active');
         }
-        
-        // ===== SUBMIT BOT MODAL =====
-        document.getElementById('submitBotBtn').addEventListener('click', () => {
-            if (!token) {
-                showToast('error', 'Veuillez vous connecter');
-                window.location.href = '/login';
-                return;
-            }
+
+        // Submit bot
+        document.getElementById('submitBotBtnTop').addEventListener('click', () => {
+            if (!token) { showToast('error', 'Connectez-vous'); location.href = '/login'; return; }
             document.getElementById('submitModal').classList.add('active');
         });
-        
-        document.getElementById('closeSubmitModal').addEventListener('click', () => {
-            document.getElementById('submitModal').classList.remove('active');
-        });
-        
-        document.getElementById('submitForm').addEventListener('submit', async (e) => {
+        document.getElementById('closeSubmitModal').addEventListener('click', () => document.getElementById('submitModal').classList.remove('active'));
+        document.getElementById('submitForm').addEventListener('submit', async e => {
             e.preventDefault();
             const botName = document.getElementById('submitBotName').value.trim();
             const repoUrl = document.getElementById('submitRepoUrl').value.trim();
-            
-            if (!botName || !repoUrl) {
-                showToast('error', 'Tous les champs sont requis');
-                return;
-            }
-            
+            if (!botName || !repoUrl) { showToast('error', 'Tous les champs requis'); return; }
             const btn = document.getElementById('submitFormBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
-            
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
             try {
-                const response = await fetch('/api/bots/submit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ bot_name: botName, repo_url: repoUrl })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('success', 'Bot soumis avec succès ! En attente d\'approbation');
-                    document.getElementById('submitModal').classList.remove('active');
-                    document.getElementById('submitForm').reset();
-                } else {
-                    showToast('error', data.error || 'Erreur lors de la soumission');
-                }
-            } catch (error) {
-                showToast('error', 'Erreur lors de la soumission');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Soumettre la demande';
-            }
+                const res = await fetch('/api/bots/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ bot_name: botName, repo_url: repoUrl }) });
+                const data = await res.json();
+                if (data.success) { showToast('success', 'Bot soumis ! En attente d\'approbation'); document.getElementById('submitModal').classList.remove('active'); document.getElementById('submitForm').reset(); }
+                else showToast('error', data.error || 'Erreur');
+            } catch(e) { showToast('error', 'Erreur réseau'); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Soumettre'; }
         });
-        
-        // Close modals on outside click
-        document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('deployModal').classList.remove('active');
+
+        // Close modals
+        document.getElementById('closeModal').addEventListener('click', () => document.getElementById('deployModal').classList.remove('active'));
+        document.getElementById('deployModal').addEventListener('click', e => { if (e.target === document.getElementById('deployModal')) document.getElementById('deployModal').classList.remove('active'); });
+        document.getElementById('submitModal').addEventListener('click', e => { if (e.target === document.getElementById('submitModal')) document.getElementById('submitModal').classList.remove('active'); });
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', e => {
+            const s = e.target.value.toLowerCase();
+            document.querySelectorAll('.bot-card').forEach(c => c.style.display = c.textContent.toLowerCase().includes(s) ? '' : 'none');
         });
-        document.getElementById('deployModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('deployModal')) {
-                document.getElementById('deployModal').classList.remove('active');
-            }
-        });
-        document.getElementById('submitModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('submitModal')) {
-                document.getElementById('submitModal').classList.remove('active');
-            }
-        });
-        
-        // Search filter
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const search = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.bot-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(search) ? 'block' : 'none';
-            });
-        });
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-                return c;
-            });
-        }
-        
-        // Setup avatar click redirect
-        function setupAvatarClickRedirect() {
-            const userMenu = document.getElementById('userMenu');
-            if (userMenu) {
-                userMenu.style.cursor = 'pointer';
-                userMenu.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/profile'; });
-            }
-            const sidebarUser = document.getElementById('sidebarUser');
-            if (sidebarUser) {
-                sidebarUser.style.cursor = 'pointer';
-                sidebarUser.addEventListener('click', () => { window.location.href = '/profile'; });
-            }
-        }
-        
-        // Init
-        checkAuth();
-        setupAvatarClickRedirect();
-        loadTemplates();
-        
+
+        function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        checkAuth(); loadTemplates();
+        window.addEventListener('resize', () => { if (window.innerWidth > 1024) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } });
         window.openDeployModal = openDeployModal;
-        window.showToast = showToast;
-        
-        // Responsive close sidebar on resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) closeSidebarFunc();
-        });
-        
-        // Animation on load
-        window.addEventListener('load', () => {
-            document.querySelectorAll('.bot-card').forEach((el, i) => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    el.style.transition = 'all 0.5s ease-out';
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, i * 50);
-            });
-        });
     </script>
 </body>
 </html>
