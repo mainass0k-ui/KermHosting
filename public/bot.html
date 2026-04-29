@@ -22,7 +22,7 @@
     
     <style>
         :root {
-            --primary: #7C3AED; --primary-light: #9D6CFF; --primary-dark: #5B2AB0; --primary-glow: rgba(124, 58, 237, 0.3);
+            --primary: #7C3AED; --primary-light: #9D6CFF; --primary-dark: #5B2AB0; --primary-glow: rgba(124,58,237,0.3);
             --secondary: #10B981; --secondary-light: #34D399; --accent: #F59E0B; --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6;
             --bg-dark: #0B1120; --bg-card: #1A2332; --bg-sidebar: #111827; --bg-hover: #1F2937; --bg-input: #1E293B;
             --text-primary: #F3F4F6; --text-secondary: #9CA3AF; --text-muted: #6B7280; --border-color: #2D3748;
@@ -30,7 +30,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; }
 
         /* SIDEBAR */
@@ -68,14 +68,14 @@
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
         /* TOP BAR */
-        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11, 17, 32, 0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
         .top-bar-left { display: flex; align-items: center; gap: 12px; }
         .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
         .top-bar-actions { display: flex; align-items: center; gap: 10px; }
         .btn-submit-bot { background: linear-gradient(135deg, #25D366, #128C7E); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .btn-submit-bot:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
+        .btn-submit-bot:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.4); }
         .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
 
         /* PAGE */
@@ -96,7 +96,7 @@
         .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; }
         .bot-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px -10px rgba(124,58,237,0.3); }
         .bot-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent); }
-        .bot-card-logo { width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; flex-shrink: 0; }
+        .bot-card-logo { width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
         .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
         .bot-card-info { flex: 1; }
         .bot-card-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
@@ -127,11 +127,21 @@
         .form-label i { color: var(--primary); margin-right: 6px; }
         .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-        .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .form-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); padding: 12px 14px; margin: 12px 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--danger); }
         .form-error i { font-size: 1.2rem; flex-shrink: 0; }
-        .form-error a { color: var(--primary-light); margin-left: auto; font-size: 0.8rem; text-decoration: none; white-space: nowrap; }
-        .form-error a:hover { text-decoration: underline; }
+        .form-error a { color: var(--primary-light); margin-left: auto; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: rgba(124,58,237,0.1); border-radius: var(--radius-full); }
+        .form-error a:hover { background: rgba(124,58,237,0.2); }
+
+        /* BOUTON EXEMPLE PRO */
+        .btn-example {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; border-radius: var(--radius-full); text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; transition: all 0.3s;
+        }
+        .btn-example:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .btn-example i { font-size: 0.85rem; }
 
         /* SESSION ID BTN */
         .session-btn-wrapper { text-align: center; margin: 6px 0 14px; }
@@ -224,7 +234,9 @@
     <!-- MODAL SOUMISSION -->
     <div class="modal" id="submitModal"><div class="modal-content"><div class="modal-header"><h2>Proposer un bot</h2><button class="modal-close" id="closeSubmitModal"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="submitForm">
         <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom du bot</label><input type="text" class="form-input" id="submitBotName" required placeholder="Ex: KERM-MD-V1"></div>
-        <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo"><div class="form-hint">Le repo doit contenir un fichier <strong>kh.json</strong> à la racine. <a href="https://github.com/hostt11/Exemple/blob/main/kh.json" target="_blank" style="color:var(--primary-light);">Voir un exemple</a></div></div>
+        <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo">
+            <div class="form-hint">Le repo doit contenir un fichier <strong>kh.json</strong> à la racine. <a href="https://github.com/hostt11/Exemple/blob/main/kh.json" target="_blank" class="btn-example"><i class="fas fa-eye"></i> Voir un exemple</a></div>
+        </div>
         <div id="submitError" style="display:none;"></div>
         <button type="submit" class="deploy-btn" id="submitFormBtn"><i class="fas fa-paper-plane"></i> Soumettre</button>
     </form></div></div></div>
@@ -242,7 +254,8 @@
         document.getElementById('closeSidebar').addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
         overlay.addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
 
-        const token=localStorage.getItem('token'); let currentUser=null;
+        const token=localStorage.getItem('token'); let currentUser=null, syncInterval=null, templatesCache=[];
+
         function checkAuth(){
             if(token){ fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{ if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=d.user.email; document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navMyBots','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); ['navHome','navLogin','navRegister'].forEach(i=>document.getElementById(i).style.display='none'); AvatarManager.applyToPage(d.user.username); } }).catch(()=>{localStorage.removeItem('token');showNotConnected()}) }else showNotConnected();
         }
@@ -250,14 +263,50 @@
         document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.reload()});
         document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href=token?'/profile':'/login'});
 
+        // ===== SYNC AUTO TOUTES LES SECONDES =====
+        async function syncTemplatesFromGitHub() {
+            if (!templatesCache.length) return;
+            for (const template of templatesCache) {
+                if (!template.repo_url || !template.user_id) continue;
+                try {
+                    const res = await fetch(`/api/bots/check-kh-changed?templateId=${template.id}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.changed) {
+                            // Le kh.json a changé, recharger les templates
+                            console.log(`🔄 Changement détecté pour ${template.name}, rechargement...`);
+                            await loadTemplates();
+                            return; // Recharger une seule fois
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }
+        }
+
+        function startSync() {
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = setInterval(syncTemplatesFromGitHub, 1000);
+        }
+
+        // ===== LOAD TEMPLATES =====
         async function loadTemplates(){
             const c=document.getElementById('botsContainer');
             try{ const r=await fetch('/api/bots/templates',{headers:token?{'Authorization':`Bearer ${token}`}:{}}); const d=await r.json();
-                if(!d.success||!d.templates?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible.</p></div>'; return; }
-                c.innerHTML=d.templates.map(t=>`<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${t.logo_url?`<img src="${t.logo_url}" alt="${esc(t.name)}">`:`<i class="fab fa-whatsapp"></i>`}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div><div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id?'Communauté':'Officiel'}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys||0}</div></div></div></div>`).join('');
-            }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
+                if(!d.success||!d.templates?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible.</p></div>'; templatesCache=[]; return; }
+                templatesCache=d.templates;
+                c.innerHTML=d.templates.map(t=>{
+                    // LOGO : priorité à kh_json.logo
+                    const logoSrc = t.kh_json?.logo || t.logo_url || '';
+                    const logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${esc(t.name)}">` : `<i class="fab fa-whatsapp"></i>`;
+                    return `<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${logoHtml}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div><div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id?'Communauté':'Officiel'}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys||0}</div></div></div></div>`;
+                }).join('');
+                startSync(); // Démarrer la synchro après chargement
+            }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; templatesCache=[]; }
         }
 
+        // ===== DEPLOY MODAL =====
         let selectedTemplate=null, currentDurationMode='weekly', currentEnvVars={};
         async function openDeployModal(tid){
             if(!token){showToast('error','Connectez-vous');location.href='/login';return}
@@ -326,6 +375,7 @@
 
         checkAuth();loadTemplates();
         window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
+        window.addEventListener('beforeunload',()=>{if(syncInterval)clearInterval(syncInterval)});
         window.openDeployModal=openDeployModal;
     </script>
 </body>
