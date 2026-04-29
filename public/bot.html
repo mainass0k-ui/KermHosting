@@ -127,19 +127,18 @@
         .form-label i { color: var(--primary); margin-right: 6px; }
         .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-        .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .form-hint { font-size: 0.75rem; margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .form-hint.available { color: var(--success); }
+        .form-hint.unavailable { color: var(--danger); }
+        .form-hint.checking { color: var(--info); }
+        .form-hint i { font-size: 0.8rem; }
         .form-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); padding: 12px 14px; margin: 12px 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--danger); }
         .form-error i { font-size: 1.2rem; flex-shrink: 0; }
         .form-error a { color: var(--primary-light); margin-left: auto; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: rgba(124,58,237,0.1); border-radius: var(--radius-full); }
         .form-error a:hover { background: rgba(124,58,237,0.2); }
 
         /* BOUTON EXEMPLE PRO */
-        .btn-example {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; border-radius: var(--radius-full); text-decoration: none;
-            font-size: 0.75rem; font-weight: 600; transition: all 0.3s;
-        }
+        .btn-example { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: var(--radius-full); text-decoration: none; font-size: 0.75rem; font-weight: 600; transition: all 0.3s; }
         .btn-example:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .btn-example i { font-size: 0.85rem; }
 
@@ -263,32 +262,21 @@
         document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.reload()});
         document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href=token?'/profile':'/login'});
 
-        // ===== SYNC AUTO TOUTES LES SECONDES =====
+        // ===== SYNC AUTO =====
         async function syncTemplatesFromGitHub() {
             if (!templatesCache.length) return;
             for (const template of templatesCache) {
                 if (!template.repo_url || !template.user_id) continue;
                 try {
-                    const res = await fetch(`/api/bots/check-kh-changed?templateId=${template.id}`, {
-                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                    });
+                    const res = await fetch(`/api/bots/check-kh-changed?templateId=${template.id}`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
                     if (res.ok) {
                         const data = await res.json();
-                        if (data.changed) {
-                            // Le kh.json a changé, recharger les templates
-                            console.log(`🔄 Changement détecté pour ${template.name}, rechargement...`);
-                            await loadTemplates();
-                            return; // Recharger une seule fois
-                        }
+                        if (data.changed) { await loadTemplates(); return; }
                     }
                 } catch (e) { /* ignore */ }
             }
         }
-
-        function startSync() {
-            if (syncInterval) clearInterval(syncInterval);
-            syncInterval = setInterval(syncTemplatesFromGitHub, 1000);
-        }
+        function startSync() { if (syncInterval) clearInterval(syncInterval); syncInterval = setInterval(syncTemplatesFromGitHub, 1000); }
 
         // ===== LOAD TEMPLATES =====
         async function loadTemplates(){
@@ -297,12 +285,11 @@
                 if(!d.success||!d.templates?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot disponible.</p></div>'; templatesCache=[]; return; }
                 templatesCache=d.templates;
                 c.innerHTML=d.templates.map(t=>{
-                    // LOGO : priorité à kh_json.logo
                     const logoSrc = t.kh_json?.logo || t.logo_url || '';
                     const logoHtml = logoSrc ? `<img src="${logoSrc}" alt="${esc(t.name)}">` : `<i class="fab fa-whatsapp"></i>`;
                     return `<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${logoHtml}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div><div class="bot-card-creator"><i class="fas fa-user"></i> ${t.user_id?'Communauté':'Officiel'}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${t.total_deploys||0}</div></div></div></div>`;
                 }).join('');
-                startSync(); // Démarrer la synchro après chargement
+                startSync();
             }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; templatesCache=[]; }
         }
 
@@ -324,13 +311,13 @@
 
             document.getElementById('modalTitle').textContent=`Déployer ${selectedTemplate.name}`;
             document.getElementById('modalBody').innerHTML=`
-                <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label><input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')"><div class="form-hint" id="appNameHint"></div></div>
+                <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label><input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')"><div class="form-hint" id="appNameHint">Saisissez un nom pour vérifier sa disponibilité</div></div>
                 
                 <div class="toggle-group"><div><div class="toggle-label">Mode mensuel</div><div class="toggle-sub">${monthly} coins pour 28 jours</div></div><div class="toggle-switch ${currentDurationMode==='monthly'?'active':''}" id="durationToggle"></div></div>
 
                 <div class="session-btn-wrapper"><a href="${kh['documentation-link']||'#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a></div>
 
-                <div class="env-section"><div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>${Object.entries(env).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(currentEnvVars[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" oninput="this.value=this.value.toLowerCase()"></div></div>`).join('')}</div>
+                <div class="env-section"><div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>${Object.entries(env).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(currentEnvVars[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" ${k==='SESSION_ID'?'':'oninput="this.value=this.value.toLowerCase()"'}></div></div>`).join('')}</div>
                 
                 <div class="price-display"><span class="amount">${price}</span> coins — <span class="duration">${days} jours</span></div>
                 
@@ -338,8 +325,23 @@
             `;
 
             document.getElementById('durationToggle').addEventListener('click',()=>{currentDurationMode=currentDurationMode==='weekly'?'monthly':'weekly';renderDeployModal()});
-            const app=document.getElementById('appName'), hint=document.getElementById('appNameHint'); let t;
-            app.addEventListener('input',()=>{clearTimeout(t);const n=app.value;if(n.length<3){hint.innerHTML='';return}t=setTimeout(async()=>{try{const r=await fetch('/api/bots/check-app-name',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({app_name:n})});const d=await r.json();hint.innerHTML=d.available?'<span style="color:var(--success)">✅ Disponible</span>':`<span style="color:var(--danger)">❌ ${d.message||'Indisponible'}</span>`}catch(e){hint.innerHTML=''}},500)});
+
+            // Vérification en temps réel du nom d'app
+            const app=document.getElementById('appName'), hint=document.getElementById('appNameHint'); let checkTimeout;
+            app.addEventListener('input',()=>{
+                clearTimeout(checkTimeout);
+                const name=app.value;
+                if(name.length<3){ hint.textContent='Saisissez un nom pour vérifier sa disponibilité'; hint.className='form-hint'; return; }
+                hint.textContent='Vérification en cours...'; hint.className='form-hint checking';
+                checkTimeout=setTimeout(async()=>{
+                    try{
+                        const r=await fetch('/api/bots/check-app-name',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({app_name:name})});
+                        const d=await r.json();
+                        if(d.available){ hint.textContent='✅ '+name+'.herokuapp.com est disponible !'; hint.className='form-hint available'; }
+                        else { hint.textContent='❌ '+name+'.herokuapp.com n\'est pas disponible'; hint.className='form-hint unavailable'; }
+                    }catch(e){ hint.textContent='⚠️ Vérification impossible'; hint.className='form-hint'; }
+                },600);
+            });
 
             document.getElementById('confirmDeployBtn').addEventListener('click',async()=>{
                 const an=app.value.trim(); if(!an){showToast('error','Nom requis');return}
