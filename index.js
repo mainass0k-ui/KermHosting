@@ -7680,7 +7680,7 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
 });
 
 // =============================================
-// FONCTIONS HEROKU API - VERSION UNIQUE
+// FONCTIONS HEROKU - VERSION CORRIGÉE
 // =============================================
 
 async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
@@ -7706,7 +7706,6 @@ async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
 
 async function createHerokuApp(apiKey, appName, repoUrl) {
     try {
-        // Générer un nom unique avec timestamp
         const uniqueName = `${appName.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-${Date.now().toString().slice(-6)}`;
         
         const app = await callHerokuAPI(apiKey, '/apps', 'POST', {
@@ -7718,15 +7717,13 @@ async function createHerokuApp(apiKey, appName, repoUrl) {
             updates: [{ buildpack: 'heroku/nodejs' }]
         });
         
-        console.log(`✅ App créée: ${app.name}`);
+        console.log(`✅ App Heroku créée: ${app.name}`);
         return app;
     } catch (error) {
         if (error.response?.data?.message?.includes('already taken')) {
-            // Réessayer avec un autre nom
             const newName = `${appName.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-${Math.random().toString(36).substring(2, 8)}`;
             return createHerokuApp(apiKey, newName, repoUrl);
         }
-        console.error('❌ Erreur création app:', error);
         throw error;
     }
 }
@@ -7741,10 +7738,10 @@ async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
             }
         });
         
-        console.log(`✅ Déploiement automatique déclenché pour ${appName}`);
+        console.log(`✅ Déploiement déclenché pour ${appName}`);
         return build;
     } catch (error) {
-        console.error('❌ Erreur déploiement:', error);
+        console.error('❌ Erreur déploiement:', error.message);
         return null;
     }
 }
@@ -7752,10 +7749,10 @@ async function deployHerokuApp(apiKey, appName, repoUrl, branch = 'main') {
 async function setHerokuEnvVars(apiKey, appName, envVars) {
     try {
         await callHerokuAPI(apiKey, `/apps/${appName}/config-vars`, 'PATCH', envVars);
-        console.log(`✅ Variables d'env configurées`);
+        console.log(`✅ Variables d'env configurées pour ${appName}`);
         return true;
     } catch (error) {
-        console.error('❌ Erreur set env vars:', error);
+        console.error('❌ Erreur set env vars:', error.message);
         return false;
     }
 }
@@ -7792,7 +7789,6 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
 
 async function getAvailableHerokuAccount() {
     try {
-        // 1. Récupérer TOUS les comptes actifs
         const { data: accounts, error } = await supabase
             .from('heroku_accounts')
             .select('*')
@@ -7801,51 +7797,38 @@ async function getAvailableHerokuAccount() {
         if (error) throw error;
         
         if (!accounts || accounts.length === 0) {
-            console.log('⚠️ Aucun compte Heroku actif trouvé');
+            console.log('⚠️ Aucun compte Heroku actif');
             return null;
         }
         
-        // 2. Filtrer ceux qui ont de la place (côté JavaScript, pas SQL)
-        const availableAccounts = accounts.filter(acc => {
-            const hasSpace = acc.current_bots < acc.max_bots;
-            if (!hasSpace) {
-                console.log(`📊 Compte ${acc.email}: ${acc.current_bots}/${acc.max_bots} bots - COMPLET`);
-            }
-            return hasSpace;
-        });
+        // Filtrer ceux qui ont de la place (côté JS, pas SQL)
+        const available = accounts.filter(acc => (acc.current_bots || 0) < (acc.max_bots || 0));
         
-        if (availableAccounts.length === 0) {
+        if (available.length === 0) {
             console.log('⚠️ Tous les comptes Heroku sont saturés');
             return null;
         }
         
-        // 3. Trier par date d'utilisation (le plus ancien en premier)
-        availableAccounts.sort((a, b) => {
+        // Trier par last_used_at (le plus ancien d'abord)
+        available.sort((a, b) => {
             if (!a.last_used_at) return -1;
             if (!b.last_used_at) return 1;
             return new Date(a.last_used_at) - new Date(b.last_used_at);
         });
         
-        // 4. Prendre le premier disponible
-        const selectedAccount = availableAccounts[0];
+        const selected = available[0];
         
-        console.log(`✅ Compte Heroku sélectionné: ${selectedAccount.email} (${selectedAccount.current_bots}/${selectedAccount.max_bots} bots)`);
-        
-        // 5. Mettre à jour le compteur (incrémentation)
-        const { error: updateError } = await supabase
+        // Incrémenter current_bots
+        await supabase
             .from('heroku_accounts')
             .update({ 
                 last_used_at: new Date().toISOString(),
-                current_bots: selectedAccount.current_bots + 1
+                current_bots: (selected.current_bots || 0) + 1
             })
-            .eq('id', selectedAccount.id);
+            .eq('id', selected.id);
         
-        if (updateError) {
-            console.error('❌ Erreur mise à jour compteur:', updateError);
-            // On retourne quand même le compte même si l'update échoue
-        }
-        
-        return selectedAccount;
+        console.log(`✅ Compte Heroku sélectionné: ${selected.email} (${selected.current_bots + 1}/${selected.max_bots})`);
+        return selected;
         
     } catch (error) {
         console.error('❌ Erreur récupération compte Heroku:', error);
@@ -7855,20 +7838,25 @@ async function getAvailableHerokuAccount() {
 
 async function releaseHerokuAccount(accountId) {
     try {
-        const { data: account } = await supabase
+        // Récupérer la valeur actuelle
+        const { data: account, error } = await supabase
             .from('heroku_accounts')
             .select('current_bots')
             .eq('id', accountId)
             .single();
         
-        if (account) {
+        if (error) throw error;
+        
+        if (account && account.current_bots > 0) {
             await supabase
                 .from('heroku_accounts')
                 .update({ current_bots: account.current_bots - 1 })
                 .eq('id', accountId);
+            
+            console.log(`✅ Compte Heroku libéré, current_bots: ${account.current_bots - 1}`);
         }
     } catch (error) {
-        console.error('❌ Erreur libération compte:', error);
+        console.error('❌ Erreur libération compte Heroku:', error);
     }
 }
 
@@ -8301,97 +8289,57 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
 
 async function deployBotAsync(botId, template, herokuAccount, appName, envVars, coinsNeeded) {
     try {
-        console.log(`🚀 Déploiement bot ${botId} sur Heroku avec compte ${herokuAccount.email}`);
+        console.log(`🚀 Déploiement bot ${botId}...`);
         
-        const { data: botInfo } = await supabase
-            .from('user_bots')
-            .select('user_id, expires_at')
-            .eq('id', botId)
-            .single();
-        
-        const userId = botInfo?.user_id;
-        const expiresAt = botInfo?.expires_at;
-        
+        // 1. Créer l'app Heroku
         const herokuApp = await createHerokuApp(herokuAccount.api_key, appName, template.repo_url);
         
+        // 2. Configurer les variables d'environnement
         await setHerokuEnvVars(herokuAccount.api_key, herokuApp.name, envVars);
         
+        // 3. Déclencher le déploiement
         await deployHerokuApp(herokuAccount.api_key, herokuApp.name, template.repo_url);
         
+        // 4. Mettre à jour user_bots
         await supabase
             .from('user_bots')
             .update({
+                heroku_app_name: herokuApp.name,
                 heroku_app_id: herokuApp.id,
+                heroku_account_id: herokuAccount.id,
                 status: 'active',
                 last_deploy_at: new Date().toISOString()
             })
             .eq('id', botId);
         
+        // 5. Déduire les coins
         const { data: user } = await supabase
             .from('profiles')
             .select('coins, username, email')
-            .eq('id', userId)
+            .eq('id', template.user_id)
             .single();
         
         if (user) {
             await supabase
                 .from('profiles')
-                .update({ 
-                    coins: user.coins - coinsNeeded,
-                    total_bot_deploys: supabase.raw('total_bot_deploys + 1')
-                })
-                .eq('id', userId);
-            
-            await supabase
-                .from('transactions')
-                .insert([{
-                    id: generateTransactionId(),
-                    user_id: userId,
-                    type: 'bot_deployment',
-                    amount: coinsNeeded,
-                    currency: 'COINS',
-                    status: 'completed',
-                    completed_at: new Date().toISOString(),
-                    metadata: { bot_id: botId, bot_name: appName, template_name: template.name }
-                }]);
+                .update({ coins: (user.coins || 0) - coinsNeeded })
+                .eq('id', template.user_id);
         }
         
-        if (template.user_id && template.user_id !== userId) {
-            const { data: creator } = await supabase
-                .from('profiles')
-                .select('coins')
-                .eq('id', template.user_id)
-                .single();
-            
-            if (creator) {
-                await supabase
-                    .from('profiles')
-                    .update({ coins: creator.coins + 5 })
-                    .eq('id', template.user_id);
-                
-                await supabase
-                    .from('bot_creator_rewards')
-                    .insert([{
-                        creator_id: template.user_id,
-                        deployer_id: userId,
-                        bot_id: botId,
-                        template_id: template.id,
-                        coins_earned: 5
-                    }]);
-            }
-        }
-        
+        // 6. Log de succès
         await supabase
             .from('bot_deployment_logs')
             .insert([{
                 bot_id: botId,
-                action: 'deploy_success',
+                action: 'deploy',
                 status: 'success',
-                message: `Déploiement réussi ! Bot actif sur Heroku (${herokuApp.web_url || 'https://' + herokuApp.name + '.herokuapp.com'})`
+                message: `Bot déployé sur ${herokuApp.name}.herokuapp.com`
             }]);
         
+        console.log(`✅ Bot ${botId} déployé avec succès sur ${herokuApp.name}.herokuapp.com`);
+        
     } catch (error) {
-        console.error(`❌ Erreur déploiement async bot ${botId}:`, error);
+        console.error(`❌ Erreur déploiement bot ${botId}:`, error);
         
         await supabase
             .from('user_bots')
@@ -8402,9 +8350,9 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
             .from('bot_deployment_logs')
             .insert([{
                 bot_id: botId,
-                action: 'deploy_failed',
+                action: 'deploy',
                 status: 'failed',
-                message: `Erreur: ${error.message}`
+                message: error.message
             }]);
         
         if (herokuAccount?.id) {
