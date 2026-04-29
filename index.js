@@ -9226,6 +9226,242 @@ app.get('/api/admin/bots/deployed', authenticateToken, requireAdmin, async (req,
 });
 
 // =============================================
+// ROUTES ADMIN - GESTION DES TEMPLATES BOTS
+// =============================================
+
+// Cette route manquante permet de récupérer TOUS les templates (y compris en attente/rejetés)
+app.get('/api/admin/bots/all', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { data: templates, error } = await supabase
+            .from('bot_templates')
+            .select(`
+                *,
+                profiles:user_id (
+                    username,
+                    email
+                )
+            `)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        // Ajouter total_deploys pour chaque template
+        const templatesWithStats = await Promise.all((templates || []).map(async (template) => {
+            const { count: totalDeploys } = await supabase
+                .from('user_bots')
+                .select('*', { count: 'exact', head: true })
+                .eq('template_id', template.id);
+            
+            return {
+                ...template,
+                total_deploys: totalDeploys || 0
+            };
+        }));
+        
+        res.json({ 
+            success: true, 
+            data: {
+                templates: templatesWithStats
+            }
+        });
+    } catch (error) {
+        console.error('❌ Erreur récupération templates admin:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Récupérer un template spécifique
+app.get('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        
+        const { data: template, error } = await supabase
+            .from('bot_templates')
+            .select('*, profiles:user_id (username, email)')
+            .eq('id', templateId)
+            .single();
+        
+        if (error || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+        
+        res.json({ success: true, template });
+    } catch (error) {
+        console.error('❌ Erreur récupération template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Modifier un template bot
+app.put('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        const { price_weekly, status, description, logo_url, rejected_reason } = req.body;
+        
+        const updates = {};
+        if (price_weekly !== undefined) updates.price_weekly = price_weekly;
+        if (status !== undefined) updates.status = status;
+        if (description !== undefined) updates.description = description;
+        if (logo_url !== undefined) updates.logo_url = logo_url;
+        if (rejected_reason !== undefined) updates.rejected_reason = rejected_reason;
+        
+        if (status === 'approved' && updates.approved_at === undefined) {
+            updates.approved_at = new Date().toISOString();
+            updates.approved_by = req.user.id;
+        }
+        
+        updates.updated_at = new Date().toISOString();
+        
+        const { error } = await supabase
+            .from('bot_templates')
+            .update(updates)
+            .eq('id', templateId);
+        
+        if (error) throw error;
+        
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'bot_template_update',
+                target_type: 'bot_template',
+                target_id: templateId,
+                description: `Modification template bot: ${JSON.stringify(updates)}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        res.json({ success: true, message: 'Template modifié avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur modification template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Synchroniser un template avec GitHub
+app.post('/api/admin/bots/templates/:templateId/sync', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        
+        const { data: template, error: fetchError } = await supabase
+            .from('bot_templates')
+            .select('repo_url, kh_json')
+            .eq('id', templateId)
+            .single();
+        
+        if (fetchError || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+        
+        const validation = await validateKhJsonFromRepo(template.repo_url);
+        
+        if (!validation.valid) {
+            return res.status(400).json({ 
+                success: false, 
+                error: validation.error,
+                message: 'Le fichier kh.json est invalide ou introuvable'
+            });
+        }
+        
+        const { error } = await supabase
+            .from('bot_templates')
+            .update({
+                kh_json: validation.khJson,
+                name: validation.khJson['bot-name'] || template.name,
+                synced_at: new Date().toISOString()
+            })
+            .eq('id', templateId);
+        
+        if (error) throw error;
+        
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'bot_template_sync',
+                target_type: 'bot_template',
+                target_id: templateId,
+                description: `Synchronisation template bot avec GitHub`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        res.json({ success: true, message: 'Template synchronisé avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur synchronisation template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// Supprimer définitivement un template bot
+app.delete('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        const { permanent } = req.query;
+        
+        const { data: template, error: fetchError } = await supabase
+            .from('bot_templates')
+            .select('name')
+            .eq('id', templateId)
+            .single();
+        
+        if (fetchError || !template) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+        
+        const { count: botCount } = await supabase
+            .from('user_bots')
+            .select('*', { count: 'exact', head: true })
+            .eq('template_id', templateId);
+        
+        if (permanent === 'true' && botCount > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Impossible de supprimer définitivement: ${botCount} bots utilisent encore ce template` 
+            });
+        }
+        
+        if (permanent === 'true') {
+            const { error } = await supabase
+                .from('bot_templates')
+                .delete()
+                .eq('id', templateId);
+            
+            if (error) throw error;
+            
+            await supabase
+                .from('admin_actions')
+                .insert([{
+                    admin_id: req.user.id,
+                    action_type: 'bot_template_delete_permanent',
+                    target_type: 'bot_template',
+                    target_id: templateId,
+                    description: `Suppression définitive du template "${template.name}"`,
+                    ip_address: req.ip,
+                    user_agent: req.headers['user-agent']
+                }]);
+            
+            res.json({ success: true, message: 'Template supprimé définitivement' });
+        } else {
+            const { error } = await supabase
+                .from('bot_templates')
+                .update({ status: 'deleted' })
+                .eq('id', templateId);
+            
+            if (error) throw error;
+            
+            res.json({ success: true, message: 'Template marqué comme supprimé' });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur suppression template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// =============================================
 // ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
 app.get('/api/download-bot', async (req, res) => {
