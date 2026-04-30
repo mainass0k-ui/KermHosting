@@ -74,24 +74,33 @@
         .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
         .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
         .top-bar-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-refresh { background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-primary); padding: 7px 14px; border-radius: var(--radius-full); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-refresh:hover { background: var(--primary); border-color: var(--primary); color: white; }
         .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
 
         /* PAGE */
         .page-content { padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
-        .page-header { margin-bottom: 16px; }
-        .page-title { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
+
+        /* LOGO CENTRÉ */
+        .logo-section { text-align: center; margin-bottom: 16px; }
+        .kerm-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text-primary); }
+        .kerm-logo i { font-size: 2rem; color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow)); animation: cloudBounce 3s ease-in-out infinite; }
+        @keyframes cloudBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        .page-header { margin-bottom: 14px; }
+        .page-title { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 2px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .page-subtitle { color: var(--text-secondary); font-size: 0.9rem; }
 
         /* STATS */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
         .stat-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 12px 14px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
         .stat-icon { width: 38px; height: 38px; border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(16,185,129,0.1)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--primary); }
         .stat-info h3 { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
         .stat-info p { font-size: 0.7rem; color: var(--text-secondary); }
 
         /* TABS */
-        .tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         .tab { padding: 6px 14px; border-radius: var(--radius-full); cursor: pointer; transition: all 0.2s; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; }
         .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
         .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
@@ -118,7 +127,7 @@
         .expiry-date { font-weight: 600; font-size: 0.8rem; }
         .expiry-warning { color: var(--warning); font-size: 0.65rem; }
 
-        /* BOUTONS D'ACTIONS BIEN POSITIONNÉS */
+        /* BOUTONS AVEC TEXTES */
         .bot-actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
         .action-btn { padding: 5px 9px; border-radius: var(--radius-md); font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 3px; }
         .action-btn.start { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
@@ -151,12 +160,15 @@
         .modal-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; }
         .modal-header h2 { font-size: 1.2rem; }
         .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: var(--radius-full); }
-        .modal-body { padding: 16px 20px 30px; max-width: 800px; margin: 0 auto; }
+        .modal-body { padding: 16px 20px 24px; max-width: 800px; margin: 0 auto; }
 
-        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 12px; height: calc(100vh - 140px); overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); }
+        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 12px; height: calc(100vh - 200px); overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); }
         .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.5); padding: 4px 0; white-space: pre-wrap; word-break: break-all; }
         .log-line.error { color: var(--danger); }
         .log-line.success { color: var(--success); }
+
+        /* BOUTONS LOGS EN BAS */
+        .logs-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
 
         .form-group { margin-bottom: 10px; }
         .form-label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.8rem; }
@@ -205,7 +217,7 @@
                 <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
                 <li id="navProfile" style="display:none;"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
                 <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
-                <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>Bots</span></a></li>
+                <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>Template Bot</span></a></li>
                 <li class="active"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
                 <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
                 <li class="divider"></li>
@@ -217,10 +229,13 @@
         <main class="main-content">
             <header class="top-bar">
                 <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
-                <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
+                <div class="top-bar-actions"><button class="btn-refresh" onclick="loadMyBots()"><i class="fas fa-sync-alt"></i> Actualiser</button><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
 
             <div class="page-content">
+                <!-- Logo KermHosting centré -->
+                <div class="logo-section"><div class="kerm-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
+
                 <div class="page-header"><h1 class="page-title">Mes <span class="gradient-text">bots</span></h1><p class="page-subtitle">Gérez tous vos bots WhatsApp déployés</p></div>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-robot"></i></div><div class="stat-info"><h3 id="totalBots">0</h3><p>Total</p></div></div>
@@ -228,7 +243,7 @@
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-info"><h3 id="expiringBots">0</h3><p>Expirent</p></div></div>
                 </div>
                 <div class="tabs"><div class="tab active" data-tab="all">Tous</div><div class="tab" data-tab="active">Actifs</div><div class="tab" data-tab="expired">Expirés</div></div>
-                <div id="botsContainer" class="bots-grid"></div>
+                <div id="botsContainer" class="bots-grid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div></div>
             </div>
         </main>
     </div>
@@ -255,14 +270,14 @@
         document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.href='/'});
         document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href='/profile'});
 
-        async function loadMyBots(){ try{ const r=await fetch('/api/bots/my-bots',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Erreur'); allBots=d.bots||[]; updateStats(); renderBots('all'); }catch(e){ document.getElementById('botsContainer').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; } }
+        async function loadMyBots(){ const c=document.getElementById('botsContainer'); try{ const r=await fetch('/api/bots/my-bots',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Erreur'); allBots=d.bots||[]; updateStats(); renderBots('all'); }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur</p></div>'; } }
         function updateStats(){ document.getElementById('totalBots').textContent=allBots.length; document.getElementById('activeBots').textContent=allBots.filter(b=>b.status==='active').length; document.getElementById('expiringBots').textContent=allBots.filter(b=>{if(b.status!=='active')return false;const d=Math.ceil((new Date(b.expires_at)-new Date())/86400000);return d<=3&&d>0;}).length; }
         function renderBots(filter){
             const c=document.getElementById('botsContainer'); let fb=allBots;
             if(filter==='active') fb=allBots.filter(b=>b.status==='active'); else if(filter==='expired') fb=allBots.filter(b=>['suspended','failed'].includes(b.status));
             if(!fb.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p><a href="/bot" style="color:var(--primary);margin-top:8px;display:inline-block;">→ Marketplace</a></div>'; return; }
             c.innerHTML=fb.map(b=>{ const ed=new Date(b.expires_at), dl=Math.ceil((ed-new Date())/86400000), isExp=dl<=3&&dl>0&&b.status==='active'; const st={active:'Actif',deploying:'Déploiement...',stopped:'Arrêté',suspended:'Suspendu',failed:'Échec'}[b.status]||b.status; const logo=b.bot_templates?.kh_json?.logo||b.bot_templates?.logo_url||'';
-                return `<div class="bot-card"><div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${esc(b.bot_templates?.name||'Bot')}</div><div class="bot-card-app">${esc(b.heroku_app_name)}</div></div><div class="bot-status ${b.status}">${st}</div></div><div class="bot-card-body"><div class="bot-expiry"><span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expire</span><span class="expiry-date ${isExp?'expiry-warning':''}">${ed.toLocaleDateString('fr-FR')} ${isExp?`(J-${dl})`:''}</span></div><div class="bot-actions">${b.status==='stopped'?`<button onclick="startBot('${b.id}')" class="action-btn start"><i class="fas fa-play"></i></button>`:''}${b.status==='active'?`<button onclick="stopBot('${b.id}')" class="action-btn stop"><i class="fas fa-stop"></i></button><button onclick="restartBot('${b.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i></button>`:''}<button onclick="openEnvModal('${b.id}')" class="action-btn env"><i class="fas fa-cog"></i></button><button onclick="openLogsModal('${b.id}')" class="action-btn logs"><i class="fas fa-terminal"></i></button>${b.status!=='active'&&b.status!=='deploying'?`<button onclick="renewBot('${b.id}')" class="action-btn renew"><i class="fas fa-coins"></i></button>`:''}<button onclick="deleteBot('${b.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button></div><div class="auto-renew-toggle"><span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span><div class="toggle-switch ${b.auto_renew?'active':''}" onclick="toggleAutoRenew('${b.id}',${!b.auto_renew})"></div></div></div></div>`;
+                return `<div class="bot-card"><div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${esc(b.bot_templates?.name||'Bot')}</div><div class="bot-card-app">${esc(b.heroku_app_name)}</div></div><div class="bot-status ${b.status}">${st}</div></div><div class="bot-card-body"><div class="bot-expiry"><span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expire</span><span class="expiry-date ${isExp?'expiry-warning':''}">${ed.toLocaleDateString('fr-FR')} ${isExp?`(J-${dl})`:''}</span></div><div class="bot-actions">${b.status==='stopped'?`<button onclick="startBot('${b.id}')" class="action-btn start"><i class="fas fa-play"></i> Démarrer</button>`:''}${b.status==='active'?`<button onclick="stopBot('${b.id}')" class="action-btn stop"><i class="fas fa-stop"></i> Arrêter</button><button onclick="restartBot('${b.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i> Redémarrer</button>`:''}<button onclick="openEnvModal('${b.id}')" class="action-btn env"><i class="fas fa-cog"></i> Env</button><button onclick="openLogsModal('${b.id}')" class="action-btn logs"><i class="fas fa-terminal"></i> Logs</button>${b.status!=='active'&&b.status!=='deploying'?`<button onclick="renewBot('${b.id}')" class="action-btn renew"><i class="fas fa-coins"></i> Renouveler</button>`:''}<button onclick="deleteBot('${b.id}')" class="action-btn delete"><i class="fas fa-trash"></i> Supprimer</button></div><div class="auto-renew-toggle"><span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span><div class="toggle-switch ${b.auto_renew?'active':''}" onclick="toggleAutoRenew('${b.id}',${!b.auto_renew})"></div></div></div></div>`;
             }).join('');
         }
 
@@ -274,7 +289,7 @@
 
         async function openEnvModal(botId){ try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Bot non trouvé'); const bot=d.bot, env=bot.env_vars||{}, khJson=bot.bot_templates?.kh_json||{}, envConfig=khJson.env||{};
             document.getElementById('envModalBody').innerHTML=`<p style="margin-bottom:10px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables. Le bot redémarrera après sauvegarde.</p>${Object.entries(envConfig).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(env[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" ${k==='SESSION_ID'?'':'oninput="this.value=this.value.toLowerCase()"'}></div></div>`).join('')}
-            <div style="margin-top:10px;display:flex;gap:8px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter une variable</button><div style="flex:1;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="CLE" style="margin-bottom:4px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addNewEnvVar('${botId}')" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button></div></div>
+            <div style="margin-top:10px;display:flex;gap:8px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter</button><div style="flex:1;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="CLE" style="margin-bottom:4px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addNewEnvVar('${botId}')" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button></div></div>
             <button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
             document.getElementById('addEnvBtn').addEventListener('click',()=>{document.getElementById('addEnvForm').style.display='flex';document.getElementById('addEnvBtn').style.display='none'});
             document.getElementById('saveEnvBtn').onclick=async()=>{const nev={};for(const k of Object.keys(envConfig)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())nev[k]=i.value.trim()}try{const sr=await fetch(`/api/bots/my-bots/${botId}/update-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({env_vars:nev})});const sd=await sr.json();sd.success?(showToast('success','Mis à jour'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',sd.error||'Erreur');}catch(e){showToast('error','Erreur')}};
@@ -283,7 +298,25 @@
 
         async function addNewEnvVar(botId){ const key=document.getElementById('newEnvKey').value.trim().toUpperCase(), val=document.getElementById('newEnvValue').value.trim(); if(!key){showToast('error','Clé requise');return} try{ const r=await fetch(`/api/bots/my-bots/${botId}/add-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({key,value:val})}); const d=await r.json(); d.success?(showToast('success','Ajouté'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
 
-        async function openLogsModal(botId){ document.getElementById('logsModalBody').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>'; document.getElementById('logsModal').classList.add('active'); try{ const r=await fetch(`/api/bots/my-bots/${botId}/logs`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); document.getElementById('logsModalBody').innerHTML=d.success&&d.logs?`<div class="logs-container">${d.logs.map(l=>`<div class="log-line">${esc(l)}</div>`).join('')||'<div class="log-line">Aucun log</div>'}</div>`:'<div class="empty-state"><i class="fas fa-terminal"></i><p>Impossible de récupérer les logs</p></div>'; }catch(e){ document.getElementById('logsModalBody').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur</p></div>'; } }
+        // ===== LOGS MODAL AVEC BOUTONS CLEAR & COPY EN BAS =====
+        async function openLogsModal(botId){
+            document.getElementById('logsModalBody').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>';
+            document.getElementById('logsModal').classList.add('active');
+            try{ const r=await fetch(`/api/bots/my-bots/${botId}/logs`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
+                const logs=d.success&&d.logs?d.logs:[];
+                document.getElementById('logsModalBody').innerHTML=`
+                    <div class="logs-container" id="logsContent">${logs.map(l=>`<div class="log-line">${esc(l)}</div>`).join('')||'<div class="log-line">Aucun log</div>'}</div>
+                    <div class="logs-actions">
+                        <button class="btn-outline" onclick="clearLogs()"><i class="fas fa-trash-alt"></i> Clear log</button>
+                        <button class="btn-outline" onclick="copyLogs()"><i class="fas fa-copy"></i> Copy log</button>
+                    </div>`;
+                // Stocker les logs pour les boutons
+                window._currentLogs = logs;
+            }catch(e){ document.getElementById('logsModalBody').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur</p></div>'; }
+        }
+
+        function clearLogs(){ const c=document.getElementById('logsContent'); if(c){c.innerHTML='<div class="log-line">Logs effacés</div>'; window._currentLogs=[]; showToast('success','Logs effacés'); } }
+        function copyLogs(){ const logs=window._currentLogs||[]; if(!logs.length){showToast('info','Aucun log à copier');return} navigator.clipboard.writeText(logs.join('\n')).then(()=>showToast('success','Logs copiés !')).catch(()=>showToast('error','Erreur copie')); }
 
         async function renewBot(botId){ const bot=allBots.find(b=>b.id===botId); if(!bot)return; const t=bot.bot_templates, wp=t?.price_weekly||100, mp=wp*4;
             document.getElementById('renewModalBody').innerHTML=`<p style="margin-bottom:10px;font-size:0.85rem;">Renouvelez votre bot.</p>
@@ -299,7 +332,7 @@
         ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{const m=['envModal','logsModal','renewModal'][i];document.getElementById(id).addEventListener('click',()=>document.getElementById(m).classList.remove('active'));});
         ['envModal','logsModal','renewModal'].forEach(m=>document.getElementById(m).addEventListener('click',e=>{if(e.target===document.getElementById(m))document.getElementById(m).classList.remove('active')}));
 
-        window.startBot=startBot;window.stopBot=stopBot;window.restartBot=restartBot;window.deleteBot=deleteBot;window.toggleAutoRenew=toggleAutoRenew;window.openEnvModal=openEnvModal;window.openLogsModal=openLogsModal;window.renewBot=renewBot;window.addNewEnvVar=addNewEnvVar;
+        window.startBot=startBot;window.stopBot=stopBot;window.restartBot=restartBot;window.deleteBot=deleteBot;window.toggleAutoRenew=toggleAutoRenew;window.openEnvModal=openEnvModal;window.openLogsModal=openLogsModal;window.renewBot=renewBot;window.addNewEnvVar=addNewEnvVar;window.clearLogs=clearLogs;window.copyLogs=copyLogs;window.loadMyBots=loadMyBots;
         checkAuth(); window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
         setInterval(()=>{if(document.visibilityState==='visible')loadMyBots()},10000);
     </script>
