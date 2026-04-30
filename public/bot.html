@@ -29,11 +29,11 @@
             --shadow-glow: 0 0 15px var(--primary-glow); --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.5; min-height: 100vh; font-size: 0.95rem; }
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; }
 
-        /* SIDEBAR - comme les autres pages */
+        /* SIDEBAR - IDENTIQUE AU DASHBOARD */
         .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
@@ -81,87 +81,77 @@
         .fab-btn:hover { transform: scale(1.1); box-shadow: 0 12px 35px rgba(37,211,102,0.6); }
 
         /* PAGE CONTENT */
-        .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; }
+        .page-content { padding: 16px; max-width: 1400px; margin: 0 auto; }
 
-        /* LOGO CENTRÉ + TEXTE */
-        .logo-section { text-align: center; margin-bottom: 24px; animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .kerm-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text-primary); }
-        .kerm-logo i { font-size: 2rem; color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow)); animation: cloudBounce 3s ease-in-out infinite; }
-        @keyframes cloudBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-
-        .marketplace-header { text-align: center; margin-bottom: 20px; }
-        .marketplace-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: var(--radius-full); margin-bottom: 14px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
-        .marketplace-title { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 6px; }
+        .marketplace-header { text-align: center; margin-bottom: 18px; }
+        .marketplace-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 8px 16px; border-radius: var(--radius-full); margin-bottom: 12px; color: white; font-weight: 600; font-size: 0.85rem; box-shadow: var(--shadow-glow); }
+        .marketplace-title { font-size: 2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .marketplace-subtitle { font-size: 0.95rem; color: var(--text-secondary); max-width: 550px; margin: 0 auto; }
 
-        /* SEARCH */
-        .search-section { margin-bottom: 20px; }
-        .search-bar { display: flex; gap: 12px; max-width: 450px; margin: 0 auto; }
-        .search-input { flex: 1; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-full); padding: 12px 18px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; }
+        .search-section { margin-bottom: 16px; }
+        .search-bar { display: flex; gap: 10px; max-width: 420px; margin: 0 auto; }
+        .search-input { flex: 1; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-full); padding: 10px 16px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; }
         .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
         .search-input::placeholder { color: var(--text-muted); }
 
-        /* SKELETON LOADING */
+        /* SKELETON */
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .skeleton-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; }
-        .skeleton-header { padding: 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
-        .skeleton-logo { width: 44px; height: 44px; border-radius: var(--radius-md); background: linear-gradient(90deg, #1a2332 25%, #2d3748 50%, #1a2332 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; flex-shrink: 0; }
+        .skeleton-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; aspect-ratio: 1/1; display: flex; flex-direction: column; }
+        .skeleton-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        .skeleton-logo { width: 40px; height: 40px; border-radius: var(--radius-md); background: linear-gradient(90deg, #1a2332 25%, #2d3748 50%, #1a2332 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; flex-shrink: 0; }
         .skeleton-line { height: 14px; border-radius: 4px; background: linear-gradient(90deg, #1a2332 25%, #2d3748 50%, #1a2332 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         .skeleton-line.w60 { width: 60%; }
         .skeleton-line.w80 { width: 80%; }
-        .skeleton-line.w100 { width: 100%; }
-        .skeleton-body { padding: 14px; }
-        .skeleton-body .skeleton-line { margin-bottom: 8px; }
-        .skeleton-footer { padding: 12px 14px; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
-        .skeleton-footer .skeleton-line { width: 70px; }
+        .skeleton-body { padding: 12px 14px; flex: 1; }
+        .skeleton-body .skeleton-line { margin-bottom: 6px; }
+        .skeleton-footer { padding: 10px 14px; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .skeleton-footer .skeleton-line { width: 60px; }
 
-        /* BOTS GRID - CADRES CARRÉS */
-        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; aspect-ratio: 1 / 1; display: flex; flex-direction: column; }
-        .bot-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px -10px rgba(124,58,237,0.3); }
-        .bot-card-header { padding: 14px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent); flex-shrink: 0; }
-        .bot-card-logo { width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: white; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+        /* BOTS GRID - PLUS PETITS */
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .bot-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; aspect-ratio: 1/1; display: flex; flex-direction: column; }
+        .bot-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 8px 20px -8px rgba(124,58,237,0.3); }
+        .bot-card-header { padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.04), transparent); flex-shrink: 0; }
+        .bot-card-logo { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
         .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
         .bot-card-info { flex: 1; min-width: 0; }
-        .bot-card-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .bot-card-body { padding: 14px 16px; flex: 1; display: flex; flex-direction: column; }
-        .bot-card-description { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .bot-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-        .bot-tag { background: var(--bg-hover); padding: 3px 8px; border-radius: var(--radius-full); font-size: 0.65rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .bot-price { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border-color); margin-top: auto; flex-shrink: 0; }
-        .price-coins { display: flex; align-items: baseline; gap: 4px; font-size: 1rem; font-weight: 700; color: var(--primary); }
-        .price-coins i { font-size: 0.9rem; color: var(--accent); }
-        .price-period { font-size: 0.7rem; color: var(--text-muted); margin-left: 2px; }
-        .deploy-count { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .bot-card-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bot-card-body { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; }
+        .bot-card-description { color: var(--text-secondary); font-size: 0.75rem; line-height: 1.4; margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .bot-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .bot-tag { background: var(--bg-hover); padding: 2px 6px; border-radius: var(--radius-full); font-size: 0.6rem; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .bot-price { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-color); margin-top: auto; flex-shrink: 0; }
+        .price-coins { display: flex; align-items: baseline; gap: 3px; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .price-coins i { font-size: 0.75rem; color: var(--accent); }
+        .price-period { font-size: 0.6rem; color: var(--text-muted); margin-left: 2px; }
+        .deploy-count { font-size: 0.6rem; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
         .deploy-count i { color: var(--primary-light); }
 
         /* PAGINATION */
-        .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
-        .pagination-btn { min-width: 38px; height: 38px; padding: 0 12px; border-radius: var(--radius-md); background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.9rem; }
+        .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+        .pagination-btn { min-width: 36px; height: 36px; padding: 0 10px; border-radius: var(--radius-md); background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.85rem; }
         .pagination-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
         .pagination-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
         .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .pagination-info { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 10px; }
+        .pagination-info { text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 8px; }
 
-        /* MODAL FULLSCREEN */
+        /* MODAL */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 0; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--bg-card); width: 100%; height: 100%; max-width: 100%; max-height: 100%; overflow-y: auto; border: none; transform: scale(0.95); transition: transform 0.3s; }
+        .modal-content { background: var(--bg-card); width: 100%; height: 100%; overflow-y: auto; border: none; transform: scale(0.95); transition: transform 0.3s; }
         .modal.active .modal-content { transform: scale(1); }
-        .modal-header { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; }
-        .modal-header h2 { font-size: 1.3rem; }
-        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: var(--radius-full); }
-        .modal-close:hover { background: var(--bg-hover); }
-        .modal-body { padding: 20px 24px 40px; max-width: 700px; margin: 0 auto; }
+        .modal-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; }
+        .modal-header h2 { font-size: 1.2rem; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: var(--radius-full); }
+        .modal-body { padding: 16px 20px 30px; max-width: 700px; margin: 0 auto; }
 
-        .form-group { margin-bottom: 14px; }
-        .form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.85rem; }
-        .form-label i { color: var(--primary); margin-right: 6px; }
-        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 14px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.85rem; }
+        .form-label i { color: var(--primary); margin-right: 5px; }
+        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 12px; color: var(--text-primary); font-size: 0.9rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-        .form-hint { font-size: 0.75rem; margin-top: 4px; }
+        .form-hint { font-size: 0.7rem; margin-top: 3px; }
         .form-hint.available { color: var(--success); }
         .form-hint.unavailable { color: var(--danger); }
         .form-hint.checking { color: var(--info); }
@@ -169,40 +159,38 @@
         .form-error i { font-size: 1.1rem; }
         .form-error a { color: var(--primary-light); margin-left: auto; font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; background: rgba(124,58,237,0.1); border-radius: var(--radius-full); }
 
-        .btn-example { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: var(--radius-full); text-decoration: none; font-size: 0.75rem; font-weight: 600; transition: all 0.3s; }
-        .btn-example:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
-        .session-btn-wrapper { text-align: center; margin: 6px 0 14px; }
-        .session-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 10px 24px; border-radius: var(--radius-full); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.3s; }
+        .info-box { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.15); border-radius: var(--radius-md); padding: 12px 14px; margin: 10px 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; display: flex; align-items: flex-start; gap: 10px; }
+        .info-box i { color: var(--primary); font-size: 1.1rem; margin-top: 2px; }
+        .info-box strong { color: var(--text-primary); }
+
+        .session-btn-wrapper { text-align: center; margin: 4px 0 10px; }
+        .session-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; padding: 9px 20px; border-radius: var(--radius-full); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; }
         .session-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,211,102,0.4); }
 
-        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; margin-bottom: 2px; }
-        .toggle-label { font-weight: 600; font-size: 0.9rem; }
-        .toggle-sub { font-size: 0.7rem; color: var(--text-muted); display: block; }
-        .toggle-switch { position: relative; width: 52px; height: 28px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 2px solid var(--border-color); flex-shrink: 0; }
+        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; margin-bottom: 2px; }
+        .toggle-label { font-weight: 600; font-size: 0.85rem; }
+        .toggle-sub { font-size: 0.65rem; color: var(--text-muted); display: block; }
+        .toggle-switch { position: relative; width: 48px; height: 26px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 2px solid var(--border-color); flex-shrink: 0; }
         .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
-        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .toggle-switch.active::after { left: 24px; }
+        .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .toggle-switch.active::after { left: 22px; }
 
-        .env-section { margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 14px; }
-        .env-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 7px; border: 1px solid var(--border-color); }
-        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 3px; font-size: 0.85rem; }
-        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; }
-        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: monospace; font-size: 0.85rem; }
+        .env-section { margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+        .env-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 8px 10px; margin-bottom: 5px; border: 1px solid var(--border-color); }
+        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 2px; font-size: 0.8rem; }
+        .env-desc { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 5px; }
+        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px 10px; color: var(--text-primary); font-family: monospace; font-size: 0.8rem; }
         .env-value input:focus { outline: none; border-color: var(--primary); }
-        .env-required { color: var(--danger); font-size: 0.65rem; margin-left: 6px; }
+        .env-required { color: var(--danger); font-size: 0.6rem; margin-left: 4px; }
 
-        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 14px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 14px; }
+        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
         .deploy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .deploy-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .price-display { background: var(--bg-input); padding: 14px; border-radius: var(--radius-md); margin-top: 14px; text-align: center; font-size: 0.9rem; }
-        .price-display .amount { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+        .price-display { background: var(--bg-input); padding: 10px; border-radius: var(--radius-md); margin-top: 10px; text-align: center; font-size: 0.85rem; }
+        .price-display .amount { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
         .price-display .duration { color: var(--text-secondary); }
-
-        .info-box { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.15); border-radius: var(--radius-md); padding: 12px; margin: 12px 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
-        .info-box i { color: var(--primary); margin-right: 6px; }
-        .info-box strong { color: var(--text-primary); }
 
         .toast { position: fixed; bottom: 16px; right: 16px; padding: 10px 16px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 8px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 320px; font-size: 0.85rem; }
         .toast.success { background: rgba(16,185,129,0.95); }
@@ -211,8 +199,8 @@
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
-        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } }
-        @media (max-width: 768px) { .page-content { padding: 12px; } .marketplace-title { font-size: 1.5rem; } .top-bar { padding: 8px 12px; } .fab-btn { width: 48px; height: 48px; bottom: 16px; right: 16px; } .bot-card { aspect-ratio: auto; min-height: 280px; } }
+        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }
+        @media (max-width: 768px) { .page-content { padding: 10px; } .marketplace-title { font-size: 1.5rem; } .top-bar { padding: 8px 12px; } .fab-btn { width: 48px; height: 48px; bottom: 16px; right: 16px; } .bot-card { aspect-ratio: auto; min-height: 240px; } }
     </style>
 </head>
 <body>
@@ -242,41 +230,37 @@
                 <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
             <div class="page-content">
-                <!-- Logo KermHosting centré -->
-                <div class="logo-section"><div class="kerm-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
-
                 <div class="marketplace-header"><div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div><h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1><p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p></div>
                 <div class="search-section"><div class="search-bar"><input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot..."></div></div>
-                <!-- Skeleton loading -->
                 <div class="bots-grid" id="botsContainer">
-                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line w100"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:40px;"></div></div></div>
-                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line w100"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:40px;"></div></div></div>
-                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line w100"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:40px;"></div></div></div>
-                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line w100"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:40px;"></div></div></div>
+                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line" style="width:100%;"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:30px;"></div></div></div>
+                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line" style="width:100%;"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:30px;"></div></div></div>
+                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line" style="width:100%;"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:30px;"></div></div></div>
+                    <div class="skeleton-card"><div class="skeleton-header"><div class="skeleton-logo"></div><div class="skeleton-line w60"></div></div><div class="skeleton-body"><div class="skeleton-line" style="width:100%;"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div><div class="skeleton-footer"><div class="skeleton-line"></div><div class="skeleton-line" style="width:30px;"></div></div></div>
                 </div>
                 <div id="paginationContainer"></div>
             </div>
         </main>
     </div>
 
-    <!-- BOUTON FLOTTANT -->
     <button class="fab-btn" id="fabSubmitBtn" title="Proposer un bot"><i class="fas fa-plus"></i></button>
 
-    <!-- MODALS -->
     <div class="modal" id="deployModal"><div class="modal-content"><div class="modal-header"><h2 id="modalTitle">Déployer un bot</h2><button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
     <div class="modal" id="submitModal"><div class="modal-content"><div class="modal-header"><h2>Proposer un bot</h2><button class="modal-close" id="closeSubmitModal"><i class="fas fa-times"></i></button></div><div class="modal-body"><form id="submitForm">
-        <div class="info-box"><i class="fas fa-info-circle"></i> Votre repo GitHub doit contenir un fichier <strong>kh.json</strong> à la racine. Ce fichier décrit le nom, la description, le logo et les variables d'environnement de votre bot. <a href="https://github.com/hostt11/Exemple/blob/main/kh.json" target="_blank" class="btn-example" style="margin-left:8px;"><i class="fas fa-download"></i> Télécharger un exemple</a></div>
+        <div class="info-box"><i class="fas fa-info-circle"></i><div>Votre repo GitHub doit contenir un fichier <strong>kh.json</strong> à la racine. Ce fichier décrit le nom, la description, le logo et les variables d'environnement de votre bot.</div></div>
         <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom du bot</label><input type="text" class="form-input" id="submitBotName" required placeholder="Ex: KERM-MD-V1"></div>
-        <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo"></div>
+        <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo">
+            <div class="form-hint" style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                <a href="https://raw.githubusercontent.com/hostt11/Exemple/main/kh.json" download class="deploy-btn" style="width:auto;padding:7px 14px;font-size:0.75rem;margin:0;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-download"></i> Télécharger kh.json</a>
+                <span style="color:var(--text-muted);font-size:0.7rem;">Ajoutez ce fichier à la racine de votre repo</span>
+            </div>
+        </div>
         <div id="submitError" style="display:none;"></div>
         <button type="submit" class="deploy-btn" id="submitFormBtn"><i class="fas fa-paper-plane"></i> Soumettre</button>
     </form></div></div></div>
 
     <script>
-        const AvatarManager = {
-            getAvatar: function(u) { return localStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
-            applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const b=document.getElementById('sidebarAvatar'); if(b)b.innerHTML=`<img src="${a}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; }
-        };
+        const AvatarManager = { getAvatar: function(u) { return localStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; }, applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const b=document.getElementById('sidebarAvatar'); if(b)b.innerHTML=`<img src="${a}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; } };
         function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
         function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
         function trunc(s,l){ if(!s)return''; return s.length>l?s.substring(0,l)+'…':s; }
@@ -286,18 +270,12 @@
         document.getElementById('closeSidebar').addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
         overlay.addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
 
-        const token=localStorage.getItem('token');
-        if(!token) location.href='/login';
+        const token=localStorage.getItem('token'); if(!token) location.href='/login';
+        let currentUser=null, templatesCache=[], currentPage=1;
+        const ITEMS_PER_PAGE=10;
+        let syncInterval=null;
 
-        let currentUser=null, syncInterval=null, templatesCache=[], currentPage=1;
-        const ITEMS_PER_PAGE=8;
-
-        function checkAuth(){
-            fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
-                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navMyBots','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); document.getElementById('navHome')?.remove(); document.getElementById('navLogin')?.remove(); document.getElementById('navRegister')?.remove(); AvatarManager.applyToPage(d.user.username); loadTemplates(); }
-                else { localStorage.removeItem('token'); location.href='/login'; }
-            }).catch(()=>{localStorage.removeItem('token');location.href='/login'});
-        }
+        function checkAuth(){ fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{ if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navMyBots','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); document.getElementById('navHome')?.remove(); document.getElementById('navLogin')?.remove(); document.getElementById('navRegister')?.remove(); AvatarManager.applyToPage(d.user.username); loadTemplates(); } else { localStorage.removeItem('token'); location.href='/login'; } }).catch(()=>{localStorage.removeItem('token');location.href='/login'}); }
         document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.href='/'});
         document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href='/profile'});
 
@@ -306,98 +284,58 @@
 
         async function loadTemplates(){
             try{ const r=await fetch('/api/bots/templates',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
-                if(!d.success||!d.templates?.length){ document.getElementById('botsContainer').innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-robot"></i><p>Aucun bot disponible.</p></div>'; document.getElementById('paginationContainer').innerHTML=''; templatesCache=[]; return; }
-                templatesCache=d.templates.sort((a,b)=>(b.total_deploys||0)-(a.total_deploys||0));
-                renderPage(); startSync();
-            }catch(e){ document.getElementById('botsContainer').innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; templatesCache=[]; }
+                if(!d.success||!d.templates?.length){ document.getElementById('botsContainer').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-robot" style="font-size:2.5rem;margin-bottom:10px;opacity:0.4;display:block;"></i><p>Aucun bot disponible.</p></div>'; document.getElementById('paginationContainer').innerHTML=''; templatesCache=[]; return; }
+                templatesCache=d.templates.sort((a,b)=>(b.total_deploys||0)-(a.total_deploys||0)); renderPage(); startSync();
+            }catch(e){ document.getElementById('botsContainer').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-exclamation-triangle" style="font-size:2rem;margin-bottom:8px;opacity:0.4;display:block;"></i><p>Erreur de chargement</p></div>'; templatesCache=[]; }
         }
 
         function renderPage(){
-            const c=document.getElementById('botsContainer');
-            const totalPages=Math.ceil(templatesCache.length/ITEMS_PER_PAGE);
-            if(currentPage>totalPages) currentPage=totalPages||1;
-            const start=(currentPage-1)*ITEMS_PER_PAGE;
-            const pageItems=templatesCache.slice(start,start+ITEMS_PER_PAGE);
-
-            c.innerHTML=pageItems.map(t=>{
-                const logoSrc=t.kh_json?.logo||t.logo_url||'';
-                const logoHtml=logoSrc?`<img src="${logoSrc}" alt="${esc(t.name)}">`:'<i class="fab fa-whatsapp"></i>';
-                const deploys=t.total_deploys||0;
-                return `<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${logoHtml}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${deploys} déploiement${deploys>1?'s':''}</div></div></div></div>`;
+            const c=document.getElementById('botsContainer'), tp=Math.ceil(templatesCache.length/ITEMS_PER_PAGE);
+            if(currentPage>tp) currentPage=tp||1;
+            const start=(currentPage-1)*ITEMS_PER_PAGE, items=templatesCache.slice(start,start+ITEMS_PER_PAGE);
+            c.innerHTML=items.map(t=>{ const logo=t.kh_json?.logo||t.logo_url||''; const deploys=t.total_deploys||0;
+                return `<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${deploys}</div></div></div></div>`;
             }).join('');
-            renderPagination(totalPages);
+            renderPagination(tp);
         }
 
-        function renderPagination(totalPages){
-            const pc=document.getElementById('paginationContainer');
-            if(totalPages<=1){ pc.innerHTML=''; return; }
-            let h=`<div class="pagination-info">Page ${currentPage} sur ${totalPages} (${templatesCache.length} bots)</div><div class="pagination">`;
+        function renderPagination(tp){ const pc=document.getElementById('paginationContainer'); if(tp<=1){pc.innerHTML='';return}
+            let h=`<div class="pagination-info">Page ${currentPage} sur ${tp} (${templatesCache.length} bots)</div><div class="pagination">`;
             h+=`<button class="pagination-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
-            for(let i=1;i<=totalPages;i++){
-                if(i===1||i===totalPages||(i>=currentPage-1&&i<=currentPage+1)) h+=`<button class="pagination-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
-                else if(i===currentPage-2||i===currentPage+2) h+=`<span style="color:var(--text-muted);padding:0 4px;">...</span>`;
-            }
-            h+=`<button class="pagination-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
+            for(let i=1;i<=tp;i++){ if(i===1||i===tp||(i>=currentPage-1&&i<=currentPage+1)) h+=`<button class="pagination-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`; else if(i===currentPage-2||i===currentPage+2) h+=`<span style="color:var(--text-muted);padding:0 4px;">...</span>`; }
+            h+=`<button class="pagination-btn" onclick="goToPage(${currentPage+1})" ${currentPage===tp?'disabled':''}><i class="fas fa-chevron-right"></i></button></div>`;
             pc.innerHTML=h;
         }
         function goToPage(p){ const tp=Math.ceil(templatesCache.length/ITEMS_PER_PAGE); if(p<1||p>tp)return; currentPage=p; renderPage(); }
 
-        // DEPLOY MODAL
         let selectedTemplate=null, currentDurationMode='weekly', currentEnvVars={};
-        async function openDeployModal(tid){
-            try{ const r=await fetch(`/api/bots/templates/${tid}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Template non trouvé');
-                selectedTemplate=d.template; currentEnvVars={}; const env=selectedTemplate.kh_json?.env||{}; for(const[k,c]of Object.entries(env))currentEnvVars[k]=c.value||'';
-                renderDeployModal();
-            }catch(e){showToast('error','Erreur chargement')}
-        }
+        async function openDeployModal(tid){ try{ const r=await fetch(`/api/bots/templates/${tid}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Template non trouvé'); selectedTemplate=d.template; currentEnvVars={}; const env=selectedTemplate.kh_json?.env||{}; for(const[k,c]of Object.entries(env))currentEnvVars[k]=c.value||''; renderDeployModal(); }catch(e){showToast('error','Erreur chargement')} }
         function renderDeployModal(){
-            const kh=selectedTemplate.kh_json||{}, env=kh.env||{};
-            const weekly=selectedTemplate.price_weekly, monthly=weekly*4, price=currentDurationMode==='weekly'?weekly:monthly, days=currentDurationMode==='weekly'?7:28;
+            const kh=selectedTemplate.kh_json||{}, env=kh.env||{}, weekly=selectedTemplate.price_weekly, monthly=weekly*4, price=currentDurationMode==='weekly'?weekly:monthly, days=currentDurationMode==='weekly'?7:28;
             document.getElementById('modalTitle').textContent=`Déployer ${selectedTemplate.name}`;
-            document.getElementById('modalBody').innerHTML=`
-                <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label><input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')"><div class="form-hint" id="appNameHint">Saisissez un nom (min 3 car.)</div></div>
-                <div class="toggle-group"><div><div class="toggle-label">Mode mensuel</div><div class="toggle-sub">${monthly} coins pour 28 jours</div></div><div class="toggle-switch ${currentDurationMode==='monthly'?'active':''}" id="durationToggle"></div></div>
-                <div class="session-btn-wrapper"><a href="${kh['documentation-link']||'#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a></div>
-                <div class="env-section"><div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>${Object.entries(env).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(currentEnvVars[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" ${k==='SESSION_ID'?'':'oninput="this.value=this.value.toLowerCase()"'}></div></div>`).join('')}</div>
-                <div class="price-display"><span class="amount">${price}</span> coins — <span class="duration">${days} jours</span></div>
-                <button class="deploy-btn" id="confirmDeployBtn"><i class="fas fa-rocket"></i> Déployer maintenant</button>
-            `;
+            document.getElementById('modalBody').innerHTML=`<div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom d'application Heroku</label><input type="text" class="form-input" id="appName" placeholder="mon-bot-wa" required autocomplete="off" style="text-transform:lowercase;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')"><div class="form-hint" id="appNameHint">Saisissez un nom (min 3 car.)</div></div>
+            <div class="toggle-group"><div><div class="toggle-label">Mode mensuel</div><div class="toggle-sub">${monthly} coins pour 28 jours</div></div><div class="toggle-switch ${currentDurationMode==='monthly'?'active':''}" id="durationToggle"></div></div>
+            <div class="session-btn-wrapper"><a href="${kh['documentation-link']||'#'}" target="_blank" class="session-btn"><i class="fas fa-qrcode"></i> Obtenir SESSION_ID</a></div>
+            <div class="env-section"><div class="env-title"><i class="fas fa-code-branch"></i> Variables d'environnement</div>${Object.entries(env).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(currentEnvVars[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" ${k==='SESSION_ID'?'':'oninput="this.value=this.value.toLowerCase()"'}></div></div>`).join('')}</div>
+            <div class="price-display"><span class="amount">${price}</span> coins — <span class="duration">${days} jours</span></div>
+            <button class="deploy-btn" id="confirmDeployBtn"><i class="fas fa-rocket"></i> Déployer maintenant</button>`;
             document.getElementById('durationToggle').addEventListener('click',()=>{currentDurationMode=currentDurationMode==='weekly'?'monthly':'weekly';renderDeployModal()});
             const app=document.getElementById('appName'), hint=document.getElementById('appNameHint'); let ct;
             app.addEventListener('input',()=>{clearTimeout(ct);const n=app.value;if(n.length<3){hint.textContent='Saisissez un nom (min 3 car.)';hint.className='form-hint';return}hint.textContent='Vérification...';hint.className='form-hint checking';ct=setTimeout(async()=>{try{const r=await fetch('/api/bots/check-app-name',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({app_name:n})});const d=await r.json();if(d.available){hint.textContent='✅ '+n+'.herokuapp.com est disponible !';hint.className='form-hint available'}else{hint.textContent='❌ '+n+'.herokuapp.com non disponible';hint.className='form-hint unavailable'}}catch(e){hint.textContent='⚠️ Vérification impossible';hint.className='form-hint'}},600)});
-            document.getElementById('confirmDeployBtn').addEventListener('click',async()=>{
-                const an=app.value.trim(); if(!an){showToast('error','Nom requis');return}
-                const ev={}; for(const k of Object.keys(env)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())ev[k]=i.value.trim()}
-                const miss=Object.entries(env).filter(([k,c])=>c.required&&!ev[k]); if(miss.length){showToast('error','Variables requises manquantes');return}
-                const b=document.getElementById('confirmDeployBtn'); b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Déploiement...';
-                try{const r=await fetch('/api/bots/deploy',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({template_id:selectedTemplate.id,app_name:an,duration_mode:currentDurationMode,env_vars:ev})});const d=await r.json();
-                    if(d.success){showToast('success','Déploiement initié !');document.getElementById('deployModal').classList.remove('active');setTimeout(()=>{location.href='/my-bots'},1500);loadTemplates()}else showToast('error',d.error||'Erreur')
-                }catch(e){showToast('error','Erreur réseau')}finally{b.disabled=false;b.innerHTML='<i class="fas fa-rocket"></i> Déployer maintenant'}
-            });
+            document.getElementById('confirmDeployBtn').addEventListener('click',async()=>{const an=app.value.trim();if(!an){showToast('error','Nom requis');return}const ev={};for(const k of Object.keys(env)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())ev[k]=i.value.trim()}const miss=Object.entries(env).filter(([k,c])=>c.required&&!ev[k]);if(miss.length){showToast('error','Variables requises manquantes');return}const b=document.getElementById('confirmDeployBtn');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Déploiement...';try{const r=await fetch('/api/bots/deploy',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({template_id:selectedTemplate.id,app_name:an,duration_mode:currentDurationMode,env_vars:ev})});const d=await r.json();if(d.success){showToast('success','Déploiement initié !');document.getElementById('deployModal').classList.remove('active');setTimeout(()=>{location.href='/my-bots'},1500);loadTemplates()}else showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur réseau')}finally{b.disabled=false;b.innerHTML='<i class="fas fa-rocket"></i> Déployer maintenant'}});
             document.getElementById('deployModal').classList.add('active');
         }
 
-        // SUBMIT
         document.getElementById('fabSubmitBtn').addEventListener('click',()=>document.getElementById('submitModal').classList.add('active'));
         document.getElementById('closeSubmitModal').addEventListener('click',()=>document.getElementById('submitModal').classList.remove('active'));
-        document.getElementById('submitForm').addEventListener('submit',async e=>{
-            e.preventDefault(); const n=document.getElementById('submitBotName').value.trim(),u=document.getElementById('submitRepoUrl').value.trim(); if(!n||!u){showToast('error','Tous les champs requis');return}
-            const b=document.getElementById('submitFormBtn'), errDiv=document.getElementById('submitError'); b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...';errDiv.style.display='none';
-            try{ const r=await fetch('/api/bots/submit',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({bot_name:n,repo_url:u})});const d=await r.json();
-                if(d.success){showToast('success','Bot soumis !');document.getElementById('submitModal').classList.remove('active');document.getElementById('submitForm').reset()}
-                else{ errDiv.style.display='block';errDiv.innerHTML=`<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>${d.error||'Erreur'}</span>${d.error?.includes('existe')?`<a href="${u}" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le repo</a>`:''}</div>` }
-            }catch(e){ errDiv.style.display='block';errDiv.innerHTML='<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>Erreur réseau</span></div>' }
-            finally{b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Soumettre'}
-        });
+        document.getElementById('submitForm').addEventListener('submit',async e=>{e.preventDefault();const n=document.getElementById('submitBotName').value.trim(),u=document.getElementById('submitRepoUrl').value.trim();if(!n||!u){showToast('error','Tous les champs requis');return}const b=document.getElementById('submitFormBtn'),errDiv=document.getElementById('submitError');b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Vérification...';errDiv.style.display='none';try{const r=await fetch('/api/bots/submit',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({bot_name:n,repo_url:u})});const d=await r.json();if(d.success){showToast('success','Bot soumis !');document.getElementById('submitModal').classList.remove('active');document.getElementById('submitForm').reset()}else{errDiv.style.display='block';errDiv.innerHTML=`<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>${d.error||'Erreur'}</span>${d.error?.includes('existe')?`<a href="${u}" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le repo</a>`:''}</div>`}}catch(e){errDiv.style.display='block';errDiv.innerHTML='<div class="form-error"><i class="fas fa-exclamation-circle"></i><span>Erreur réseau</span></div>'}finally{b.disabled=false;b.innerHTML='<i class="fas fa-paper-plane"></i> Soumettre'}});
 
-        // CLOSE
         document.getElementById('closeModal').addEventListener('click',()=>document.getElementById('deployModal').classList.remove('active'));
         document.getElementById('deployModal').addEventListener('click',e=>{if(e.target===document.getElementById('deployModal'))document.getElementById('deployModal').classList.remove('active')});
         document.getElementById('submitModal').addEventListener('click',e=>{if(e.target===document.getElementById('submitModal'))document.getElementById('submitModal').classList.remove('active')});
         document.getElementById('searchInput').addEventListener('input',e=>{const s=e.target.value.toLowerCase();document.querySelectorAll('.bot-card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(s)?'':'none')});
 
-        checkAuth();
-        window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
+        checkAuth(); window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
         window.addEventListener('beforeunload',()=>{if(syncInterval)clearInterval(syncInterval)});
         window.openDeployModal=openDeployModal; window.goToPage=goToPage;
     </script>
