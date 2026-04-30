@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -153,13 +152,22 @@
         .modal-close:hover { background: var(--bg-hover); }
         .modal-body { padding: 16px 20px 30px; max-width: 800px; margin: 0 auto; }
 
-        /* LOGS MODAL - PLUS GRAND */
+        /* LOGS MODAL - STYLES AMÉLIORÉS */
         .logs-modal .modal-content { max-width: 100%; }
         .logs-modal .modal-body { max-width: 95%; }
-        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 14px; height: calc(100vh - 140px); overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.78rem; border: 1px solid var(--border-color); }
-        .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.5); padding: 4px 0; white-space: pre-wrap; word-break: break-all; }
-        .log-line.error { color: var(--danger); }
-        .log-line.success { color: var(--success); }
+        .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .logs-refresh-btn { background: var(--primary); border: none; padding: 6px 12px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .logs-refresh-btn:hover { background: var(--primary-light); transform: scale(1.02); }
+        .logs-auto-status { font-size: 0.7rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; }
+        .logs-auto-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 14px; height: calc(100vh - 180px); overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.78rem; border: 1px solid var(--border-color); }
+        .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.3); padding: 6px 0; white-space: pre-wrap; word-break: break-all; font-weight: 500; }
+        .log-line.error { color: var(--danger); font-weight: 700; background: rgba(239,68,68,0.1); }
+        .log-line.success { color: var(--success); font-weight: 700; }
+        .log-line.warning { color: var(--warning); font-weight: 700; }
+        .log-line.info { color: var(--info); font-weight: 600; }
+        .log-line .timestamp { color: var(--text-muted); font-weight: 400; margin-right: 10px; }
 
         /* FORM */
         .form-group { margin-bottom: 12px; }
@@ -241,7 +249,7 @@
     <!-- ENV MODAL -->
     <div class="modal" id="envModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-code-branch"></i> Variables d'environnement</h2><button class="modal-close" id="closeEnvModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="envModalBody"></div></div></div>
 
-    <!-- LOGS MODAL - PLUS GRAND -->
+    <!-- LOGS MODAL - AVEC RAFRAÎCHISSEMENT AUTO -->
     <div class="modal logs-modal" id="logsModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-terminal"></i> Logs du bot</h2><button class="modal-close" id="closeLogsModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="logsModalBody"></div></div></div>
 
     <!-- RENEW MODAL -->
@@ -262,6 +270,9 @@
 
         const token=localStorage.getItem('token'); if(!token) location.href='/login';
         let currentUser=null, allBots=[];
+        let currentLogsBotId = null;
+        let logsRefreshInterval = null;
+        let isLogsAutoRefresh = true;
 
         function checkAuth(){
             fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
@@ -303,50 +314,194 @@
         async function deleteBot(id){ if(!confirm('Supprimer ce bot ? Irréversible.'))return; try{ const r=await fetch(`/api/bots/my-bots/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?(showToast('success','Bot supprimé'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
         async function toggleAutoRenew(id,enabled){ try{ const r=await fetch(`/api/bots/my-bots/${id}/auto-renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({enabled})}); const d=await r.json(); d.success?(showToast('success',`Auto-renouvellement ${enabled?'activé':'désactivé'}`),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
 
-        // ===== ENV MODAL (comme sur bot) =====
+        // ===== ENV MODAL CORRIGÉ =====
         async function openEnvModal(botId){
-            try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Bot non trouvé');
-                const bot=d.bot, env=bot.env_vars||{}, khJson=bot.bot_templates?.kh_json||{}, envConfig=khJson.env||{};
-                document.getElementById('envModalBody').innerHTML=`
-                    <p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p>
-                    ${Object.entries(envConfig).map(([k,c])=>`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(env[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}" ${k==='SESSION_ID'?'':'oninput="this.value=this.value.toLowerCase()"'}></div></div>`).join('')}
-                    <div style="margin-top:12px;display:flex;gap:8px;">
+            try {
+                const r = await fetch(`/api/bots/my-bots/${botId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const d = await r.json();
+                if (!d.success) throw new Error('Bot non trouvé');
+                const bot = d.bot;
+                const env = bot.env_vars || {};
+                const khJson = bot.bot_templates?.kh_json || {};
+                const envConfig = khJson.env || {};
+                
+                let html = `<p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p>
+                    <div id="envList">`;
+                
+                for (const [k, c] of Object.entries(envConfig)) {
+                    html += `<div class="env-item" data-key="${k}">
+                        <div class="env-key">${esc(k)} ${c.required ? '<span class="env-required">(requis)</span>' : ''}</div>
+                        <div class="env-desc">${esc(c.description || '')}</div>
+                        <div class="env-value">
+                            <input type="text" id="env_${k}" value="${esc(env[k] || c.value || '')}" placeholder="${c.required ? 'Requis' : 'Optionnel'}">
+                        </div>
+                    </div>`;
+                }
+                
+                html += `</div>
+                    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
                         <button class="btn-outline" id="addEnvBtn" style="flex-shrink:0;"><i class="fas fa-plus"></i> Ajouter une variable</button>
-                        <div style="flex:1;display:none;" id="addEnvForm">
-                            <input type="text" id="newEnvKey" class="form-input" placeholder="CLE" style="margin-bottom:4px;">
+                        <div style="flex:1;min-width:180px;display:none;" id="addEnvForm">
+                            <input type="text" id="newEnvKey" class="form-input" placeholder="NOM_VARIABLE" style="margin-bottom:4px;">
                             <input type="text" id="newEnvValue" class="form-input" placeholder="Valeur">
-                            <button class="action-btn env" onclick="addNewEnvVar('${botId}')" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button>
+                            <button class="action-btn env" id="confirmAddEnvBtn" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button>
                         </div>
                     </div>
-                    <button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>
-                `;
-                document.getElementById('addEnvBtn').addEventListener('click',()=>{ document.getElementById('addEnvForm').style.display='flex'; document.getElementById('addEnvBtn').style.display='none'; });
-                document.getElementById('saveEnvBtn').onclick=async()=>{
-                    const nev={}; for(const k of Object.keys(envConfig)){ const i=document.getElementById(`env_${k}`); if(i?.value.trim())nev[k]=i.value.trim(); }
-                    try{ const sr=await fetch(`/api/bots/my-bots/${botId}/update-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({env_vars:nev})}); const sd=await sr.json();
-                        sd.success?(showToast('success','Variables mises à jour'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',sd.error||'Erreur');
-                    }catch(e){showToast('error','Erreur')}
+                    <button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
+                
+                document.getElementById('envModalBody').innerHTML = html;
+                
+                document.getElementById('addEnvBtn').addEventListener('click', () => {
+                    document.getElementById('addEnvForm').style.display = 'block';
+                    document.getElementById('addEnvBtn').style.display = 'none';
+                });
+                
+                document.getElementById('confirmAddEnvBtn')?.addEventListener('click', async () => {
+                    const key = document.getElementById('newEnvKey').value.trim().toUpperCase();
+                    const val = document.getElementById('newEnvValue').value.trim();
+                    if (!key) { showToast('error', 'Clé requise'); return; }
+                    try {
+                        const sr = await fetch(`/api/bots/my-bots/${botId}/add-env`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ key, value: val })
+                        });
+                        const sd = await sr.json();
+                        if (sd.success) {
+                            showToast('success', 'Variable ajoutée');
+                            document.getElementById('envModal').classList.remove('active');
+                            loadMyBots();
+                        } else showToast('error', sd.error || 'Erreur');
+                    } catch(e) { showToast('error', 'Erreur'); }
+                });
+                
+                document.getElementById('saveEnvBtn').onclick = async () => {
+                    const newEnv = {};
+                    for (const k of Object.keys(envConfig)) {
+                        const input = document.getElementById(`env_${k}`);
+                        if (input?.value.trim()) newEnv[k] = input.value.trim();
+                    }
+                    try {
+                        const sr = await fetch(`/api/bots/my-bots/${botId}/update-env`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ env_vars: newEnv })
+                        });
+                        const sd = await sr.json();
+                        if (sd.success) {
+                            showToast('success', 'Variables mises à jour');
+                            document.getElementById('envModal').classList.remove('active');
+                            loadMyBots();
+                        } else showToast('error', sd.error || 'Erreur');
+                    } catch(e) { showToast('error', 'Erreur'); }
                 };
+                
                 document.getElementById('envModal').classList.add('active');
-            }catch(e){showToast('error','Erreur chargement variables')}
+            } catch(e) { showToast('error', 'Erreur chargement variables'); }
         }
 
-        async function addNewEnvVar(botId){
-            const key=document.getElementById('newEnvKey').value.trim().toUpperCase(), val=document.getElementById('newEnvValue').value.trim();
-            if(!key){showToast('error','Clé requise');return}
-            try{ const r=await fetch(`/api/bots/my-bots/${botId}/add-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({key,value:val})}); const d=await r.json();
-                d.success?(showToast('success','Variable ajoutée'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',d.error||'Erreur');
-            }catch(e){showToast('error','Erreur')}
+        // ===== LOGS MODAL AVEC RAFRAÎCHISSEMENT AUTO =====
+        async function loadLogs(botId, showLoading = true) {
+            if (!botId) return;
+            if (showLoading) {
+                const logsContainer = document.getElementById('logsContainer');
+                if (logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+            }
+            try {
+                const r = await fetch(`/api/bots/my-bots/${botId}/logs?lines=200`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const d = await r.json();
+                const logsContainer = document.getElementById('logsContainer');
+                if (!logsContainer) return;
+                
+                if (d.success && d.logs) {
+                    const logsArray = Array.isArray(d.logs) ? d.logs : (d.logs.lines || []);
+                    if (logsArray.length === 0) {
+                        logsContainer.innerHTML = '<div class="log-line">Aucun log disponible pour le moment</div>';
+                    } else {
+                        logsContainer.innerHTML = logsArray.map(log => {
+                            let logClass = 'log-line';
+                            const lowerLog = String(log).toLowerCase();
+                            if (lowerLog.includes('error') || lowerLog.includes('fail') || lowerLog.includes('crash')) logClass += ' error';
+                            else if (lowerLog.includes('success') || lowerLog.includes('started') || lowerLog.includes('listening')) logClass += ' success';
+                            else if (lowerLog.includes('warn')) logClass += ' warning';
+                            else if (lowerLog.includes('info')) logClass += ' info';
+                            
+                            const timestampMatch = String(log).match(/^(\d{2}:\d{2}:\d{2})/);
+                            if (timestampMatch) {
+                                return `<div class="${logClass}"><span class="timestamp">[${timestampMatch[1]}]</span> ${esc(log.substring(timestampMatch[0].length))}</div>`;
+                            }
+                            return `<div class="${logClass}">${esc(log)}</div>`;
+                        }).join('');
+                    }
+                } else {
+                    logsContainer.innerHTML = '<div class="log-line error">Impossible de récupérer les logs</div>';
+                }
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            } catch(e) {
+                const logsContainer = document.getElementById('logsContainer');
+                if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">Erreur de connexion</div>';
+            }
         }
 
-        // ===== LOGS MODAL (plus grand) =====
-        async function openLogsModal(botId){
-            document.getElementById('logsModalBody').innerHTML='<div style="text-align:center;padding:40px;color:var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div>';
+        function startLogsAutoRefresh(botId) {
+            if (logsRefreshInterval) clearInterval(logsRefreshInterval);
+            logsRefreshInterval = setInterval(() => {
+                if (currentLogsBotId && isLogsAutoRefresh) {
+                    loadLogs(currentLogsBotId, false);
+                }
+            }, 5000);
+        }
+
+        function stopLogsAutoRefresh() {
+            if (logsRefreshInterval) {
+                clearInterval(logsRefreshInterval);
+                logsRefreshInterval = null;
+            }
+        }
+
+        async function openLogsModal(botId) {
+            currentLogsBotId = botId;
+            isLogsAutoRefresh = true;
+            
+            document.getElementById('logsModalBody').innerHTML = `
+                <div class="logs-header">
+                    <div>
+                        <button class="logs-refresh-btn" id="manualRefreshLogsBtn"><i class="fas fa-sync-alt"></i> Rafraîchir</button>
+                        <span class="logs-auto-status" id="autoRefreshStatus"><span class="dot"></span> Auto-refresh (5s)</span>
+                    </div>
+                    <button class="btn-outline" id="toggleAutoRefreshBtn" style="padding:4px 12px;font-size:0.7rem;"><i class="fas fa-pause"></i> Pause</button>
+                </div>
+                <div class="logs-container" id="logsContainer">
+                    <div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement des logs...</div>
+                </div>
+            `;
+            
             document.getElementById('logsModal').classList.add('active');
-            try{ const r=await fetch(`/api/bots/my-bots/${botId}/logs`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
-                if(d.success&&d.logs){ document.getElementById('logsModalBody').innerHTML=`<div class="logs-container">${d.logs.map(l=>`<div class="log-line">${esc(l)}</div>`).join('')||'<div class="log-line">Aucun log</div>'}</div>`; }
-                else document.getElementById('logsModalBody').innerHTML='<div class="empty-state"><i class="fas fa-terminal"></i><p>Impossible de récupérer les logs</p></div>';
-            }catch(e){ document.getElementById('logsModalBody').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur</p></div>'; }
+            
+            await loadLogs(botId, true);
+            startLogsAutoRefresh(botId);
+            
+            document.getElementById('manualRefreshLogsBtn').onclick = async () => {
+                await loadLogs(botId, true);
+                showToast('info', 'Logs rafraîchis');
+            };
+            
+            document.getElementById('toggleAutoRefreshBtn').onclick = () => {
+                isLogsAutoRefresh = !isLogsAutoRefresh;
+                const btn = document.getElementById('toggleAutoRefreshBtn');
+                const statusSpan = document.getElementById('autoRefreshStatus');
+                if (isLogsAutoRefresh) {
+                    btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                    statusSpan.innerHTML = '<span class="dot"></span> Auto-refresh (5s)';
+                    startLogsAutoRefresh(botId);
+                    showToast('info', 'Auto-refresh activé');
+                } else {
+                    btn.innerHTML = '<i class="fas fa-play"></i> Reprendre';
+                    statusSpan.innerHTML = '<span class="dot" style="background:#6B7280;"></span> Auto-refresh désactivé';
+                    stopLogsAutoRefresh();
+                    showToast('info', 'Auto-refresh désactivé');
+                }
+            };
         }
 
         // ===== RENEW MODAL =====
@@ -359,7 +514,9 @@
                 <div style="background:var(--bg-input);padding:12px;border-radius:var(--radius-md);text-align:center;margin-bottom:12px;"><span style="font-size:1.2rem;font-weight:700;color:var(--primary);" id="renewPrice">${wp}</span><span style="color:var(--text-secondary);font-size:0.85rem;"> coins</span></div>
                 <button class="deploy-btn" id="confirmRenewBtn"><i class="fas fa-sync-alt"></i> Renouveler</button>
             `;
-            let dm='weekly'; document.getElementById('renewDurationToggle').addEventListener('click',()=>{dm=dm==='weekly'?'monthly':'weekly';document.getElementById('renewDurationToggle').classList.toggle('active');document.getElementById('renewPrice').textContent=dm==='weekly'?wp:mp;});
+            let dm='weekly'; 
+            const toggle = document.getElementById('renewDurationToggle');
+            toggle.addEventListener('click',()=>{dm=dm==='weekly'?'monthly':'weekly';toggle.classList.toggle('active');document.getElementById('renewPrice').textContent=dm==='weekly'?wp:mp;});
             document.getElementById('confirmRenewBtn').onclick=async()=>{
                 const cn=dm==='weekly'?wp:mp; if((currentUser?.coins||0)<cn){showToast('error',`Coins insuffisants. Besoin de ${cn} coins.`);return}
                 try{ const r=await fetch(`/api/bots/my-bots/${botId}/renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({duration_mode:dm})}); const d=await r.json();
@@ -375,11 +532,27 @@
         document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderBots(t.dataset.tab)}));
 
         // Close modals
-        ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{ const m=['envModal','logsModal','renewModal'][i]; document.getElementById(id).addEventListener('click',()=>document.getElementById(m).classList.remove('active')); });
-        ['envModal','logsModal','renewModal'].forEach(m=>document.getElementById(m).addEventListener('click',e=>{if(e.target===document.getElementById(m))document.getElementById(m).classList.remove('active')}));
+        const closeModal = (modalId) => {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'logsModal') {
+                stopLogsAutoRefresh();
+                currentLogsBotId = null;
+                isLogsAutoRefresh = true;
+            }
+        };
+        
+        document.getElementById('closeEnvModal').addEventListener('click', () => closeModal('envModal'));
+        document.getElementById('closeLogsModal').addEventListener('click', () => closeModal('logsModal'));
+        document.getElementById('closeRenewModal').addEventListener('click', () => closeModal('renewModal'));
+        
+        ['envModal', 'logsModal', 'renewModal'].forEach(m => {
+            document.getElementById(m).addEventListener('click', e => {
+                if (e.target === document.getElementById(m)) closeModal(m);
+            });
+        });
 
         window.startBot=startBot; window.stopBot=stopBot; window.restartBot=restartBot; window.deleteBot=deleteBot;
-        window.toggleAutoRenew=toggleAutoRenew; window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.renewBot=renewBot; window.addNewEnvVar=addNewEnvVar;
+        window.toggleAutoRenew=toggleAutoRenew; window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.renewBot=renewBot;
 
         checkAuth();
         window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
