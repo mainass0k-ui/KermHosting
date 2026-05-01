@@ -9748,6 +9748,337 @@ router.get('/bots/check-kh-changed', authenticateToken, async (req, res) => {
     }
 });
 
+app.put('/api/admin/bots/templates/:templateId/full', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { templateId } = req.params;
+        const { name, repo_url, price_weekly, status, description, logo_url, rejected_reason } = req.body;
+        
+        // Vérifier si le template existe
+        const { data: existingTemplate, error: fetchError } = await supabase
+            .from('bot_templates')
+            .select('*')
+            .eq('id', templateId)
+            .single();
+        
+        if (fetchError || !existingTemplate) {
+            return res.status(404).json({ success: false, error: 'Template non trouvé' });
+        }
+        
+        let khJson = existingTemplate.kh_json;
+        
+        // Si le repo a changé, vérifier le nouveau kh.json
+        if (repo_url && repo_url !== existingTemplate.repo_url) {
+            const validation = await validateKhJsonFromRepo(repo_url);
+            if (!validation.valid) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: validation.error,
+                    guide: 'Le nouveau repository doit contenir un fichier kh.json valide'
+                });
+            }
+            khJson = validation.khJson;
+        }
+        
+        // Mise à jour
+        const updates = {
+            updated_at: new Date().toISOString(),
+            updated_by: req.user.id
+        };
+        if (name) updates.name = name;
+        if (repo_url) updates.repo_url = repo_url;
+        if (price_weekly !== undefined) updates.price_weekly = price_weekly;
+        if (status) updates.status = status;
+        if (description !== undefined) updates.description = description;
+        if (logo_url !== undefined) updates.logo_url = logo_url;
+        if (rejected_reason !== undefined) updates.rejected_reason = rejected_reason;
+        if (khJson) updates.kh_json = khJson;
+        
+        if (status === 'approved' && existingTemplate.status !== 'approved') {
+            updates.approved_at = new Date().toISOString();
+            updates.approved_by = req.user.id;
+        }
+        
+        const { error: updateError } = await supabase
+            .from('bot_templates')
+            .update(updates)
+            .eq('id', templateId);
+        
+        if (updateError) throw updateError;
+        
+        // Si le statut est 'rejected', mettre à jour la soumission associée
+        if (status === 'rejected') {
+            await supabase
+                .from('bot_submissions')
+                .update({
+                    status: 'rejected',
+                    processed_at: new Date().toISOString(),
+                    processed_by: req.user.id,
+                    admin_notes: rejected_reason || 'Rejeté par admin'
+                })
+                .eq('repo_url', existingTemplate.repo_url)
+                .eq('user_id', existingTemplate.user_id);
+        }
+        
+        res.json({ success: true, message: 'Template modifié avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur modification template:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.put('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { status, expires_at, auto_renew } = req.body;
+        
+        const updates = {};
+        if (status) updates.status = status;
+        if (expires_at) updates.expires_at = expires_at;
+        if (auto_renew !== undefined) updates.auto_renew = auto_renew;
+        
+        const { error } = await supabase
+            .from('user_bots')
+            .update(updates)
+            .eq('id', botId);
+        
+        if (error) throw error;
+        
+        // Log admin
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'deployed_bot_update',
+                target_type: 'user_bot',
+                target_id: botId,
+                description: `Modification du bot déployé: ${JSON.stringify(updates)}`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        res.json({ success: true, message: 'Bot déployé modifié avec succès' });
+        
+    } catch (error) {
+        console.error('❌ Erreur modification bot déployé:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/bots/deployed/:botId/renew', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { days_to_add = 7 } = req.body;
+        
+        const { data: bot, error: fetchError } = await supabase
+            .from('user_bots')
+            .select('expires_at, user_id, heroku_app_name')
+            .eq('id', botId)
+            .single();
+        
+        if (fetchError || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        const currentExpiry = new Date(bot.expires_at);
+        const now = new Date();
+        let newExpiry;
+        
+        if (currentExpiry < now) {
+            newExpiry = new Date();
+        } else {
+            newExpiry = new Date(currentExpiry);
+        }
+        newExpiry.setDate(newExpiry.getDate() + days_to_add);
+        
+        const { error: updateError } = await supabase
+            .from('user_bots')
+            .update({ expires_at: newExpiry.toISOString() })
+            .eq('id', botId);
+        
+        if (updateError) throw updateError;
+        
+        // Log
+        await supabase
+            .from('admin_actions')
+            .insert([{
+                admin_id: req.user.id,
+                action_type: 'deployed_bot_renew',
+                target_type: 'user_bot',
+                target_id: botId,
+                description: `Renouvellement forcé du bot ${bot.heroku_app_name} (+${days_to_add} jours)`,
+                ip_address: req.ip,
+                user_agent: req.headers['user-agent']
+            }]);
+        
+        res.json({ success: true, message: `Bot renouvelé jusqu'au ${newExpiry.toLocaleDateString('fr-FR')}` });
+        
+    } catch (error) {
+        console.error('❌ Erreur renouvellement bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/bots/deployed/:botId/suspend', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error: fetchError } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id')
+            .eq('id', botId)
+            .single();
+        
+        if (fetchError || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        // Suspendre sur Heroku via l'API
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                try {
+                    await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                        updates: [{ type: 'web', quantity: 0 }]
+                    });
+                } catch (herokuError) {
+                    console.log('⚠️ Erreur Heroku:', herokuError.message);
+                }
+            }
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'suspended' })
+            .eq('id', botId);
+        
+        res.json({ success: true, message: 'Bot suspendu' });
+        
+    } catch (error) {
+        console.error('❌ Erreur suspension bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/bots/deployed/:botId/unsuspend', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error: fetchError } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id')
+            .eq('id', botId)
+            .single();
+        
+        if (fetchError || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        // Réactiver sur Heroku
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                try {
+                    await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                        updates: [{ type: 'web', quantity: 1 }]
+                    });
+                } catch (herokuError) {
+                    console.log('⚠️ Erreur Heroku:', herokuError.message);
+                }
+            }
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'active' })
+            .eq('id', botId);
+        
+        res.json({ success: true, message: 'Bot réactivé' });
+        
+    } catch (error) {
+        console.error('❌ Erreur réactivation bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+app.put('/api/admin/users/:userId/bot-quota', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { bot_quota } = req.body;
+        
+        if (bot_quota === undefined || bot_quota < 0) {
+            return res.status(400).json({ success: false, error: 'Quota invalide' });
+        }
+        
+        const { error } = await supabase
+            .from('profiles')
+            .update({ bot_quota: bot_quota })
+            .eq('id', userId);
+        
+        if (error) throw error;
+        
+        res.json({ success: true, message: `Quota utilisateur mis à jour: ${bot_quota}` });
+        
+    } catch (error) {
+        console.error('❌ Erreur mise à jour quota:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+app.delete('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        
+        const { data: bot, error: fetchError } = await supabase
+            .from('user_bots')
+            .select('heroku_app_name, heroku_account_id')
+            .eq('id', botId)
+            .single();
+        
+        if (fetchError || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+        
+        // Supprimer sur Heroku
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                try {
+                    await deleteHerokuApp(herokuAccount.api_key, bot.heroku_app_name);
+                    await releaseHerokuAccount(bot.heroku_account_id);
+                } catch (herokuError) {
+                    console.log('⚠️ Erreur suppression Heroku:', herokuError.message);
+                }
+            }
+        }
+        
+        // Supprimer de la BD
+        await supabase
+            .from('user_bots')
+            .delete()
+            .eq('id', botId);
+        
+        res.json({ success: true, message: 'Bot supprimé définitivement' });
+        
+    } catch (error) {
+        console.error('❌ Erreur suppression bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
 // =============================================
 // ROUTE DE TÉLÉCHARGEMENT KERM-MD-V1
 // =============================================
