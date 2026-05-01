@@ -76,12 +76,11 @@
         .top-bar-actions { display: flex; align-items: center; gap: 10px; }
         .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
 
-        /* HEADER CENTRÉ AVEC LOGO */
-        .brand-center-header { text-align: center; padding: 30px 16px 10px; }
-        .brand-center-logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
-        .brand-center-logo img { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: cover; }
-        .brand-center-logo i { font-size: 2.5rem; color: var(--primary); }
-        .brand-center-name { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        /* HEADER CENTRÉ AVEC LOGO COMME SUR L'IMAGE */
+        .brand-center-header { text-align: center; padding: 24px 16px 6px; }
+        .brand-center-logo { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .brand-center-logo i { font-size: 2rem; color: var(--primary); }
+        .brand-center-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
         /* BOUTON FLOTTANT */
         .fab-btn { position: fixed; bottom: 24px; right: 24px; z-index: 1500; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #25D366, #128C7E); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 8px 25px rgba(37,211,102,0.5); transition: all 0.3s; }
@@ -245,13 +244,12 @@
                 <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
             <div class="page-content">
-                <!-- LOGO ET NOM CENTRÉS COMME SUR L'IMAGE -->
+                <!-- LOGO CLOUD + KERMHOSTING CENTRÉS COMME SUR L'IMAGE -->
                 <div class="brand-center-header">
                     <div class="brand-center-logo">
-                        <img src="https://files.catbox.moe/d66qx0.jpeg" alt="KermHosting Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-                        <i class="fas fa-cloud-upload-alt" style="display:none;"></i>
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span class="brand-center-name">KermHosting</span>
                     </div>
-                    <div class="brand-center-name">KermHosting</div>
                 </div>
                 <div class="marketplace-header"><div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div><h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1><p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p></div>
                 <div class="search-section"><div class="search-bar"><input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot..."></div></div>
@@ -305,15 +303,16 @@
         async function syncTemplatesFromGitHub(){ if(!templatesCache.length)return; for(const t of templatesCache){ if(!t.repo_url||!t.user_id)continue; try{ const r=await fetch(`/api/bots/check-kh-changed?templateId=${t.id}`,{headers:{'Authorization':`Bearer ${token}`}}); if(r.ok){ const d=await r.json(); if(d.changed){ await loadTemplates(); return; } } }catch(e){} } }
         function startSync(){ if(syncInterval)clearInterval(syncInterval); syncInterval=setInterval(syncTemplatesFromGitHub,1000); }
 
+        // Fonction de partage corrigée : redirige vers la page marketplace avec le bot pré-ouvert
         function shareBot(templateId, botName) {
-            const url = `${window.location.origin}/bot/${templateId}`;
+            const url = `${window.location.origin}/bot?open=${templateId}`;
             if (navigator.share) {
                 navigator.share({ title: botName, text: `Découvre le bot ${botName} sur KermHosting !`, url: url }).catch(() => {});
             } else {
                 navigator.clipboard.writeText(url).then(() => {
                     showToast('success', 'Lien copié !');
                 }).catch(() => {
-                    showToast('error', 'Impossible de copier le lien');
+                    showToast('info', 'Lien : ' + url);
                 });
             }
         }
@@ -322,6 +321,14 @@
             try{ const r=await fetch('/api/bots/templates',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
                 if(!d.success||!d.templates?.length){ document.getElementById('botsContainer').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-robot" style="font-size:2.5rem;margin-bottom:10px;opacity:0.4;display:block;"></i><p>Aucun bot disponible.</p></div>'; document.getElementById('paginationContainer').innerHTML=''; templatesCache=[]; return; }
                 templatesCache=d.templates.sort((a,b)=>(b.total_deploys||0)-(a.total_deploys||0)); renderPage(); startSync();
+                // Vérifie si un bot doit être ouvert via le paramètre d'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const openId = urlParams.get('open');
+                if (openId && templatesCache.some(t => t.id === openId)) {
+                    openDeployModal(openId);
+                    // Nettoie l'URL sans recharger
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }catch(e){ document.getElementById('botsContainer').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-exclamation-triangle" style="font-size:2rem;margin-bottom:8px;opacity:0.4;display:block;"></i><p>Erreur de chargement</p></div>'; templatesCache=[]; }
         }
 
