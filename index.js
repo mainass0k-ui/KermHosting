@@ -8257,6 +8257,7 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
     try {
         const { template_id, app_name, duration_mode, env_vars } = req.body;
         
+        // 1. Récupérer le template
         const { data: template, error: templateError } = await supabase
             .from('bot_templates')
             .select('*')
@@ -8268,6 +8269,7 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             return res.status(404).json({ success: false, error: 'Template non trouvé ou non approuvé' });
         }
         
+        // 2. Vérifier le quota de l'utilisateur
         if (req.user.total_bot_deploys >= req.user.bot_quota) {
             return res.status(400).json({ 
                 success: false, 
@@ -8275,20 +8277,29 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             });
         }
         
+        // 3. ✅ CALCULER LE PRIX ET VÉRIFIER LES COINS
         let coinsNeeded = template.price_weekly;
         let daysToAdd = 7;
+        
         if (duration_mode === 'monthly') {
-            coinsNeeded *= 4;
+            coinsNeeded = template.price_weekly * 4;
             daysToAdd = 28;
         }
         
+        // ✅ VÉRIFICATION CRUCIALE : L'utilisateur a-t-il assez de coins ?
         if (req.user.coins < coinsNeeded) {
             return res.status(400).json({ 
                 success: false, 
-                error: `Coins insuffisants. Besoin de ${coinsNeeded} coins.` 
+                error: `❌ Coins insuffisants ! Vous avez ${req.user.coins} coins, mais ${coinsNeeded} coins sont nécessaires.`,
+                required_coins: coinsNeeded,
+                current_coins: req.user.coins,
+                missing_coins: coinsNeeded - req.user.coins,
+                action: 'buy_coins',
+                buy_link: '/buy-coins'
             });
         }
         
+        // 4. Trouver un compte Heroku disponible
         const herokuAccount = await getAvailableHerokuAccount();
         if (!herokuAccount) {
             return res.status(503).json({ 
@@ -8297,11 +8308,14 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             });
         }
         
+        // 5. Nettoyer le nom de l'application
         const cleanAppName = app_name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
         
+        // 6. Calculer la date d'expiration
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + daysToAdd);
         
+        // 7. Créer l'enregistrement du bot (statut 'deploying')
         const { data: bot, error: botError } = await supabase
             .from('user_bots')
             .insert([{
@@ -8312,7 +8326,7 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
                 status: 'deploying',
                 duration_mode: duration_mode,
                 expires_at: expiresAt.toISOString(),
-                env_vars: env_vars || template.kh_json.env,
+                env_vars: env_vars || template.kh_json?.env,
                 created_at: new Date().toISOString()
             }])
             .select()
@@ -8323,22 +8337,28 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             throw botError;
         }
         
+        // 8. Log de début de déploiement
         await supabase
             .from('bot_deployment_logs')
             .insert([{
                 bot_id: bot.id,
                 action: 'deploy_start',
                 status: 'pending',
-                message: 'Déploiement en cours...'
+                message: `Déploiement en cours... ${coinsNeeded} coins seront déduits.`
             }]);
         
-        deployBotAsync(bot.id, template, herokuAccount, cleanAppName, env_vars, coinsNeeded);
+        // 9. Lancer le déploiement en arrière-plan (avec l'ID utilisateur)
+        deployBotAsync(bot.id, template, herokuAccount, cleanAppName, env_vars, coinsNeeded, req.user.id);
         
+        // 10. Réponse immédiate à l'utilisateur
         res.json({ 
             success: true, 
-            message: 'Déploiement initié. Vous serez notifié par email une fois terminé.',
+            message: `Déploiement initié ! ${coinsNeeded} coins seront déduits de votre solde une fois terminé.`,
             bot_id: bot.id,
-            status: 'deploying'
+            status: 'deploying',
+            required_coins: coinsNeeded,
+            current_coins: req.user.coins,
+            remaining_after: req.user.coins - coinsNeeded
         });
         
     } catch (error) {
@@ -8347,10 +8367,10 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
     }
 });
 
-async function deployBotAsync(botId, template, herokuAccount, appName, envVars, coinsNeeded) {
+async function deployBotAsync(botId, template, herokuAccount, appName, envVars, coinsNeeded, userId) {
     try {
         console.log(`🚀 Déploiement bot ${botId}...`);
-        
+
         // 1. Créer l'app Heroku
         const herokuApp = await createHerokuApp(herokuAccount.api_key, appName, template.repo_url);
         
@@ -8372,21 +8392,52 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
             })
             .eq('id', botId);
         
-        // 5. Déduire les coins
+        // ✅ 5. DÉDUIRE LES COINS DU BON UTILISATEUR (celui qui déploie)
         const { data: user } = await supabase
             .from('profiles')
             .select('coins, username, email')
-            .eq('id', template.user_id)
+            .eq('id', userId)  // ← CORRECTION : userId passé en paramètre
             .single();
         
         if (user) {
+            const newBalance = (user.coins || 0) - coinsNeeded;
             await supabase
                 .from('profiles')
-                .update({ coins: (user.coins || 0) - coinsNeeded })
-                .eq('id', template.user_id);
+                .update({ coins: newBalance })
+                .eq('id', userId);
+            
+            // ✅ CRÉER UNE TRANSACTION
+            await supabase
+                .from('transactions')
+                .insert([{
+                    id: generateTransactionId(),
+                    user_id: userId,
+                    type: 'bot_deploy',
+                    amount: coinsNeeded,
+                    currency: 'COINS',
+                    status: 'completed',
+                    completed_at: new Date().toISOString(),
+                    metadata: { 
+                        bot_id: botId,
+                        template_id: template.id,
+                        template_name: template.name
+                    }
+                }]);
+            
+            console.log(`✅ ${coinsNeeded} coins déduits de ${user.username}, nouveau solde: ${newBalance}`);
         }
         
-        // 6. Log de succès
+        // ✅ 6. INCRÉMENTER LE COMPTEUR DE DÉPLOIEMENTS DU TEMPLATE
+        const currentDeploys = template.total_deploys || 0;
+        await supabase
+            .from('bot_templates')
+            .update({ 
+                total_deploys: currentDeploys + 1,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', template.id);
+        
+        // 7. Log de succès
         await supabase
             .from('bot_deployment_logs')
             .insert([{
@@ -8395,6 +8446,22 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
                 status: 'success',
                 message: `Bot déployé sur ${herokuApp.name}.herokuapp.com`
             }]);
+        
+        // 8. ✅ NOTIFICATION PAR EMAIL
+        if (user && user.email) {
+            const successHtml = `
+                <h2>✅ Bot déployé avec succès !</h2>
+                <p>Bonjour ${user.username},</p>
+                <p>Votre bot <strong>"${appName}"</strong> a été déployé avec succès.</p>
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                    <p><strong>🌐 URL :</strong> https://${herokuApp.name}.herokuapp.com</p>
+                    <p><strong>📅 Expiration :</strong> ${new Date(Date.now() + (coinsNeeded === template.price_weekly ? 7 : 28) * 86400000).toLocaleDateString('fr-FR')}</p>
+                    <p><strong>💰 Coins déduits :</strong> ${coinsNeeded}</p>
+                </div>
+                <p><a href="${SITE_CONFIG.url}/my-bots">Gérer mes bots</a></p>
+            `;
+            await sendEmail(user.email, '✅ Bot déployé avec succès', getBaseEmailTemplate('Bot déployé', successHtml));
+        }
         
         console.log(`✅ Bot ${botId} déployé avec succès sur ${herokuApp.name}.herokuapp.com`);
         
