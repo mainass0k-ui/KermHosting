@@ -34,7 +34,7 @@
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; }
 
-        /* SIDEBAR - identique au dashboard */
+        /* SIDEBAR */
         .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
@@ -68,20 +68,14 @@
 
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
-        /* TOP BAR */
-        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
-        .top-bar-left { display: flex; align-items: center; gap: 12px; }
-        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
-        .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
-        .top-bar-actions { display: flex; align-items: center; gap: 10px; }
+        /* TOP BAR - KERMHOSTING CENTRÉ */
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); flex-shrink: 0; }
+        .top-bar-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .top-bar-center i { color: var(--primary); font-size: 1.3rem; }
+        .top-bar-center span { font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .top-bar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-
-        /* LOGO CENTRÉ */
-        .logo-section { text-align: center; margin-bottom: 20px; }
-        .kerm-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text-primary); }
-        .kerm-logo i { font-size: 2rem; color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow)); animation: cloudBounce 3s ease-in-out infinite; }
-        @keyframes cloudBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
         /* PAGE */
         .page-content { padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
@@ -210,7 +204,7 @@
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
         @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .page-content { padding: 10px; } .page-title { font-size: 1.3rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .page-content { padding: 10px; } .page-title { font-size: 1.3rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .top-bar { padding: 8px 12px; } .top-bar-center span { font-size: 1rem; } }
     </style>
 </head>
 <body>
@@ -235,15 +229,19 @@
         </aside>
 
         <main class="main-content">
+            <!-- TOP BAR : burger à gauche, KermHosting centré, avatar à droite -->
             <header class="top-bar">
-                <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
-                <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-center">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a>
+                </div>
             </header>
 
             <div class="page-content">
-                <!-- Logo KermHosting centré -->
-                <div class="logo-section"><div class="kerm-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
-
                 <div class="page-header"><h1 class="page-title">Mes <span class="gradient-text">bots</span></h1><p class="page-subtitle">Gérez tous vos bots WhatsApp déployés</p></div>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-robot"></i></div><div class="stat-info"><h3 id="totalBots">0</h3><p>Total bots</p></div></div>
@@ -307,7 +305,7 @@
             let fb=allBots;
             if(filter==='active') fb=allBots.filter(b=>b.status==='active');
             else if(filter==='expired') fb=allBots.filter(b=>['suspended','failed'].includes(b.status));
-            if(!fb.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p><a href="/bot" style="color:var(--primary);margin-top:8px;display:inline-block;">→ Marketplace</a></div>'; return; }
+            if(!fb.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p></div>'; return; }
             c.innerHTML=fb.map(b=>{
                 const ed=new Date(b.expires_at), dl=Math.ceil((ed-new Date())/86400000), isExp=dl<=3&&dl>0&&b.status==='active';
                 const st={active:'Actif',deploying:'Déploiement...',stopped:'Arrêté',suspended:'Suspendu',failed:'Échec'}[b.status]||b.status;
