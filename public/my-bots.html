@@ -12,6 +12,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
     
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -32,54 +34,58 @@
         body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
         .app-container { display: flex; min-height: 100vh; }
 
-        /* SIDEBAR */
+        /* SIDEBAR - identique au dashboard */
         .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .sidebar.active { transform: translateX(0); }
         .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .sidebar-overlay.active { opacity: 1; visibility: visible; }
-        .sidebar-header { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
-        .logo i { color: var(--primary); font-size: 1.4rem; }
-        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.2rem; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
-        .sidebar-user { padding: 16px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+        .logo i { color: var(--primary); font-size: 1.5rem; }
+        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
+        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .sidebar-user:hover { background: var(--bg-hover); }
-        .user-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; overflow: hidden; }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 0.9rem; }
-        .user-email { font-size: 0.7rem; color: var(--text-secondary); }
-        .user-badge { background: var(--primary); color: white; font-size: 0.6rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 0; }
+        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
         .sidebar-nav ul { list-style: none; }
-        .sidebar-nav li { margin: 3px 8px; }
+        .sidebar-nav li { margin: 4px 8px; }
         .sidebar-nav li.active { background: linear-gradient(90deg, var(--primary), transparent); border-radius: var(--radius-md); }
         .sidebar-nav li.active a { color: white; }
-        .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius-md); transition: all 0.2s; font-size: 0.9rem; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius-md); transition: all 0.2s; font-size: 0.95rem; }
         .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .sidebar-nav i { width: 18px; font-size: 1rem; }
-        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 12px 8px; }
-        .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border-color); }
+        .sidebar-nav i { width: 20px; font-size: 1.1rem; }
+        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
         .sidebar-stats { display: flex; justify-content: space-between; }
         .stat { text-align: center; }
-        .stat-value { display: block; font-weight: 700; font-size: 0.9rem; color: var(--primary); }
-        .stat-label { font-size: 0.6rem; color: var(--text-secondary); text-transform: uppercase; }
+        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
 
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
         /* TOP BAR */
-        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.4rem; cursor: pointer; width: 36px; height: 36px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
-        .top-bar-left { display: flex; align-items: center; gap: 10px; }
-        .top-bar-logo { display: flex; align-items: center; gap: 6px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; }
-        .top-bar-logo i { color: var(--primary); font-size: 1.2rem; }
-        .top-bar-actions { display: flex; align-items: center; gap: 8px; }
-        .btn-marketplace { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 7px 14px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px; white-space: nowrap; text-decoration: none; }
-        .btn-marketplace:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
-        .user-avatar-small { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
+        .top-bar-left { display: flex; align-items: center; gap: 12px; }
+        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
+        .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
+        .top-bar-actions { display: flex; align-items: center; gap: 10px; }
+        .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+
+        /* LOGO CENTRÉ */
+        .logo-section { text-align: center; margin-bottom: 20px; }
+        .kerm-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--text-primary); }
+        .kerm-logo i { font-size: 2rem; color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow)); animation: cloudBounce 3s ease-in-out infinite; }
+        @keyframes cloudBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
         /* PAGE */
         .page-content { padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
-        .page-header { margin-bottom: 20px; }
+        .page-header { margin-bottom: 16px; }
         .page-title { font-size: 1.6rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
         .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .page-subtitle { color: var(--text-secondary); font-size: 0.85rem; }
@@ -152,12 +158,18 @@
         .modal-close:hover { background: var(--bg-hover); }
         .modal-body { padding: 16px 20px 30px; max-width: 800px; margin: 0 auto; }
 
-        /* LOGS MODAL - STYLES AMÉLIORÉS */
+        /* LOGS MODAL */
         .logs-modal .modal-content { max-width: 100%; }
         .logs-modal .modal-body { max-width: 95%; }
         .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-        .logs-refresh-btn { background: var(--primary); border: none; padding: 6px 12px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .logs-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .logs-refresh-btn, .logs-copy-btn, .logs-clear-btn { border: none; padding: 6px 12px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .logs-refresh-btn { background: var(--primary); }
         .logs-refresh-btn:hover { background: var(--primary-light); transform: scale(1.02); }
+        .logs-copy-btn { background: var(--info); }
+        .logs-copy-btn:hover { background: #2563eb; transform: scale(1.02); }
+        .logs-clear-btn { background: var(--danger); }
+        .logs-clear-btn:hover { background: #dc2626; transform: scale(1.02); }
         .logs-auto-status { font-size: 0.7rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; }
         .logs-auto-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -169,13 +181,11 @@
         .log-line.info { color: var(--info); font-weight: 600; }
         .log-line .timestamp { color: var(--text-muted); font-weight: 400; margin-right: 10px; }
 
-        /* FORM */
         .form-group { margin-bottom: 12px; }
         .form-label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.8rem; }
         .form-label i { color: var(--primary); margin-right: 5px; }
         .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 12px; color: var(--text-primary); font-size: 0.85rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-        .form-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; }
         .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border-color); }
         .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 2px; font-size: 0.8rem; }
         .env-desc { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; }
@@ -219,9 +229,6 @@
                 <li class="active"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
                 <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
                 <li class="divider"></li>
-                <li id="navHome"><a href="/"><i class="fas fa-home"></i><span>Accueil</span></a></li>
-                <li id="navLogin"><a href="/login"><i class="fas fa-sign-in-alt"></i><span>Connexion</span></a></li>
-                <li id="navRegister"><a href="/register"><i class="fas fa-user-plus"></i><span>Inscription</span></a></li>
                 <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
             </ul></nav>
             <div class="sidebar-footer"><div class="sidebar-stats"><div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div><div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div></div></div>
@@ -230,10 +237,13 @@
         <main class="main-content">
             <header class="top-bar">
                 <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
-                <div class="top-bar-actions"><a href="/bot" class="btn-marketplace"><i class="fas fa-store"></i> Marketplace</a><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
+                <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
 
             <div class="page-content">
+                <!-- Logo KermHosting centré -->
+                <div class="logo-section"><div class="kerm-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
+
                 <div class="page-header"><h1 class="page-title">Mes <span class="gradient-text">bots</span></h1><p class="page-subtitle">Gérez tous vos bots WhatsApp déployés</p></div>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-robot"></i></div><div class="stat-info"><h3 id="totalBots">0</h3><p>Total bots</p></div></div>
@@ -249,7 +259,7 @@
     <!-- ENV MODAL -->
     <div class="modal" id="envModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-code-branch"></i> Variables d'environnement</h2><button class="modal-close" id="closeEnvModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="envModalBody"></div></div></div>
 
-    <!-- LOGS MODAL - AVEC RAFRAÎCHISSEMENT AUTO -->
+    <!-- LOGS MODAL -->
     <div class="modal logs-modal" id="logsModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-terminal"></i> Logs du bot</h2><button class="modal-close" id="closeLogsModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="logsModalBody"></div></div></div>
 
     <!-- RENEW MODAL -->
@@ -262,6 +272,7 @@
         };
         function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
         function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function trunc(s,l){ if(!s)return''; return s.length>l?s.substring(0,l)+'…':s; }
 
         const sidebar=document.getElementById('sidebar'), overlay=document.getElementById('sidebarOverlay');
         document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.add('active');overlay.classList.add('active')});
@@ -269,14 +280,11 @@
         overlay.addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
 
         const token=localStorage.getItem('token'); if(!token) location.href='/login';
-        let currentUser=null, allBots=[];
-        let currentLogsBotId = null;
-        let logsRefreshInterval = null;
-        let isLogsAutoRefresh = true;
+        let currentUser=null, allBots=[], currentLogsBotId=null, logsRefreshInterval=null, isLogsAutoRefresh=true;
 
         function checkAuth(){
             fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
-                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=d.user.email; document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); ['navHome','navLogin','navRegister'].forEach(i=>document.getElementById(i).style.display='none'); AvatarManager.applyToPage(d.user.username); loadMyBots(); }
+                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); ['navHome','navLogin','navRegister'].forEach(i=>{const el=document.getElementById(i);if(el)el.style.display='none';}); AvatarManager.applyToPage(d.user.username); loadMyBots(); }
                 else { localStorage.removeItem('token'); location.href='/login'; }
             }).catch(()=>{localStorage.removeItem('token');location.href='/login'});
         }
@@ -314,105 +322,29 @@
         async function deleteBot(id){ if(!confirm('Supprimer ce bot ? Irréversible.'))return; try{ const r=await fetch(`/api/bots/my-bots/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?(showToast('success','Bot supprimé'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
         async function toggleAutoRenew(id,enabled){ try{ const r=await fetch(`/api/bots/my-bots/${id}/auto-renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({enabled})}); const d=await r.json(); d.success?(showToast('success',`Auto-renouvellement ${enabled?'activé':'désactivé'}`),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
 
-        // ===== ENV MODAL CORRIGÉ =====
         async function openEnvModal(botId){
-            try {
-                const r = await fetch(`/api/bots/my-bots/${botId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const d = await r.json();
-                if (!d.success) throw new Error('Bot non trouvé');
-                const bot = d.bot;
-                const env = bot.env_vars || {};
-                const khJson = bot.bot_templates?.kh_json || {};
-                const envConfig = khJson.env || {};
-                
-                let html = `<p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p>
-                    <div id="envList">`;
-                
-                for (const [k, c] of Object.entries(envConfig)) {
-                    html += `<div class="env-item" data-key="${k}">
-                        <div class="env-key">${esc(k)} ${c.required ? '<span class="env-required">(requis)</span>' : ''}</div>
-                        <div class="env-desc">${esc(c.description || '')}</div>
-                        <div class="env-value">
-                            <input type="text" id="env_${k}" value="${esc(env[k] || c.value || '')}" placeholder="${c.required ? 'Requis' : 'Optionnel'}">
-                        </div>
-                    </div>`;
-                }
-                
-                html += `</div>
-                    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-                        <button class="btn-outline" id="addEnvBtn" style="flex-shrink:0;"><i class="fas fa-plus"></i> Ajouter une variable</button>
-                        <div style="flex:1;min-width:180px;display:none;" id="addEnvForm">
-                            <input type="text" id="newEnvKey" class="form-input" placeholder="NOM_VARIABLE" style="margin-bottom:4px;">
-                            <input type="text" id="newEnvValue" class="form-input" placeholder="Valeur">
-                            <button class="action-btn env" id="confirmAddEnvBtn" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button>
-                        </div>
-                    </div>
-                    <button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
-                
-                document.getElementById('envModalBody').innerHTML = html;
-                
-                document.getElementById('addEnvBtn').addEventListener('click', () => {
-                    document.getElementById('addEnvForm').style.display = 'block';
-                    document.getElementById('addEnvBtn').style.display = 'none';
-                });
-                
-                document.getElementById('confirmAddEnvBtn')?.addEventListener('click', async () => {
-                    const key = document.getElementById('newEnvKey').value.trim().toUpperCase();
-                    const val = document.getElementById('newEnvValue').value.trim();
-                    if (!key) { showToast('error', 'Clé requise'); return; }
-                    try {
-                        const sr = await fetch(`/api/bots/my-bots/${botId}/add-env`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ key, value: val })
-                        });
-                        const sd = await sr.json();
-                        if (sd.success) {
-                            showToast('success', 'Variable ajoutée');
-                            document.getElementById('envModal').classList.remove('active');
-                            loadMyBots();
-                        } else showToast('error', sd.error || 'Erreur');
-                    } catch(e) { showToast('error', 'Erreur'); }
-                });
-                
-                document.getElementById('saveEnvBtn').onclick = async () => {
-                    const newEnv = {};
-                    for (const k of Object.keys(envConfig)) {
-                        const input = document.getElementById(`env_${k}`);
-                        if (input?.value.trim()) newEnv[k] = input.value.trim();
-                    }
-                    try {
-                        const sr = await fetch(`/api/bots/my-bots/${botId}/update-env`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ env_vars: newEnv })
-                        });
-                        const sd = await sr.json();
-                        if (sd.success) {
-                            showToast('success', 'Variables mises à jour');
-                            document.getElementById('envModal').classList.remove('active');
-                            loadMyBots();
-                        } else showToast('error', sd.error || 'Erreur');
-                    } catch(e) { showToast('error', 'Erreur'); }
-                };
-                
+            try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Bot non trouvé');
+                const bot=d.bot, env=bot.env_vars||{}, khJson=bot.bot_templates?.kh_json||{}, envConfig=khJson.env||{};
+                let html=`<p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p><div id="envList">`;
+                for(const[k,c]of Object.entries(envConfig)) html+=`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(env[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}"></div></div>`;
+                html+=`</div><div style="margin-top:12px;display:flex;gap:8px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter une variable</button><div style="flex:1;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="CLE" style="margin-bottom:4px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addEnvVar('${botId}')" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button></div></div><button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
+                document.getElementById('envModalBody').innerHTML=html;
+                document.getElementById('addEnvBtn').addEventListener('click',()=>{document.getElementById('addEnvForm').style.display='block';document.getElementById('addEnvBtn').style.display='none'});
+                document.getElementById('saveEnvBtn').onclick=async()=>{const nev={};for(const k of Object.keys(envConfig)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())nev[k]=i.value.trim()}try{const sr=await fetch(`/api/bots/my-bots/${botId}/update-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({env_vars:nev})});const sd=await sr.json();sd.success?(showToast('success','Variables mises à jour'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',sd.error||'Erreur')}catch(e){showToast('error','Erreur')}};
                 document.getElementById('envModal').classList.add('active');
-            } catch(e) { showToast('error', 'Erreur chargement variables'); }
+            }catch(e){showToast('error','Erreur chargement variables')}
         }
+        async function addEnvVar(botId){const key=document.getElementById('newEnvKey').value.trim().toUpperCase(),val=document.getElementById('newEnvValue').value.trim();if(!key){showToast('error','Clé requise');return}try{const r=await fetch(`/api/bots/my-bots/${botId}/add-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({key,value:val})});const d=await r.json();d.success?(showToast('success','Variable ajoutée'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur')}}
 
-        // ===== LOGS MODAL AVEC RAFRAÎCHISSEMENT AUTO =====
+        // ===== LOGS =====
         async function loadLogs(botId, showLoading = true) {
             if (!botId) return;
-            if (showLoading) {
-                const logsContainer = document.getElementById('logsContainer');
-                if (logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
-            }
+            const logsContainer = document.getElementById('logsContainer');
+            if (showLoading && logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
             try {
                 const r = await fetch(`/api/bots/my-bots/${botId}/logs?lines=200`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const d = await r.json();
-                const logsContainer = document.getElementById('logsContainer');
                 if (!logsContainer) return;
-                
                 if (d.success && d.logs) {
                     const logsArray = Array.isArray(d.logs) ? d.logs : (d.logs.lines || []);
                     if (logsArray.length === 0) {
@@ -425,134 +357,79 @@
                             else if (lowerLog.includes('success') || lowerLog.includes('started') || lowerLog.includes('listening')) logClass += ' success';
                             else if (lowerLog.includes('warn')) logClass += ' warning';
                             else if (lowerLog.includes('info')) logClass += ' info';
-                            
                             const timestampMatch = String(log).match(/^(\d{2}:\d{2}:\d{2})/);
-                            if (timestampMatch) {
-                                return `<div class="${logClass}"><span class="timestamp">[${timestampMatch[1]}]</span> ${esc(log.substring(timestampMatch[0].length))}</div>`;
-                            }
+                            if (timestampMatch) return `<div class="${logClass}"><span class="timestamp">[${timestampMatch[1]}]</span> ${esc(log.substring(timestampMatch[0].length))}</div>`;
                             return `<div class="${logClass}">${esc(log)}</div>`;
                         }).join('');
                     }
-                } else {
-                    logsContainer.innerHTML = '<div class="log-line error">Impossible de récupérer les logs</div>';
-                }
+                } else logsContainer.innerHTML = '<div class="log-line error">Impossible de récupérer les logs</div>';
                 logsContainer.scrollTop = logsContainer.scrollHeight;
-            } catch(e) {
-                const logsContainer = document.getElementById('logsContainer');
-                if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">Erreur de connexion</div>';
-            }
+            } catch(e) { if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">Erreur de connexion</div>'; }
         }
 
-        function startLogsAutoRefresh(botId) {
-            if (logsRefreshInterval) clearInterval(logsRefreshInterval);
-            logsRefreshInterval = setInterval(() => {
-                if (currentLogsBotId && isLogsAutoRefresh) {
-                    loadLogs(currentLogsBotId, false);
-                }
-            }, 5000);
+        function copyLogs() {
+            const logsContainer = document.getElementById('logsContainer');
+            if (!logsContainer) return;
+            const logs = logsContainer.innerText;
+            navigator.clipboard.writeText(logs).then(() => showToast('success', 'Logs copiés !')).catch(() => showToast('error', 'Erreur de copie'));
         }
 
-        function stopLogsAutoRefresh() {
-            if (logsRefreshInterval) {
-                clearInterval(logsRefreshInterval);
-                logsRefreshInterval = null;
-            }
+        function clearLogs() {
+            const logsContainer = document.getElementById('logsContainer');
+            if (!logsContainer) return;
+            logsContainer.innerHTML = '<div class="log-line info">Logs effacés</div>';
+            showToast('info', 'Logs effacés (affichage local)');
         }
+
+        function startLogsAutoRefresh(botId) { if (logsRefreshInterval) clearInterval(logsRefreshInterval); logsRefreshInterval = setInterval(() => { if (currentLogsBotId && isLogsAutoRefresh) loadLogs(currentLogsBotId, false); }, 5000); }
+        function stopLogsAutoRefresh() { if (logsRefreshInterval) { clearInterval(logsRefreshInterval); logsRefreshInterval = null; } }
 
         async function openLogsModal(botId) {
-            currentLogsBotId = botId;
-            isLogsAutoRefresh = true;
-            
+            currentLogsBotId = botId; isLogsAutoRefresh = true;
             document.getElementById('logsModalBody').innerHTML = `
                 <div class="logs-header">
-                    <div>
+                    <div class="logs-header-left">
                         <button class="logs-refresh-btn" id="manualRefreshLogsBtn"><i class="fas fa-sync-alt"></i> Rafraîchir</button>
-                        <span class="logs-auto-status" id="autoRefreshStatus"><span class="dot"></span> Auto-refresh (5s)</span>
+                        <button class="logs-copy-btn" id="copyLogsBtn"><i class="fas fa-copy"></i> Copier</button>
+                        <button class="logs-clear-btn" id="clearLogsBtn"><i class="fas fa-eraser"></i> Clear</button>
                     </div>
-                    <button class="btn-outline" id="toggleAutoRefreshBtn" style="padding:4px 12px;font-size:0.7rem;"><i class="fas fa-pause"></i> Pause</button>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="logs-auto-status" id="autoRefreshStatus"><span class="dot"></span> Auto (5s)</span>
+                        <button class="btn-outline" id="toggleAutoRefreshBtn" style="padding:4px 12px;font-size:0.7rem;"><i class="fas fa-pause"></i> Pause</button>
+                    </div>
                 </div>
-                <div class="logs-container" id="logsContainer">
-                    <div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement des logs...</div>
-                </div>
-            `;
-            
+                <div class="logs-container" id="logsContainer"><div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement des logs...</div></div>`;
             document.getElementById('logsModal').classList.add('active');
-            
             await loadLogs(botId, true);
             startLogsAutoRefresh(botId);
-            
-            document.getElementById('manualRefreshLogsBtn').onclick = async () => {
-                await loadLogs(botId, true);
-                showToast('info', 'Logs rafraîchis');
-            };
-            
+            document.getElementById('manualRefreshLogsBtn').onclick = async () => { await loadLogs(botId, true); showToast('info', 'Logs rafraîchis'); };
+            document.getElementById('copyLogsBtn').onclick = copyLogs;
+            document.getElementById('clearLogsBtn').onclick = clearLogs;
             document.getElementById('toggleAutoRefreshBtn').onclick = () => {
                 isLogsAutoRefresh = !isLogsAutoRefresh;
-                const btn = document.getElementById('toggleAutoRefreshBtn');
-                const statusSpan = document.getElementById('autoRefreshStatus');
-                if (isLogsAutoRefresh) {
-                    btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-                    statusSpan.innerHTML = '<span class="dot"></span> Auto-refresh (5s)';
-                    startLogsAutoRefresh(botId);
-                    showToast('info', 'Auto-refresh activé');
-                } else {
-                    btn.innerHTML = '<i class="fas fa-play"></i> Reprendre';
-                    statusSpan.innerHTML = '<span class="dot" style="background:#6B7280;"></span> Auto-refresh désactivé';
-                    stopLogsAutoRefresh();
-                    showToast('info', 'Auto-refresh désactivé');
-                }
+                const btn = document.getElementById('toggleAutoRefreshBtn'), statusSpan = document.getElementById('autoRefreshStatus');
+                if (isLogsAutoRefresh) { btn.innerHTML = '<i class="fas fa-pause"></i> Pause'; statusSpan.innerHTML = '<span class="dot"></span> Auto (5s)'; startLogsAutoRefresh(botId); }
+                else { btn.innerHTML = '<i class="fas fa-play"></i> Reprendre'; statusSpan.innerHTML = '<span style="color:#6B7280;">Auto off</span>'; stopLogsAutoRefresh(); }
             };
         }
 
-        // ===== RENEW MODAL =====
         async function renewBot(botId){
             const bot=allBots.find(b=>b.id===botId); if(!bot)return;
             const t=bot.bot_templates, wp=t?.price_weekly||100, mp=wp*4;
-            document.getElementById('renewModalBody').innerHTML=`
-                <p style="margin-bottom:12px;font-size:0.85rem;">Renouvelez votre bot pour prolonger son expiration.</p>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;margin-bottom:12px;"><div><div style="font-weight:600;font-size:0.85rem;">Mode mensuel</div><div style="font-size:0.7rem;color:var(--text-muted);">${mp} coins pour 28 jours</div></div><div class="toggle-switch" id="renewDurationToggle"></div></div>
-                <div style="background:var(--bg-input);padding:12px;border-radius:var(--radius-md);text-align:center;margin-bottom:12px;"><span style="font-size:1.2rem;font-weight:700;color:var(--primary);" id="renewPrice">${wp}</span><span style="color:var(--text-secondary);font-size:0.85rem;"> coins</span></div>
-                <button class="deploy-btn" id="confirmRenewBtn"><i class="fas fa-sync-alt"></i> Renouveler</button>
-            `;
-            let dm='weekly'; 
-            const toggle = document.getElementById('renewDurationToggle');
-            toggle.addEventListener('click',()=>{dm=dm==='weekly'?'monthly':'weekly';toggle.classList.toggle('active');document.getElementById('renewPrice').textContent=dm==='weekly'?wp:mp;});
-            document.getElementById('confirmRenewBtn').onclick=async()=>{
-                const cn=dm==='weekly'?wp:mp; if((currentUser?.coins||0)<cn){showToast('error',`Coins insuffisants. Besoin de ${cn} coins.`);return}
-                try{ const r=await fetch(`/api/bots/my-bots/${botId}/renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({duration_mode:dm})}); const d=await r.json();
-                    if(d.success){showToast('success','Bot renouvelé');document.getElementById('renewModal').classList.remove('active');loadMyBots();
-                        fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(d.success){document.getElementById('sidebarCoins').textContent=d.user.coins||0;currentUser=d.user;}});
-                    }else showToast('error',d.error||'Erreur');
-                }catch(e){showToast('error','Erreur')}
-            };
+            document.getElementById('renewModalBody').innerHTML=`<p style="margin-bottom:12px;font-size:0.85rem;">Renouvelez votre bot.</p><div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;margin-bottom:12px;"><div><div style="font-weight:600;font-size:0.85rem;">Mode mensuel</div><div style="font-size:0.7rem;color:var(--text-muted);">${mp} coins</div></div><div class="toggle-switch" id="renewDurationToggle"></div></div><div style="background:var(--bg-input);padding:12px;border-radius:var(--radius-md);text-align:center;margin-bottom:12px;"><span style="font-size:1.2rem;font-weight:700;color:var(--primary);" id="renewPrice">${wp}</span><span style="color:var(--text-secondary);font-size:0.85rem;"> coins</span></div><button class="deploy-btn" id="confirmRenewBtn"><i class="fas fa-sync-alt"></i> Renouveler</button>`;
+            let dm='weekly'; document.getElementById('renewDurationToggle').addEventListener('click',()=>{dm=dm==='weekly'?'monthly':'weekly';document.getElementById('renewDurationToggle').classList.toggle('active');document.getElementById('renewPrice').textContent=dm==='weekly'?wp:mp;});
+            document.getElementById('confirmRenewBtn').onclick=async()=>{const cn=dm==='weekly'?wp:mp;if((currentUser?.coins||0)<cn){showToast('error',`Coins insuffisants. Besoin de ${cn} coins.`);return}try{const r=await fetch(`/api/bots/my-bots/${botId}/renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({duration_mode:dm})});const d=await r.json();if(d.success){showToast('success','Bot renouvelé');document.getElementById('renewModal').classList.remove('active');loadMyBots();fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(d.success){document.getElementById('sidebarCoins').textContent=d.user.coins||0;currentUser=d.user;}})}else showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur')}};
             document.getElementById('renewModal').classList.add('active');
         }
 
-        // Tabs
         document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderBots(t.dataset.tab)}));
 
-        // Close modals
-        const closeModal = (modalId) => {
-            document.getElementById(modalId).classList.remove('active');
-            if (modalId === 'logsModal') {
-                stopLogsAutoRefresh();
-                currentLogsBotId = null;
-                isLogsAutoRefresh = true;
-            }
-        };
-        
-        document.getElementById('closeEnvModal').addEventListener('click', () => closeModal('envModal'));
-        document.getElementById('closeLogsModal').addEventListener('click', () => closeModal('logsModal'));
-        document.getElementById('closeRenewModal').addEventListener('click', () => closeModal('renewModal'));
-        
-        ['envModal', 'logsModal', 'renewModal'].forEach(m => {
-            document.getElementById(m).addEventListener('click', e => {
-                if (e.target === document.getElementById(m)) closeModal(m);
-            });
-        });
+        const closeModal = (modalId) => { document.getElementById(modalId).classList.remove('active'); if (modalId === 'logsModal') { stopLogsAutoRefresh(); currentLogsBotId = null; } };
+        ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{const m=['envModal','logsModal','renewModal'][i];document.getElementById(id).addEventListener('click',()=>closeModal(m))});
+        ['envModal','logsModal','renewModal'].forEach(m=>document.getElementById(m).addEventListener('click',e=>{if(e.target===document.getElementById(m))closeModal(m)}));
 
         window.startBot=startBot; window.stopBot=stopBot; window.restartBot=restartBot; window.deleteBot=deleteBot;
-        window.toggleAutoRenew=toggleAutoRenew; window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.renewBot=renewBot;
+        window.toggleAutoRenew=toggleAutoRenew; window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.renewBot=renewBot; window.addEnvVar=addEnvVar;
 
         checkAuth();
         window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
