@@ -8143,8 +8143,8 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Nom et repo requis' });
         }
         
+        // 1. Vérifier le kh.json
         const validation = await validateKhJsonFromRepo(repo_url);
-        
         if (!validation.valid) {
             return res.status(400).json({ 
                 success: false, 
@@ -8153,19 +8153,87 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             });
         }
         
-        const { data: existing } = await supabase
+        // 2. Vérifier si un template actif existe déjà (status différent de 'deleted')
+        const { data: existingTemplate } = await supabase
+            .from('bot_templates')
+            .select('id, status')
+            .eq('repo_url', repo_url)
+            .neq('status', 'deleted')
+            .maybeSingle();
+
+        if (existingTemplate) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Ce bot existe déjà sur le marketplace' 
+            });
+        }
+        
+        // 3. Vérifier si une soumission en attente ou approuvée existe
+        const { data: existingSubmission } = await supabase
             .from('bot_submissions')
-            .select('id')
+            .select('id, status')
             .eq('repo_url', repo_url)
             .eq('user_id', req.user.id)
             .in('status', ['pending', 'approved'])
             .maybeSingle();
-        
-        if (existing) {
-            return res.status(400).json({ success: false, error: 'Ce bot a déjà été soumis' });
+
+        if (existingSubmission) {
+            if (existingSubmission.status === 'pending') {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Ce bot est déjà en attente de validation' 
+                });
+            }
+            if (existingSubmission.status === 'approved') {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Ce bot a déjà été approuvé' 
+                });
+            }
         }
         
-        const { data: submission, error } = await supabase
+        // 4. Vérifier si une soumission rejetée existe (on la réactive)
+        const { data: rejectedSubmission } = await supabase
+            .from('bot_submissions')
+            .select('id')
+            .eq('repo_url', repo_url)
+            .eq('user_id', req.user.id)
+            .eq('status', 'rejected')
+            .maybeSingle();
+
+        if (rejectedSubmission) {
+            const { error: updateError } = await supabase
+                .from('bot_submissions')
+                .update({
+                    bot_name: bot_name,
+                    kh_json: validation.khJson,
+                    status: 'pending',
+                    admin_notes: null,
+                    processed_at: null,
+                    processed_by: null
+                })
+                .eq('id', rejectedSubmission.id);
+            
+            if (!updateError) {
+                const adminHtml = `
+                    <h2>🤖 Réactivation de demande de bot</h2>
+                    <p><strong>Bot :</strong> ${bot_name}</p>
+                    <p><strong>Repo :</strong> ${repo_url}</p>
+                    <p><strong>Soumis par :</strong> ${req.user.username} (${req.user.email})</p>
+                    <p>Accédez au panel admin pour approuver ou refuser cette demande.</p>
+                `;
+                await sendEmail('bookmakerp@gmail.com', '🤖 Réactivation demande de bot', getBaseEmailTemplate('Réactivation demande bot', adminHtml));
+                
+                return res.json({ 
+                    success: true, 
+                    message: 'Bot soumis avec succès (réactivation)',
+                    submission_id: rejectedSubmission.id
+                });
+            }
+        }
+        
+        // 5. Créer une nouvelle soumission
+        const { data: submission, error: insertError } = await supabase
             .from('bot_submissions')
             .insert([{
                 user_id: req.user.id,
@@ -8177,7 +8245,7 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             .select()
             .single();
         
-        if (error) throw error;
+        if (insertError) throw insertError;
         
         const adminHtml = `
             <h2>🤖 Nouvelle demande d'ajout de bot</h2>
@@ -8185,13 +8253,12 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             <p><strong>Repo :</strong> ${repo_url}</p>
             <p><strong>Soumis par :</strong> ${req.user.username} (${req.user.email})</p>
             <p>Accédez au panel admin pour approuver ou refuser cette demande.</p>
-            <a href="${SITE_CONFIG.url}/admin">Traiter la demande</a>
         `;
         await sendEmail('bookmakerp@gmail.com', '🤖 Nouvelle demande de bot', getBaseEmailTemplate('Nouvelle demande bot', adminHtml));
         
         res.json({ 
             success: true, 
-            message: 'Bot soumis avec succès. En attente d\'approbation par un administrateur.',
+            message: 'Bot soumis avec succès. En attente d\'approbation.',
             submission_id: submission.id
         });
         
@@ -9516,11 +9583,11 @@ app.post('/api/admin/bots/templates/:templateId/sync', authenticateToken, requir
 app.delete('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { templateId } = req.params;
-        const { permanent } = req.query;
         
+        // 1. Récupérer le template
         const { data: template, error: fetchError } = await supabase
             .from('bot_templates')
-            .select('name')
+            .select('repo_url, user_id, name')
             .eq('id', templateId)
             .single();
         
@@ -9528,49 +9595,23 @@ app.delete('/api/admin/bots/templates/:templateId', authenticateToken, requireAd
             return res.status(404).json({ success: false, error: 'Template non trouvé' });
         }
         
-        const { count: botCount } = await supabase
-            .from('user_bots')
-            .select('*', { count: 'exact', head: true })
-            .eq('template_id', templateId);
+        // 2. Supprimer la soumission associée
+        await supabase
+            .from('bot_submissions')
+            .delete()
+            .eq('repo_url', template.repo_url)
+            .eq('user_id', template.user_id);
         
-        if (permanent === 'true' && botCount > 0) {
-            return res.status(400).json({ 
-                success: false, 
-                error: `Impossible de supprimer définitivement: ${botCount} bots utilisent encore ce template` 
-            });
-        }
+        // 3. Supprimer le template
+        await supabase
+            .from('bot_templates')
+            .delete()
+            .eq('id', templateId);
         
-        if (permanent === 'true') {
-            const { error } = await supabase
-                .from('bot_templates')
-                .delete()
-                .eq('id', templateId);
-            
-            if (error) throw error;
-            
-            await supabase
-                .from('admin_actions')
-                .insert([{
-                    admin_id: req.user.id,
-                    action_type: 'bot_template_delete_permanent',
-                    target_type: 'bot_template',
-                    target_id: templateId,
-                    description: `Suppression définitive du template "${template.name}"`,
-                    ip_address: req.ip,
-                    user_agent: req.headers['user-agent']
-                }]);
-            
-            res.json({ success: true, message: 'Template supprimé définitivement' });
-        } else {
-            const { error } = await supabase
-                .from('bot_templates')
-                .update({ status: 'deleted' })
-                .eq('id', templateId);
-            
-            if (error) throw error;
-            
-            res.json({ success: true, message: 'Template marqué comme supprimé' });
-        }
+        res.json({ 
+            success: true, 
+            message: 'Template et soumission supprimés. L\'utilisateur pourra soumettre à nouveau ce bot.' 
+        });
         
     } catch (error) {
         console.error('❌ Erreur suppression template:', error);
