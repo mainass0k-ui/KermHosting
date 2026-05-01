@@ -71,10 +71,17 @@
         .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); }
         .top-bar-left { display: flex; align-items: center; gap: 12px; }
-        .top-bar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
-        .top-bar-logo i { color: var(--primary); font-size: 1.3rem; }
+        .top-bar-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; }
+        .top-bar-brand i { color: var(--primary); font-size: 1.3rem; }
         .top-bar-actions { display: flex; align-items: center; gap: 10px; }
         .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+
+        /* HEADER CENTRÉ AVEC LOGO */
+        .brand-center-header { text-align: center; padding: 30px 16px 10px; }
+        .brand-center-logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+        .brand-center-logo img { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: cover; }
+        .brand-center-logo i { font-size: 2.5rem; color: var(--primary); }
+        .brand-center-name { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
         /* BOUTON FLOTTANT */
         .fab-btn { position: fixed; bottom: 24px; right: 24px; z-index: 1500; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #25D366, #128C7E); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 8px 25px rgba(37,211,102,0.5); transition: all 0.3s; }
@@ -110,7 +117,7 @@
 
         /* BOTS GRID - PLUS PETITS */
         .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-        .bot-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; aspect-ratio: 1/1; display: flex; flex-direction: column; }
+        .bot-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; cursor: pointer; aspect-ratio: 1/1; display: flex; flex-direction: column; position: relative; }
         .bot-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 8px 20px -8px rgba(124,58,237,0.3); }
         .bot-card-header { padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.04), transparent); flex-shrink: 0; }
         .bot-card-logo { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
@@ -127,6 +134,8 @@
         .price-period { font-size: 0.6rem; color: var(--text-muted); margin-left: 2px; }
         .deploy-count { font-size: 0.6rem; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
         .deploy-count i { color: var(--primary-light); }
+        .bot-share-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.7rem; transition: all 0.2s; z-index: 5; }
+        .bot-share-btn:hover { background: var(--primary); border-color: var(--primary); }
 
         /* PAGINATION */
         .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
@@ -192,6 +201,12 @@
         .price-display .amount { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
         .price-display .duration { color: var(--text-secondary); }
 
+        /* ACTIONS ROW dans le formulaire submit */
+        .submit-actions-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+        .download-kh-btn { display: inline-flex; align-items: center; gap: 5px; background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-primary); padding: 7px 14px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+        .download-kh-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
+        .download-kh-hint { color: var(--text-muted); font-size: 0.7rem; }
+
         .toast { position: fixed; bottom: 16px; right: 16px; padding: 10px 16px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 8px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 320px; font-size: 0.85rem; }
         .toast.success { background: rgba(16,185,129,0.95); }
         .toast.error { background: rgba(239,68,68,0.95); }
@@ -200,7 +215,7 @@
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
         @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }
-        @media (max-width: 768px) { .page-content { padding: 10px; } .marketplace-title { font-size: 1.5rem; } .top-bar { padding: 8px 12px; } .fab-btn { width: 48px; height: 48px; bottom: 16px; right: 16px; } .bot-card { aspect-ratio: auto; min-height: 240px; } }
+        @media (max-width: 768px) { .page-content { padding: 10px; } .brand-center-name { font-size: 1.5rem; } .marketplace-title { font-size: 1.5rem; } .top-bar { padding: 8px 12px; } .fab-btn { width: 48px; height: 48px; bottom: 16px; right: 16px; } .bot-card { aspect-ratio: auto; min-height: 240px; } }
     </style>
 </head>
 <body>
@@ -226,10 +241,18 @@
 
         <main class="main-content">
             <header class="top-bar">
-                <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
+                <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button><div class="top-bar-brand"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div></div>
                 <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
             <div class="page-content">
+                <!-- LOGO ET NOM CENTRÉS COMME SUR L'IMAGE -->
+                <div class="brand-center-header">
+                    <div class="brand-center-logo">
+                        <img src="https://files.catbox.moe/d66qx0.jpeg" alt="KermHosting Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+                        <i class="fas fa-cloud-upload-alt" style="display:none;"></i>
+                    </div>
+                    <div class="brand-center-name">KermHosting</div>
+                </div>
                 <div class="marketplace-header"><div class="marketplace-badge"><i class="fab fa-whatsapp"></i><span>WhatsApp Bots Marketplace</span></div><h1 class="marketplace-title">Déployez des bots <span class="gradient-text">en 1 minute</span></h1><p class="marketplace-subtitle">Choisissez un template, configurez vos variables, et déployez instantanément.</p></div>
                 <div class="search-section"><div class="search-bar"><input type="text" class="search-input" id="searchInput" placeholder="Rechercher un bot..."></div></div>
                 <div class="bots-grid" id="botsContainer">
@@ -250,9 +273,9 @@
         <div class="info-box"><i class="fas fa-info-circle"></i><div>Votre repo GitHub doit contenir un fichier <strong>kh.json</strong> à la racine. Ce fichier décrit le nom, la description, le logo et les variables d'environnement de votre bot.</div></div>
         <div class="form-group"><label class="form-label"><i class="fas fa-tag"></i> Nom du bot</label><input type="text" class="form-input" id="submitBotName" required placeholder="Ex: KERM-MD-V1"></div>
         <div class="form-group"><label class="form-label"><i class="fab fa-github"></i> GitHub Repository</label><input type="url" class="form-input" id="submitRepoUrl" required placeholder="https://github.com/user/repo">
-            <div class="form-hint" style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-                <a href="https://raw.githubusercontent.com/hostt11/Exemple/main/kh.json" download class="deploy-btn" style="width:auto;padding:7px 14px;font-size:0.75rem;margin:0;display:inline-flex;align-items:center;gap:5px;"><i class="fas fa-download"></i> Télécharger kh.json</a>
-                <span style="color:var(--text-muted);font-size:0.7rem;">Ajoutez ce fichier à la racine de votre repo</span>
+            <div class="submit-actions-row">
+                <a href="https://raw.githubusercontent.com/hostt11/Exemple/main/kh.json" download class="download-kh-btn"><i class="fas fa-download"></i> Télécharger kh.json</a>
+                <span class="download-kh-hint">Ajoutez ce fichier à la racine de votre repo</span>
             </div>
         </div>
         <div id="submitError" style="display:none;"></div>
@@ -282,6 +305,19 @@
         async function syncTemplatesFromGitHub(){ if(!templatesCache.length)return; for(const t of templatesCache){ if(!t.repo_url||!t.user_id)continue; try{ const r=await fetch(`/api/bots/check-kh-changed?templateId=${t.id}`,{headers:{'Authorization':`Bearer ${token}`}}); if(r.ok){ const d=await r.json(); if(d.changed){ await loadTemplates(); return; } } }catch(e){} } }
         function startSync(){ if(syncInterval)clearInterval(syncInterval); syncInterval=setInterval(syncTemplatesFromGitHub,1000); }
 
+        function shareBot(templateId, botName) {
+            const url = `${window.location.origin}/bot/${templateId}`;
+            if (navigator.share) {
+                navigator.share({ title: botName, text: `Découvre le bot ${botName} sur KermHosting !`, url: url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('success', 'Lien copié !');
+                }).catch(() => {
+                    showToast('error', 'Impossible de copier le lien');
+                });
+            }
+        }
+
         async function loadTemplates(){
             try{ const r=await fetch('/api/bots/templates',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
                 if(!d.success||!d.templates?.length){ document.getElementById('botsContainer').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-secondary);"><i class="fas fa-robot" style="font-size:2.5rem;margin-bottom:10px;opacity:0.4;display:block;"></i><p>Aucun bot disponible.</p></div>'; document.getElementById('paginationContainer').innerHTML=''; templatesCache=[]; return; }
@@ -293,8 +329,10 @@
             const c=document.getElementById('botsContainer'), tp=Math.ceil(templatesCache.length/ITEMS_PER_PAGE);
             if(currentPage>tp) currentPage=tp||1;
             const start=(currentPage-1)*ITEMS_PER_PAGE, items=templatesCache.slice(start,start+ITEMS_PER_PAGE);
-            c.innerHTML=items.map(t=>{ const logo=t.kh_json?.logo||t.logo_url||''; const deploys=t.total_deploys||0;
-                return `<div class="bot-card" onclick="openDeployModal('${t.id}')"><div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${esc(t.name)}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${deploys}</div></div></div></div>`;
+            c.innerHTML=items.map(t=>{ const logo=t.kh_json?.logo||t.logo_url||''; const deploys=t.total_deploys||0; const botName = esc(t.name);
+                return `<div class="bot-card" onclick="openDeployModal('${t.id}')">
+                    <button class="bot-share-btn" onclick="event.stopPropagation(); shareBot('${t.id}', '${botName.replace(/'/g, "\\'")}')" title="Partager ce bot"><i class="fas fa-share-alt"></i></button>
+                    <div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${botName}</div></div></div><div class="bot-card-body"><div class="bot-card-description">${esc(t.kh_json?.description||'Aucune description')}</div><div class="bot-tags">${(t.kh_json?.keywords||['bot']).slice(0,3).map(k=>`<span class="bot-tag">${esc(k)}</span>`).join('')}</div><div class="bot-price"><div class="price-coins"><i class="fas fa-coins"></i>${t.price_weekly}<span class="price-period">/sem</span></div><div class="deploy-count"><i class="fas fa-download"></i> ${deploys}</div></div></div></div>`;
             }).join('');
             renderPagination(tp);
         }
@@ -337,7 +375,7 @@
 
         checkAuth(); window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
         window.addEventListener('beforeunload',()=>{if(syncInterval)clearInterval(syncInterval)});
-        window.openDeployModal=openDeployModal; window.goToPage=goToPage;
+        window.openDeployModal=openDeployModal; window.goToPage=goToPage; window.shareBot=shareBot;
     </script>
 </body>
 </html>
