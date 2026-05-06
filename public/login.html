@@ -320,6 +320,33 @@
             margin: 4px 0;
         }
 
+        /* Indicateur de statut Turnstile */
+        .turnstile-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-height: 20px;
+        }
+
+        .turnstile-status i {
+            font-size: 0.7rem;
+        }
+
+        .turnstile-status.verified {
+            color: var(--success);
+        }
+
+        .turnstile-status.verifying {
+            color: var(--accent);
+        }
+
+        .turnstile-status.error {
+            color: var(--danger);
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -356,9 +383,11 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .auth-btn:hover {
+        .auth-btn:hover:not(:disabled) {
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
@@ -369,6 +398,27 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .auth-btn .btn-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Footer */
@@ -613,7 +663,11 @@
 
                 <!-- Cloudflare Turnstile -->
                 <div class="form-group">
-                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired"></div>
+                    <div class="turnstile-status" id="turnstileStatus">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <span>Vérification de sécurité en cours...</span>
+                    </div>
                 </div>
 
                 <div class="checkbox-group">
@@ -622,7 +676,8 @@
                 </div>
 
                 <button type="submit" class="auth-btn" id="submitBtn" disabled>
-                    <span>Se connecter</span>
+                    <span class="spinner" id="btnSpinner"></span>
+                    <span class="btn-text">Se connecter</span>
                 </button>
             </form>
 
@@ -644,6 +699,20 @@
     <script>
         let turnstileVerified = false;
         let turnstileToken = null;
+        let isSubmitting = false;
+
+        // Références aux éléments du DOM
+        const loginIdentifier = document.getElementById('loginIdentifier');
+        const password = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const turnstileStatus = document.getElementById('turnstileStatus');
+        const messageContainer = document.getElementById('messageContainer');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        // Les inputs restent TOUJOURS actifs, on ne les désactive jamais
+        // On ne gèle que le bouton de soumission si Turnstile n'est pas vérifié
 
         function showLoading(text) {
             document.getElementById('loadingText').textContent = text;
@@ -658,6 +727,24 @@
             document.getElementById('loadingText').textContent = text;
         }
 
+        function setButtonLoading(loading) {
+            isSubmitting = loading;
+            if (loading) {
+                submitBtn.disabled = true;
+                btnText.style.opacity = '0';
+                btnSpinner.style.display = 'block';
+            } else {
+                submitBtn.disabled = !turnstileVerified;
+                btnText.style.opacity = '1';
+                btnSpinner.style.display = 'none';
+            }
+        }
+
+        function updateTurnstileStatus(status, message, icon) {
+            turnstileStatus.className = 'turnstile-status ' + status;
+            turnstileStatus.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+        }
+
         async function checkMaintenance() {
             try {
                 const response = await fetch('/api/maintenance/status');
@@ -667,10 +754,37 @@
             } catch (error) { return false; }
         }
 
+        // Callback Turnstile : SUCCÈS
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
             turnstileToken = token;
-            document.getElementById('submitBtn').disabled = false;
+            updateTurnstileStatus('verified', 'Vérification réussie ✓', 'fa-check-circle');
+            
+            // Active le bouton SEULEMENT si on n'est pas en train de soumettre
+            if (!isSubmitting) {
+                submitBtn.disabled = false;
+            }
+        };
+
+        // Callback Turnstile : ERREUR
+        window.onTurnstileError = function() {
+            turnstileVerified = false;
+            turnstileToken = null;
+            updateTurnstileStatus('error', 'Erreur de vérification - rechargez la page', 'fa-exclamation-triangle');
+            submitBtn.disabled = true;
+        };
+
+        // Callback Turnstile : EXPIRÉ
+        window.onTurnstileExpired = function() {
+            turnstileVerified = false;
+            turnstileToken = null;
+            updateTurnstileStatus('verifying', 'Vérification expirée - veuillez réessayer', 'fa-clock');
+            submitBtn.disabled = true;
+            
+            // Relancer automatiquement Turnstile après expiration
+            if (window.turnstile) {
+                window.turnstile.reset();
+            }
         };
 
         async function checkAlreadyLoggedIn() {
@@ -687,23 +801,20 @@
         }
 
         function togglePassword() {
-            const password = document.getElementById('password');
-            const icon = document.getElementById('toggleIcon');
             if (password.type === 'password') {
                 password.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
             } else {
                 password.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
             }
         }
 
         function showMessage(type, text) {
-            const container = document.getElementById('messageContainer');
             const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
-            container.innerHTML = `<div class="message ${type}"><i class="fas ${icons[type]}"></i><span>${text}</span></div>`;
+            messageContainer.innerHTML = `<div class="message ${type}"><i class="fas ${icons[type]}"></i><span>${text}</span></div>`;
         }
 
         function loadSavedCredentials() {
@@ -711,16 +822,16 @@
             const savedPassword = localStorage.getItem('savedPassword');
             const rememberMe = localStorage.getItem('rememberMe') === 'true';
             if (rememberMe && savedIdentifier) {
-                document.getElementById('loginIdentifier').value = savedIdentifier;
-                if (savedPassword) document.getElementById('password').value = savedPassword;
+                loginIdentifier.value = savedIdentifier;
+                if (savedPassword) password.value = savedPassword;
                 document.getElementById('rememberMe').checked = true;
             }
         }
 
-        function saveCredentials(identifier, password, remember) {
+        function saveCredentials(identifier, passwordValue, remember) {
             if (remember) {
                 localStorage.setItem('savedIdentifier', identifier);
-                localStorage.setItem('savedPassword', password);
+                localStorage.setItem('savedPassword', passwordValue);
                 localStorage.setItem('rememberMe', 'true');
             } else {
                 localStorage.removeItem('savedIdentifier');
@@ -733,11 +844,11 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
         }
 
-        async function attemptLogin(identifier, password, turnstileToken) {
+        async function attemptLogin(identifier, passwordValue, cfToken) {
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, password, 'cf-turnstile-response': turnstileToken })
+                body: JSON.stringify({ identifier, password: passwordValue, 'cf-turnstile-response': cfToken })
             });
             return await response.json();
         }
@@ -745,16 +856,28 @@
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const rawIdentifier = document.getElementById('loginIdentifier').value.trim();
-            const password = document.getElementById('password').value;
+            // Si déjà en cours de soumission, on ignore
+            if (isSubmitting) return;
+            
+            const rawIdentifier = loginIdentifier.value.trim();
+            const passwordValue = password.value;
             const rememberMe = document.getElementById('rememberMe').checked;
-            const submitBtn = document.getElementById('submitBtn');
             
-            if (!rawIdentifier) { showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur'); return; }
-            if (!turnstileVerified) { showMessage('error', 'Veuillez compléter la vérification'); return; }
+            if (!rawIdentifier) { 
+                showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur');
+                // Focus sur l'input - l'utilisateur peut taper immédiatement
+                loginIdentifier.focus();
+                return; 
+            }
             
+            if (!turnstileVerified) { 
+                showMessage('error', 'Veuillez patienter pendant la vérification de sécurité');
+                return; 
+            }
+            
+            // Mise en état de chargement
+            setButtonLoading(true);
             showLoading('Connexion en cours...');
-            submitBtn.disabled = true;
             
             try {
                 let data;
@@ -764,41 +887,54 @@
                 
                 if (isEmail(rawIdentifier)) {
                     const lowerCaseEmail = rawIdentifier.toLowerCase();
-                    data = await attemptLogin(lowerCaseEmail, password, turnstileToken);
+                    data = await attemptLogin(lowerCaseEmail, passwordValue, turnstileToken);
                     
                     if (!data.success && rawIdentifier !== lowerCaseEmail) {
                         updateLoadingText('Tentative avec la casse originale...');
-                        const secondAttempt = await attemptLogin(rawIdentifier, password, turnstileToken);
+                        const secondAttempt = await attemptLogin(rawIdentifier, passwordValue, turnstileToken);
                         if (secondAttempt.success) { data = secondAttempt; successfulIdentifier = rawIdentifier; }
                     } else if (data.success) { successfulIdentifier = lowerCaseEmail; }
                 } else {
-                    data = await attemptLogin(rawIdentifier, password, turnstileToken);
+                    data = await attemptLogin(rawIdentifier, passwordValue, turnstileToken);
                 }
                 
                 if (data.success) {
-                    saveCredentials(successfulIdentifier, password, rememberMe);
+                    saveCredentials(successfulIdentifier, passwordValue, rememberMe);
                     localStorage.setItem('token', data.token);
                     updateLoadingText('Chargement de votre session...');
                     setTimeout(() => updateLoadingText('Préparation de votre espace...'), 800);
                     setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
                 } else {
                     hideLoading();
-                    submitBtn.disabled = false;
+                    setButtonLoading(false);
+                    
                     if (data.requiresVerification) {
                         showMessage('info', 'Email non vérifié. Redirection...');
                         setTimeout(() => { window.location.href = `/email-verification?email=${encodeURIComponent(rawIdentifier)}`; }, 1500);
                     } else {
                         showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
+                        
+                        // Reset Turnstile pour une nouvelle tentative
                         turnstileVerified = false;
                         turnstileToken = null;
-                        document.getElementById('submitBtn').disabled = true;
-                        if (window.turnstile) turnstile.reset();
+                        submitBtn.disabled = true;
+                        updateTurnstileStatus('verifying', 'Vérification de sécurité en cours...', 'fa-spinner fa-pulse');
+                        
+                        if (window.turnstile) {
+                            window.turnstile.reset();
+                        }
+                        
+                        // Focus sur l'identifiant pour permettre de corriger immédiatement
+                        loginIdentifier.focus();
                     }
                 }
             } catch (error) {
                 hideLoading();
-                submitBtn.disabled = false;
+                setButtonLoading(false);
                 showMessage('error', 'Erreur de connexion au serveur');
+                
+                // Même en cas d'erreur réseau, les inputs restent actifs
+                loginIdentifier.focus();
             }
         });
 
@@ -806,7 +942,11 @@
             const isMaintenance = await checkMaintenance();
             if (isMaintenance) return;
             const isLoggedIn = await checkAlreadyLoggedIn();
-            if (!isLoggedIn) loadSavedCredentials();
+            if (!isLoggedIn) {
+                loadSavedCredentials();
+                // Status initial Turnstile
+                updateTurnstileStatus('verifying', 'Vérification de sécurité en cours...', 'fa-spinner fa-pulse');
+            }
         });
     </script>
 </body>
