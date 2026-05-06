@@ -19,9 +19,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Cloudflare Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    
     <title>Connexion - KermHosting</title>
     
     <style>
@@ -621,7 +618,7 @@
                     <label for="rememberMe">Se souvenir de moi</label>
                 </div>
 
-                <button type="submit" class="auth-btn" id="submitBtn" disabled>
+                <button type="submit" class="auth-btn" id="submitBtn">
                     <span>Se connecter</span>
                 </button>
             </form>
@@ -641,6 +638,9 @@
         </div>
     </div>
 
+    <!-- Cloudflare Turnstile chargé ici, après le contenu -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
     <script>
         let turnstileVerified = false;
         let turnstileToken = null;
@@ -670,7 +670,6 @@
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
             turnstileToken = token;
-            document.getElementById('submitBtn').disabled = false;
         };
 
         async function checkAlreadyLoggedIn() {
@@ -791,7 +790,6 @@
                         showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
                         turnstileVerified = false;
                         turnstileToken = null;
-                        document.getElementById('submitBtn').disabled = true;
                         if (window.turnstile) turnstile.reset();
                     }
                 }
