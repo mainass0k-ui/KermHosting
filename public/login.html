@@ -75,6 +75,7 @@
             overflow-y: auto;
         }
 
+        /* ===== ICÔNES LOGIN EN BACKGROUND ===== */
         .login-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -108,6 +109,7 @@
             75% { transform: translateY(-40px) translateX(-25px) rotate(12deg); opacity: 0.06; }
         }
 
+        /* Particules */
         .particles {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -139,6 +141,7 @@
             80% { opacity: 0.6; }
         }
 
+        /* Grille subtile */
         .grid-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -155,6 +158,7 @@
             50% { opacity: 1; }
         }
 
+        /* ===== CONTAINER ===== */
         .auth-container {
             width: 100%;
             max-width: 420px;
@@ -168,6 +172,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Logo KermHosting */
         .logo-section {
             text-align: center;
             margin-bottom: 20px;
@@ -195,6 +200,7 @@
             50% { transform: translateY(-5px); }
         }
 
+        /* Carte transparente */
         .auth-card {
             background: transparent;
             border-radius: 0;
@@ -206,6 +212,7 @@
             overflow: visible;
         }
 
+        /* Header */
         .auth-header {
             text-align: left;
             margin-bottom: 16px;
@@ -239,6 +246,7 @@
             font-size: 0.85rem;
         }
 
+        /* Formulaire */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -332,6 +340,7 @@
             cursor: pointer;
         }
 
+        /* Bouton */
         .auth-btn {
             background: var(--primary);
             color: white;
@@ -362,6 +371,7 @@
             box-shadow: none;
         }
 
+        /* Footer */
         .auth-links {
             text-align: center;
             font-size: 0.85rem;
@@ -391,6 +401,7 @@
             text-decoration: underline;
         }
 
+        /* Message */
         .message {
             padding: 10px 14px;
             border-radius: var(--radius-md);
@@ -413,6 +424,7 @@
         .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
         .message.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--primary); color: var(--primary); }
 
+        /* ===== LOADING OVERLAY ===== */
         .loading-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -505,6 +517,7 @@
     </style>
 </head>
 <body>
+    <!-- Background animé d'icônes login -->
     <div class="login-bg">
         <i class="fas fa-user-lock floating-icon"></i>
         <i class="fas fa-fingerprint floating-icon"></i>
@@ -518,8 +531,10 @@
         <i class="fas fa-unlock-alt floating-icon"></i>
     </div>
 
+    <!-- Grille -->
     <div class="grid-bg"></div>
 
+    <!-- Particules -->
     <div class="particles">
         <div class="particle"></div>
         <div class="particle"></div>
@@ -531,6 +546,7 @@
         <div class="particle"></div>
     </div>
 
+    <!-- LOADING OVERLAY -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="loading-icon-wrapper">
@@ -548,7 +564,9 @@
         </div>
     </div>
 
+    <!-- Contenu -->
     <div class="auth-container">
+        <!-- Logo KermHosting -->
         <div class="logo-section">
             <div class="kerm-logo">
                 <i class="fas fa-cloud-upload-alt"></i>
@@ -593,6 +611,7 @@
                     </div>
                 </div>
 
+                <!-- Cloudflare Turnstile -->
                 <div class="form-group">
                     <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
                 </div>
@@ -602,7 +621,7 @@
                     <label for="rememberMe">Se souvenir de moi</label>
                 </div>
 
-                <button type="submit" class="auth-btn" id="submitBtn">
+                <button type="submit" class="auth-btn" id="submitBtn" disabled>
                     <span>Se connecter</span>
                 </button>
             </form>
@@ -651,6 +670,7 @@
         window.onTurnstileSuccess = function(token) {
             turnstileVerified = true;
             turnstileToken = token;
+            document.getElementById('submitBtn').disabled = false;
         };
 
         async function checkAlreadyLoggedIn() {
@@ -731,7 +751,7 @@
             const submitBtn = document.getElementById('submitBtn');
             
             if (!rawIdentifier) { showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur'); return; }
-            if (!turnstileVerified) { showMessage('error', 'Veuillez patienter, vérification en cours...'); return; }
+            if (!turnstileVerified) { showMessage('error', 'Veuillez compléter la vérification'); return; }
             
             showLoading('Connexion en cours...');
             submitBtn.disabled = true;
@@ -771,6 +791,7 @@
                         showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
                         turnstileVerified = false;
                         turnstileToken = null;
+                        document.getElementById('submitBtn').disabled = true;
                         if (window.turnstile) turnstile.reset();
                     }
                 }
