@@ -1,6 +1,7 @@
 // =============================================
 // index.js - KERMHOSTING BACKEND ULTIME - VERSION COMPLÈTE
 // AVEC WEBSOCKET TEMPS RÉEL, STATS, LOGOUT-ALL, BOTS ET HEROKU
+// SMTP POUR TOUS LES EMAILS
 // =============================================
 
 import express from 'express';
@@ -55,7 +56,7 @@ const fapshiHeaders = {
 };
 
 // =============================================
-// CONFIGURATION RESEND
+// CONFIGURATION RESEND (FALLBACK)
 // =============================================
 const RESEND_CONFIG = {
     apiKey: 're_H45dWC65_QJEweNhFFLL9qhsn9c46m2Hn',
@@ -66,7 +67,7 @@ const RESEND_CONFIG = {
 const resend = new Resend(RESEND_CONFIG.apiKey);
 
 // =============================================
-// CONFIGURATION SMTP POUR EMAILS EN MASSE
+// CONFIGURATION SMTP POUR TOUS LES EMAILS
 // =============================================
 const SMTP_CONFIG = {
     host: 'smtp.gmail.com',
@@ -100,16 +101,15 @@ function getSmtpTransporter() {
             if (error) {
                 console.error('❌ Erreur SMTP:', error);
             } else {
-                console.log('✅ SMTP prêt pour les emails en masse');
+                console.log('✅ SMTP prêt pour tous les emails');
             }
         });
     }
     return smtpTransporter;
 }
 
-// Fonction pour éviter les doublons d'emails
-function hasEmailBeenSentRecently(email, type, serverId, hours = 24) {
-    const key = `${email}:${type}:${serverId || ''}`;
+function hasEmailBeenSentRecently(email, type, identifier, hours = 24) {
+    const key = `${email}:${type}:${identifier || ''}`;
     const lastSent = lastEmailSentCache.get(key);
     if (lastSent) {
         const hoursSinceLast = (Date.now() - lastSent) / (1000 * 60 * 60);
@@ -121,36 +121,77 @@ function hasEmailBeenSentRecently(email, type, serverId, hours = 24) {
     return false;
 }
 
-async function sendMassEmailViaSMTP(to, subject, htmlContent) {
+// =============================================
+// FONCTION EMAIL UNIFIÉE (SMTP en priorité, Resend en fallback)
+// =============================================
+async function sendEmail(to, subject, htmlContent) {
     try {
         const transporter = getSmtpTransporter();
         
-        if (!transporter) {
-            console.error('❌ SMTP non configuré, utilisation de Resend comme fallback');
-            return await sendEmail(to, subject, htmlContent);
+        if (transporter) {
+            console.log(`📧 Tentative d'envoi via SMTP à ${to}...`);
+            
+            const mailOptions = {
+                from: SMTP_CONFIG.from,
+                to: to,
+                subject: subject,
+                html: htmlContent,
+                headers: {
+                    'X-Priority': '1',
+                    'List-Unsubscribe': `<${SITE_CONFIG.url}/unsubscribe>`
+                }
+            };
+            
+            const info = await transporter.sendMail(mailOptions);
+            console.log(`✅ Email envoyé à ${to} via SMTP`);
+            return { success: true, provider: 'SMTP', messageId: info.messageId };
         }
         
-        const mailOptions = {
-            from: SMTP_CONFIG.from,
-            to: to,
-            subject: subject,
-            html: htmlContent,
-            headers: {
-                'X-Priority': '1',
-                'X-MassMail': 'true',
-                'List-Unsubscribe': `<${SITE_CONFIG.url}/unsubscribe>`
-            }
-        };
+        console.log(`⚠️ SMTP non disponible, fallback vers Resend pour ${to}`);
         
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`✅ Email masse envoyé à ${to} via SMTP`);
-        return { success: true, messageId: info.messageId };
+        const { data, error } = await resend.emails.send({
+            from: RESEND_CONFIG.from,
+            to: [to],
+            subject: subject,
+            html: htmlContent
+        });
+
+        if (error) {
+            console.error('❌ Erreur Resend:', error);
+            return { success: false, error, provider: 'RESEND' };
+        }
+
+        console.log(`✅ Email envoyé à ${to} via Resend`);
+        return { success: true, provider: 'RESEND', data };
         
     } catch (error) {
-        console.error(`❌ Erreur SMTP pour ${to}:`, error);
-        console.log(`🔄 Fallback vers Resend pour ${to}`);
-        return await sendEmail(to, subject, htmlContent);
+        console.error(`❌ Erreur envoi email à ${to}:`, error);
+        
+        try {
+            const { data, error } = await resend.emails.send({
+                from: RESEND_CONFIG.from,
+                to: [to],
+                subject: subject,
+                html: htmlContent
+            });
+            if (!error) {
+                console.log(`✅ Email envoyé à ${to} via Resend (fallback d'urgence)`);
+                return { success: true, provider: 'RESEND_URGENT', data };
+            }
+        } catch (finalError) {
+            console.error(`❌ Échec total pour ${to}`);
+        }
+        
+        return { success: false, error: error.message };
     }
+}
+
+async function sendSupportEmail(to, subject, htmlContent) {
+    return sendEmail(to, subject, htmlContent);
+}
+
+async function sendMassEmailViaSMTP(to, subject, htmlContent) {
+    return await sendEmail(to, subject, htmlContent);
 }
 
 // =============================================
@@ -673,125 +714,8 @@ function validateUsername(username) {
 }
 
 // =============================================
-// ANTI-MULTI-COMPTES (NOUVEAU)
+// FONCTIONS EMAIL AVEC TEMPLATES
 // =============================================
-async function checkAndBanMultiAccounts(ip, userId, userEmail, username) {
-    // Vérifier si l'utilisateur est admin (exemption)
-    const { data: adminCheck } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-    
-    if (adminCheck && (adminCheck.role === 'admin' || adminCheck.role === 'superadmin')) {
-        return false; // Les admins sont exemptés
-    }
-    
-    // Chercher d'autres comptes avec la même IP
-    const { data: otherAccounts } = await supabase
-        .from('profiles')
-        .select('id, email, username')
-        .eq('registration_ip', ip)
-        .neq('id', userId);
-    
-    if (otherAccounts && otherAccounts.length > 0) {
-        // Bannir tous les comptes concernés
-        const allUserIds = [...otherAccounts.map(a => a.id), userId];
-        
-        for (const id of allUserIds) {
-            await supabase
-                .from('profiles')
-                .update({ 
-                    banned: true,
-                    ban_reason: 'Multi-comptes détectés (même IP)'
-                })
-                .eq('id', id);
-            
-            // Email à chaque compte banni
-            const { data: user } = await supabase
-                .from('profiles')
-                .select('email, username')
-                .eq('id', id)
-                .single();
-            
-            if (user) {
-                await sendEmail(
-                    user.email,
-                    '🔒 Compte suspendu - Multi-comptes',
-                    getMultiAccountBanHtml(user.username, ip)
-                );
-            }
-        }
-        
-        return true;
-    }
-    
-    return false;
-}
-
-function getMultiAccountBanHtml(username, ip) {
-    const content = `
-        <h2>🔒 Compte suspendu</h2>
-        <p>Bonjour ${username},</p>
-        <p>Votre compte a été suspendu car nous avons détecté plusieurs comptes créés depuis la même adresse IP.</p>
-        <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
-            <p><strong>Raison :</strong> Multi-comptes (IP: ${ip})</p>
-            <p>Pour faire réactiver votre compte, veuillez contacter un administrateur.</p>
-        </div>
-        <p><strong>Contact :</strong> ${SITE_CONFIG.supportEmail}</p>
-    `;
-    return getBaseEmailTemplate('🔒 Compte suspendu - Multi-comptes', content);
-}
-
-// =============================================
-// FONCTIONS EMAIL AVEC RESEND - VERSION OPTIMISÉE
-// =============================================
-async function sendEmail(to, subject, htmlContent) {
-    try {
-        console.log(`📧 Tentative d'envoi à ${to} via Resend...`);
-        
-        const { data, error } = await resend.emails.send({
-            from: RESEND_CONFIG.from,
-            to: [to],
-            subject: subject,
-            html: htmlContent
-        });
-
-        if (error) {
-            console.error('❌ Erreur Resend:', error);
-            return { success: false, error };
-        }
-
-        console.log(`✅ Email envoyé avec succès à ${to}`, data);
-        return { success: true, data };
-        
-    } catch (error) {
-        console.error('❌ Erreur envoi email:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-async function sendSupportEmail(to, subject, htmlContent) {
-    try {
-        const { data, error } = await resend.emails.send({
-            from: RESEND_CONFIG.supportFrom,
-            to: [to],
-            subject: subject,
-            html: htmlContent
-        });
-
-        if (error) {
-            console.error('❌ Erreur Resend support:', error);
-            return { success: false };
-        }
-
-        console.log(`✅ Email support envoyé à ${to}`);
-        return { success: true };
-    } catch (error) {
-        console.error('❌ Erreur email support:', error);
-        return { success: false };
-    }
-}
 
 // Template de base avec design élégant mais sobre
 function getBaseEmailTemplate(title, content) {
@@ -806,26 +730,26 @@ function getBaseEmailTemplate(title, content) {
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f4f4f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 580px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                 <tr>
-                    <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
-                        <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
-                        <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 30px;">
-                        ${content}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
-                        <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
-                        <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>`;
+        <tr>
+            <td style="padding: 30px 30px 20px 30px; text-align: center; border-bottom: 2px solid #f0f0f5;">
+                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #7C3AED; letter-spacing: -0.5px;">KermHosting</h1>
+                <p style="margin: 5px 0 0 0; color: #888; font-size: 14px; font-weight: 400;">Hébergement Node.js nouvelle génération</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px;">
+                ${content}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px 30px; text-align: center; background-color: #fafafc; border-radius: 0 0 12px 12px; border-top: 1px solid #eaeaf0;">
+                <p style="margin: 0; color: #666; font-size: 13px;">KermHosting · ${SITE_CONFIG.url}</p>
+                <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">© ${year} Tous droits réservés.</p>
+            </td>
+        </tr>
+    </table>
+    </body>
+    </html>`;
 }
 
 // 🔐 Template de vérification d'email
@@ -864,16 +788,16 @@ function getWelcomeEmailHtml(username) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🚀 Pour commencer :</h3>
             <table width="100%" cellpadding="0" cellspacing="0">
-                         <tr>
-                            <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
-                          </tr>
-                         <tr>
-                            <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
-                          </tr>
-                         <tr>
-                            <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
-                          </tr>
-                      </table>
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">1. Connectez-vous à votre tableau de bord</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">2. Créez votre premier serveur (offre gratuite 24h)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #555;">3. Déployez vos projets Node.js</td>
+                </tr>
+            </table>
         </div>
         
         <p style="text-align: center; margin: 30px 0 15px 0;">
@@ -921,27 +845,27 @@ function getPurchaseConfirmationHtml(username, plan, serverCredentials) {
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">🔑 Informations de connexion :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                         <tr>
-                            <td style="color: #666;">Nom du serveur :</td>
-                            <td style="font-weight: bold;">${serverCredentials.server_name}</td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">Nom d'utilisateur :</td>
-                            <td style="font-weight: bold;">${serverCredentials.username}</td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">Mot de passe :</td>
-                            <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">URL du panel :</td>
-                            <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">Identifiant :</td>
-                            <td style="font-family: monospace;">${serverCredentials.identifier}</td>
-                          </tr>
-                      </table>
+                <tr>
+                    <td style="color: #666;">Nom du serveur :</td>
+                    <td style="font-weight: bold;">${serverCredentials.server_name}</td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">Nom d'utilisateur :</td>
+                    <td style="font-weight: bold;">${serverCredentials.username}</td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">Mot de passe :</td>
+                    <td style="font-weight: bold; color: #7C3AED;">${serverCredentials.password}</td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">URL du panel :</td>
+                    <td><a href="${PTERODACTYL_CONFIG.url}" style="color: #7C3AED;">${PTERODACTYL_CONFIG.url}</a></td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">Identifiant :</td>
+                    <td style="font-family: monospace;">${serverCredentials.identifier}</td>
+                </tr>
+            </table>
         </div>
         
         <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
@@ -977,29 +901,29 @@ function getCoinsPurchaseHtml(username, pack, totalCoins, transactionId) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                     <tr>
-                        <td style="color: #666;">Pack acheté :</td>
-                        <td style="font-weight: bold;">${packName}</td>
-                      </tr>
-                     <tr>
-                        <td style="color: #666;">Coins de base :</td>
-                        <td style="font-weight: bold;">${packCoins}</td>
-                      </tr>
-                    ${packBonus > 0 ? `
-                     <tr>
-                        <td style="color: #666;">Bonus offert :</td>
-                        <td style="font-weight: bold; color: #27ae60;">+${packBonus} coins</td>
-                      </tr>
-                    ` : ''}
-                     <tr>
-                        <td style="color: #666;">Montant payé :</td>
-                        <td style="font-weight: bold;">${packPrice} FCFA</td>
-                      </tr>
-                     <tr>
-                        <td style="color: #666;">ID de transaction :</td>
-                        <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
-                      </tr>
-                  </table>
+            <tr>
+                <td style="color: #666;">Pack acheté :</td>
+                <td style="font-weight: bold;">${packName}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Coins de base :</td>
+                <td style="font-weight: bold;">${packCoins}</td>
+            </tr>
+            ${packBonus > 0 ? `
+            <tr>
+                <td style="color: #666;">Bonus offert :</td>
+                <td style="font-weight: bold; color: #27ae60;">+${packBonus} coins</td>
+            </tr>
+            ` : ''}
+            <tr>
+                <td style="color: #666;">Montant payé :</td>
+                <td style="font-weight: bold;">${packPrice} FCFA</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">ID de transaction :</td>
+                <td style="font-family: monospace; font-size: 12px;">${transactionId || 'N/A'}</td>
+            </tr>
+        </table>
         
         <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 12px 15px; margin: 25px 0;">
             <p style="margin: 0; color: #2e7d32; font-size: 14px;">✨ Vous pouvez maintenant utiliser vos coins pour créer ou renouveler des serveurs.</p>
@@ -1088,15 +1012,15 @@ function getServerExpiringHtml(username, server, daysLeft) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                     <tr>
-                        <td style="color: #666;">Date d'expiration :</td>
-                        <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-                      </tr>
-                     <td>
-                        <td style="color: #666;">Prix de renouvellement :</td>
-                        <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-                      </tr>
-                  </table>
+            <tr>
+                <td style="color: #666;">Date d'expiration :</td>
+                <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Prix de renouvellement :</td>
+                <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
+            </tr>
+        </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -1107,7 +1031,7 @@ function getServerExpiringHtml(username, server, daysLeft) {
     return getBaseEmailTemplate('⚠️ Alerte expiration', content);
 }
 
-// 🔴 Template de suspension de serveur (J0)
+// 🔴 Template de suspension de serveur
 function getServerSuspendedHtml(username, server) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🔴 Votre serveur a été suspendu</h2>
@@ -1121,19 +1045,19 @@ function getServerSuspendedHtml(username, server) {
         </div>
         
         <table width="100%" cellpadding="8" cellspacing="0" style="margin: 20px 0;">
-                     <tr>
-                        <td style="color: #666;">Date d'expiration :</td>
-                        <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
-                      </tr>
-                     <tr>
-                        <td style="color: #666;">Date limite de renouvellement :</td>
-                        <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
-                      </tr>
-                     <tr>
-                        <td style="color: #666;">Prix de renouvellement :</td>
-                        <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
-                      </tr>
-                  </table>
+            <tr>
+                <td style="color: #666;">Date d'expiration :</td>
+                <td style="font-weight: bold;">${new Date(server.expires_at).toLocaleDateString('fr-FR')}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Date limite de renouvellement :</td>
+                <td style="font-weight: bold; color: #e67e22;">${new Date(new Date(server.expires_at).getTime() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}</td>
+            </tr>
+            <tr>
+                <td style="color: #666;">Prix de renouvellement :</td>
+                <td style="font-weight: bold;">${PLANS[server.server_type]?.price_fcfa || 0} FCFA / ${Math.floor((PLANS[server.server_type]?.price_fcfa || 0) / 5)} coins</td>
+            </tr>
+        </table>
         
         <div style="text-align: center; margin: 30px 0 15px 0;">
             <a href="${SITE_CONFIG.url}/dashboard" style="display: inline-block; background-color: #7C3AED; color: white; padding: 14px 32px; text-decoration: none; border-radius: 50px; font-weight: 600;">Renouveler maintenant</a>
@@ -1142,7 +1066,7 @@ function getServerSuspendedHtml(username, server) {
     return getBaseEmailTemplate('🔴 Serveur suspendu', content);
 }
 
-// 🗑️ Template de suppression de serveur (J+3)
+// 🗑️ Template de suppression de serveur
 function getServerDeletedHtml(username, server) {
     const content = `
         <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">🗑️ Votre serveur a été supprimé</h2>
@@ -1313,19 +1237,19 @@ function getMinipayPendingHtml(username, pack, convertedAmount, currencySymbol) 
         <div style="background-color: #f0f7ff; border-radius: 12px; padding: 20px; margin: 25px 0;">
             <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">📋 Récapitulatif :</h3>
             <table width="100%" cellpadding="8" cellspacing="0">
-                         <td>
-                            <td style="color: #666;">Pack :</td>
-                            <td style="font-weight: bold;">${pack.name}</td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">Coins :</td>
-                            <td style="font-weight: bold;">${pack.coins + (pack.bonus || 0)} coins</td>
-                          </tr>
-                         <tr>
-                            <td style="color: #666;">Montant :</td>
-                            <td style="font-weight: bold;">${convertedAmount} ${currencySymbol}</td>
-                          </tr>
-                      </table>
+                <tr>
+                    <td style="color: #666;">Pack :</td>
+                    <td style="font-weight: bold;">${pack.name}</td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">Coins :</td>
+                    <td style="font-weight: bold;">${pack.coins + (pack.bonus || 0)} coins</td>
+                </tr>
+                <tr>
+                    <td style="color: #666;">Montant :</td>
+                    <td style="font-weight: bold;">${convertedAmount} ${currencySymbol}</td>
+                </tr>
+            </table>
         </div>
         
         <div style="background-color: #fff9e6; border-left: 4px solid #fbbf24; padding: 12px 15px; margin: 25px 0;">
@@ -1915,7 +1839,6 @@ const authenticateToken = async (req, res, next) => {
             return res.status(403).json({ success: false, error: 'Compte suspendu', code: 'ACCOUNT_BANNED' });
         }
 
-        // Vérifier si l'utilisateur a fait un logout-all après l'émission du token
         if (user.last_logout_all) {
             const tokenIssuedAt = decoded.iat;
             const lastLogoutAll = new Date(user.last_logout_all).getTime() / 1000;
@@ -2909,7 +2832,6 @@ async function processAutoRenewBeforeExpiry(server) {
             return false;
         }
 
-        // Vérifier si un email a déjà été envoyé récemment pour ce serveur
         if (hasEmailBeenSentRecently(user.email, 'auto_renew', server.id, 24)) {
             console.log(`⏭️ Skip auto-renew email pour ${server.server_name} - déjà envoyé récemment`);
         } else {
@@ -3002,7 +2924,6 @@ async function processAutoRenewBeforeExpiry(server) {
                     created_at: new Date().toISOString()
                 }]);
 
-            // Vérifier avant d'envoyer l'email
             if (!hasEmailBeenSentRecently(user.email, 'auto_renew_success', server.id, 1)) {
                 const html = `
                     <h2 style="color: #333; margin: 0 0 15px 0;">🔄 Auto-renouvellement réussi</h2>
@@ -3054,7 +2975,6 @@ async function processAutoRenewBeforeExpiry(server) {
                     description: `Échec auto-renouvellement (J-1) du serveur "${server.server_name}" : coins insuffisants (besoin: ${coinsNeeded}, disponible: ${user.coins})`
                 }]);
 
-            // Vérifier avant d'envoyer l'email
             if (!hasEmailBeenSentRecently(user.email, 'auto_renew_failed', server.id, 24)) {
                 const html = `
                     <h2 style="color: #333; margin: 0 0 15px 0;">⚠️ Auto-renouvellement échoué</h2>
@@ -3416,7 +3336,7 @@ app.get('/api/servers/:serverId/allocations', authenticateToken, async (req, res
 });
 
 // =============================================
-// CRON JOB UNIQUE - TOUTES LES 15 SECONDES
+// CRON JOB SERVEURS - TOUTES LES 15 SECONDES
 // =============================================
 setInterval(async () => {
     console.log(`🔄 Vérification des serveurs - ${new Date().toISOString()}`);
@@ -3560,6 +3480,301 @@ setInterval(async () => {
     }
     
 }, 15000);
+
+// =============================================
+// CRON JOB BOTS - TOUTES LES 30 SECONDES
+// =============================================
+setInterval(async () => {
+    console.log(`🤖 Vérification des bots - ${new Date().toISOString()}`);
+    
+    const now = new Date();
+    
+    // 1. Bots expirés : suspension
+    const { data: expiredBots } = await supabase
+        .from('user_bots')
+        .select('*, profiles(*)')
+        .lt('expires_at', now.toISOString())
+        .eq('status', 'active');
+
+    for (const bot of expiredBots || []) {
+        console.log(`🔴 Suspension bot expiré: ${bot.heroku_app_name}`);
+        
+        // Suspendre sur Heroku
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                try {
+                    await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                        updates: [{ type: 'web', quantity: 0 }]
+                    });
+                } catch (herokuError) {
+                    console.log(`⚠️ Erreur suspension Heroku: ${herokuError.message}`);
+                }
+            }
+        }
+        
+        await supabase
+            .from('user_bots')
+            .update({ status: 'suspended' })
+            .eq('id', bot.id);
+        
+        if (!hasEmailBeenSentRecently(bot.profiles.email, 'bot_suspended', bot.id, 24)) {
+            const suspensionHtml = `
+                <h2>🔴 Votre bot a été suspendu</h2>
+                <p>Bonjour ${bot.profiles.username},</p>
+                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été suspendu car il a atteint sa date d'expiration.</p>
+                <div style="background: #fee9e6; padding: 15px; border-left: 4px solid #f44336;">
+                    <p><strong>Date d'expiration :</strong> ${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</p>
+                    <p>Pour réactiver votre bot, veuillez le renouveler depuis votre tableau de bord.</p>
+                </div>
+                <a href="${SITE_CONFIG.url}/my-bots">Gérer mes bots</a>
+            `;
+            await sendEmail(bot.profiles.email, '🔴 Votre bot a été suspendu', getBaseEmailTemplate('Bot suspendu', suspensionHtml));
+        }
+    }
+    
+    // 2. Bots suspendus depuis plus de 3 jours : suppression définitive
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    
+    const { data: botsToDelete } = await supabase
+        .from('user_bots')
+        .select('*, profiles(*)')
+        .eq('status', 'suspended')
+        .lt('expires_at', threeDaysAgo.toISOString());
+
+    for (const bot of botsToDelete || []) {
+        console.log(`🗑️ Suppression définitive bot: ${bot.heroku_app_name}`);
+        
+        // Supprimer sur Heroku
+        if (bot.heroku_account_id) {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount && bot.heroku_app_name) {
+                try {
+                    await deleteHerokuApp(herokuAccount.api_key, bot.heroku_app_name);
+                    await releaseHerokuAccount(bot.heroku_account_id);
+                } catch (herokuError) {
+                    console.log(`⚠️ Erreur suppression Heroku: ${herokuError.message}`);
+                }
+            }
+        }
+        
+        await supabase
+            .from('user_bots')
+            .delete()
+            .eq('id', bot.id);
+        
+        if (!hasEmailBeenSentRecently(bot.profiles.email, 'bot_deleted', bot.id, 24)) {
+            const deletionHtml = `
+                <h2>🗑️ Votre bot a été supprimé définitivement</h2>
+                <p>Bonjour ${bot.profiles.username},</p>
+                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été définitivement supprimé car il n'a pas été renouvelé dans les 3 jours suivant son expiration.</p>
+                <p>Toutes les données associées à ce bot ont été effacées.</p>
+                <a href="${SITE_CONFIG.url}/bot">Déployer un nouveau bot</a>
+            `;
+            await sendEmail(bot.profiles.email, '🗑️ Votre bot a été supprimé', getBaseEmailTemplate('Bot supprimé', deletionHtml));
+        }
+    }
+    
+    // 3. Notification J-3 pour bots actifs
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    
+    const { data: expiringBots } = await supabase
+        .from('user_bots')
+        .select('*, profiles(*)')
+        .lte('expires_at', threeDaysFromNow.toISOString())
+        .gt('expires_at', now.toISOString())
+        .eq('warning_sent', false)
+        .eq('status', 'active');
+
+    for (const bot of expiringBots || []) {
+        const daysLeft = Math.ceil((new Date(bot.expires_at) - now) / (1000 * 60 * 60 * 24));
+        if (!hasEmailBeenSentRecently(bot.profiles.email, 'bot_expiring', bot.id, 72)) {
+            console.log(`📧 Envoi notification expiration bot J-${daysLeft}: ${bot.heroku_app_name}`);
+            
+            const expiringHtml = `
+                <h2>⚠️ Votre bot expire bientôt</h2>
+                <p>Bonjour ${bot.profiles.username},</p>
+                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> expirera dans <strong>${daysLeft} jours</strong>.</p>
+                <div style="background: #fff9e6; padding: 15px; border-left: 4px solid #fbbf24;">
+                    <p><strong>Action requise :</strong> Pour éviter la suspension de votre bot, veuillez le renouveler avant le <strong>${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
+                </div>
+                <a href="${SITE_CONFIG.url}/my-bots">Renouveler maintenant</a>
+            `;
+            await sendEmail(bot.profiles.email, '⚠️ Votre bot expire bientôt', getBaseEmailTemplate('Expiration bot', expiringHtml));
+            
+            await supabase
+                .from('user_bots')
+                .update({ warning_sent: true })
+                .eq('id', bot.id);
+        }
+    }
+    
+    // 4. AUTO-RENOUVELLEMENT BOTS (J-1)
+    const oneDayFromNow = new Date();
+    oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
+    
+    const { data: botsToAutoRenew } = await supabase
+        .from('user_bots')
+        .select('*, profiles(*)')
+        .eq('auto_renew', true)
+        .eq('status', 'active')
+        .lte('expires_at', oneDayFromNow.toISOString())
+        .gt('expires_at', now.toISOString());
+
+    for (const bot of botsToAutoRenew || []) {
+        console.log(`🔄 Auto-renouvellement bot: ${bot.heroku_app_name}`);
+        
+        // Récupérer le template pour connaître le prix
+        const { data: template } = await supabase
+            .from('bot_templates')
+            .select('price_weekly')
+            .eq('id', bot.template_id)
+            .single();
+        
+        let coinsNeeded = template?.price_weekly || 100;
+        if (bot.duration_mode === 'monthly') {
+            coinsNeeded *= 4;
+        }
+        
+        const { data: user } = await supabase
+            .from('profiles')
+            .select('coins, username, email')
+            .eq('id', bot.user_id)
+            .single();
+        
+        if (user && user.coins >= coinsNeeded) {
+            // Déduire les coins
+            await supabase
+                .from('profiles')
+                .update({ coins: user.coins - coinsNeeded })
+                .eq('id', bot.user_id);
+            
+            // Calculer nouvelle expiration
+            const currentExpiry = new Date(bot.expires_at);
+            const nowDate = new Date();
+            let newExpiry;
+            
+            if (currentExpiry < nowDate) {
+                newExpiry = new Date();
+            } else {
+                newExpiry = new Date(currentExpiry);
+            }
+            
+            const daysToAdd = bot.duration_mode === 'monthly' ? 28 : 7;
+            newExpiry.setDate(newExpiry.getDate() + daysToAdd);
+            
+            // Mettre à jour le bot
+            await supabase
+                .from('user_bots')
+                .update({
+                    expires_at: newExpiry.toISOString(),
+                    warning_sent: false,
+                    auto_renew_attempts: 0,
+                    auto_renew_error: null,
+                    status: 'active'
+                })
+                .eq('id', bot.id);
+            
+            // Réactiver sur Heroku si suspendu
+            if (bot.heroku_account_id && bot.heroku_app_name) {
+                const { data: herokuAccount } = await supabase
+                    .from('heroku_accounts')
+                    .select('api_key')
+                    .eq('id', bot.heroku_account_id)
+                    .single();
+                
+                if (herokuAccount) {
+                    try {
+                        await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                            updates: [{ type: 'web', quantity: 1 }]
+                        });
+                    } catch (herokuError) {
+                        console.log(`⚠️ Erreur réactivation Heroku: ${herokuError.message}`);
+                    }
+                }
+            }
+            
+            // Log de succès
+            await supabase
+                .from('bot_deployment_logs')
+                .insert([{
+                    bot_id: bot.id,
+                    action: 'auto_renew_success',
+                    status: 'success',
+                    message: `Auto-renouvellement réussi (${coinsNeeded} coins) - nouvelle expiration: ${newExpiry.toLocaleDateString('fr-FR')}`
+                }]);
+            
+            // Email de confirmation
+            if (!hasEmailBeenSentRecently(user.email, 'bot_auto_renew_success', bot.id, 1)) {
+                const successHtml = `
+                    <h2>🔄 Auto-renouvellement réussi</h2>
+                    <p>Bonjour ${user.username},</p>
+                    <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été automatiquement renouvelé.</p>
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                        <p><strong>📅 Nouvelle expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+                        <p><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
+                        <p><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
+                    </div>
+                `;
+                await sendEmail(user.email, '🔄 Auto-renouvellement bot réussi', getBaseEmailTemplate('Auto-renouvellement réussi', successHtml));
+            }
+            
+            console.log(`✅ Auto-renouvellement bot réussi: ${bot.heroku_app_name}`);
+            
+        } else {
+            // Coins insuffisants
+            const missingCoins = coinsNeeded - (user?.coins || 0);
+            
+            await supabase
+                .from('user_bots')
+                .update({
+                    auto_renew_error: `Auto-renouvellement échoué: ${missingCoins} coins manquants`,
+                    auto_renew: false
+                })
+                .eq('id', bot.id);
+            
+            await supabase
+                .from('bot_deployment_logs')
+                .insert([{
+                    bot_id: bot.id,
+                    action: 'auto_renew_failed',
+                    status: 'failed',
+                    message: `Coins insuffisants: besoin ${coinsNeeded}, disponible ${user?.coins || 0}`
+                }]);
+            
+            if (user && !hasEmailBeenSentRecently(user.email, 'bot_auto_renew_failed', bot.id, 24)) {
+                const failedHtml = `
+                    <h2>⚠️ Auto-renouvellement bot échoué</h2>
+                    <p>Bonjour ${user.username},</p>
+                    <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> devait être renouvelé, mais vous n'avez pas assez de coins.</p>
+                    <div style="background: #fff9e6; padding: 15px; border-left: 4px solid #fbbf24;">
+                        <p><strong>💰 Coins nécessaires :</strong> ${coinsNeeded}</p>
+                        <p><strong>💳 Votre solde :</strong> ${user.coins}</p>
+                        <p><strong>⚠️ Manque :</strong> ${missingCoins} coins</p>
+                    </div>
+                    <p>Pour éviter la suspension de votre bot, rechargez vos coins avant le <strong>${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
+                    <a href="${SITE_CONFIG.url}/buy-coins">Acheter des coins</a>
+                `;
+                await sendEmail(user.email, '⚠️ Auto-renouvellement bot échoué', getBaseEmailTemplate('Auto-renouvellement échoué', failedHtml));
+            }
+            
+            console.log(`❌ Auto-renouvellement bot échoué (coins insuffisants): ${bot.heroku_app_name}`);
+        }
+    }
+    
+}, 30000);
 
 // =============================================
 // WEBSOCKET AMÉLIORÉ AVEC STATS TEMPS RÉEL
@@ -3790,7 +4005,7 @@ wss.on('connection', (ws, req) => {
 });
 
 // =============================================
-// ROUTES AUTH
+// ROUTES AUTH (SANS ANTI-MULTI-COMPTES)
 // =============================================
 
 app.post('/api/register', async (req, res) => {
@@ -3862,14 +4077,7 @@ app.post('/api/register', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Erreur création compte', code: 'REGISTER_ERROR' });
         }
 
-        const banned = await checkAndBanMultiAccounts(clientIp, newUser.id, email, username);
-        if (banned) {
-            return res.status(403).json({ 
-                success: false, 
-                error: 'Compte banni pour multi-comptes. Contactez le support.',
-                code: 'MULTI_ACCOUNT_BANNED'
-            });
-        }
+        // ANTI-MULTI-COMPTES SUPPRIMÉ - Plus de bannissement automatique
 
         await sendEmail(
             email,
@@ -6324,7 +6532,6 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
             const pteroId = pteroUser.attributes.id.toString();
             const pteroUsername = pteroUser.attributes.username;
 
-            // Lié à KermHosting → CONSERVÉ
             if (linkedPteroIds.has(pteroId)) {
                 stats.linked++;
                 console.log(`✅ Conservé (lié): ${pteroUsername}`);
@@ -6332,22 +6539,18 @@ app.post('/api/admin/pterodactyl/cleanup-users', authenticateToken, requireSuper
             }
 
             try {
-                // Vérifier les serveurs de l'utilisateur
                 const userDetails = await callPterodactylAPI(`/api/application/users/${pteroId}`);
                 const servers = userDetails.attributes.relationships?.servers?.data || [];
                 
                 if (servers.length > 0) {
-                    // A des serveurs → CONSERVÉ
                     stats.has_servers++;
                     console.log(`⚠️ Conservé (${servers.length} serveur(s)): ${pteroUsername}`);
                 } else {
-                    // Sans serveur → SUPPRIMÉ
                     try {
                         await callPterodactylAPI(`/api/application/users/${pteroId}`, 'DELETE');
                         stats.deleted++;
                         console.log(`🗑️ Supprimé: ${pteroUsername}`);
                     } catch (deleteError) {
-                        // Gérer l'erreur "Cannot delete a user with active servers"
                         if (deleteError.response?.data?.errors?.[0]?.detail?.includes('active servers')) {
                             stats.has_servers++;
                             console.log(`⚠️ Conservé (a des serveurs actifs): ${pteroUsername}`);
@@ -7680,7 +7883,7 @@ app.post('/api/admin/servers/:serverId/unsuspend', authenticateToken, requireAdm
 });
 
 // =============================================
-// FONCTIONS HEROKU - VERSION CORRIGÉE
+// FONCTIONS HEROKU
 // =============================================
 
 async function callHerokuAPI(apiKey, endpoint, method = 'GET', data = null) {
@@ -7779,7 +7982,6 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
     try {
         console.log(`📋 Récupération logs pour ${appName}...`);
         
-        // Créer une session de logs
         const session = await callHerokuAPI(apiKey, `/apps/${appName}/log-sessions`, 'POST', {
             lines: Math.min(lines, 1500),
             tail: false
@@ -7787,7 +7989,6 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
         
         console.log(`✅ Session logs créée: ${session.logplex_url}`);
         
-        // Récupérer les logs depuis l'URL Logplex
         if (session && session.logplex_url) {
             const logsResponse = await axios.get(session.logplex_url, {
                 timeout: 10000,
@@ -7795,13 +7996,11 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
             });
             
             if (logsResponse.data) {
-                // Parser les logs (format Logplex)
                 const rawLogs = logsResponse.data.split('\n');
                 const formattedLogs = [];
                 
                 for (const line of rawLogs) {
                     if (line.trim()) {
-                        // Format Logplex: "2025-01-01T00:00:00.000000+00:00 heroku[web.1]: message"
                         const match = line.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+)\+\d{2}:\d{2}\s+(\w+)\[(\w+\.?\d*)\]:\s*(.*)$/);
                         if (match) {
                             formattedLogs.push({
@@ -7819,7 +8018,6 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
                     }
                 }
                 
-                // Retourner les logs formatés
                 const lines = formattedLogs.map(log => {
                     const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '';
                     return `[${time}] ${log.message}`;
@@ -7835,7 +8033,6 @@ async function getHerokuAppLogs(apiKey, appName, lines = 100) {
     } catch (error) {
         console.error('❌ Erreur getHerokuAppLogs:', error.message);
         
-        // Retourner des logs simulés en cas d'erreur
         return { 
             lines: [
                 `[INFO] Impossible de récupérer les logs en temps réel`,
@@ -7861,7 +8058,6 @@ async function getAvailableHerokuAccount() {
             return null;
         }
         
-        // Filtrer ceux qui ont de la place (côté JS, pas SQL)
         const available = accounts.filter(acc => (acc.current_bots || 0) < (acc.max_bots || 0));
         
         if (available.length === 0) {
@@ -7869,7 +8065,6 @@ async function getAvailableHerokuAccount() {
             return null;
         }
         
-        // Trier par last_used_at (le plus ancien d'abord)
         available.sort((a, b) => {
             if (!a.last_used_at) return -1;
             if (!b.last_used_at) return 1;
@@ -7878,7 +8073,6 @@ async function getAvailableHerokuAccount() {
         
         const selected = available[0];
         
-        // Incrémenter current_bots
         await supabase
             .from('heroku_accounts')
             .update({ 
@@ -7898,7 +8092,6 @@ async function getAvailableHerokuAccount() {
 
 async function releaseHerokuAccount(accountId) {
     try {
-        // Récupérer la valeur actuelle
         const { data: account, error } = await supabase
             .from('heroku_accounts')
             .select('current_bots')
@@ -7950,152 +8143,9 @@ async function validateKhJsonFromRepo(repoUrl) {
     }
 }
 
-async function processBotAutoRenew(bot) {
-    try {
-        const template = await supabase
-            .from('bot_templates')
-            .select('price_weekly')
-            .eq('id', bot.template_id)
-            .single();
-        
-        let coinsNeeded = template.data?.price_weekly || 100;
-        if (bot.duration_mode === 'monthly') {
-            coinsNeeded *= 4;
-        }
-        
-        const { data: user, error: userError } = await supabase
-            .from('profiles')
-            .select('coins, username, email')
-            .eq('id', bot.user_id)
-            .single();
-        
-        if (userError || !user) return false;
-        
-        if (hasEmailBeenSentRecently(user.email, 'bot_auto_renew', bot.id, 24)) {
-            console.log(`⏭️ Skip auto-renew email pour bot ${bot.id}`);
-            return false;
-        }
-        
-        await supabase
-            .from('bot_deployment_logs')
-            .insert([{
-                bot_id: bot.id,
-                action: 'auto_renew_attempt',
-                status: 'pending',
-                message: `Tentative auto-renouvellement (${bot.duration_mode}) - besoin: ${coinsNeeded} coins`
-            }]);
-        
-        if (user.coins >= coinsNeeded) {
-            await supabase
-                .from('profiles')
-                .update({ coins: user.coins - coinsNeeded })
-                .eq('id', bot.user_id);
-            
-            const currentExpiry = new Date(bot.expires_at);
-            const now = new Date();
-            let newExpiry;
-            
-            if (currentExpiry < now) {
-                newExpiry = new Date();
-            } else {
-                newExpiry = new Date(currentExpiry);
-            }
-            
-            const daysToAdd = bot.duration_mode === 'monthly' ? 28 : 7;
-            newExpiry.setDate(newExpiry.getDate() + daysToAdd);
-            
-            await supabase
-                .from('user_bots')
-                .update({
-                    expires_at: newExpiry.toISOString(),
-                    warning_sent: false,
-                    auto_renew_attempts: 0,
-                    auto_renew_error: null,
-                    status: 'active'
-                })
-                .eq('id', bot.id);
-            
-            const transactionId = generateTransactionId();
-            await supabase
-                .from('transactions')
-                .insert([{
-                    id: transactionId,
-                    user_id: bot.user_id,
-                    type: 'bot_renewal',
-                    amount: coinsNeeded,
-                    currency: 'COINS',
-                    status: 'completed',
-                    completed_at: new Date().toISOString(),
-                    metadata: { 
-                        bot_id: bot.id,
-                        bot_name: bot.heroku_app_name,
-                        duration_mode: bot.duration_mode,
-                        auto_renew: true
-                    }
-                }]);
-            
-            await supabase
-                .from('bot_deployment_logs')
-                .insert([{
-                    bot_id: bot.id,
-                    action: 'auto_renew_success',
-                    status: 'success',
-                    message: `Auto-renouvellement réussi (${coinsNeeded} coins) - nouvelle expiration: ${newExpiry.toLocaleDateString('fr-FR')}`
-                }]);
-            
-            const html = `
-                <h2>🔄 Auto-renouvellement réussi</h2>
-                <p>Bonjour ${user.username},</p>
-                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été automatiquement renouvelé.</p>
-                <div style="background: #f0f7ff; padding: 15px; border-radius: 8px;">
-                    <p><strong>📅 Nouvelle expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
-                    <p><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
-                    <p><strong>💳 Solde restant :</strong> ${user.coins - coinsNeeded} coins</p>
-                </div>
-            `;
-            await sendEmail(user.email, '🔄 Auto-renouvellement bot réussi', getBaseEmailTemplate('Auto-renouvellement', html));
-            
-            return true;
-        } else {
-            const missingCoins = coinsNeeded - user.coins;
-            
-            await supabase
-                .from('user_bots')
-                .update({
-                    auto_renew_error: `Auto-renouvellement échoué: ${missingCoins} coins manquants`,
-                    auto_renew: false
-                })
-                .eq('id', bot.id);
-            
-            await supabase
-                .from('bot_deployment_logs')
-                .insert([{
-                    bot_id: bot.id,
-                    action: 'auto_renew_failed',
-                    status: 'failed',
-                    message: `Coins insuffisants: besoin ${coinsNeeded}, disponible ${user.coins}`
-                }]);
-            
-            const html = `
-                <h2>⚠️ Auto-renouvellement échoué</h2>
-                <p>Bonjour ${user.username},</p>
-                <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> devait être renouvelé, mais vous n'avez pas assez de coins.</p>
-                <div style="background: #fff9e6; padding: 15px; border-left: 4px solid #fbbf24;">
-                    <p><strong>💰 Coins nécessaires :</strong> ${coinsNeeded}</p>
-                    <p><strong>💳 Votre solde :</strong> ${user.coins}</p>
-                    <p><strong>⚠️ Manque :</strong> ${missingCoins} coins</p>
-                </div>
-                <p>Pour éviter la suspension de votre bot, rechargez vos coins avant le <strong>${new Date(bot.expires_at).toLocaleDateString('fr-FR')}</strong>.</p>
-            `;
-            await sendEmail(user.email, '⚠️ Auto-renouvellement bot échoué', getBaseEmailTemplate('Auto-renouvellement échoué', html));
-            
-            return false;
-        }
-    } catch (error) {
-        console.error(`❌ Erreur auto-renew bot ${bot.id}:`, error);
-        return false;
-    }
-}
+// =============================================
+// ROUTES BOTS (MARKETPLACE)
+// =============================================
 
 app.get('/api/bots/templates', authenticateToken, async (req, res) => {
     try {
@@ -8107,7 +8157,20 @@ app.get('/api/bots/templates', authenticateToken, async (req, res) => {
         
         if (error) throw error;
         
-        res.json({ success: true, templates: templates || [] });
+        // Ajouter total_deploys pour chaque template
+        const templatesWithStats = await Promise.all((templates || []).map(async (template) => {
+            const { count: totalDeploys } = await supabase
+                .from('user_bots')
+                .select('*', { count: 'exact', head: true })
+                .eq('template_id', template.id);
+            
+            return {
+                ...template,
+                total_deploys: totalDeploys || 0
+            };
+        }));
+        
+        res.json({ success: true, templates: templatesWithStats || [] });
     } catch (error) {
         console.error('❌ Erreur récupération templates:', error);
         res.status(500).json({ success: false, error: 'Erreur serveur' });
@@ -8143,7 +8206,6 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Nom et repo requis' });
         }
         
-        // 1. Vérifier le kh.json
         const validation = await validateKhJsonFromRepo(repo_url);
         if (!validation.valid) {
             return res.status(400).json({ 
@@ -8153,7 +8215,6 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             });
         }
         
-        // 2. Vérifier si un template actif existe déjà (status différent de 'deleted')
         const { data: existingTemplate } = await supabase
             .from('bot_templates')
             .select('id, status')
@@ -8168,7 +8229,6 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             });
         }
         
-        // 3. Vérifier si une soumission en attente ou approuvée existe
         const { data: existingSubmission } = await supabase
             .from('bot_submissions')
             .select('id, status')
@@ -8192,7 +8252,6 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             }
         }
         
-        // 4. Vérifier si une soumission rejetée existe (on la réactive)
         const { data: rejectedSubmission } = await supabase
             .from('bot_submissions')
             .select('id')
@@ -8232,7 +8291,6 @@ app.post('/api/bots/submit', authenticateToken, async (req, res) => {
             }
         }
         
-        // 5. Créer une nouvelle soumission
         const { data: submission, error: insertError } = await supabase
             .from('bot_submissions')
             .insert([{
@@ -8324,7 +8382,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
     try {
         const { template_id, app_name, duration_mode, env_vars } = req.body;
         
-        // 1. Récupérer le template
         const { data: template, error: templateError } = await supabase
             .from('bot_templates')
             .select('*')
@@ -8336,7 +8393,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             return res.status(404).json({ success: false, error: 'Template non trouvé ou non approuvé' });
         }
         
-        // 2. Vérifier le quota de l'utilisateur
         if (req.user.total_bot_deploys >= req.user.bot_quota) {
             return res.status(400).json({ 
                 success: false, 
@@ -8344,7 +8400,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             });
         }
         
-        // 3. ✅ CALCULER LE PRIX ET VÉRIFIER LES COINS
         let coinsNeeded = template.price_weekly;
         let daysToAdd = 7;
         
@@ -8353,7 +8408,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             daysToAdd = 28;
         }
         
-        // ✅ VÉRIFICATION CRUCIALE : L'utilisateur a-t-il assez de coins ?
         if (req.user.coins < coinsNeeded) {
             return res.status(400).json({ 
                 success: false, 
@@ -8366,7 +8420,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             });
         }
         
-        // 4. Trouver un compte Heroku disponible
         const herokuAccount = await getAvailableHerokuAccount();
         if (!herokuAccount) {
             return res.status(503).json({ 
@@ -8375,14 +8428,11 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             });
         }
         
-        // 5. Nettoyer le nom de l'application
         const cleanAppName = app_name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
         
-        // 6. Calculer la date d'expiration
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + daysToAdd);
         
-        // 7. Créer l'enregistrement du bot (statut 'deploying')
         const { data: bot, error: botError } = await supabase
             .from('user_bots')
             .insert([{
@@ -8404,7 +8454,6 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
             throw botError;
         }
         
-        // 8. Log de début de déploiement
         await supabase
             .from('bot_deployment_logs')
             .insert([{
@@ -8414,10 +8463,8 @@ app.post('/api/bots/deploy', authenticateToken, requireEmailVerification, async 
                 message: `Déploiement en cours... ${coinsNeeded} coins seront déduits.`
             }]);
         
-        // 9. Lancer le déploiement en arrière-plan (avec l'ID utilisateur)
         deployBotAsync(bot.id, template, herokuAccount, cleanAppName, env_vars, coinsNeeded, req.user.id);
         
-        // 10. Réponse immédiate à l'utilisateur
         res.json({ 
             success: true, 
             message: `Déploiement initié ! ${coinsNeeded} coins seront déduits de votre solde une fois terminé.`,
@@ -8438,16 +8485,12 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
     try {
         console.log(`🚀 Déploiement bot ${botId}...`);
 
-        // 1. Créer l'app Heroku
         const herokuApp = await createHerokuApp(herokuAccount.api_key, appName, template.repo_url);
         
-        // 2. Configurer les variables d'environnement
         await setHerokuEnvVars(herokuAccount.api_key, herokuApp.name, envVars);
         
-        // 3. Déclencher le déploiement
         await deployHerokuApp(herokuAccount.api_key, herokuApp.name, template.repo_url);
         
-        // 4. Mettre à jour user_bots
         await supabase
             .from('user_bots')
             .update({
@@ -8459,11 +8502,10 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
             })
             .eq('id', botId);
         
-        // ✅ 5. DÉDUIRE LES COINS DU BON UTILISATEUR (celui qui déploie)
         const { data: user } = await supabase
             .from('profiles')
             .select('coins, username, email')
-            .eq('id', userId)  // ← CORRECTION : userId passé en paramètre
+            .eq('id', userId)
             .single();
         
         if (user) {
@@ -8473,7 +8515,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
                 .update({ coins: newBalance })
                 .eq('id', userId);
             
-            // ✅ CRÉER UNE TRANSACTION
             await supabase
                 .from('transactions')
                 .insert([{
@@ -8494,7 +8535,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
             console.log(`✅ ${coinsNeeded} coins déduits de ${user.username}, nouveau solde: ${newBalance}`);
         }
         
-        // ✅ 6. INCRÉMENTER LE COMPTEUR DE DÉPLOIEMENTS DU TEMPLATE
         const currentDeploys = template.total_deploys || 0;
         await supabase
             .from('bot_templates')
@@ -8504,7 +8544,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
             })
             .eq('id', template.id);
         
-        // 7. Log de succès
         await supabase
             .from('bot_deployment_logs')
             .insert([{
@@ -8514,7 +8553,6 @@ async function deployBotAsync(botId, template, herokuAccount, appName, envVars, 
                 message: `Bot déployé sur ${herokuApp.name}.herokuapp.com`
             }]);
         
-        // 8. ✅ NOTIFICATION PAR EMAIL
         if (user && user.email) {
             const successHtml = `
                 <h2>✅ Bot déployé avec succès !</h2>
@@ -9021,6 +9059,10 @@ app.delete('/api/bots/my-bots/:botId', authenticateToken, async (req, res) => {
     }
 });
 
+// =============================================
+// ROUTES ADMIN BOTS
+// =============================================
+
 app.get('/api/admin/bot-submissions', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { data: submissions, error } = await supabase
@@ -9409,11 +9451,6 @@ app.get('/api/admin/bots/deployed', authenticateToken, requireAdmin, async (req,
     }
 });
 
-// =============================================
-// ROUTES ADMIN - GESTION DES TEMPLATES BOTS
-// =============================================
-
-// Cette route manquante permet de récupérer TOUS les templates (y compris en attente/rejetés)
 app.get('/api/admin/bots/all', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { data: templates, error } = await supabase
@@ -9429,7 +9466,6 @@ app.get('/api/admin/bots/all', authenticateToken, requireAdmin, async (req, res)
         
         if (error) throw error;
         
-        // Ajouter total_deploys pour chaque template
         const templatesWithStats = await Promise.all((templates || []).map(async (template) => {
             const { count: totalDeploys } = await supabase
                 .from('user_bots')
@@ -9454,29 +9490,6 @@ app.get('/api/admin/bots/all', authenticateToken, requireAdmin, async (req, res)
     }
 });
 
-// Récupérer un template spécifique
-app.get('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-        
-        const { data: template, error } = await supabase
-            .from('bot_templates')
-            .select('*, profiles:user_id (username, email)')
-            .eq('id', templateId)
-            .single();
-        
-        if (error || !template) {
-            return res.status(404).json({ success: false, error: 'Template non trouvé' });
-        }
-        
-        res.json({ success: true, template });
-    } catch (error) {
-        console.error('❌ Erreur récupération template:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// Modifier un template bot
 app.put('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { templateId } = req.params;
@@ -9503,322 +9516,6 @@ app.put('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin
         
         if (error) throw error;
         
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'bot_template_update',
-                target_type: 'bot_template',
-                target_id: templateId,
-                description: `Modification template bot: ${JSON.stringify(updates)}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-        
-        res.json({ success: true, message: 'Template modifié avec succès' });
-        
-    } catch (error) {
-        console.error('❌ Erreur modification template:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// Synchroniser un template avec GitHub
-app.post('/api/admin/bots/templates/:templateId/sync', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-        
-        const { data: template, error: fetchError } = await supabase
-            .from('bot_templates')
-            .select('repo_url, kh_json')
-            .eq('id', templateId)
-            .single();
-        
-        if (fetchError || !template) {
-            return res.status(404).json({ success: false, error: 'Template non trouvé' });
-        }
-        
-        const validation = await validateKhJsonFromRepo(template.repo_url);
-        
-        if (!validation.valid) {
-            return res.status(400).json({ 
-                success: false, 
-                error: validation.error,
-                message: 'Le fichier kh.json est invalide ou introuvable'
-            });
-        }
-        
-        const { error } = await supabase
-            .from('bot_templates')
-            .update({
-                kh_json: validation.khJson,
-                name: validation.khJson['bot-name'] || template.name,
-                synced_at: new Date().toISOString()
-            })
-            .eq('id', templateId);
-        
-        if (error) throw error;
-        
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'bot_template_sync',
-                target_type: 'bot_template',
-                target_id: templateId,
-                description: `Synchronisation template bot avec GitHub`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-        
-        res.json({ success: true, message: 'Template synchronisé avec succès' });
-        
-    } catch (error) {
-        console.error('❌ Erreur synchronisation template:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// Supprimer définitivement un template bot
-app.delete('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-        
-        // 1. Récupérer le template
-        const { data: template, error: fetchError } = await supabase
-            .from('bot_templates')
-            .select('repo_url, user_id, name')
-            .eq('id', templateId)
-            .single();
-        
-        if (fetchError || !template) {
-            return res.status(404).json({ success: false, error: 'Template non trouvé' });
-        }
-        
-        // 2. Supprimer la soumission associée
-        await supabase
-            .from('bot_submissions')
-            .delete()
-            .eq('repo_url', template.repo_url)
-            .eq('user_id', template.user_id);
-        
-        // 3. Supprimer le template
-        await supabase
-            .from('bot_templates')
-            .delete()
-            .eq('id', templateId);
-        
-        res.json({ 
-            success: true, 
-            message: 'Template et soumission supprimés. L\'utilisateur pourra soumettre à nouveau ce bot.' 
-        });
-        
-    } catch (error) {
-        console.error('❌ Erreur suppression template:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// POST /api/bots/resync/:templateId
-// Resynchronise un template avec son repo GitHub
-router.post('/bots/resync/:templateId', authenticateToken, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-        const userId = req.user.id;
-
-        // Récupérer le template
-        const { data: template, error: templateError } = await supabase
-            .from('bot_templates')
-            .select('*')
-            .eq('id', templateId)
-            .single();
-
-        if (templateError || !template) {
-            return res.status(404).json({ success: false, error: 'Template non trouvé' });
-        }
-
-        // Vérifier que l'utilisateur est le propriétaire ou admin
-        const { data: userProfile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', userId)
-            .single();
-
-        const isOwner = template.user_id === userId;
-        const isAdmin = userProfile?.role === 'admin';
-
-        if (!isOwner && !isAdmin) {
-            return res.status(403).json({ success: false, error: 'Non autorisé' });
-        }
-
-        // Re-valider le kh.json depuis GitHub
-        const validation = await validateKhJsonFromRepo(template.repo_url);
-        
-        if (!validation.valid) {
-            return res.status(400).json({ 
-                success: false, 
-                error: `Échec de la synchronisation : ${validation.error}` 
-            });
-        }
-
-        const khJson = validation.khJson;
-
-        // Mettre à jour le template avec les nouvelles données
-        const { data: updated, error: updateError } = await supabase
-            .from('bot_templates')
-            .update({
-                name: khJson['bot-name'] || template.name,
-                description: khJson.description || template.description,
-                logo_url: khJson.logo || template.logo_url,
-                kh_json: khJson,
-                synced_at: new Date().toISOString(),
-                updated_by: userId
-            })
-            .eq('id', templateId)
-            .select()
-            .single();
-
-        if (updateError) {
-            console.error('Erreur mise à jour template:', updateError);
-            return res.status(500).json({ success: false, error: 'Erreur lors de la mise à jour' });
-        }
-
-        console.log(`✅ Template ${templateId} resynchronisé avec succès`);
-        
-        return res.json({
-            success: true,
-            message: 'Template resynchronisé avec succès',
-            template: updated
-        });
-
-    } catch (error) {
-        console.error('Erreur resync template:', error);
-        return res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
-
-// GET /api/bots/check-kh-changed?templateId=xxx
-// Vérifie si le kh.json a changé sur GitHub
-router.get('/bots/check-kh-changed', authenticateToken, async (req, res) => {
-    try {
-        const { templateId } = req.query;
-        if (!templateId) return res.status(400).json({ success: false, error: 'templateId requis' });
-
-        const { data: template, error } = await supabase
-            .from('bot_templates')
-            .select('id, repo_url, synced_at')
-            .eq('id', templateId)
-            .single();
-
-        if (error || !template) return res.status(404).json({ success: false, error: 'Template non trouvé' });
-
-        // Vérifier le kh.json sur GitHub
-        const validation = await validateKhJsonFromRepo(template.repo_url);
-        if (!validation.valid) return res.json({ changed: false });
-
-        const khJson = validation.khJson;
-
-        // Vérifier si changé (comparer avec synced_at)
-        // Si synced_at est null, c'est que le template n'a jamais été sync
-        const lastSync = template.synced_at ? new Date(template.synced_at).getTime() : 0;
-        const now = Date.now();
-
-        // Si ça fait plus d'une seconde, on considère qu'il faut resync
-        const changed = (now - lastSync) > 1000;
-
-        if (changed) {
-            // Mettre à jour le template
-            await supabase
-                .from('bot_templates')
-                .update({
-                    name: khJson['bot-name'] || template.name,
-                    description: khJson.description || template.description,
-                    logo_url: khJson.logo || template.logo_url,
-                    kh_json: khJson,
-                    synced_at: new Date().toISOString()
-                })
-                .eq('id', templateId);
-
-            return res.json({ changed: true, template: { ...template, kh_json: khJson, logo_url: khJson.logo || template.logo_url } });
-        }
-
-        return res.json({ changed: false });
-    } catch (error) {
-        return res.json({ changed: false });
-    }
-});
-
-app.put('/api/admin/bots/templates/:templateId/full', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-        const { name, repo_url, price_weekly, status, description, logo_url, rejected_reason } = req.body;
-        
-        // Vérifier si le template existe
-        const { data: existingTemplate, error: fetchError } = await supabase
-            .from('bot_templates')
-            .select('*')
-            .eq('id', templateId)
-            .single();
-        
-        if (fetchError || !existingTemplate) {
-            return res.status(404).json({ success: false, error: 'Template non trouvé' });
-        }
-        
-        let khJson = existingTemplate.kh_json;
-        
-        // Si le repo a changé, vérifier le nouveau kh.json
-        if (repo_url && repo_url !== existingTemplate.repo_url) {
-            const validation = await validateKhJsonFromRepo(repo_url);
-            if (!validation.valid) {
-                return res.status(400).json({ 
-                    success: false, 
-                    error: validation.error,
-                    guide: 'Le nouveau repository doit contenir un fichier kh.json valide'
-                });
-            }
-            khJson = validation.khJson;
-        }
-        
-        // Mise à jour
-        const updates = {
-            updated_at: new Date().toISOString(),
-            updated_by: req.user.id
-        };
-        if (name) updates.name = name;
-        if (repo_url) updates.repo_url = repo_url;
-        if (price_weekly !== undefined) updates.price_weekly = price_weekly;
-        if (status) updates.status = status;
-        if (description !== undefined) updates.description = description;
-        if (logo_url !== undefined) updates.logo_url = logo_url;
-        if (rejected_reason !== undefined) updates.rejected_reason = rejected_reason;
-        if (khJson) updates.kh_json = khJson;
-        
-        if (status === 'approved' && existingTemplate.status !== 'approved') {
-            updates.approved_at = new Date().toISOString();
-            updates.approved_by = req.user.id;
-        }
-        
-        const { error: updateError } = await supabase
-            .from('bot_templates')
-            .update(updates)
-            .eq('id', templateId);
-        
-        if (updateError) throw updateError;
-        
-        // Si le statut est 'rejected', mettre à jour la soumission associée
-        if (status === 'rejected') {
-            await supabase
-                .from('bot_submissions')
-                .update({
-                    status: 'rejected',
-                    processed_at: new Date().toISOString(),
-                    processed_by: req.user.id,
-                    admin_notes: rejected_reason || 'Rejeté par admin'
-                })
-                .eq('repo_url', existingTemplate.repo_url)
-                .eq('user_id', existingTemplate.user_id);
-        }
-        
         res.json({ success: true, message: 'Template modifié avec succès' });
         
     } catch (error) {
@@ -9843,19 +9540,6 @@ app.put('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, asyn
             .eq('id', botId);
         
         if (error) throw error;
-        
-        // Log admin
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'deployed_bot_update',
-                target_type: 'user_bot',
-                target_id: botId,
-                description: `Modification du bot déployé: ${JSON.stringify(updates)}`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
         
         res.json({ success: true, message: 'Bot déployé modifié avec succès' });
         
@@ -9898,19 +9582,6 @@ app.post('/api/admin/bots/deployed/:botId/renew', authenticateToken, requireAdmi
         
         if (updateError) throw updateError;
         
-        // Log
-        await supabase
-            .from('admin_actions')
-            .insert([{
-                admin_id: req.user.id,
-                action_type: 'deployed_bot_renew',
-                target_type: 'user_bot',
-                target_id: botId,
-                description: `Renouvellement forcé du bot ${bot.heroku_app_name} (+${days_to_add} jours)`,
-                ip_address: req.ip,
-                user_agent: req.headers['user-agent']
-            }]);
-        
         res.json({ success: true, message: `Bot renouvelé jusqu'au ${newExpiry.toLocaleDateString('fr-FR')}` });
         
     } catch (error) {
@@ -9933,7 +9604,6 @@ app.post('/api/admin/bots/deployed/:botId/suspend', authenticateToken, requireAd
             return res.status(404).json({ success: false, error: 'Bot non trouvé' });
         }
         
-        // Suspendre sur Heroku via l'API
         if (bot.heroku_account_id) {
             const { data: herokuAccount } = await supabase
                 .from('heroku_accounts')
@@ -9979,7 +9649,6 @@ app.post('/api/admin/bots/deployed/:botId/unsuspend', authenticateToken, require
             return res.status(404).json({ success: false, error: 'Bot non trouvé' });
         }
         
-        // Réactiver sur Heroku
         if (bot.heroku_account_id) {
             const { data: herokuAccount } = await supabase
                 .from('heroku_accounts')
@@ -10010,29 +9679,7 @@ app.post('/api/admin/bots/deployed/:botId/unsuspend', authenticateToken, require
         res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
-app.put('/api/admin/users/:userId/bot-quota', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { bot_quota } = req.body;
-        
-        if (bot_quota === undefined || bot_quota < 0) {
-            return res.status(400).json({ success: false, error: 'Quota invalide' });
-        }
-        
-        const { error } = await supabase
-            .from('profiles')
-            .update({ bot_quota: bot_quota })
-            .eq('id', userId);
-        
-        if (error) throw error;
-        
-        res.json({ success: true, message: `Quota utilisateur mis à jour: ${bot_quota}` });
-        
-    } catch (error) {
-        console.error('❌ Erreur mise à jour quota:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
-    }
-});
+
 app.delete('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { botId } = req.params;
@@ -10047,7 +9694,6 @@ app.delete('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, a
             return res.status(404).json({ success: false, error: 'Bot non trouvé' });
         }
         
-        // Supprimer sur Heroku
         if (bot.heroku_account_id) {
             const { data: herokuAccount } = await supabase
                 .from('heroku_accounts')
@@ -10065,7 +9711,6 @@ app.delete('/api/admin/bots/deployed/:botId', authenticateToken, requireAdmin, a
             }
         }
         
-        // Supprimer de la BD
         await supabase
             .from('user_bots')
             .delete()
@@ -10483,8 +10128,9 @@ app.get('*', (req, res) => res.status(404).sendFile(path.join(__dirname, 'public
 server.listen(SITE_CONFIG.port, async () => {
     console.log(`\n🚀 KERMHOSTING DÉMARRÉ SUR LE PORT ${SITE_CONFIG.port}`);
     console.log(`💰 Mode paiement: Fapshi LIVE + PayPal + Minipay`);
-    console.log(`📧 Email via Resend: ${RESEND_CONFIG.from}`);
-    console.log(`📧 Email masse via SMTP: ${SMTP_CONFIG.from}`);
+    console.log(`📧 Email via SMTP en priorité, fallback Resend`);
+    console.log(`📧 SMTP: ${SMTP_CONFIG.from}`);
+    console.log(`📧 Resend: ${RESEND_CONFIG.from}`);
     console.log(`🎮 Pterodactyl: ${PTERODACTYL_CONFIG.url}`);
     console.log(`================================\n`);
     
