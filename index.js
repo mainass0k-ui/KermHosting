@@ -77,7 +77,7 @@ const SMTP_CONFIG = {
         user: 'partnerxbet73@gmail.com',
         pass: 'klrj jvyv aenh tsdj'
     },
-    from: 'KermHosting <noreply@kermhosting.site>'
+    from: 'KermHosting☁️ <noreply@kermhosting.site>'
 };
 
 let smtpTransporter = null;
