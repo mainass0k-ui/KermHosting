@@ -9021,6 +9021,161 @@ app.post('/api/bots/my-bots/:botId/auto-renew', authenticateToken, async (req, r
     }
 });
 
+app.post('/api/bots/my-bots/:botId/renew', authenticateToken, async (req, res) => {
+    try {
+        const { botId } = req.params;
+        const { duration_mode } = req.body; // 'weekly' ou 'monthly'
+
+        if (!['weekly', 'monthly'].includes(duration_mode)) {
+            return res.status(400).json({ success: false, error: 'Mode invalide' });
+        }
+
+        // Récupérer le bot
+        const { data: bot, error: botError } = await supabase
+            .from('user_bots')
+            .select('*, bot_templates!user_bots_template_id_fkey(*)')
+            .eq('id', botId)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (botError || !bot) {
+            return res.status(404).json({ success: false, error: 'Bot non trouvé' });
+        }
+
+        if (bot.status === 'deploying') {
+            return res.status(400).json({ success: false, error: 'Bot en cours de déploiement' });
+        }
+
+        // Calculer le prix
+        const weeklyPrice = bot.bot_templates?.price_weekly || 100;
+        let coinsNeeded = weeklyPrice;
+        let daysToAdd = 7;
+
+        if (duration_mode === 'monthly') {
+            coinsNeeded = weeklyPrice * 4;
+            daysToAdd = 28;
+        }
+
+        // Vérifier les coins
+        if (req.user.coins < coinsNeeded) {
+            return res.status(400).json({ 
+                success: false, 
+                error: `Coins insuffisants. Besoin de ${coinsNeeded} coins, vous avez ${req.user.coins} coins.`,
+                required_coins: coinsNeeded,
+                current_coins: req.user.coins
+            });
+        }
+
+        // Calculer nouvelle expiration
+        const currentExpiry = new Date(bot.expires_at);
+        const now = new Date();
+        let newExpiry;
+        
+        if (currentExpiry < now) {
+            newExpiry = new Date();
+        } else {
+            newExpiry = new Date(currentExpiry);
+        }
+        newExpiry.setDate(newExpiry.getDate() + daysToAdd);
+
+        // DÉDUIRE LES COINS
+        await supabase
+            .from('profiles')
+            .update({ coins: req.user.coins - coinsNeeded })
+            .eq('id', req.user.id);
+
+        // METTRE À JOUR LE BOT
+        await supabase
+            .from('user_bots')
+            .update({
+                expires_at: newExpiry.toISOString(),
+                duration_mode: duration_mode,
+                status: 'active',
+                warning_sent: false,
+                auto_renew_error: null
+            })
+            .eq('id', botId);
+
+        // Réactiver sur Heroku si suspendu
+        if (bot.heroku_account_id && bot.heroku_app_name && bot.status !== 'active') {
+            const { data: herokuAccount } = await supabase
+                .from('heroku_accounts')
+                .select('api_key')
+                .eq('id', bot.heroku_account_id)
+                .single();
+            
+            if (herokuAccount) {
+                try {
+                    await callHerokuAPI(herokuAccount.api_key, `/apps/${bot.heroku_app_name}/formation`, 'PATCH', {
+                        updates: [{ type: 'web', quantity: 1 }]
+                    });
+                } catch (herokuError) {
+                    console.log(`⚠️ Erreur réactivation Heroku: ${herokuError.message}`);
+                }
+            }
+        }
+
+        // CRÉER UNE TRANSACTION
+        const transactionId = generateTransactionId();
+        await supabase
+            .from('transactions')
+            .insert([{
+                id: transactionId,
+                user_id: req.user.id,
+                type: 'bot_renewal',
+                amount: coinsNeeded,
+                currency: 'COINS',
+                status: 'completed',
+                completed_at: new Date().toISOString(),
+                metadata: { 
+                    bot_id: botId,
+                    bot_name: bot.heroku_app_name,
+                    duration_mode: duration_mode,
+                    previous_expiry: bot.expires_at,
+                    new_expiry: newExpiry.toISOString()
+                }
+            }]);
+
+        // LOG DE DÉPLOIEMENT
+        await supabase
+            .from('bot_deployment_logs')
+            .insert([{
+                bot_id: botId,
+                action: 'renew',
+                status: 'success',
+                message: `Renouvellement ${duration_mode === 'weekly' ? 'hebdomadaire' : 'mensuel'} réussi (${coinsNeeded} coins). Nouvelle expiration: ${newExpiry.toLocaleDateString('fr-FR')}`
+            }]);
+
+        // ENVOI D'EMAIL
+        const renewalHtml = `
+            <h2>✅ Bot renouvelé avec succès</h2>
+            <p>Bonjour ${req.user.username},</p>
+            <p>Votre bot <strong>"${bot.heroku_app_name}"</strong> a été renouvelé avec succès.</p>
+            <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                <p><strong>📅 Nouvelle date d'expiration :</strong> ${newExpiry.toLocaleDateString('fr-FR')}</p>
+                <p><strong>💰 Coins déduits :</strong> ${coinsNeeded} coins</p>
+                <p><strong>💳 Solde restant :</strong> ${req.user.coins - coinsNeeded} coins</p>
+            </div>
+            <a href="${SITE_CONFIG.url}/my-bots">Gérer mes bots</a>
+        `;
+        await sendEmail(req.user.email, '✅ Bot renouvelé avec succès', getBaseEmailTemplate('Bot renouvelé', renewalHtml));
+
+        console.log(`✅ Bot ${botId} renouvelé: +${daysToAdd} jours, ${coinsNeeded} coins déduits`);
+
+        res.json({ 
+            success: true, 
+            message: `Bot renouvelé jusqu'au ${newExpiry.toLocaleDateString('fr-FR')}`,
+            new_expiry: newExpiry.toISOString(),
+            coins_deducted: coinsNeeded,
+            remaining_coins: req.user.coins - coinsNeeded
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur renouvellement bot:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
 app.delete('/api/bots/my-bots/:botId', authenticateToken, async (req, res) => {
     try {
         const { botId } = req.params;
