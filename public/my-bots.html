@@ -9,10 +9,6 @@
 
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
-    
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,7 +64,7 @@
 
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
-        /* TOP BAR - KERMHOSTING CENTRÉ */
+        /* TOP BAR */
         .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); flex-shrink: 0; }
         .top-bar-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -98,7 +94,7 @@
         .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
 
         /* BOTS GRID */
-        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
         .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; }
         .bot-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 8px 25px -8px rgba(124,58,237,0.3); }
         .bot-card-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent); }
@@ -117,7 +113,8 @@
         .bot-expiry { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 7px 10px; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.8rem; }
         .expiry-label { font-size: 0.7rem; color: var(--text-secondary); }
         .expiry-date { font-weight: 600; font-size: 0.8rem; }
-        .expiry-warning { color: var(--warning); font-size: 0.65rem; }
+        .expiry-warning { color: var(--warning); font-weight: 700; }
+        .expiry-critical { color: var(--danger); font-weight: 700; }
         .bot-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
         .action-btn { padding: 6px 10px; border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 4px; }
         .action-btn.start { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
@@ -135,29 +132,29 @@
         .action-btn.logs { background: rgba(16,185,129,0.15); color: var(--secondary); border: 1px solid rgba(16,185,129,0.3); }
         .action-btn.logs:hover { background: var(--secondary); color: white; }
         .auto-renew-toggle { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
-        .auto-renew-label { font-size: 0.7rem; color: var(--text-secondary); }
+        .auto-renew-label { font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; }
         .toggle-switch { position: relative; width: 36px; height: 18px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 1.5px solid var(--border-color); flex-shrink: 0; }
         .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
         .toggle-switch::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; }
         .toggle-switch.active::after { left: 17px; }
+        .toggle-switch.disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* MODAL FULLSCREEN */
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 0; }
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 20px; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--bg-card); width: 100%; height: 100%; max-width: 100%; max-height: 100%; overflow-y: auto; border: none; transform: scale(0.95); transition: transform 0.3s; }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-xl); border: 1px solid var(--border-color); transform: scale(0.95); transition: transform 0.3s; }
         .modal.active .modal-content { transform: scale(1); }
-        .modal-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; }
-        .modal-header h2 { font-size: 1.2rem; }
-        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: var(--radius-full); }
-        .modal-close:hover { background: var(--bg-hover); }
-        .modal-body { padding: 16px 20px 30px; max-width: 800px; margin: 0 auto; }
+        .modal-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+        .modal-header h2 { font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: var(--radius-full); transition: all 0.2s; }
+        .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .modal-body { padding: 20px; }
 
         /* LOGS MODAL */
-        .logs-modal .modal-content { max-width: 100%; }
-        .logs-modal .modal-body { max-width: 95%; }
-        .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-        .logs-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .logs-refresh-btn, .logs-copy-btn, .logs-clear-btn { border: none; padding: 6px 12px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .logs-modal .modal-content { max-width: 90vw; max-height: 85vh; }
+        .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .logs-header-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .logs-refresh-btn, .logs-copy-btn, .logs-clear-btn { border: none; padding: 8px 14px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
         .logs-refresh-btn { background: var(--primary); }
         .logs-refresh-btn:hover { background: var(--primary-light); transform: scale(1.02); }
         .logs-copy-btn { background: var(--info); }
@@ -167,44 +164,57 @@
         .logs-auto-status { font-size: 0.7rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; }
         .logs-auto-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 14px; height: calc(100vh - 180px); overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.78rem; border: 1px solid var(--border-color); }
-        .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.3); padding: 6px 0; white-space: pre-wrap; word-break: break-all; font-weight: 500; }
+        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 16px; height: 60vh; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); }
+        .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.3); padding: 6px 0; white-space: pre-wrap; word-break: break-all; font-weight: 500; font-family: 'Courier New', monospace; }
         .log-line.error { color: var(--danger); font-weight: 700; background: rgba(239,68,68,0.1); }
         .log-line.success { color: var(--success); font-weight: 700; }
         .log-line.warning { color: var(--warning); font-weight: 700; }
         .log-line.info { color: var(--info); font-weight: 600; }
         .log-line .timestamp { color: var(--text-muted); font-weight: 400; margin-right: 10px; }
 
-        .form-group { margin-bottom: 12px; }
-        .form-label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.8rem; }
-        .form-label i { color: var(--primary); margin-right: 5px; }
-        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 12px; color: var(--text-primary); font-size: 0.85rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; }
+        .form-label i { color: var(--primary); margin-right: 6px; width: 18px; }
+        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; color: var(--text-primary); font-size: 0.85rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border-color); }
-        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 600; color: var(--primary-light); margin-bottom: 2px; font-size: 0.8rem; }
-        .env-desc { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 6px; }
-        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 7px 10px; color: var(--text-primary); font-family: monospace; font-size: 0.8rem; }
+        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 700; color: var(--primary-light); margin-bottom: 4px; font-size: 0.85rem; }
+        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: monospace; font-size: 0.8rem; }
         .env-value input:focus { outline: none; border-color: var(--primary); }
-        .env-required { color: var(--danger); font-size: 0.6rem; margin-left: 4px; }
-
-        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 12px; }
+        .env-required { color: var(--danger); font-size: 0.65rem; margin-left: 6px; font-weight: normal; }
+        .btn-outline { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { border-color: var(--primary); background: rgba(124,58,237,0.08); }
+        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 16px; }
         .deploy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .deploy-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .btn-outline { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        .btn-outline:hover { border-color: var(--primary); background: rgba(124,58,237,0.08); }
-
-        .empty-state { text-align: center; padding: 30px; color: var(--text-secondary); grid-column: 1/-1; }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.4; }
-        .toast { position: fixed; bottom: 16px; right: 16px; padding: 10px 16px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 8px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 320px; font-size: 0.85rem; }
+        /* RENEW MODAL */
+        .renew-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .renew-option { background: var(--bg-hover); border-radius: var(--radius-lg); padding: 16px; border: 2px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        .renew-option:hover { border-color: var(--primary); background: rgba(124,58,237,0.05); }
+        .renew-option.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+        .renew-option-info { flex: 1; }
+        .renew-option-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+        .renew-option-desc { font-size: 0.7rem; color: var(--text-muted); }
+        .renew-option-price { text-align: right; }
+        .renew-price-amount { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+        .renew-price-label { font-size: 0.7rem; color: var(--text-muted); }
+        .renew-price-warning { margin-top: 16px; padding: 12px; background: rgba(245,158,11,0.1); border-radius: var(--radius-md); text-align: center; font-size: 0.8rem; color: var(--warning); }
+        
+        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 10px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 350px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .toast.success { background: rgba(16,185,129,0.95); }
         .toast.error { background: rgba(239,68,68,0.95); }
         .toast.info { background: rgba(59,130,246,0.95); }
+        .toast.warning { background: rgba(245,158,11,0.95); }
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
 
-        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .page-content { padding: 10px; } .page-title { font-size: 1.3rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .top-bar { padding: 8px 12px; } .top-bar-center span { font-size: 1rem; } }
+        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: 1fr; } .logs-modal .modal-content { max-width: 95vw; } }
+        @media (max-width: 768px) { .page-content { padding: 12px; } .page-title { font-size: 1.3rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .top-bar { padding: 8px 12px; } .top-bar-center span { font-size: 1rem; } .modal-content { max-width: 95%; margin: 16px; } }
     </style>
 </head>
 <body>
@@ -229,16 +239,10 @@
         </aside>
 
         <main class="main-content">
-            <!-- TOP BAR : burger à gauche, KermHosting centré, avatar à droite -->
             <header class="top-bar">
                 <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                <div class="top-bar-center">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>KermHosting</span>
-                </div>
-                <div class="top-bar-actions">
-                    <a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a>
-                </div>
+                <div class="top-bar-center"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
             </header>
 
             <div class="page-content">
@@ -268,7 +272,8 @@
             getAvatar: function(u) { return localStorage.getItem('user_avatar') || sessionStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
             applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const b=document.getElementById('sidebarAvatar'); if(b)b.innerHTML=`<img src="${a}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; }
         };
-        function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
+        
+        function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':t==='warning'?'exclamation-triangle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
         function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
         function trunc(s,l){ if(!s)return''; return s.length>l?s.substring(0,l)+'…':s; }
 
@@ -282,7 +287,7 @@
 
         function checkAuth(){
             fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
-                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); ['navHome','navLogin','navRegister'].forEach(i=>{const el=document.getElementById(i);if(el)el.style.display='none';}); AvatarManager.applyToPage(d.user.username); loadMyBots(); }
+                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); AvatarManager.applyToPage(d.user.username); loadMyBots(); }
                 else { localStorage.removeItem('token'); location.href='/login'; }
             }).catch(()=>{localStorage.removeItem('token');location.href='/login'});
         }
@@ -295,11 +300,26 @@
                 if(!d.success) throw new Error('Erreur'); allBots=d.bots||[]; updateStats(); renderBots('all');
             }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
         }
+        
         function updateStats(){
             document.getElementById('totalBots').textContent=allBots.length;
             document.getElementById('activeBots').textContent=allBots.filter(b=>b.status==='active').length;
             document.getElementById('expiringBots').textContent=allBots.filter(b=>{if(b.status!=='active')return false;const d=Math.ceil((new Date(b.expires_at)-new Date())/86400000);return d<=3&&d>0;}).length;
         }
+        
+        function getTimeRemaining(expiryDate){
+            const now=new Date(), exp=new Date(expiryDate);
+            const diffMs=exp-now;
+            if(diffMs<=0) return { text:'Expiré', class:'expiry-critical', icon:'fa-skull-crossbones' };
+            const days=Math.floor(diffMs/(1000*60*60*24));
+            const hours=Math.floor((diffMs%(1000*60*60*24))/(1000*60*60));
+            if(days>7) return { text:`${days}j restant`, class:'', icon:'fa-calendar-day' };
+            if(days>=3) return { text:`J-${days}`, class:'expiry-warning', icon:'fa-hourglass-half' };
+            if(days>=1) return { text:`J-${days}`, class:'expiry-critical', icon:'fa-hourglass-end' };
+            if(hours>0) return { text:`${hours}h restant`, class:'expiry-critical', icon:'fa-clock' };
+            return { text:'Expire bientôt', class:'expiry-critical', icon:'fa-exclamation-triangle' };
+        }
+        
         function renderBots(filter){
             const c=document.getElementById('botsContainer');
             let fb=allBots;
@@ -307,38 +327,142 @@
             else if(filter==='expired') fb=allBots.filter(b=>['suspended','failed'].includes(b.status));
             if(!fb.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p></div>'; return; }
             c.innerHTML=fb.map(b=>{
-                const ed=new Date(b.expires_at), dl=Math.ceil((ed-new Date())/86400000), isExp=dl<=3&&dl>0&&b.status==='active';
+                const ed=new Date(b.expires_at);
+                const tr=getTimeRemaining(b.expires_at);
+                const daysLeft=Math.ceil((ed-new Date())/86400000);
                 const st={active:'Actif',deploying:'Déploiement...',stopped:'Arrêté',suspended:'Suspendu',failed:'Échec'}[b.status]||b.status;
                 const logo=b.bot_templates?.kh_json?.logo||b.bot_templates?.logo_url||'';
-                return `<div class="bot-card"><div class="bot-card-header"><div class="bot-card-logo">${logo?`<img src="${logo}" alt="">`:'<i class="fab fa-whatsapp"></i>'}</div><div class="bot-card-info"><div class="bot-card-name">${esc(b.bot_templates?.name||'Bot')}</div><div class="bot-card-app">${esc(b.heroku_app_name)}</div></div><div class="bot-status ${b.status}">${st}</div></div><div class="bot-card-body"><div class="bot-expiry"><span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expiration</span><span class="expiry-date ${isExp?'expiry-warning':''}">${ed.toLocaleDateString('fr-FR')} ${isExp?`(J-${dl})`:''}</span></div><div class="bot-actions">${b.status==='stopped'?`<button onclick="startBot('${b.id}')" class="action-btn start"><i class="fas fa-play"></i> Démarrer</button>`:''}${b.status==='active'?`<button onclick="stopBot('${b.id}')" class="action-btn stop"><i class="fas fa-stop"></i> Arrêter</button><button onclick="restartBot('${b.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i> Redémarrer</button>`:''}<button onclick="openEnvModal('${b.id}')" class="action-btn env"><i class="fas fa-cog"></i> Env</button><button onclick="openLogsModal('${b.id}')" class="action-btn logs"><i class="fas fa-terminal"></i> Logs</button>${b.status!=='active'&&b.status!=='deploying'?`<button onclick="renewBot('${b.id}')" class="action-btn renew"><i class="fas fa-coins"></i> Renouveler</button>`:''}<button onclick="deleteBot('${b.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button></div><div class="auto-renew-toggle"><span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span><div class="toggle-switch ${b.auto_renew?'active':''}" onclick="toggleAutoRenew('${b.id}',${!b.auto_renew})"></div></div></div></div>`;
+                return `<div class="bot-card" data-bot-id="${b.id}">
+                    <div class="bot-card-header">
+                        <div class="bot-card-logo">${logo?`<img src="${logo}" alt="logo">`:'<i class="fab fa-whatsapp"></i>'}</div>
+                        <div class="bot-card-info">
+                            <div class="bot-card-name">${esc(b.bot_templates?.name||'Bot')}</div>
+                            <div class="bot-card-app">${esc(b.heroku_app_name)}</div>
+                        </div>
+                        <div class="bot-status ${b.status}">${st}</div>
+                    </div>
+                    <div class="bot-card-body">
+                        <div class="bot-expiry">
+                            <span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expiration</span>
+                            <span class="expiry-date ${tr.class}">
+                                <i class="fas ${tr.icon}"></i> ${ed.toLocaleDateString('fr-FR')} ${tr.text!=='Expiré'&&b.status==='active'?`(${tr.text})`:''}
+                            </span>
+                        </div>
+                        <div class="bot-actions">
+                            ${b.status==='stopped'?`<button onclick="startBot('${b.id}')" class="action-btn start"><i class="fas fa-play"></i> Démarrer</button>`:''}
+                            ${b.status==='active'?`<button onclick="stopBot('${b.id}')" class="action-btn stop"><i class="fas fa-stop"></i> Arrêter</button><button onclick="restartBot('${b.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i> Redémarrer</button>`:''}
+                            <button onclick="openEnvModal('${b.id}')" class="action-btn env"><i class="fas fa-cog"></i> Env</button>
+                            <button onclick="openLogsModal('${b.id}')" class="action-btn logs"><i class="fas fa-terminal"></i> Logs</button>
+                            ${b.status!=='active'&&b.status!=='deploying'?`<button onclick="openRenewModal('${b.id}')" class="action-btn renew"><i class="fas fa-coins"></i> Renouveler</button>`:''}
+                            <button onclick="deleteBot('${b.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="auto-renew-toggle">
+                            <span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span>
+                            <div class="toggle-switch ${b.auto_renew?'active':''}" data-bot-id="${b.id}" data-enabled="${b.auto_renew}"></div>
+                        </div>
+                    </div>
+                </div>`;
             }).join('');
+            
+            // Attacher les événements de toggle après le rendu
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.removeEventListener('click', handleToggleClick);
+                toggle.addEventListener('click', handleToggleClick);
+            });
+        }
+        
+        async function handleToggleClick(event) {
+            event.stopPropagation();
+            const toggle = event.currentTarget;
+            const botId = toggle.getAttribute('data-bot-id');
+            const currentlyEnabled = toggle.classList.contains('active');
+            const newEnabled = !currentlyEnabled;
+            
+            // Désactiver temporairement pour éviter les doubles clics
+            toggle.style.pointerEvents = 'none';
+            toggle.classList.add('disabled');
+            
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/auto-renew`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ enabled: newEnabled })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (newEnabled) {
+                        toggle.classList.add('active');
+                        toggle.setAttribute('data-enabled', 'true');
+                    } else {
+                        toggle.classList.remove('active');
+                        toggle.setAttribute('data-enabled', 'false');
+                    }
+                    showToast('success', `Auto-renouvellement ${newEnabled ? 'activé' : 'désactivé'} avec succès`);
+                    
+                    // Mettre à jour les données locales
+                    const bot = allBots.find(b => b.id === botId);
+                    if (bot) bot.auto_renew = newEnabled;
+                } else {
+                    showToast('error', data.error || `Erreur lors de la modification`);
+                }
+            } catch (error) {
+                showToast('error', 'Erreur de connexion');
+            } finally {
+                toggle.style.pointerEvents = '';
+                toggle.classList.remove('disabled');
+            }
         }
 
-        async function startBot(id){ try{ const r=await fetch(`/api/bots/my-bots/${id}/start`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?(showToast('success','Bot démarré'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
-        async function stopBot(id){ try{ const r=await fetch(`/api/bots/my-bots/${id}/stop`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?(showToast('success','Bot arrêté'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
-        async function restartBot(id){ showToast('info','Redémarrage...'); try{ const r=await fetch(`/api/bots/my-bots/${id}/restart`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?showToast('success','Bot redémarré'):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
-        async function deleteBot(id){ if(!confirm('Supprimer ce bot ? Irréversible.'))return; try{ const r=await fetch(`/api/bots/my-bots/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); d.success?(showToast('success','Bot supprimé'),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
-        async function toggleAutoRenew(id,enabled){ try{ const r=await fetch(`/api/bots/my-bots/${id}/auto-renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({enabled})}); const d=await r.json(); d.success?(showToast('success',`Auto-renouvellement ${enabled?'activé':'désactivé'}`),loadMyBots()):showToast('error',d.error||'Erreur'); }catch(e){showToast('error','Erreur')} }
+        async function startBot(id){ 
+            showToast('info', 'Démarrage en cours...');
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/start`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot démarré'),setTimeout(()=>loadMyBots(),500)):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function stopBot(id){ 
+            showToast('info', 'Arrêt en cours...');
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/stop`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot arrêté'),setTimeout(()=>loadMyBots(),500)):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function restartBot(id){ 
+            showToast('info','Redémarrage en cours...'); 
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/restart`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?showToast('success','Bot redémarré avec succès'):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function deleteBot(id){ 
+            if(!confirm('⚠️ Supprimer ce bot ? Cette action est irréversible.\nToutes les données seront perdues.')) return; 
+            try{ const r=await fetch(`/api/bots/my-bots/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot supprimé'),loadMyBots()):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
 
         async function openEnvModal(botId){
-            try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); if(!d.success)throw new Error('Bot non trouvé');
+            try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                if(!d.success)throw new Error('Bot non trouvé');
                 const bot=d.bot, env=bot.env_vars||{}, khJson=bot.bot_templates?.kh_json||{}, envConfig=khJson.env||{};
-                let html=`<p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.8rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p><div id="envList">`;
+                let html=`<p style="margin-bottom:16px;color:var(--text-secondary);font-size:0.85rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement après sauvegarde.</p><div id="envList">`;
                 for(const[k,c]of Object.entries(envConfig)) html+=`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(env[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}"></div></div>`;
-                html+=`</div><div style="margin-top:12px;display:flex;gap:8px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter une variable</button><div style="flex:1;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="CLE" style="margin-bottom:4px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addEnvVar('${botId}')" style="margin-top:4px;"><i class="fas fa-check"></i> Ajouter</button></div></div><button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
+                html+=`</div><div style="margin-top:16px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter une variable</button></div><div style="margin-top:12px;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="NOM_DE_LA_VARIABLE" style="margin-bottom:8px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addEnvVar('${botId}')" style="margin-top:8px;width:100%;"><i class="fas fa-check"></i> Ajouter</button></div><button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
                 document.getElementById('envModalBody').innerHTML=html;
                 document.getElementById('addEnvBtn').addEventListener('click',()=>{document.getElementById('addEnvForm').style.display='block';document.getElementById('addEnvBtn').style.display='none'});
                 document.getElementById('saveEnvBtn').onclick=async()=>{const nev={};for(const k of Object.keys(envConfig)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())nev[k]=i.value.trim()}try{const sr=await fetch(`/api/bots/my-bots/${botId}/update-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({env_vars:nev})});const sd=await sr.json();sd.success?(showToast('success','Variables mises à jour'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',sd.error||'Erreur')}catch(e){showToast('error','Erreur')}};
                 document.getElementById('envModal').classList.add('active');
             }catch(e){showToast('error','Erreur chargement variables')}
         }
+        
         async function addEnvVar(botId){const key=document.getElementById('newEnvKey').value.trim().toUpperCase(),val=document.getElementById('newEnvValue').value.trim();if(!key){showToast('error','Clé requise');return}try{const r=await fetch(`/api/bots/my-bots/${botId}/add-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({key,value:val})});const d=await r.json();d.success?(showToast('success','Variable ajoutée'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur')}}
 
-        // ===== LOGS =====
+        // LOGS FUNCTIONS
         async function loadLogs(botId, showLoading = true) {
             if (!botId) return;
             const logsContainer = document.getElementById('logsContainer');
-            if (showLoading && logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+            if (showLoading && logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement des logs...</div>';
             try {
                 const r = await fetch(`/api/bots/my-bots/${botId}/logs?lines=200`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const d = await r.json();
@@ -346,37 +470,35 @@
                 if (d.success && d.logs) {
                     const logsArray = Array.isArray(d.logs) ? d.logs : (d.logs.lines || []);
                     if (logsArray.length === 0) {
-                        logsContainer.innerHTML = '<div class="log-line">Aucun log disponible pour le moment</div>';
+                        logsContainer.innerHTML = '<div class="log-line">📭 Aucun log disponible pour le moment</div>';
                     } else {
                         logsContainer.innerHTML = logsArray.map(log => {
                             let logClass = 'log-line';
                             const lowerLog = String(log).toLowerCase();
-                            if (lowerLog.includes('error') || lowerLog.includes('fail') || lowerLog.includes('crash')) logClass += ' error';
-                            else if (lowerLog.includes('success') || lowerLog.includes('started') || lowerLog.includes('listening')) logClass += ' success';
+                            if (lowerLog.includes('error') || lowerLog.includes('fail') || lowerLog.includes('crash') || lowerLog.includes('exception')) logClass += ' error';
+                            else if (lowerLog.includes('success') || lowerLog.includes('started') || lowerLog.includes('listening') || lowerLog.includes('connected')) logClass += ' success';
                             else if (lowerLog.includes('warn')) logClass += ' warning';
                             else if (lowerLog.includes('info')) logClass += ' info';
-                            const timestampMatch = String(log).match(/^(\d{2}:\d{2}:\d{2})/);
-                            if (timestampMatch) return `<div class="${logClass}"><span class="timestamp">[${timestampMatch[1]}]</span> ${esc(log.substring(timestampMatch[0].length))}</div>`;
                             return `<div class="${logClass}">${esc(log)}</div>`;
                         }).join('');
                     }
-                } else logsContainer.innerHTML = '<div class="log-line error">Impossible de récupérer les logs</div>';
+                } else logsContainer.innerHTML = '<div class="log-line error">❌ Impossible de récupérer les logs</div>';
                 logsContainer.scrollTop = logsContainer.scrollHeight;
-            } catch(e) { if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">Erreur de connexion</div>'; }
+            } catch(e) { if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">⚡ Erreur de connexion</div>'; }
         }
 
         function copyLogs() {
             const logsContainer = document.getElementById('logsContainer');
             if (!logsContainer) return;
             const logs = logsContainer.innerText;
-            navigator.clipboard.writeText(logs).then(() => showToast('success', 'Logs copiés !')).catch(() => showToast('error', 'Erreur de copie'));
+            navigator.clipboard.writeText(logs).then(() => showToast('success', '📋 Logs copiés !')).catch(() => showToast('error', '❌ Erreur de copie'));
         }
 
         function clearLogs() {
             const logsContainer = document.getElementById('logsContainer');
             if (!logsContainer) return;
-            logsContainer.innerHTML = '<div class="log-line info">Logs effacés</div>';
-            showToast('info', 'Logs effacés (affichage local)');
+            logsContainer.innerHTML = '<div class="log-line info">🧹 Logs effacés (affichage local)</div>';
+            showToast('info', 'Logs effacés localement');
         }
 
         function startLogsAutoRefresh(botId) { if (logsRefreshInterval) clearInterval(logsRefreshInterval); logsRefreshInterval = setInterval(() => { if (currentLogsBotId && isLogsAutoRefresh) loadLogs(currentLogsBotId, false); }, 5000); }
@@ -389,7 +511,7 @@
                     <div class="logs-header-left">
                         <button class="logs-refresh-btn" id="manualRefreshLogsBtn"><i class="fas fa-sync-alt"></i> Rafraîchir</button>
                         <button class="logs-copy-btn" id="copyLogsBtn"><i class="fas fa-copy"></i> Copier</button>
-                        <button class="logs-clear-btn" id="clearLogsBtn"><i class="fas fa-eraser"></i> Clear</button>
+                        <button class="logs-clear-btn" id="clearLogsBtn"><i class="fas fa-eraser"></i> Effacer</button>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span class="logs-auto-status" id="autoRefreshStatus"><span class="dot"></span> Auto (5s)</span>
@@ -407,31 +529,168 @@
                 isLogsAutoRefresh = !isLogsAutoRefresh;
                 const btn = document.getElementById('toggleAutoRefreshBtn'), statusSpan = document.getElementById('autoRefreshStatus');
                 if (isLogsAutoRefresh) { btn.innerHTML = '<i class="fas fa-pause"></i> Pause'; statusSpan.innerHTML = '<span class="dot"></span> Auto (5s)'; startLogsAutoRefresh(botId); }
-                else { btn.innerHTML = '<i class="fas fa-play"></i> Reprendre'; statusSpan.innerHTML = '<span style="color:#6B7280;">Auto off</span>'; stopLogsAutoRefresh(); }
+                else { btn.innerHTML = '<i class="fas fa-play"></i> Reprendre'; statusSpan.innerHTML = '<span style="color:#6B7280;">⏸ Auto off</span>'; stopLogsAutoRefresh(); }
             };
         }
 
-        async function renewBot(botId){
-            const bot=allBots.find(b=>b.id===botId); if(!bot)return;
-            const t=bot.bot_templates, wp=t?.price_weekly||100, mp=wp*4;
-            document.getElementById('renewModalBody').innerHTML=`<p style="margin-bottom:12px;font-size:0.85rem;">Renouvelez votre bot.</p><div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;margin-bottom:12px;"><div><div style="font-weight:600;font-size:0.85rem;">Mode mensuel</div><div style="font-size:0.7rem;color:var(--text-muted);">${mp} coins</div></div><div class="toggle-switch" id="renewDurationToggle"></div></div><div style="background:var(--bg-input);padding:12px;border-radius:var(--radius-md);text-align:center;margin-bottom:12px;"><span style="font-size:1.2rem;font-weight:700;color:var(--primary);" id="renewPrice">${wp}</span><span style="color:var(--text-secondary);font-size:0.85rem;"> coins</span></div><button class="deploy-btn" id="confirmRenewBtn"><i class="fas fa-sync-alt"></i> Renouveler</button>`;
-            let dm='weekly'; document.getElementById('renewDurationToggle').addEventListener('click',()=>{dm=dm==='weekly'?'monthly':'weekly';document.getElementById('renewDurationToggle').classList.toggle('active');document.getElementById('renewPrice').textContent=dm==='weekly'?wp:mp;});
-            document.getElementById('confirmRenewBtn').onclick=async()=>{const cn=dm==='weekly'?wp:mp;if((currentUser?.coins||0)<cn){showToast('error',`Coins insuffisants. Besoin de ${cn} coins.`);return}try{const r=await fetch(`/api/bots/my-bots/${botId}/renew`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({duration_mode:dm})});const d=await r.json();if(d.success){showToast('success','Bot renouvelé');document.getElementById('renewModal').classList.remove('active');loadMyBots();fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(d.success){document.getElementById('sidebarCoins').textContent=d.user.coins||0;currentUser=d.user;}})}else showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur')}};
+        // RENEW MODAL - CORRIGÉ
+        let selectedRenewMode = 'weekly';
+        let currentRenewBot = null;
+        
+        async function openRenewModal(botId){
+            currentRenewBot = allBots.find(b => b.id === botId);
+            if(!currentRenewBot){ showToast('error','Bot non trouvé'); return; }
+            
+            const weeklyPrice = currentRenewBot.bot_templates?.price_weekly || 100;
+            const monthlyPrice = weeklyPrice * 4;
+            const userCoins = currentUser?.coins || 0;
+            selectedRenewMode = 'weekly';
+            
+            const modalBody = document.getElementById('renewModalBody');
+            modalBody.innerHTML = `
+                <div style="margin-bottom:20px;">
+                    <div style="background:var(--bg-hover);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span><i class="fas fa-robot"></i> Bot</span>
+                            <span style="font-weight:700;">${esc(currentRenewBot.bot_templates?.name||'Bot')}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                            <span><i class="fas fa-coins"></i> Vos coins</span>
+                            <span style="font-weight:700;color:var(--primary);">${userCoins} coins</span>
+                        </div>
+                    </div>
+                    
+                    <div class="renew-options">
+                        <div class="renew-option ${selectedRenewMode==='weekly'?'selected':''}" data-mode="weekly">
+                            <div class="renew-option-info">
+                                <div class="renew-option-title"><i class="fas fa-calendar-week"></i> Hebdomadaire</div>
+                                <div class="renew-option-desc">7 jours supplémentaires</div>
+                            </div>
+                            <div class="renew-option-price">
+                                <div class="renew-price-amount">${weeklyPrice}</div>
+                                <div class="renew-price-label">coins</div>
+                            </div>
+                        </div>
+                        <div class="renew-option ${selectedRenewMode==='monthly'?'selected':''}" data-mode="monthly">
+                            <div class="renew-option-info">
+                                <div class="renew-option-title"><i class="fas fa-calendar-alt"></i> Mensuel</div>
+                                <div class="renew-option-desc">28 jours supplémentaires <span style="color:var(--success);">(Économie)</span></div>
+                            </div>
+                            <div class="renew-option-price">
+                                <div class="renew-price-amount">${monthlyPrice}</div>
+                                <div class="renew-price-label">coins</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="renew-price-warning" id="renewWarning">
+                        <i class="fas fa-info-circle"></i> Sélectionnez une durée pour continuer
+                    </div>
+                </div>
+                
+                <button class="deploy-btn" id="confirmRenewBtn">
+                    <i class="fas fa-sync-alt"></i> Renouveler maintenant
+                </button>
+            `;
+            
+            // Gestion de la sélection
+            document.querySelectorAll('.renew-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.renew-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedRenewMode = opt.getAttribute('data-mode');
+                    const price = selectedRenewMode === 'weekly' ? weeklyPrice : monthlyPrice;
+                    const warningDiv = document.getElementById('renewWarning');
+                    if(userCoins >= price){
+                        warningDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${price} coins seront déduits de votre solde`;
+                        warningDiv.style.background = 'rgba(16,185,129,0.1)';
+                        warningDiv.style.color = 'var(--success)';
+                    } else {
+                        warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Solde insuffisant ! Besoin de ${price} coins, vous avez ${userCoins} coins`;
+                        warningDiv.style.background = 'rgba(239,68,68,0.1)';
+                        warningDiv.style.color = 'var(--danger)';
+                    }
+                });
+            });
+            
+            // Bouton de confirmation
+            document.getElementById('confirmRenewBtn').onclick = async () => {
+                const price = selectedRenewMode === 'weekly' ? weeklyPrice : monthlyPrice;
+                if(userCoins < price){
+                    showToast('error', `❌ Solde insuffisant ! Besoin de ${price} coins`);
+                    return;
+                }
+                
+                showToast('info', '🔄 Renouvellement en cours...');
+                document.getElementById('confirmRenewBtn').disabled = true;
+                document.getElementById('confirmRenewBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+                
+                try {
+                    const response = await fetch(`/api/bots/my-bots/${botId}/renew`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ duration_mode: selectedRenewMode })
+                    });
+                    const data = await response.json();
+                    
+                    if(data.success){
+                        showToast('success', '✅ Bot renouvelé avec succès !');
+                        document.getElementById('renewModal').classList.remove('active');
+                        loadMyBots();
+                        // Rafraîchir les infos utilisateur
+                        const userResp = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                        const userData = await userResp.json();
+                        if(userData.success){
+                            currentUser = userData.user;
+                            document.getElementById('sidebarCoins').textContent = currentUser.coins || 0;
+                        }
+                    } else {
+                        showToast('error', data.error || '❌ Erreur lors du renouvellement');
+                    }
+                } catch(error) {
+                    showToast('error', '❌ Erreur de connexion');
+                } finally {
+                    document.getElementById('confirmRenewBtn').disabled = false;
+                    document.getElementById('confirmRenewBtn').innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler maintenant';
+                }
+            };
+            
             document.getElementById('renewModal').classList.add('active');
         }
 
-        document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderBots(t.dataset.tab)}));
+        // Fermeture des modales
+        const closeModal = (modalId) => { 
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('active'); 
+            if (modalId === 'logsModal') { stopLogsAutoRefresh(); currentLogsBotId = null; }
+            if (modalId === 'renewModal') { selectedRenewMode = 'weekly'; currentRenewBot = null; }
+        };
+        
+        ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{
+            const modals = ['envModal','logsModal','renewModal'];
+            document.getElementById(id).addEventListener('click',()=>closeModal(modals[i]));
+        });
+        
+        ['envModal','logsModal','renewModal'].forEach(m=>{
+            const modal = document.getElementById(m);
+            if(modal) modal.addEventListener('click',e=>{if(e.target===modal)closeModal(m)});
+        });
 
-        const closeModal = (modalId) => { document.getElementById(modalId).classList.remove('active'); if (modalId === 'logsModal') { stopLogsAutoRefresh(); currentLogsBotId = null; } };
-        ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{const m=['envModal','logsModal','renewModal'][i];document.getElementById(id).addEventListener('click',()=>closeModal(m))});
-        ['envModal','logsModal','renewModal'].forEach(m=>document.getElementById(m).addEventListener('click',e=>{if(e.target===document.getElementById(m))closeModal(m)}));
+        // Tabs
+        document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+            document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+            t.classList.add('active');
+            renderBots(t.dataset.tab);
+        }));
 
+        // Exposer les fonctions globalement
         window.startBot=startBot; window.stopBot=stopBot; window.restartBot=restartBot; window.deleteBot=deleteBot;
-        window.toggleAutoRenew=toggleAutoRenew; window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.renewBot=renewBot; window.addEnvVar=addEnvVar;
+        window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.openRenewModal=openRenewModal;
+        window.addEnvVar=addEnvVar;
 
         checkAuth();
         window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
-        setInterval(()=>{if(document.visibilityState==='visible')loadMyBots()},10000);
+        setInterval(()=>{if(document.visibilityState==='visible')loadMyBots()},15000);
     </script>
 </body>
 </html>
