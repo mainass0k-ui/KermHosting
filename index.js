@@ -200,8 +200,7 @@ async function sendMassEmailViaSMTP(to, subject, htmlContent) {
 const PTERODACTYL_CONFIG = {
     url: 'https://panel.kermhosting.site',
     applicationApiKey: 'ptla_B5SVGZOmICJqNAIjow3jRg8FJDMCeWlGHjjjXzbA9fn',
-    clientApiKey: 'ptlc_RZlMsL7KDRLLupm3fMod6t3U8p9Ts0GdKwx9otAmrvK
-'
+    clientApiKey: 'ptlc_RZlMsL7KDRLLupm3fMod6t3U8p9Ts0GdKwx9otAmrvK',
 };
 
 // =============================================
