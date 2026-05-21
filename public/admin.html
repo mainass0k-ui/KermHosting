@@ -7,14 +7,12 @@
     <meta name="description" content="Administration KermHosting - Gérez les utilisateurs, serveurs, bots, Heroku">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
-    <!-- Favicon / Icônes Apple -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -35,8 +33,6 @@
             --warning: #F59E0B;
             --success: #10B981;
             --info: #3B82F6;
-            --paypal: #0070BA;
-            --minipay: #00C4B3;
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
             --bg-sidebar: #111827;
@@ -76,7 +72,6 @@
 
         .app-container { display: flex; min-height: 100vh; }
 
-        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
@@ -163,8 +158,8 @@
         }
 
         .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 1rem; }
-        .user-email { font-size: 0.75rem; color: var(--text-secondary); }
+        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-badge {
             background: var(--primary);
             color: white;
@@ -172,6 +167,7 @@
             font-weight: 600;
             padding: 2px 8px;
             border-radius: var(--radius-full);
+            white-space: nowrap;
         }
 
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
@@ -204,16 +200,15 @@
         .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
         .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
 
-        /* Main Content */
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
         .top-bar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(11, 17, 32, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 8px 16px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -226,10 +221,12 @@
             color: var(--text-primary);
             font-size: 1.5rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--radius-full);
-            display: none;
         }
 
         .menu-toggle:hover { background: var(--bg-hover); }
@@ -252,8 +249,11 @@
             color: var(--text-primary);
             font-size: 1.25rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: var(--radius-full);
         }
 
@@ -261,9 +261,9 @@
 
         .user-menu { cursor: pointer; }
         .user-avatar-small {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
             border: 2px solid var(--primary);
             object-fit: cover;
         }
@@ -295,9 +295,11 @@
             text-decoration: none;
             transition: all 0.3s;
             font-size: 0.9rem;
+            flex: 1;
+            min-width: 140px;
         }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-warning { background: var(--warning); color: black; }
@@ -306,9 +308,8 @@
         .btn-success:hover { background: #0d9668; transform: translateY(-2px); }
         .btn-outline { background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); }
         .btn-outline:hover { border-color: var(--primary); background: var(--bg-hover); }
-        .btn-small { padding: 6px 12px; font-size: 0.75rem; }
+        .btn-small { padding: 8px 16px; font-size: 0.8rem; }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -345,7 +346,6 @@
         .stat-label { color: var(--text-secondary); font-size: 0.8rem; }
         .stat-change { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 
-        /* Financial Stats */
         .financial-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -382,7 +382,6 @@
         .financial-amount { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; position: relative; z-index: 1; }
         .financial-sub { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; position: relative; z-index: 1; }
 
-        /* Charts */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -400,7 +399,6 @@
         .chart-card h3 { margin-bottom: 16px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
         canvas { max-height: 250px; width: 100% !important; }
 
-        /* Top Buyers */
         .top-buyers {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -436,7 +434,6 @@
         .buyer-email { font-size: 0.7rem; color: var(--text-secondary); }
         .buyer-total { font-weight: 700; color: var(--primary); font-size: 1rem; }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 8px;
@@ -466,7 +463,6 @@
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
 
-        /* Search Bar */
         .search-bar {
             display: flex;
             flex-direction: column;
@@ -533,7 +529,6 @@
         }
         .export-btn:hover { background: var(--primary); color: white; }
 
-        /* Tables */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -541,7 +536,7 @@
             overflow-x: auto;
             margin-bottom: 24px;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th {
             text-align: left;
             padding: 16px 12px;
@@ -595,6 +590,10 @@
         .action-btn.edit:hover { background: var(--success); }
         .action-btn.ban:hover { background: var(--warning); }
         .action-btn.view:hover { background: var(--info); }
+        .action-btn.suspend:hover { background: var(--warning); }
+        .action-btn.unsuspend:hover { background: var(--success); }
+        .action-btn.confirm:hover { background: var(--success); }
+        .action-btn.fail:hover { background: var(--danger); }
 
         .screenshot-preview {
             max-width: 60px;
@@ -627,7 +626,6 @@
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .page-info { color: var(--text-secondary); font-size: 0.9rem; }
 
-        /* Modals */
         .modal {
             position: fixed;
             top: 0;
@@ -647,11 +645,16 @@
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px 20px;
-            max-width: 700px;
+            max-width: 600px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal-header {
             display: flex;
@@ -702,23 +705,38 @@
         .modal-textarea { min-height: 120px; resize: vertical; }
         .modal-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 
+        .server-mini-card {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .server-mini-info h4 { font-size: 1rem; margin-bottom: 4px; }
+        .server-mini-info p { font-size: 0.8rem; color: var(--text-secondary); }
+        .server-mini-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
         .loading-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .loading-state i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 16px 20px;
             border-radius: var(--radius-md);
             color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             z-index: 9999;
             animation: slideIn 0.3s ease-out;
-            font-size: 0.85rem;
+            max-width: 350px;
+            margin: 0 auto;
         }
         .toast.success { background: rgba(16, 185, 129, 0.95); }
         .toast.error { background: rgba(239, 68, 68, 0.95); }
@@ -727,8 +745,17 @@
             from { opacity: 0; transform: translateX(30px); }
             to { opacity: 1; transform: translateX(0); }
         }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(30px); }
+        }
 
-        /* Maintenance */
+        .confirm-icon { text-align: center; font-size: 3.5rem; margin-bottom: 16px; }
+        .confirm-icon.warning { color: var(--warning); }
+        .confirm-icon.danger { color: var(--danger); }
+        .confirm-title { text-align: center; font-size: 1.3rem; margin-bottom: 8px; }
+        .confirm-message { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem; }
+
         .maintenance-status {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -775,6 +802,15 @@
             border: 1px solid var(--border-color);
             margin-bottom: 24px;
         }
+        .email-campaign-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
         .email-template-select { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
         .template-badge {
             background: var(--bg-hover);
@@ -791,7 +827,23 @@
         .template-badge:hover { border-color: var(--primary); background: var(--bg-input); }
         .template-badge.selected { border-color: var(--primary); background: rgba(124, 58, 237, 0.1); color: var(--primary); }
 
-        /* Responsive */
+        .campaign-stats {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .campaign-progress { flex: 1; height: 8px; background: var(--border-color); border-radius: var(--radius-full); overflow: hidden; }
+        .campaign-progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s; }
+        .campaign-cancel-btn { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-md); cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+        .campaign-cancel-btn:hover { background: #dc2626; }
+
         @media (min-width: 768px) {
             .page-content { padding: 24px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -800,6 +852,9 @@
             .search-bar { flex-direction: row; align-items: center; }
             .search-row { flex: 1; }
             .page-header { flex-direction: row; align-items: center; justify-content: space-between; }
+            .btn { flex: none; }
+            .server-mini-card { flex-direction: row; align-items: center; justify-content: space-between; }
+            .toast { left: auto; right: 20px; }
         }
         @media (min-width: 1024px) {
             .menu-toggle { display: none; }
@@ -808,7 +863,6 @@
             .top-bar-logo { display: none; }
         }
         @media (max-width: 767px) {
-            .menu-toggle { display: flex; align-items: center; justify-content: center; }
             .financial-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         }
     </style>
@@ -839,8 +893,7 @@
                     <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
                     <li><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
                     <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
-                    <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>Template Bot</span></a></li>
-                    <li><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
+                    <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>KERM MD V1</span></a></li>
                     <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
                     <li class="active"><a href="/admin"><i class="fas fa-crown"></i><span>Administration</span></a></li>
                     <li class="divider"></li>
@@ -878,7 +931,7 @@
                     </div>
                 </div>
 
-                <!-- STATS GLOBALES -->
+                <!-- STATS GLOBALES (8 cartes) -->
                 <div class="stats-grid">
                     <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-users"></i></div></div><div class="stat-value" id="statTotalUsers">0</div><div class="stat-label">Utilisateurs</div><div class="stat-change"><i class="fas fa-check-circle"></i> <span id="statVerifiedUsers">0 vérifiés</span></div></div>
                     <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-server"></i></div></div><div class="stat-value" id="statTotalServers">0</div><div class="stat-label">Serveurs</div><div class="stat-change"><i class="fas fa-clock"></i> <span id="statActiveServers">0 actifs</span></div></div>
@@ -928,25 +981,57 @@
                 <!-- TAB: UTILISATEURS -->
                 <div class="tab-pane active" id="tab-users">
                     <div class="search-bar">
-                        <div class="search-row"><input type="text" class="search-input" id="userSearch" placeholder="Rechercher..." onkeyup="filterUsers()"><select class="filter-select" id="userFilter" onchange="filterUsers()"><option value="all">Tous</option><option value="verified">Vérifiés</option><option value="unverified">Non vérifiés</option><option value="banned">Bannis</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option></select></div>
-                        <div class="search-badge"><i class="fas fa-users"></i><span id="userCount">0</span> utilisateurs <button class="clear-search" onclick="clearUserSearch()"><i class="fas fa-times"></i></button></div>
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="userSearch" placeholder="Rechercher (nom, email, ID...)" onkeyup="filterUsers()">
+                            <select class="filter-select" id="userFilter" onchange="filterUsers()">
+                                <option value="all">Tous</option>
+                                <option value="verified">Vérifiés</option>
+                                <option value="unverified">Non vérifiés</option>
+                                <option value="banned">Bannis</option>
+                                <option value="admin">Admins</option>
+                                <option value="superadmin">Super Admins</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-users"></i><span id="userCount">0</span> utilisateurs<button class="clear-search" onclick="clearUserSearch()"><i class="fas fa-times"></i></button></div>
                         <div class="export-btns"><button class="export-btn" onclick="exportUsers('csv')"><i class="fas fa-file-csv"></i> CSV</button><button class="export-btn" onclick="exportUsers('json')"><i class="fas fa-file-code"></i> JSON</button></div>
                     </div>
-                    <div class="table-container"><table><thead><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Coins</th><th>Serveurs</th><th>Statut</th><th>Inscription</th><th>Actions</th></thead><tbody id="usersTableBody"><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody>｜｜DSML｜｜</div>
+                    <div class="table-container"><table><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Coins</th><th>Serveurs</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead><tbody id="usersTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="userPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
                 <!-- TAB: SERVEURS -->
                 <div class="tab-pane" id="tab-servers">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="serverSearch" placeholder="Rechercher..." onkeyup="filterServers()"><select class="filter-select" id="serverFilter" onchange="filterServers()"><option value="all">Tous</option><option value="active">Actifs</option><option value="expired">Expirés</option><option value="expiring">Expire bientôt</option></select></div><div class="search-badge"><i class="fas fa-server"></i><span id="serverCount">0</span> serveurs</div></div>
-                    <div class="table-container"><table><thead><th>ID</th><th>Nom</th><th>Propriétaire</th><th>Plan</th><th>Statut</th><th>Création</th><th>Expiration</th><th>Actions</th></thead><tbody id="serversTableBody"><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="serverSearch" placeholder="Rechercher..." onkeyup="filterServers()">
+                            <select class="filter-select" id="serverFilter" onchange="filterServers()">
+                                <option value="all">Tous</option>
+                                <option value="active">Actifs</option>
+                                <option value="expired">Expirés</option>
+                                <option value="expiring">Expire bientôt</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-server"></i><span id="serverCount">0</span> serveurs</div>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>ID</th><th>Nom</th><th>Propriétaire</th><th>Plan</th><th>Statut</th><th>Création</th><th>Expiration</th><th>Actions</th></tr></thead><tbody id="serversTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeServerPage('prev')" id="serverPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="serverPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeServerPage('next')" id="serverNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
                 <!-- TAB: TRANSACTIONS -->
                 <div class="tab-pane" id="tab-transactions">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher..." onkeyup="filterTransactions()"><select class="filter-select" id="transactionFilter" onchange="filterTransactions()"><option value="all">Toutes</option><option value="completed">Complétées</option><option value="pending">En attente</option><option value="failed">Échouées</option></select></div><div class="search-badge"><i class="fas fa-exchange-alt"></i><span id="transactionCount">0</span> transactions</div></div>
-                    <div class="table-container"><table><thead><th>ID</th><th>Utilisateur</th><th>Type</th><th>Montant</th><th>Statut</th><th>Moyen</th><th>Date</th><th>Actions</th></thead><tbody id="transactionsTableBody"><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher..." onkeyup="filterTransactions()">
+                            <select class="filter-select" id="transactionFilter" onchange="filterTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="completed">Complétées</option>
+                                <option value="pending">En attente</option>
+                                <option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-exchange-alt"></i><span id="transactionCount">0</span> transactions</div>
+                    </div>
+                    <div class="table-container"><tr><thead><tr><th>ID</th><th>Utilisateur</th><th>Type</th><th>Montant</th><th>Statut</th><th>Moyen</th><th>Date</th><th>Actions</th></tr></thead><tbody id="transactionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeTransactionPage('prev')" id="transactionPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="transactionPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeTransactionPage('next')" id="transactionNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
@@ -962,76 +1047,185 @@
 
                 <!-- TAB: LOGS -->
                 <div class="tab-pane" id="tab-logs">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="logSearch" placeholder="Rechercher..." onkeyup="filterLogs()"><select class="filter-select" id="logFilter" onchange="filterLogs()"><option value="all">Toutes</option><option value="ban">Bannissements</option><option value="role">Changements rôle</option><option value="coins">Ajouts/retraits coins</option><option value="server">Actions serveurs</option></select><button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left:auto;"><i class="fas fa-trash-alt"></i> Supprimer les logs</button></div><div class="search-badge"><i class="fas fa-history"></i><span id="logCount">0</span> logs</div></div>
-                    <div class="table-container"><table><thead><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th><th>Détails</th><th>IP</th></thead><tbody id="logsTableBody"><td colspan="6" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="logSearch" placeholder="Rechercher..." onkeyup="filterLogs()">
+                            <select class="filter-select" id="logFilter" onchange="filterLogs()">
+                                <option value="all">Toutes</option>
+                                <option value="ban">Bannissements</option>
+                                <option value="role">Changements rôle</option>
+                                <option value="coins">Ajouts/retraits coins</option>
+                                <option value="server">Actions serveurs</option>
+                            </select>
+                            <button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left:auto;"><i class="fas fa-trash-alt"></i> Supprimer les logs</button>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-history"></i><span id="logCount">0</span> logs</div>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th><th>Détails</th><th>IP</th></tr></thead><tbody id="logsTableBody"><tr><td colspan="6" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeLogsPage('prev')" id="logsPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="logsPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeLogsPage('next')" id="logsNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
                 <!-- TAB: PAYPAL -->
                 <div class="tab-pane" id="tab-paypal">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="paypalSearch" placeholder="Rechercher..." onkeyup="filterPaypalTransactions()"><select class="filter-select" id="paypalFilter" onchange="filterPaypalTransactions()"><option value="all">Toutes</option><option value="pending">En attente</option><option value="successful">Confirmées</option><option value="failed">Échouées</option></select></div><div class="search-badge"><i class="fab fa-paypal"></i><span id="paypalCount">0</span> transactions PayPal<button class="clear-search" onclick="clearPaypalSearch()"><i class="fas fa-times"></i></button></div><button class="btn btn-primary" onclick="refreshPaypalTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="table-container"><table><thead><th>Date</th><th>Utilisateur</th><th>Type</th><th>Montant FCFA</th><th>Montant devise</th><th>Email PayPal</th><th>Nom complet</th><th>Statut</th><th>Actions</th></thead><tbody id="paypalTableBody"><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="paypalSearch" placeholder="Rechercher..." onkeyup="filterPaypalTransactions()">
+                            <select class="filter-select" id="paypalFilter" onchange="filterPaypalTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="pending">En attente</option>
+                                <option value="successful">Confirmées</option>
+                                <option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fab fa-paypal"></i><span id="paypalCount">0</span> transactions PayPal<button class="clear-search" onclick="clearPaypalSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="refreshPaypalTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Type</th><th>Montant FCFA</th><th>Montant devise</th><th>Email PayPal</th><th>Nom complet</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="paypalTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: MINIPAY -->
                 <div class="tab-pane" id="tab-minipay">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="minipaySearch" placeholder="Rechercher..." onkeyup="filterMinipayTransactions()"><select class="filter-select" id="minipayFilter" onchange="filterMinipayTransactions()"><option value="all">Toutes</option><option value="pending_manual">En attente capture</option><option value="pending_manual_with_proof">Capture reçue</option><option value="successful">Confirmées</option><option value="failed">Échouées</option></select></div><div class="search-badge"><i class="fas fa-mobile-alt"></i><span id="minipayCount">0</span> transactions Minipay<button class="clear-search" onclick="clearMinipaySearch()"><i class="fas fa-times"></i></button></div><button class="btn btn-primary" onclick="refreshMinipayTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="table-container"><table><thead><th>Date</th><th>Utilisateur</th><th>Pack</th><th>Coins</th><th>Montant local</th><th>Pays</th><th>Téléphone</th><th>Statut</th><th>Capture</th><th>Actions</th></thead><tbody id="minipayTableBody"><td colspan="10" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="minipaySearch" placeholder="Rechercher..." onkeyup="filterMinipayTransactions()">
+                            <select class="filter-select" id="minipayFilter" onchange="filterMinipayTransactions()">
+                                <option value="all">Toutes</option>
+                                <option value="pending_manual">En attente capture</option>
+                                <option value="pending_manual_with_proof">Capture reçue</option>
+                                <option value="successful">Confirmées</option>
+                                <option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-mobile-alt"></i><span id="minipayCount">0</span> transactions Minipay<button class="clear-search" onclick="clearMinipaySearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="refreshMinipayTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Pack</th><th>Coins</th><th>Montant local</th><th>Pays</th><th>Téléphone</th><th>Statut</th><th>Capture</th><th>Actions</th></tr></thead><tbody id="minipayTableBody"><tr><td colspan="10" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: DEMANDES BOTS -->
                 <div class="tab-pane" id="tab-bot-submissions">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="botSearch" placeholder="Rechercher..." onkeyup="filterBotSubmissions()"><select class="filter-select" id="botFilter" onchange="filterBotSubmissions()"><option value="pending">En attente</option><option value="approved">Approuvés</option><option value="rejected">Rejetés</option><option value="all">Tous</option></select></div><div class="search-badge"><i class="fas fa-clipboard-list"></i><span id="botSubmissionsCount">0</span> demandes<button class="clear-search" onclick="clearBotSearch()"><i class="fas fa-times"></i></button></div><button class="btn btn-primary" onclick="loadBotSubmissions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="table-container"><table><thead><th>Date</th><th>Utilisateur</th><th>Nom</th><th>Repository</th><th>Statut</th><th>Kh.json</th><th>Prix</th><th>Actions</th></thead><tbody id="botSubmissionsTableBody"><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botSearch" placeholder="Rechercher..." onkeyup="filterBotSubmissions()">
+                            <select class="filter-select" id="botFilter" onchange="filterBotSubmissions()">
+                                <option value="pending">En attente</option>
+                                <option value="approved">Approuvés</option>
+                                <option value="rejected">Rejetés</option>
+                                <option value="all">Tous</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-clipboard-list"></i><span id="botSubmissionsCount">0</span> demandes<button class="clear-search" onclick="clearBotSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadBotSubmissions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Nom</th><th>Repository</th><th>Statut</th><th>Kh.json</th><th>Prix</th><th>Actions</th></tr></thead><tbody id="botSubmissionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: TEMPLATES BOTS -->
                 <div class="tab-pane" id="tab-bot-templates">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="botTemplateSearch" placeholder="Rechercher..." onkeyup="filterBotTemplates()"><select class="filter-select" id="botTemplateFilter" onchange="filterBotTemplates()"><option value="all">Tous</option><option value="approved">Approuvés</option><option value="pending">En attente</option><option value="rejected">Rejetés</option></select></div><div class="search-badge"><i class="fas fa-boxes"></i><span id="botTemplatesCount">0</span> templates<button class="clear-search" onclick="clearBotTemplateSearch()"><i class="fas fa-times"></i></button></div><button class="btn btn-primary" onclick="loadBotTemplates()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="table-container"><table><thead><th>ID</th><th>Nom</th><th>Créateur</th><th>Repository</th><th>Prix</th><th>Déploiements</th><th>Statut</th><th>Actions</th></thead><tbody id="botTemplatesTableBody"><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botTemplateSearch" placeholder="Rechercher..." onkeyup="filterBotTemplates()">
+                            <select class="filter-select" id="botTemplateFilter" onchange="filterBotTemplates()">
+                                <option value="all">Tous</option>
+                                <option value="approved">Approuvés</option>
+                                <option value="pending">En attente</option>
+                                <option value="rejected">Rejetés</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-boxes"></i><span id="botTemplatesCount">0</span> templates<button class="clear-search" onclick="clearBotTemplateSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadBotTemplates()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><tr><thead><tr><th>ID</th><th>Nom</th><th>Créateur</th><th>Repository</th><th>Prix</th><th>Déploiements</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="botTemplatesTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: BOTS DÉPLOYÉS -->
                 <div class="tab-pane" id="tab-deployed-bots">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="deployedBotSearch" placeholder="Rechercher..." onkeyup="filterDeployedBots()"><select class="filter-select" id="deployedBotFilter" onchange="filterDeployedBots()"><option value="all">Tous</option><option value="active">Actifs</option><option value="deploying">En déploiement</option><option value="stopped">Arrêtés</option><option value="suspended">Suspendus</option></select></div><div class="search-badge"><i class="fas fa-rocket"></i><span id="deployedBotsCount">0</span> bots déployés<button class="clear-search" onclick="clearDeployedBotSearch()"><i class="fas fa-times"></i></button></div><button class="btn btn-primary" onclick="loadDeployedBots()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="table-container"><table><thead><th>Date déploiement</th><th>Nom Heroku</th><th>Template</th><th>Utilisateur</th><th>Durée</th><th>Expiration</th><th>Statut</th><th>Auto-renew</th><th>Actions</th></thead><tbody id="deployedBotsTableBody"><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="deployedBotSearch" placeholder="Rechercher..." onkeyup="filterDeployedBots()">
+                            <select class="filter-select" id="deployedBotFilter" onchange="filterDeployedBots()">
+                                <option value="all">Tous</option>
+                                <option value="active">Actifs</option>
+                                <option value="deploying">En déploiement</option>
+                                <option value="stopped">Arrêtés</option>
+                                <option value="suspended">Suspendus</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-rocket"></i><span id="deployedBotsCount">0</span> bots déployés<button class="clear-search" onclick="clearDeployedBotSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadDeployedBots()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>Date déploiement</th><th>Nom Heroku</th><th>Template</th><th>Utilisateur</th><th>Durée</th><th>Expiration</th><th>Statut</th><th>Auto-renew</th><th>Actions</th></tr></thead><tbody id="deployedBotsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: COMPTES HEROKU -->
                 <div class="tab-pane" id="tab-heroku">
-                    <div class="search-bar"><div class="search-row"><input type="text" class="search-input" id="herokuSearch" placeholder="Rechercher compte..." onkeyup="filterHerokuAccounts()"><select class="filter-select" id="herokuFilter" onchange="filterHerokuAccounts()"><option value="all">Tous</option><option value="active">Actifs</option><option value="inactive">Inactifs</option></select></div><div class="search-badge"><i class="fab fa-salesforce"></i><span id="herokuAccountsCount">0</span> comptes Heroku</div><button class="btn btn-success" onclick="showAddHerokuAccountModal()" style="margin-left:auto;"><i class="fas fa-plus"></i> Ajouter un compte</button><button class="btn btn-primary" onclick="loadHerokuAccounts()"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
-                    <div class="stats-grid" style="margin-bottom:20px;"><div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fab fa-salesforce"></i></div></div><div class="stat-value" id="herokuTotalAccounts">0</div><div class="stat-label">Total comptes</div></div><div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-value" id="herokuActiveAccounts">0</div><div class="stat-label">Actifs</div></div><div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-microchip"></i></div></div><div class="stat-value" id="herokuTotalCapacity">0</div><div class="stat-label">Capacité totale</div></div><div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-value" id="herokuAvailableCapacity">0</div><div class="stat-label">Disponible</div></div></div>
-                    <div class="table-container"><table><thead><th>ID</th><th>Email</th><th>API Key</th><th>Max Bots</th><th>Bots actifs</th><th>Statut</th><th>Dernière utilisation</th><th>Actions</th></thead><tbody id="herokuAccountsTableBody"><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div>
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="herokuSearch" placeholder="Rechercher compte..." onkeyup="filterHerokuAccounts()">
+                            <select class="filter-select" id="herokuFilter" onchange="filterHerokuAccounts()">
+                                <option value="all">Tous</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Inactifs</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fab fa-salesforce"></i><span id="herokuAccountsCount">0</span> comptes Heroku</div>
+                        <button class="btn btn-success" onclick="showAddHerokuAccountModal()" style="margin-left:auto;"><i class="fas fa-plus"></i> Ajouter un compte</button>
+                        <button class="btn btn-primary" onclick="loadHerokuAccounts()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="stats-grid" style="margin-bottom:20px;">
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fab fa-salesforce"></i></div></div><div class="stat-value" id="herokuTotalAccounts">0</div><div class="stat-label">Total comptes</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-value" id="herokuActiveAccounts">0</div><div class="stat-label">Actifs</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-microchip"></i></div></div><div class="stat-value" id="herokuTotalCapacity">0</div><div class="stat-label">Capacité totale</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-value" id="herokuAvailableCapacity">0</div><div class="stat-label">Disponible</div></div>
+                    </div>
+                    <div class="table-container"><table><thead><tr><th>ID</th><th>Email</th><th>API Key</th><th>Max Bots</th><th>Bots actifs</th><th>Statut</th><th>Dernière utilisation</th><th>Actions</th></tr></thead><tbody id="herokuAccountsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: MAINTENANCE -->
                 <div class="tab-pane" id="tab-maintenance">
-                    <div class="maintenance-status"><div class="status-indicator" id="maintenanceStatusIndicator"><span class="status-dot" id="maintenanceStatusDot"></span><span id="maintenanceStatusText">Chargement...</span></div>
-                    <div class="current-config"><h4>Configuration actuelle</h4><div class="config-item"><span class="config-label">Message</span><span class="config-value" id="currentMessage">-</span></div><div class="config-item"><span class="config-label">Fin estimée</span><span class="config-value" id="currentEndTime">-</span></div><div class="config-item"><span class="config-label">Support Email</span><span class="config-value" id="currentEmail">-</span></div><div class="config-item"><span class="config-label">WhatsApp</span><span class="config-value" id="currentWhatsApp">-</span></div><div class="config-item"><span class="config-label">Discord</span><span class="config-value" id="currentDiscord">-</span></div></div>
-                    <h3 style="margin:24px 0 16px;">Modifier la maintenance</h3>
-                    <div class="maintenance-form"><div class="form-row checkbox"><input type="checkbox" id="maintenanceActive"><label>Activer la maintenance</label></div><div class="form-row"><label>Message</label><textarea id="maintenanceMessage" placeholder="🚧 Site en maintenance..."></textarea></div><div class="form-row"><label>Fin estimée</label><input type="datetime-local" id="maintenanceEndTime"></div><div class="form-row"><label>Email support</label><input type="email" id="maintenanceEmail"></div><div class="form-row"><label>WhatsApp</label><input type="text" id="maintenanceWhatsApp" placeholder="https://wa.me/..."></div><div class="form-row"><label>Discord</label><input type="text" id="maintenanceDiscord"></div><div class="form-row"><label>IPs autorisées (admin)</label><textarea id="maintenanceIPs" placeholder="192.168.1.1"></textarea></div><div class="form-actions"><button class="btn btn-outline" onclick="loadMaintenanceConfig()"><i class="fas fa-sync-alt"></i> Recharger</button><button class="btn btn-primary" onclick="saveMaintenanceConfig()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
+                    <div class="maintenance-status">
+                        <div class="status-indicator" id="maintenanceStatusIndicator"><span class="status-dot" id="maintenanceStatusDot"></span><span id="maintenanceStatusText">Chargement...</span></div>
+                        <div class="current-config"><h4>Configuration actuelle</h4><div class="config-item"><span class="config-label">Message</span><span class="config-value" id="currentMessage">-</span></div><div class="config-item"><span class="config-label">Fin estimée</span><span class="config-value" id="currentEndTime">-</span></div><div class="config-item"><span class="config-label">Support Email</span><span class="config-value" id="currentEmail">-</span></div><div class="config-item"><span class="config-label">WhatsApp</span><span class="config-value" id="currentWhatsApp">-</span></div><div class="config-item"><span class="config-label">Discord</span><span class="config-value" id="currentDiscord">-</span></div></div>
+                        <h3 style="margin:24px 0 16px;">Modifier la maintenance</h3>
+                        <div class="maintenance-form">
+                            <div class="form-row checkbox"><input type="checkbox" id="maintenanceActive"><label>Activer la maintenance</label></div>
+                            <div class="form-row"><label>Message</label><textarea id="maintenanceMessage" placeholder="🚧 Site en maintenance..."></textarea></div>
+                            <div class="form-row"><label>Fin estimée</label><input type="datetime-local" id="maintenanceEndTime"></div>
+                            <div class="form-row"><label>Email support</label><input type="email" id="maintenanceEmail"></div>
+                            <div class="form-row"><label>WhatsApp</label><input type="text" id="maintenanceWhatsApp" placeholder="https://wa.me/..."></div>
+                            <div class="form-row"><label>Discord</label><input type="text" id="maintenanceDiscord"></div>
+                            <div class="form-row"><label>IPs autorisées (admin)</label><textarea id="maintenanceIPs" placeholder="192.168.1.1"></textarea></div>
+                            <div class="form-actions" style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;"><button class="btn btn-outline" onclick="loadMaintenanceConfig()"><i class="fas fa-sync-alt"></i> Recharger</button><button class="btn btn-primary" onclick="saveMaintenanceConfig()"><i class="fas fa-save"></i> Enregistrer</button></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB: EMAILS MASSIFS -->
                 <div class="tab-pane" id="tab-email">
-                    <div class="email-campaign-card"><div class="email-campaign-title"><i class="fas fa-envelope-open-text"></i> Envoi d'emails massifs</div>
-                    <div class="modal-form-group"><label>Type de template</label><div class="email-template-select" id="templateSelect"></div></div>
-                    <div class="modal-form-group"><label>Sujet</label><input type="text" class="modal-input" id="emailSubject"></div>
-                    <div class="modal-form-group"><label>Message personnalisé</label><textarea class="modal-textarea" id="emailMessage"></textarea></div>
-                    <div class="modal-form-group"><label>Cible</label><select class="modal-select" id="emailTarget"><option value="all">Tous</option><option value="user">Utilisateurs</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option></select></div>
-                    <div class="modal-form-group"><label>Email de test</label><input type="email" class="modal-input" id="testEmail"></div>
-                    <div class="modal-actions"><button class="btn btn-outline" onclick="sendTestEmail()"><i class="fas fa-flask"></i> Envoyer un test</button><button class="btn btn-primary" onclick="sendMassEmail()"><i class="fas fa-paper-plane"></i> Lancer la campagne</button></div>
-                    <div id="campaignProgress" style="display:none;"><div class="campaign-stats"><span><i class="fas fa-spinner fa-spin"></i> Envoi...</span><span id="campaignStatus">0 / 0</span><div class="campaign-progress"><div class="campaign-progress-bar" id="campaignProgressBar"></div></div><button class="campaign-cancel-btn" id="cancelCampaignBtn" onclick="cancelCurrentCampaign()"><i class="fas fa-stop"></i> Annuler</button></div></div></div>
-                    <div class="email-campaign-card"><div class="email-campaign-title"><i class="fas fa-history"></i> Historique</div><div class="table-container"><table><thead><th>Date</th><th>Admin</th><th>Sujet</th><th>Template</th><th>Destinataires</th><th>Succès</th><th>Échecs</th><th>Statut</th><th>Action</th></thead><tbody id="campaignsTableBody"><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tbody></table></div><div class="campaign-stats"><span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span><button class="btn btn-small btn-outline" onclick="loadCampaignHistory()"><i class="fas fa-sync-alt"></i> Actualiser</button></div></div>
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title"><i class="fas fa-envelope-open-text"></i> Envoi d'emails massifs</div>
+                        <div class="modal-form-group"><label>Type de template</label><div class="email-template-select" id="templateSelect"></div></div>
+                        <div class="modal-form-group"><label>Sujet</label><input type="text" class="modal-input" id="emailSubject"></div>
+                        <div class="modal-form-group"><label>Message personnalisé</label><textarea class="modal-textarea" id="emailMessage"></textarea></div>
+                        <div class="modal-form-group"><label>Cible</label><select class="modal-select" id="emailTarget"><option value="all">Tous</option><option value="user">Utilisateurs</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option></select></div>
+                        <div class="modal-form-group"><label>Email de test</label><input type="email" class="modal-input" id="testEmail"></div>
+                        <div class="modal-actions" style="justify-content:center; margin-top:20px;"><button class="btn btn-outline" onclick="sendTestEmail()"><i class="fas fa-flask"></i> Envoyer un test</button><button class="btn btn-primary" onclick="sendMassEmail()"><i class="fas fa-paper-plane"></i> Lancer la campagne</button></div>
+                        <div id="campaignProgress" style="display:none; margin-top:20px;"><div class="campaign-stats"><span><i class="fas fa-spinner fa-spin"></i> Envoi...</span><span id="campaignStatus">0 / 0</span><div class="campaign-progress"><div class="campaign-progress-bar" id="campaignProgressBar"></div></div><button class="campaign-cancel-btn" onclick="cancelCurrentCampaign()"><i class="fas fa-stop"></i> Annuler</button></div></div>
+                    </div>
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title"><i class="fas fa-history"></i> Historique</div>
+                        <div class="table-container"><table><thead><tr><th>Date</th><th>Admin</th><th>Sujet</th><th>Template</th><th>Destinataires</th><th>Succès</th><th>Échecs</th><th>Statut</th><th>Action</th></tr></thead><tbody id="campaignsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                        <div class="campaign-stats" style="margin-top:12px;"><span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span><button class="btn btn-small btn-outline" onclick="loadCampaignHistory()"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- MODALS -->
-    <div id="userEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>✏️ Édition utilisateur</h2><button class="modal-close" onclick="closeModal('userEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editUserId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editUsername">-</span></div><div class="modal-info-item"><span class="modal-info-label">Email</span><span class="modal-info-value" id="editEmail">-</span></div><div class="modal-info-item"><span class="modal-info-label">Coins</span><span class="modal-info-value" id="editCoins">-</span></div></div><div class="modal-form-group"><label>Rôle</label><select id="editRole" class="modal-select"><option value="user">Utilisateur</option><option value="admin">Admin</option><option value="superadmin">Super Admin</option></select></div><div class="modal-form-group"><label>Email vérifié</label><select id="editEmailVerified" class="modal-select"><option value="true">Oui</option><option value="false">Non</option></select></div><div class="modal-form-group"><label>Banni</label><select id="editBanned" class="modal-select"><option value="false">Non</option><option value="true">Oui</option></select></div><div class="modal-form-group"><label>Ajouter/Retirer des coins</label><div style="display:flex;gap:8px;"><input type="number" class="modal-input" id="editCoinsAmount" placeholder="Montant" min="1"><button class="btn btn-success btn-small" onclick="addCoinsToUser()"><i class="fas fa-plus"></i> Ajouter</button><button class="btn btn-danger btn-small" onclick="removeCoinsFromUser()"><i class="fas fa-minus"></i> Retirer</button></div></div><h3 style="margin:16px 0 8px;">Serveurs de l'utilisateur</h3><div id="editUserServers"><div class="loading-state"><i class="fas fa-spinner fa-spin"></i></div></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('userEditModal')">Fermer</button><button class="btn btn-primary" onclick="saveUserChanges()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
+    <div id="userEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Édition utilisateur</h2><button class="modal-close" onclick="closeModal('userEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editUserId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editUsername">-</span></div><div class="modal-info-item"><span class="modal-info-label">Email</span><span class="modal-info-value" id="editEmail">-</span></div><div class="modal-info-item"><span class="modal-info-label">Coins</span><span class="modal-info-value" id="editCoins">-</span></div></div><div class="modal-form-group"><label>Rôle</label><select class="modal-select" id="editRole"><option value="user">Utilisateur</option><option value="admin">Admin</option><option value="superadmin">Super Admin</option></select></div><div class="modal-form-group"><label>Vérification email</label><select class="modal-select" id="editEmailVerified"><option value="true">Vérifié</option><option value="false">Non vérifié</option></select></div><div class="modal-form-group"><label>Statut bannissement</label><select class="modal-select" id="editBanned"><option value="false">Actif</option><option value="true">Banni</option></select></div><div class="modal-form-group"><label>Ajouter/Retirer des coins</label><div style="display:flex; gap:8px; flex-wrap:wrap;"><input type="number" class="modal-input" id="editCoinsAmount" placeholder="Montant" min="1" style="flex:1;"><button class="btn btn-success btn-small" onclick="addCoinsToUser()">Ajouter</button><button class="btn btn-danger btn-small" onclick="removeCoinsFromUser()">Retirer</button></div></div><h3 style="margin:16px 0 8px; font-size:1.1rem;">Serveurs de l'utilisateur</h3><div id="editUserServers"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('userEditModal')">Fermer</button><button class="btn btn-primary" onclick="saveUserChanges()">Enregistrer</button></div></div></div>
 
-    <div id="serverEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>✏️ Édition serveur</h2><button class="modal-close" onclick="closeModal('serverEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editServerId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editServerName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Propriétaire</span><span class="modal-info-value" id="editServerOwner">-</span></div></div><div class="modal-form-group"><label>Plan</label><select id="editServerPlan" class="modal-select"><option value="free">Free</option><option value="1gb">Starter</option><option value="2gb">Basic</option><option value="4gb">Pro</option><option value="8gb">Business</option></select></div><div class="modal-form-group"><label>Statut</label><select id="editServerStatus" class="modal-select"><option value="active">Actif</option><option value="stopped">Arrêté</option><option value="suspended">Suspendu</option></select></div><div class="modal-form-group"><label>Expiration</label><input type="datetime-local" id="editServerExpiry" class="modal-input"></div><div class="modal-form-group"><label>Nom utilisateur Pterodactyl</label><input type="text" id="editServerPteroUser" class="modal-input"></div><div class="modal-form-group"><label>Nouveau mot de passe</label><input type="text" id="editServerPassword" class="modal-input"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button><button class="btn btn-danger" id="deleteServerBtn" onclick="deleteServer(currentServerId)"><i class="fas fa-trash-alt"></i> Supprimer</button><button class="btn btn-primary" onclick="saveServerChanges()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
+    <div id="serverEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Édition serveur</h2><button class="modal-close" onclick="closeModal('serverEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editServerId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editServerName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Propriétaire</span><span class="modal-info-value" id="editServerOwner">-</span></div></div><div class="modal-form-group"><label>Plan</label><select class="modal-select" id="editServerPlan"><option value="free">Free</option><option value="1gb">Starter</option><option value="2gb">Basic</option><option value="4gb">Pro</option><option value="8gb">Business</option></select></div><div class="modal-form-group"><label>Statut</label><select class="modal-select" id="editServerStatus"><option value="active">Actif</option><option value="stopped">Arrêté</option><option value="suspended">Suspendu</option></select></div><div class="modal-form-group"><label>Date d'expiration</label><input type="datetime-local" class="modal-input" id="editServerExpiry"></div><div class="modal-form-group"><label>Nom d'utilisateur Pterodactyl</label><input type="text" class="modal-input" id="editServerPteroUser" placeholder="Nom d'utilisateur"></div><div class="modal-form-group"><label>Mot de passe</label><input type="text" class="modal-input" id="editServerPassword" placeholder="Nouveau mot de passe"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button><button class="btn btn-danger" id="deleteServerBtn" onclick="deleteServer(currentServerId)">Supprimer</button><button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button></div></div></div>
 
     <div id="botTemplateEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>✏️ Édition template bot</h2><button class="modal-close" onclick="closeModal('botTemplateEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editTemplateId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom actuel</span><span class="modal-info-value" id="editTemplateName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Créateur</span><span class="modal-info-value" id="editTemplateCreator">-</span></div></div><div class="modal-form-group"><label>Nouveau nom</label><input type="text" id="editTemplateNewName" class="modal-input" placeholder="Laisser vide pour ne pas changer"></div><div class="modal-form-group"><label>Nouveau repository</label><input type="text" id="editTemplateNewRepo" class="modal-input" placeholder="https://github.com/user/repo"></div><div class="modal-form-group"><label>Prix (coins/semaine)</label><input type="number" id="editTemplatePrice" class="modal-input" min="0"></div><div class="modal-form-group"><label>Statut</label><select id="editTemplateStatus" class="modal-select"><option value="approved">Approuvé</option><option value="pending">En attente</option><option value="rejected">Rejeté</option><option value="deleted">Supprimé</option></select></div><div class="modal-form-group"><label>Description</label><textarea id="editTemplateDescription" class="modal-textarea"></textarea></div><div class="modal-form-group"><label>Logo URL</label><input type="text" id="editTemplateLogo" class="modal-input"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('botTemplateEditModal')">Annuler</button><button class="btn btn-danger" onclick="deleteBotTemplate(currentTemplateId)"><i class="fas fa-trash-alt"></i> Supprimer</button><button class="btn btn-primary" onclick="saveBotTemplateChanges()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
 
@@ -1039,37 +1233,33 @@
 
     <div id="herokuAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-plus"></i> Ajouter un compte Heroku</h2><button class="modal-close" onclick="closeModal('herokuAccountModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-form-group"><label>Email</label><input type="email" id="herokuEmail" class="modal-input"></div><div class="modal-form-group"><label>API Key</label><input type="password" id="herokuApiKey" class="modal-input"></div><div class="modal-form-group"><label>Max bots</label><input type="number" id="herokuMaxBots" class="modal-input" value="50"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('herokuAccountModal')">Annuler</button><button class="btn btn-success" onclick="addHerokuAccount()"><i class="fas fa-plus"></i> Ajouter</button></div></div></div>
 
-    <div id="minipayTransactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>📄 Détails transaction Minipay</h2><button class="modal-close" onclick="closeModal('minipayTransactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="minipayTransactionDetails"></div><div class="modal-screenshot" id="minipayScreenshotContainer" style="display:none;"><p><strong>Capture d'écran :</strong></p><img id="minipayScreenshot" src="" style="max-width:100%;max-height:300px;border-radius:var(--radius-md);cursor:pointer;" onclick="openScreenshotModal(this.src)"></div></div><div class="modal-actions" id="minipayModalActions"><button class="btn btn-primary" onclick="closeModal('minipayTransactionModal')">Fermer</button></div></div></div>
+    <div id="minipayTransactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Détails de la transaction Minipay</h2><button class="modal-close" onclick="closeModal('minipayTransactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="minipayTransactionDetails"></div><div class="modal-screenshot" id="minipayScreenshotContainer" style="display:none;"><p><strong>Capture d'écran :</strong></p><img id="minipayScreenshot" src="" style="max-width:100%;max-height:300px;border-radius:var(--radius-md);cursor:pointer;" onclick="openScreenshotModal(this.src)"></div></div><div class="modal-actions" id="minipayModalActions"><button class="btn btn-primary" onclick="closeModal('minipayTransactionModal')">Fermer</button></div></div></div>
 
-    <div id="screenshotModal" class="modal"><div class="modal-content" style="max-width:90vw;"><div class="modal-header"><h2>🖼️ Capture d'écran</h2><button class="modal-close" onclick="closeModal('screenshotModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><img id="screenshotFullImg" src="" class="screenshot-modal-img"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('screenshotModal')">Fermer</button></div></div></div>
+    <div id="screenshotModal" class="modal"><div class="modal-content" style="max-width:90vw;"><div class="modal-header"><h2>Capture d'écran</h2><button class="modal-close" onclick="closeModal('screenshotModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><img id="screenshotFullImg" src="" style="max-width:100%;border-radius:var(--radius-lg);"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('screenshotModal')">Fermer</button></div></div></div>
 
-    <div id="transactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>📄 Détails transaction</h2><button class="modal-close" onclick="closeModal('transactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="transactionDetails"></div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button></div></div></div>
+    <div id="transactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Détails de la transaction</h2><button class="modal-close" onclick="closeModal('transactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="transactionDetails"></div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button></div></div></div>
 
-    <div id="pteroCleanupModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-broom"></i> Nettoyage Pterodactyl</h2><button class="modal-close" onclick="closeModal('pteroCleanupModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div id="cleanupInitial"><p>⚠️ Va analyser et supprimer les utilisateurs Pterodactyl sans serveur et non liés à KermHosting.</p><ul style="margin:16px 0;padding-left:20px;"><li>✅ Non liés à aucun compte KermHosting</li><li>✅ Sans aucun serveur actif</li></ul><p style="color:var(--warning);font-weight:500;">⚠️ Action irréversible.</p></div><div id="cleanupProgress" style="display:none;text-align:center;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i><p>Nettoyage en cours...</p></div><div id="cleanupResult" style="display:none;"></div><div id="cleanupStats" style="display:none;"></div></div><div class="modal-actions" id="cleanupActions"><button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button><button class="btn btn-warning" onclick="startPterodactylCleanup()"><i class="fas fa-broom"></i> Lancer</button></div></div></div>
+    <div id="pteroCleanupModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Nettoyage des utilisateurs Pterodactyl</h2><button class="modal-close" onclick="closeModal('pteroCleanupModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div id="cleanupInitial"><p>Cette action va analyser tous les utilisateurs Pterodactyl et supprimer ceux qui :</p><ul style="margin:16px 0; padding-left:20px;"><li>✅ Ne sont liés à aucun compte KermHosting</li><li>✅ N'ont aucun serveur actif</li></ul><p style="color:var(--warning); font-weight:500;">⚠️ Cette action est irréversible.</p></div><div id="cleanupProgress" style="display:none; text-align:center; padding:20px;"><i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i><p>Nettoyage en cours, veuillez patienter...</p></div><div id="cleanupResult" style="display:none;"></div><div id="cleanupStats" style="display:none;"></div></div><div class="modal-actions" id="cleanupActions"><button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button><button class="btn btn-warning" onclick="startPterodactylCleanup()"><i class="fas fa-broom"></i> Lancer le nettoyage</button></div></div></div>
 
-    <div id="confirmModal" class="modal"><div class="modal-content"><div class="confirm-icon" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div><h2 class="confirm-title" id="confirmTitle">Confirmation</h2><p class="confirm-message" id="confirmMessage">Êtes-vous sûr ?</p><div class="modal-actions actions-center"><button class="btn btn-outline" onclick="closeModal('confirmModal')">Non, annuler</button><button class="btn btn-danger" id="confirmActionBtn">Oui, confirmer</button></div></div></div>
+    <div id="confirmModal" class="modal"><div class="modal-content"><div class="confirm-icon" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div><h2 class="confirm-title" id="confirmTitle">Confirmation</h2><p class="confirm-message" id="confirmMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p><div class="modal-actions" style="justify-content:center;"><button class="btn btn-outline" onclick="closeModal('confirmModal')">Non, annuler</button><button class="btn btn-danger" id="confirmActionBtn">Oui, confirmer</button></div></div></div>
 
     <script>
-        // Configuration
         const token = localStorage.getItem('token');
         if (!token) window.location.href = '/login';
 
-        // Variables globales
         let currentUser = null;
         let allUsers = [], allServers = [], allTransactions = [], allLogs = [];
         let allPaypalTransactions = [], allMinipayTransactions = [];
         let allBotSubmissions = [], allBotTemplates = [], allDeployedBots = [], allHerokuAccounts = [];
         let filteredBotSubmissions = [], filteredBotTemplates = [], filteredDeployedBots = [], filteredHerokuAccounts = [];
         let filteredPaypalTransactions = [], filteredMinipayTransactions = [];
-        let financialStats = null;
         let currentUserId = null, currentServerId = null, currentTemplateId = null, currentDeployedBotId = null;
         let charts = {};
         let emailTemplates = [];
         let currentCampaignId = null, campaignPollingInterval = null;
         let syncIntervals = {};
 
-        // Pagination
-        const itemsPerPage = 10;
+        const itemsPerPage = 5;
         let filteredUsers = [], currentUserPage = 1;
         let filteredServers = [], currentServerPage = 1;
         let filteredTransactions = [], currentTransactionPage = 1;
@@ -1078,7 +1268,6 @@
 
         const PLANS = { free:{name:'Free'}, '1gb':{name:'Starter'}, '2gb':{name:'Basic'}, '4gb':{name:'Pro'}, '8gb':{name:'Business'} };
 
-        // Utilitaires
         function showToast(type, message) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1087,6 +1276,7 @@
             setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
+        function esc(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
         function formatDateCameroon(d) { return new Date(d).toLocaleString('fr-FR', { timeZone:'Africa/Douala' }); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -1136,7 +1326,6 @@
                 const res = await fetch('/api/admin/financial-stats', { headers:{'Authorization':`Bearer ${token}`} });
                 const data = await res.json();
                 if(data.success) {
-                    financialStats = data.financial;
                     document.getElementById('financialTotal').textContent = (data.financial.total_revenue||0).toLocaleString() + ' FCFA';
                     document.getElementById('financialToday').textContent = (data.financial.today_revenue||0).toLocaleString() + ' FCFA';
                     document.getElementById('financialAvg').textContent = (data.financial.avg_transaction||0).toLocaleString() + ' FCFA';
@@ -1149,7 +1338,7 @@
                     if(data.financial.top_buyers && data.financial.top_buyers.length) {
                         let html = '';
                         data.financial.top_buyers.slice(0,10).forEach((b,i) => {
-                            html += `<div class="buyer-item"><div class="buyer-rank">${i+1}</div><div class="buyer-info"><div class="buyer-name">${escapeHtml(b.username)}</div><div class="buyer-email">${escapeHtml(b.email)}</div></div><div class="buyer-total">${b.total.toLocaleString()} FCFA</div><button class="action-btn view" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button></div>`;
+                            html += `<div class="buyer-item"><div class="buyer-rank">${i+1}</div><div class="buyer-info"><div class="buyer-name">${esc(b.username)}</div><div class="buyer-email">${esc(b.email)}</div></div><div class="buyer-total">${b.total.toLocaleString()} FCFA</div><button class="action-btn view" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button></div>`;
                         });
                         document.getElementById('topBuyersList').innerHTML = html;
                     }
@@ -1157,8 +1346,6 @@
                 }
             } catch(e) { console.error(e); }
         }
-
-        function escapeHtml(str) { if(!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
         function updateCharts(fin) {
             if(charts.revenue) charts.revenue.destroy();
@@ -1208,7 +1395,7 @@
                     document.getElementById('herokuTotalCapacity').textContent = totalCap;
                     document.getElementById('herokuAvailableCapacity').textContent = totalCap - usedCap;
                 }
-                // Chargement des données
+                // Chargement des données principales
                 const users = await fetch('/api/admin/users', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
                 if(users.success) { allUsers = users.users; filteredUsers = [...allUsers]; document.getElementById('userCount').textContent = allUsers.length; currentUserPage=1; displayUsers(); }
                 const servers = await fetch('/api/admin/servers', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
@@ -1221,7 +1408,7 @@
             } catch(e) { console.error(e); showToast('error','Erreur chargement données admin'); }
         }
 
-        // Affichage Users
+        // AFFICHAGE USERS
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
             if(!filteredUsers.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucun utilisateur</td></tr>'; document.getElementById('userPagination').style.display='none'; return; }
@@ -1236,7 +1423,7 @@
                 let statusClass = u.banned ? 'badge-danger' : (u.email_verified ? 'badge-success' : 'badge-warning');
                 let statusText = u.banned ? 'Banni' : (u.email_verified ? 'Actif' : 'Non vérifié');
                 let roleClass = u.role==='superadmin' ? 'badge-danger' : (u.role==='admin' ? 'badge-primary' : 'badge-info');
-                html += `<tr><td><code>${u.id.substring(0,8)}...</code></td><td><strong>${escapeHtml(u.username)}</strong></td><td>${escapeHtml(u.email)}</td><td><span class="badge ${roleClass}">${u.role}</span></td><td>${u.coins} coins</td><td>${u.servers_count||0}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(u.created_at).toLocaleDateString()}</td><td><div class="action-group"><button class="action-btn edit" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="viewUserServers('${u.id}')"><i class="fas fa-server"></i></button><button class="action-btn ban" onclick="toggleBan('${u.id}',${u.banned})"><i class="fas fa-ban"></i></button><button class="action-btn delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button><button class="action-btn" onclick="viewUserTransactions('${u.id}')"><i class="fas fa-history"></i></button></div></td></tr>`;
+                html += `<tr><td><code>${u.id.substring(0,8)}...</code></td><td><strong>${esc(u.username)}</strong></span></td><td>${esc(u.email)}</span></td><td><span class="badge ${roleClass}">${u.role}</span></span><td>${u.coins} coins</span><td>${u.servers_count||0}</span><td><span class="badge ${statusClass}">${statusText}</span></span><td>${new Date(u.created_at).toLocaleDateString()}</span><td><div class="action-group"><button class="action-btn edit" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="viewUserServers('${u.id}')"><i class="fas fa-server"></i></button><button class="action-btn ban" onclick="toggleBan('${u.id}',${u.banned})"><i class="fas fa-ban"></i></button><button class="action-btn delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button><button class="action-btn" onclick="viewUserTransactions('${u.id}')"><i class="fas fa-history"></i></button></div></td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1258,10 +1445,10 @@
         }
         function clearUserSearch() { document.getElementById('userSearch').value=''; document.getElementById('userFilter').value='all'; filteredUsers=[...allUsers]; currentUserPage=1; displayUsers(); }
 
-        // Affichage Serveurs
+        // AFFICHAGE SERVEURS
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
-            if(!filteredServers.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun serveur</tbody></td>'; document.getElementById('serverPagination').style.display='none'; return; }
+            if(!filteredServers.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucun serveur</td></tr>'; document.getElementById('serverPagination').style.display='none'; return; }
             document.getElementById('serverPagination').style.display='flex';
             let totalPages = Math.ceil(filteredServers.length/itemsPerPage), start = (currentServerPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredServers.length), paginated = filteredServers.slice(start,end);
             document.getElementById('serverPageInfo').textContent = `Page ${currentServerPage} / ${totalPages}`;
@@ -1275,7 +1462,7 @@
                 else if(s.status==='stopped') { statusClass='badge-warning'; statusText='Arrêté'; }
                 else if(daysLeft<0) { statusClass='badge-danger'; statusText='Expiré'; }
                 else if(daysLeft<=3) { statusClass='badge-warning'; statusText='Expire bientôt'; }
-                html += `<tr><td><code>${s.id.substring(0,8)}...</code></td><td><strong>${escapeHtml(s.server_name)}</strong></td><td>${escapeHtml(s.owner_username||'Inconnu')}</td><td>${PLANS[s.server_type]?.name||s.server_type}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(s.created_at).toLocaleDateString()}</td><td>${new Date(s.expires_at).toLocaleDateString()} (${daysLeft}j)</td><td><div class="action-group"><button class="action-btn edit" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="editUser('${s.user_id}')"><i class="fas fa-user"></i></button>${s.status==='suspended'?`<button class="action-btn unsuspend" onclick="unsuspendServer('${s.id}')"><i class="fas fa-play"></i></button>`:`<button class="action-btn suspend" onclick="suspendServer('${s.id}')"><i class="fas fa-pause"></i></button>`}<button class="action-btn delete" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+                html += `<tr><td><code>${s.id.substring(0,8)}...</code></td><td><strong>${esc(s.server_name)}</strong></td><td>${esc(s.owner_username||'Inconnu')}</td><td>${PLANS[s.server_type]?.name||s.server_type}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(s.created_at).toLocaleDateString()}</td><td>${new Date(s.expires_at).toLocaleDateString()} (${daysLeft}j)</td><td><div class="action-group"><button class="action-btn edit" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="editUser('${s.user_id}')"><i class="fas fa-user"></i></button>${s.status==='suspended'?`<button class="action-btn unsuspend" onclick="unsuspendServer('${s.id}')"><i class="fas fa-play"></i></button>`:`<button class="action-btn suspend" onclick="suspendServer('${s.id}')"><i class="fas fa-pause"></i></button>`}<button class="action-btn delete" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1295,10 +1482,10 @@
             currentServerPage=1; document.getElementById('serverCount').textContent=filteredServers.length; displayServers();
         }
 
-        // Affichage Transactions
+        // AFFICHAGE TRANSACTIONS
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
-            if(!filteredTransactions.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucune transaction</tbody></td>'; document.getElementById('transactionPagination').style.display='none'; return; }
+            if(!filteredTransactions.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucune transaction</td></tr>'; document.getElementById('transactionPagination').style.display='none'; return; }
             document.getElementById('transactionPagination').style.display='flex';
             let total = Math.ceil(filteredTransactions.length/itemsPerPage), start = (currentTransactionPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredTransactions.length), paginated = filteredTransactions.slice(start,end);
             document.getElementById('transactionPageInfo').textContent = `Page ${currentTransactionPage} / ${total}`;
@@ -1308,7 +1495,7 @@
             for(let t of paginated) {
                 let statusClass = t.status==='successful'?'badge-success':(t.status==='pending'?'badge-warning':'badge-danger');
                 let typeTxt = { 'coins_purchase':'Achat coins', 'server_purchase':'Achat serveur', 'server_renewal':'Renouvellement' }[t.type] || t.type;
-                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td>${escapeHtml(t.user_username||'Inconnu')}</td><td>${typeTxt}</td><td><strong>${t.amount.toLocaleString()} ${t.currency}</strong></td><td><span class="badge ${statusClass}">${t.status}</span></td><td>${t.medium||'N/A'}</td><td>${formatDateCameroon(t.created_at)}</td><td><div class="action-group"><button class="action-btn view" onclick="viewTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button></div></td></tr>`;
+                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td>${esc(t.user_username||'Inconnu')}</td><td>${typeTxt}</td><td><strong>${t.amount.toLocaleString()} ${t.currency}</strong></td><td><span class="badge ${statusClass}">${t.status}</span></td><td>${t.medium||'N/A'}</td><td>${formatDateCameroon(t.created_at)}</td><td><div class="action-group"><button class="action-btn view" onclick="viewTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button></div></td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1327,17 +1514,17 @@
             currentTransactionPage=1; document.getElementById('transactionCount').textContent=filteredTransactions.length; displayTransactions();
         }
 
-        // Affichage Logs
+        // AFFICHAGE LOGS
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
-            if(!filteredLogs.length) { tbody.innerHTML='<tr><td colspan="6" class="loading-state">Aucun log</tbody></tr>'; document.getElementById('logsPagination').style.display='none'; return; }
+            if(!filteredLogs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;">Aucun log</td></tr>'; document.getElementById('logsPagination').style.display='none'; return; }
             let total = Math.ceil(filteredLogs.length/itemsPerPage), start = (currentLogsPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredLogs.length), paginated = filteredLogs.slice(start,end);
             document.getElementById('logsPageInfo').textContent = `Page ${currentLogsPage} / ${total}`;
             document.getElementById('logsPrevBtn').disabled = currentLogsPage===1;
             document.getElementById('logsNextBtn').disabled = currentLogsPage===total;
             let html = '';
             for(let l of paginated) {
-                html += `<tr><td>${formatDateCameroon(l.created_at)}</td><td>${escapeHtml(l.admin_username||'Inconnu')}</td><td>${l.action_type}</td><td>${l.target_type||''} ${l.target_id?l.target_id.substring(0,8)+'...':''}</td><td>${escapeHtml(l.description||'')}</td><td>${l.ip_address||'N/A'}</td></tr>`;
+                html += `<tr><td>${formatDateCameroon(l.created_at)}</span></td><td>${esc(l.admin_username||'Inconnu')}</span></td><td>${l.action_type}</span><td>${l.target_type||''} ${l.target_id?l.target_id.substring(0,8)+'...':''}</span><td>${esc(l.description||'')}</span><td>${l.ip_address||'N/A'}</span></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1357,7 +1544,7 @@
             currentLogsPage=1; document.getElementById('logCount').textContent=filteredLogs.length; displayLogs();
         }
 
-        // Actions utilisateurs
+        // ACTIONS UTILISATEURS
         async function editUser(userId) {
             let user = allUsers.find(u=>u.id===userId);
             if(!user) return;
@@ -1371,13 +1558,13 @@
             document.getElementById('editBanned').value = user.banned ? 'true' : 'false';
             let userServers = allServers.filter(s=>s.user_id===userId);
             let serversDiv = document.getElementById('editUserServers');
-            if(!userServers.length) serversDiv.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Aucun serveur</p>';
+            if(!userServers.length) serversDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Aucun serveur</p>';
             else {
                 let html = '';
                 userServers.slice(0,3).forEach(s => {
-                    html += `<div class="server-mini-card"><div class="server-mini-info"><h4>${escapeHtml(s.server_name)}</h4><p>${PLANS[s.server_type]?.name||s.server_type} - Expire: ${new Date(s.expires_at).toLocaleDateString()}</p></div><div class="server-mini-actions"><button class="action-btn edit" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></div>`;
+                    html += `<div class="server-mini-card"><div class="server-mini-info"><h4>${esc(s.server_name)}</h4><p>${PLANS[s.server_type]?.name||s.server_type} - Expire: ${new Date(s.expires_at).toLocaleDateString()}</p></div><div class="server-mini-actions"><button class="action-btn edit" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></div>`;
                 });
-                if(userServers.length>3) html += `<p style="text-align:center;margin-top:8px;">... et ${userServers.length-3} autres</p>`;
+                if(userServers.length>3) html += `<p style="text-align: center; color: var(--text-secondary); margin-top: 8px;">... et ${userServers.length-3} autres</p>`;
                 serversDiv.innerHTML = html;
             }
             openModal('userEditModal');
@@ -1416,7 +1603,7 @@
             } catch(e) { showToast('error','Erreur réseau'); }
         }
         async function toggleBan(userId, currentBanned) {
-            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>`;
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>`;
             document.getElementById('confirmTitle').textContent = currentBanned ? 'Débannir' : 'Bannir';
             document.getElementById('confirmMessage').textContent = `Êtes-vous sûr de vouloir ${currentBanned ? 'débannir' : 'bannir'} cet utilisateur ?`;
             let confirmBtn = document.getElementById('confirmActionBtn');
@@ -1433,9 +1620,9 @@
             openModal('confirmModal');
         }
         async function deleteUser(userId) {
-            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>`;
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
             document.getElementById('confirmTitle').textContent = 'Supprimer utilisateur';
-            document.getElementById('confirmMessage').textContent = 'Suppression définitive ?';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible !';
             let confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
@@ -1450,7 +1637,7 @@
             openModal('confirmModal');
         }
 
-        // Actions serveurs
+        // ACTIONS SERVEURS
         function editServer(serverId) {
             let server = allServers.find(s=>s.id===serverId);
             if(!server) return;
@@ -1480,9 +1667,10 @@
             } catch(e) { showToast('error','Erreur réseau'); }
         }
         async function deleteServer(serverId) {
-            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>`;
+            if (!serverId) { showToast('error','ID du serveur non spécifié'); return; }
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
             document.getElementById('confirmTitle').textContent = 'Supprimer serveur';
-            document.getElementById('confirmMessage').textContent = 'Suppression définitive ?';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce serveur ?';
             let confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-danger';
             confirmBtn.onclick = async () => {
@@ -1490,22 +1678,22 @@
                 try {
                     let res = await fetch(`/api/admin/servers/${serverId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
                     let data = await res.json();
-                    if(data.success) { showToast('success','Serveur supprimé'); loadAdminData(); if(currentServerId===serverId) closeModal('serverEditModal'); }
+                    if(data.success) { showToast('success','Serveur supprimé'); if(currentServerId===serverId) closeModal('serverEditModal'); loadAdminData(); }
                     else showToast('error',data.error);
                 } catch(e) { showToast('error','Erreur réseau'); }
             };
             openModal('confirmModal');
         }
         async function suspendServer(serverId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color:var(--warning);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Suspendre serveur';
-            document.getElementById('confirmMessage').textContent = 'Confirmer la suspension ?';
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ?';
             let confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-warning';
             confirmBtn.onclick = async () => {
                 closeModal('confirmModal');
                 try {
-                    let res = await fetch(`/api/admin/servers/${serverId}/suspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'} });
+                    let res = await fetch(`/api/admin/servers/${serverId}/suspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
                     let data = await res.json();
                     if(data.success) { showToast('success','Serveur suspendu'); loadAdminData(); }
                     else showToast('error',data.error);
@@ -1514,9 +1702,9 @@
             openModal('confirmModal');
         }
         async function unsuspendServer(serverId) {
-            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color:var(--success);"></i>';
-            document.getElementById('confirmTitle').textContent = 'Réactiver serveur';
-            document.getElementById('confirmMessage').textContent = 'Confirmer la réactivation ?';
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ?';
             let confirmBtn = document.getElementById('confirmActionBtn');
             confirmBtn.className = 'btn btn-success';
             confirmBtn.onclick = async () => {
@@ -1533,12 +1721,12 @@
         function viewTransaction(transactionId) {
             let t = allTransactions.find(t=>t.id===transactionId);
             if(!t) return;
-            let details = `<div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${t.id}</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${escapeHtml(t.user_username||'Inconnu')}</span></div><div class="modal-info-item"><span class="modal-info-label">Type</span><span class="modal-info-value">${t.type}</span></div><div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${t.amount} ${t.currency}</span></div><div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value"><span class="badge ${t.status==='successful'?'badge-success':'badge-warning'}">${t.status}</span></span></div><div class="modal-info-item"><span class="modal-info-label">Moyen</span><span class="modal-info-value">${t.medium||'N/A'}</span></div><div class="modal-info-item"><span class="modal-info-label">Date</span><span class="modal-info-value">${formatDateCameroon(t.created_at)}</span></div>`;
+            let details = `<div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${t.id}</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${esc(t.user_username||'Inconnu')}</span></div><div class="modal-info-item"><span class="modal-info-label">Type</span><span class="modal-info-value">${t.type}</span></div><div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${t.amount} ${t.currency}</span></div><div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value"><span class="badge ${t.status==='successful'?'badge-success':'badge-warning'}">${t.status}</span></span></div><div class="modal-info-item"><span class="modal-info-label">Moyen</span><span class="modal-info-value">${t.medium||'N/A'}</span></div><div class="modal-info-item"><span class="modal-info-label">Date</span><span class="modal-info-value">${formatDateCameroon(t.created_at)}</span></div>`;
             document.getElementById('transactionDetails').innerHTML = details;
             openModal('transactionModal');
         }
 
-        // PayPal
+        // PAYPAL
         async function loadPaypalTransactions() {
             try {
                 let res = await fetch('/api/admin/paypal/pending', { headers:{'Authorization':`Bearer ${token}`} });
@@ -1551,7 +1739,7 @@
         function refreshPaypalTransactions() { loadPaypalTransactions(); }
         function displayPaypalTransactions() {
             let tbody = document.getElementById('paypalTableBody');
-            if(!filteredPaypalTransactions.length) { tbody.innerHTML='<tr><td colspan="9" class="loading-state">Aucune transaction PayPal</tbody></tr>'; return; }
+            if(!filteredPaypalTransactions.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucune transaction PayPal</td><tr>'; return; }
             let start = (currentPaypalPage-1)*itemsPerPage, paginated = filteredPaypalTransactions.slice(start, start+itemsPerPage);
             let html = '';
             for(let t of paginated) {
@@ -1559,7 +1747,7 @@
                 let statusBadge = t.status==='pending'?'badge-warning':(t.status==='successful'?'badge-success':'badge-danger');
                 let amountDisplay = t.paypal_amount_converted ? `${t.paypal_amount_converted} ${t.paypal_currency}` : `${t.amount} FCFA`;
                 let actions = t.status==='pending' ? `<div class="action-group"><button class="action-btn confirm" onclick="confirmPaypalPayment('${t.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" onclick="failPaypalPayment('${t.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" onclick="viewPaypalTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" onclick="viewPaypalTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>`;
-                html += `<tr><td>${formatDateCameroon(t.created_at)}</span></td><td><strong>${escapeHtml(t.profiles?.username||'Inconnu')}</strong><br><small>${escapeHtml(t.profiles?.email||'')}</small></td><td><span class="badge badge-info">${typeText}</span></td><td>${t.amount.toLocaleString()} FCFA</span></td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${t.paypal_email||'-'}</td><td>${t.paypal_name||'-'}</td><td><span class="badge ${statusBadge}">${t.status}</span></td><td>${actions}</td></tr>`;
+                html += `<tr><td>${formatDateCameroon(t.created_at)}</span></td><td><strong>${esc(t.profiles?.username||'Inconnu')}</strong><br><small>${esc(t.profiles?.email||'')}</small></td><td><span class="badge badge-info">${typeText}</span></td><td>${t.amount.toLocaleString()} FCFA</span></td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${t.paypal_email||'-'}</td><td>${t.paypal_name||'-'}</td><td><span class="badge ${statusBadge}">${t.status}</span></td><td>${actions}</td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1567,14 +1755,14 @@
         async function failPaypalPayment(transactionId) { showToast('error','Fonction implémentée'); loadPaypalTransactions(); }
         function viewPaypalTransaction(transactionId) { let t = allPaypalTransactions.find(t=>t.id===transactionId); if(t) { document.getElementById('transactionDetails').innerHTML = `<div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${t.id}</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${t.profiles?.username}</span></div><div class="modal-info-item"><span class="modal-info-label">Email PayPal</span><span class="modal-info-value">${t.paypal_email}</span></div><div class="modal-info-item"><span class="modal-info-label">Nom complet</span><span class="modal-info-value">${t.paypal_name}</span></div><div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${t.amount} FCFA / ${t.paypal_amount_converted} ${t.paypal_currency}</span></div>`; openModal('transactionModal'); } }
 
-        // Minipay
+        // MINIPAY
         async function loadMinipayTransactions() { try { let res = await fetch('/api/admin/minipay/pending', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allMinipayTransactions = data.transactions||[]; filteredMinipayTransactions = [...allMinipayTransactions]; document.getElementById('minipayCount').textContent = allMinipayTransactions.length; currentMinipayPage=1; displayMinipayTransactions(); } } catch(e) { showToast('error','Erreur Minipay'); } }
         function filterMinipayTransactions() { let search = document.getElementById('minipaySearch').value.toLowerCase(); let filter = document.getElementById('minipayFilter').value; filteredMinipayTransactions = allMinipayTransactions.filter(t => { let match = (t.profiles?.username||'').toLowerCase().includes(search) || (t.profiles?.email||'').toLowerCase().includes(search); if(!match) return false; if(filter==='pending_manual') return t.status==='pending_manual'; if(filter==='pending_manual_with_proof') return t.status==='pending_manual_with_proof'; if(filter==='successful') return t.status==='successful'; if(filter==='failed') return t.status==='failed'; return true; }); displayMinipayTransactions(); }
         function clearMinipaySearch() { document.getElementById('minipaySearch').value=''; document.getElementById('minipayFilter').value='all'; filteredMinipayTransactions=[...allMinipayTransactions]; displayMinipayTransactions(); }
         function refreshMinipayTransactions() { loadMinipayTransactions(); }
         function displayMinipayTransactions() {
             let tbody = document.getElementById('minipayTableBody');
-            if(!filteredMinipayTransactions.length) { tbody.innerHTML='<tr><td colspan="10" class="loading-state">Aucune transaction</tbody></td>'; return; }
+            if(!filteredMinipayTransactions.length) { tbody.innerHTML='<tr><td colspan="10" style="text-align:center;">Aucune transaction Minipay</tbody></tr>'; return; }
             let start = (currentMinipayPage-1)*itemsPerPage, paginated = filteredMinipayTransactions.slice(start, start+itemsPerPage);
             let html = '';
             for(let t of paginated) {
@@ -1585,7 +1773,7 @@
                 let statusClass = t.status==='pending_manual'?'badge-warning':(t.status==='pending_manual_with_proof'?'badge-info':(t.status==='successful'?'badge-success':'badge-danger'));
                 let screenshotHtml = t.payment_screenshot ? `<img src="${t.payment_screenshot}" class="screenshot-preview" onclick="openScreenshotModal('${t.payment_screenshot}')">` : '-';
                 let actions = t.status==='pending_manual_with_proof' ? `<div class="action-group"><button class="action-btn confirm" onclick="confirmMinipayPayment('${t.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" onclick="failMinipayPayment('${t.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" onclick="viewMinipayTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" onclick="viewMinipayTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>`;
-                html += `<tr><td>${formatDateCameroon(t.created_at)}</span></td><td><strong>${escapeHtml(t.profiles?.username||'Inconnu')}</strong><br><small>${escapeHtml(t.profiles?.email||'')}</small></td><td>${pack?.name||'-'}</td><td>${totalCoins} coins</span></td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${t.country||'-'}</td><td>${t.minipay_phone||'-'}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${screenshotHtml}</td><td>${actions}</td></tr>`;
+                html += `<tr><td>${formatDateCameroon(t.created_at)}</span></td><td><strong>${esc(t.profiles?.username||'Inconnu')}</strong><br><small>${esc(t.profiles?.email||'')}</small></td><td>${pack?.name||'-'}</td><td>${totalCoins} coins</span></td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${t.country||'-'}</td><td>${t.minipay_phone||'-'}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${screenshotHtml}</td><td>${actions}</td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1594,7 +1782,7 @@
         async function failMinipayPayment(transactionId) { showToast('error','Fonction implémentée'); loadMinipayTransactions(); }
         function openScreenshotModal(url) { document.getElementById('screenshotFullImg').src=url; openModal('screenshotModal'); }
 
-        // Bot Submissions
+        // BOT SUBMISSIONS
         async function loadBotSubmissions() { try { let res = await fetch('/api/admin/bot-submissions', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allBotSubmissions = data.submissions||[]; filteredBotSubmissions = [...allBotSubmissions]; document.getElementById('botSubmissionsCount').textContent = allBotSubmissions.length; displayBotSubmissions(); } } catch(e) { showToast('error','Erreur chargement demandes'); } }
         function filterBotSubmissions() { let search = document.getElementById('botSearch').value.toLowerCase(); let filter = document.getElementById('botFilter').value; filteredBotSubmissions = allBotSubmissions.filter(s => { let match = (s.bot_name||'').toLowerCase().includes(search) || (s.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter==='all') return true; return s.status===filter; }); displayBotSubmissions(); }
         function clearBotSearch() { document.getElementById('botSearch').value=''; document.getElementById('botFilter').value='pending'; filteredBotSubmissions=[...allBotSubmissions]; displayBotSubmissions(); }
@@ -1605,7 +1793,7 @@
             for(let s of filteredBotSubmissions) {
                 let statusBadge = s.status==='pending'?'badge-warning':(s.status==='approved'?'badge-success':'badge-danger');
                 let actions = s.status==='pending' ? `<div class="action-group"><button class="action-btn confirm" onclick="approveBot('${s.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" onclick="rejectBot('${s.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" onclick="viewBotSubmission('${s.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" onclick="viewBotSubmission('${s.id}')"><i class="fas fa-info-circle"></i></button></div>`;
-                html += `<tr><td>${formatDateCameroon(s.created_at)}</span></td><td><strong>${escapeHtml(s.profiles?.username||'Inconnu')}</strong><br><small>${escapeHtml(s.profiles?.email||'')}</small></td><td><strong>${escapeHtml(s.bot_name)}</strong></td><td><a href="${s.repo_url}" target="_blank">Voir repo</a></td><td><span class="badge ${statusBadge}">${s.status}</span></td><td>${s.kh_json?'✅ Valide':'❌'}</td>.<input type="number" id="price_${s.id}" class="modal-input" style="width:100px;padding:4px;" value="100"></td><td>${actions}</td></tr>`;
+                html += `<tr><td>${formatDateCameroon(s.created_at)}</span></td><td><strong>${esc(s.profiles?.username||'Inconnu')}</strong><br><small>${esc(s.profiles?.email||'')}</small></td><td><strong>${esc(s.bot_name)}</strong></td><td><a href="${s.repo_url}" target="_blank">Voir repo</a></td><td><span class="badge ${statusBadge}">${s.status}</span></td><td>${s.kh_json?'✅ Valide':'❌'}</td>.<input type="number" id="price_${s.id}" class="modal-input" style="width:100px;padding:4px;" value="100"></td><td>${actions}</td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1613,18 +1801,18 @@
         async function rejectBot(submissionId) { showToast('info','Rejet...'); try { let res = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({reason:'Non conforme'}) }); let data = await res.json(); if(data.success) { showToast('success','Bot rejeté'); loadBotSubmissions(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
         function viewBotSubmission(submissionId) { let s = allBotSubmissions.find(s=>s.id===submissionId); if(s) { let details = `<div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value">${s.bot_name}</span></div><div class="modal-info-item"><span class="modal-info-label">Repo</span><span class="modal-info-value"><a href="${s.repo_url}" target="_blank">${s.repo_url}</a></span></div><div class="modal-info-item"><span class="modal-info-label">Soumis par</span><span class="modal-info-value">${s.profiles?.username}</span></div><div class="modal-info-item"><span class="modal-info-label">Kh.json</span><span class="modal-info-value"><pre style="background:var(--bg-input);padding:8px;border-radius:8px;">${JSON.stringify(s.kh_json,null,2)}</pre></span></div>`; document.getElementById('transactionDetails').innerHTML = details; openModal('transactionModal'); } }
 
-        // Bot Templates
+        // BOT TEMPLATES
         async function loadBotTemplates() { try { let res = await fetch('/api/admin/bots/all', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allBotTemplates = data.data.templates||[]; filteredBotTemplates = [...allBotTemplates]; document.getElementById('botTemplatesCount').textContent = allBotTemplates.length; currentBotTemplatePage=1; displayBotTemplates(); startAutoSyncForAllTemplates(allBotTemplates); } } catch(e) { showToast('error','Erreur templates'); } }
         function filterBotTemplates() { let search = document.getElementById('botTemplateSearch').value.toLowerCase(); let filter = document.getElementById('botTemplateFilter').value; filteredBotTemplates = allBotTemplates.filter(t => { let match = (t.name||'').toLowerCase().includes(search) || (t.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter==='all') return true; return t.status===filter; }); currentBotTemplatePage=1; document.getElementById('botTemplatesCount').textContent=filteredBotTemplates.length; displayBotTemplates(); }
         function clearBotTemplateSearch() { document.getElementById('botTemplateSearch').value=''; document.getElementById('botTemplateFilter').value='all'; filteredBotTemplates=[...allBotTemplates]; currentBotTemplatePage=1; displayBotTemplates(); }
         function displayBotTemplates() {
             let tbody = document.getElementById('botTemplatesTableBody');
-            if(!filteredBotTemplates.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun template</tbody></td>'; return; }
+            if(!filteredBotTemplates.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun template</tbody></tr>'; return; }
             let start = (currentBotTemplatePage-1)*itemsPerPage, paginated = filteredBotTemplates.slice(start, start+itemsPerPage);
             let html = '';
             for(let t of paginated) {
                 let statusBadge = t.status==='approved'?'badge-success':(t.status==='pending'?'badge-warning':(t.status==='rejected'?'badge-danger':'badge-danger'));
-                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td><strong>${escapeHtml(t.name)}</strong></td><td>${t.profiles?.username||'Inconnu'}</td><td><a href="${t.repo_url}" target="_blank">Voir</a></td><td>${t.price_weekly||100} coins</span></td><td>${t.total_deploys||0}</span></td><td><span class="badge ${statusBadge}">${t.status}</span></td><td><div class="action-group"><button class="action-btn edit" onclick="editBotTemplate('${t.id}')"><i class="fas fa-edit"></i></button><button class="action-btn sync" onclick="syncBotTemplate('${t.id}')"><i class="fas fa-sync-alt"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteBotTemplate('${t.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
+                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td><strong>${esc(t.name)}</strong></td><td>${t.profiles?.username||'Inconnu'}</td><td><a href="${t.repo_url}" target="_blank">Voir</a></td><td>${t.price_weekly||100} coins</span></td><td>${t.total_deploys||0}</span></td><td><span class="badge ${statusBadge}">${t.status}</span></td><td><div class="action-group"><button class="action-btn edit" onclick="editBotTemplate('${t.id}')"><i class="fas fa-edit"></i></button><button class="action-btn sync" onclick="syncBotTemplate('${t.id}')"><i class="fas fa-sync-alt"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteBotTemplate('${t.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
             }
             tbody.innerHTML = html;
         }
@@ -1664,7 +1852,7 @@
             confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/bots/templates/${templateId}?permanent=true`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Template supprimé'); loadBotTemplates(); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
         }
 
-        // Synchro auto kh.json
+        // SYNCHRO AUTO KH.JSON
         async function syncSingleBotTemplate(templateId, repoUrl) {
             try {
                 const res = await fetch(`/api/admin/bots/templates/${templateId}/sync-kh`, {
@@ -1687,13 +1875,13 @@
             templates.forEach(tpl => { if (tpl.status === 'approved' && tpl.repo_url) { startAutoSyncForTemplate(tpl.id, tpl.repo_url); } });
         }
 
-        // Deployed Bots
+        // DEPLOYED BOTS
         async function loadDeployedBots() { try { let res = await fetch('/api/admin/bots/deployed', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allDeployedBots = data.bots||[]; filteredDeployedBots = [...allDeployedBots]; document.getElementById('deployedBotsCount').textContent = allDeployedBots.length; currentDeployedBotPage=1; displayDeployedBots(); } } catch(e) { showToast('error','Erreur chargement bots déployés'); } }
         function filterDeployedBots() { let search = document.getElementById('deployedBotSearch').value.toLowerCase(); let filter = document.getElementById('deployedBotFilter').value; filteredDeployedBots = allDeployedBots.filter(b => { let match = (b.heroku_app_name||'').toLowerCase().includes(search) || (b.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter!=='all') return b.status===filter; return true; }); currentDeployedBotPage=1; document.getElementById('deployedBotsCount').textContent=filteredDeployedBots.length; displayDeployedBots(); }
         function clearDeployedBotSearch() { document.getElementById('deployedBotSearch').value=''; document.getElementById('deployedBotFilter').value='all'; filteredDeployedBots=[...allDeployedBots]; currentDeployedBotPage=1; displayDeployedBots(); }
         function displayDeployedBots() {
             let tbody = document.getElementById('deployedBotsTableBody');
-            if(!filteredDeployedBots.length) { tbody.innerHTML='<tr><td colspan="9" class="loading-state">Aucun bot déployé</tbody></td>'; return; }
+            if(!filteredDeployedBots.length) { tbody.innerHTML='<tr><td colspan="9" class="loading-state">Aucun bot déployé</tbody></tr>'; return; }
             let start = (currentDeployedBotPage-1)*itemsPerPage, paginated = filteredDeployedBots.slice(start, start+itemsPerPage);
             let html = '';
             for(let b of paginated) {
@@ -1701,7 +1889,7 @@
                 let statusBadge = b.status==='active'?(daysLeft<0?'badge-danger':(daysLeft<=3?'badge-warning':'badge-success')): (b.status==='deploying'?'badge-warning':(b.status==='stopped'?'badge-warning':(b.status==='suspended'?'badge-danger':'badge-danger')));
                 let statusText = b.status==='active'?(daysLeft<0?'Expiré':(daysLeft<=3?'Expire bientôt':'Actif')):b.status;
                 let actions = `<div class="action-group"><button class="action-btn edit" onclick="editDeployedBot('${b.id}')"><i class="fas fa-edit"></i></button>${b.status==='active'?`<button class="action-btn suspend" onclick="suspendDeployedBot('${b.id}')"><i class="fas fa-pause"></i></button>`:b.status==='suspended'?`<button class="action-btn unsuspend" onclick="unsuspendDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>`:b.status==='stopped'?`<button class="action-btn unsuspend" onclick="startDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>`:''}<button class="action-btn view" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteDeployedBot('${b.id}')"><i class="fas fa-trash"></i></button></div>`;
-                html += `<tr><td>${formatDateCameroon(b.created_at)}</span></td><td><strong>${escapeHtml(b.heroku_app_name)}</strong></td><td>${b.bot_templates?.name||'-'}</td><td>${b.profiles?.username||'Inconnu'}</td><td>${b.duration_mode==='monthly'?'Mensuel':'Hebdo'}</td><td>${new Date(b.expires_at).toLocaleDateString()} (${daysLeft}j)</td><td><span class="badge ${statusBadge}">${statusText}</span></td><td>${b.auto_renew?'✅':'❌'}</td><td>${actions}</td></tr>`;
+                html += `<tr><td>${formatDateCameroon(b.created_at)}</span></td><td><strong>${esc(b.heroku_app_name)}</strong></td><td>${b.bot_templates?.name||'-'}</td><td>${b.profiles?.username||'Inconnu'}</td><td>${b.duration_mode==='monthly'?'Mensuel':'Hebdo'}</td><td>${new Date(b.expires_at).toLocaleDateString()} (${daysLeft}j)</td><td><span class="badge ${statusBadge}">${statusText}</span></td><td>${b.auto_renew?'✅':'❌'}</td><td>${actions}</td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1720,18 +1908,18 @@
             confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/bots/deployed/${botId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Bot supprimé'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
         }
 
-        // Heroku Accounts
+        // HEROKU ACCOUNTS
         async function loadHerokuAccounts() { try { let res = await fetch('/api/admin/heroku/accounts', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allHerokuAccounts = data.accounts||[]; filteredHerokuAccounts = [...allHerokuAccounts]; document.getElementById('herokuAccountsCount').textContent = allHerokuAccounts.length; displayHerokuAccounts(); updateHerokuStats(); } } catch(e) { showToast('error','Erreur chargement Heroku'); } }
         function updateHerokuStats() { let total = allHerokuAccounts.length, active = allHerokuAccounts.filter(a=>a.is_active).length; let totalCap = allHerokuAccounts.reduce((s,a)=>s+(a.max_bots||0),0), usedCap = allHerokuAccounts.reduce((s,a)=>s+(a.current_bots||0),0); document.getElementById('herokuTotalAccounts').textContent=total; document.getElementById('herokuActiveAccounts').textContent=active; document.getElementById('herokuTotalCapacity').textContent=totalCap; document.getElementById('herokuAvailableCapacity').textContent=totalCap-usedCap; }
         function filterHerokuAccounts() { let search = document.getElementById('herokuSearch').value.toLowerCase(); let filter = document.getElementById('herokuFilter').value; filteredHerokuAccounts = allHerokuAccounts.filter(a => { let match = a.email.toLowerCase().includes(search); if(!match) return false; if(filter==='active') return a.is_active; if(filter==='inactive') return !a.is_active; return true; }); displayHerokuAccounts(); }
         function displayHerokuAccounts() {
             let tbody = document.getElementById('herokuAccountsTableBody');
-            if(!filteredHerokuAccounts.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun compte Heroku</tbody></table>'; return; }
+            if(!filteredHerokuAccounts.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun compte Heroku</tbody></tr>'; return; }
             let html = '';
             for(let a of filteredHerokuAccounts) {
                 let statusBadge = a.is_active?'badge-success':'badge-danger';
                 let lastUsed = a.last_used_at ? formatDateCameroon(a.last_used_at) : 'Jamais';
-                html += `<tr><td><code>${a.id.substring(0,8)}...</code></td><td><strong>${escapeHtml(a.email)}</strong></td><td><input type="password" value="${a.api_key.substring(0,20)}..." readonly style="background:transparent;border:none;color:var(--text-secondary);font-family:monospace;" size="25"></td><td>${a.max_bots||0}</span></td><td>${a.current_bots||0} / ${a.max_bots||0} (${Math.round(((a.current_bots||0)/(a.max_bots||1))*100)}%)</span></td><td><span class="badge ${statusBadge}">${a.is_active?'Actif':'Inactif'}</span></td><td>${lastUsed}</td>.<div class="action-group"><button class="action-btn edit" onclick="editHerokuAccount('${a.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteHerokuAccount('${a.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
+                html += `<tr><td><code>${a.id.substring(0,8)}...</code></td><td><strong>${esc(a.email)}</strong></td><td><input type="password" value="${a.api_key.substring(0,20)}..." readonly style="background:transparent;border:none;color:var(--text-secondary);font-family:monospace;" size="25"></td><td>${a.max_bots||0}</span></td><td>${a.current_bots||0} / ${a.max_bots||0} (${Math.round(((a.current_bots||0)/(a.max_bots||1))*100)}%)</span></td><td><span class="badge ${statusBadge}">${a.is_active?'Actif':'Inactif'}</span></td><td>${lastUsed}</td>.<div class="action-group"><button class="action-btn edit" onclick="editHerokuAccount('${a.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteHerokuAccount('${a.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
             }
             tbody.innerHTML = html;
         }
@@ -1747,7 +1935,7 @@
             confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/heroku/accounts/${accountId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Compte Heroku supprimé'); loadHerokuAccounts(); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
         }
 
-        // Maintenance
+        // MAINTENANCE
         async function loadMaintenanceConfig() {
             try {
                 let res = await fetch('/api/admin/maintenance', { headers:{'Authorization':`Bearer ${token}`} });
@@ -1778,18 +1966,18 @@
             try { let res = await fetch('/api/admin/maintenance', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify(cfg) }); let data = await res.json(); if(data.success) { showToast('success',data.message); loadMaintenanceConfig(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur réseau'); }
         }
 
-        // Emails Massifs
-        async function loadEmailTemplates() { try { let res = await fetch('/api/admin/email-templates', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { emailTemplates = data.templates; let html = ''; emailTemplates.forEach(t=>{ html += `<div class="template-badge" onclick="selectTemplate('${t.id}')" data-template="${t.id}"><i class="fas ${t.icon=== '📢' ? 'fa-bullhorn' : t.icon=== '🛠️' ? 'fa-tools' : t.icon=== '🎉' ? 'fa-gift' : t.icon=== '📰' ? 'fa-newspaper' : t.icon=== '⚠️' ? 'fa-exclamation-triangle' : 'fa-envelope'}"></i> ${t.name}</div>`; }); document.getElementById('templateSelect').innerHTML = html; if(emailTemplates.length) selectTemplate(emailTemplates[0].id); } } catch(e) { showToast('error','Erreur templates email'); } }
+        // EMAILS MASSIFS
+        async function loadEmailTemplates() { try { let res = await fetch('/api/admin/email-templates', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { emailTemplates = data.templates; let html = ''; emailTemplates.forEach(t=>{ html += `<div class="template-badge" onclick="selectTemplate('${t.id}')" data-template="${t.id}">${t.icon} ${t.name}</div>`; }); document.getElementById('templateSelect').innerHTML = html; if(emailTemplates.length) selectTemplate(emailTemplates[0].id); } } catch(e) { showToast('error','Erreur templates email'); } }
         let selectedTemplateId = null;
         function selectTemplate(id) { selectedTemplateId = id; document.querySelectorAll('.template-badge').forEach(el=>el.classList.remove('selected')); let sel = document.querySelector(`.template-badge[data-template="${id}"]`); if(sel) sel.classList.add('selected'); let tpl = emailTemplates.find(t=>t.id===id); if(tpl) { document.getElementById('emailSubject').value = tpl.default_subject; document.getElementById('emailMessage').value = tpl.default_message; } }
         async function sendTestEmail() { let testEmail = document.getElementById('testEmail').value; if(!testEmail) { showToast('error','Email de test requis'); return; } let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, test_email:testEmail, send_test_first:true}) }); let data = await res.json(); if(data.success) showToast('success','Test envoyé'); else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
         async function sendMassEmail() { let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, send_test_first:false}) }); let data = await res.json(); if(data.success) { showToast('success','Campagne lancée'); startCampaignMonitoring(data.campaign_id); loadCampaignHistory(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
-        async function loadCampaignHistory() { try { let res = await fetch('/api/admin/email-campaigns', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let campaigns = data.campaigns||[]; let tbody = document.getElementById('campaignsTableBody'); if(!campaigns.length) { tbody.innerHTML='<td><td colspan="9">Aucune campagne</td></td>'; document.getElementById('globalSuccessRate').textContent='0%'; return; } let totalSuccess=0, totalSent=0; let html=''; campaigns.forEach(c=>{ totalSuccess+=c.success_count||0; totalSent+=(c.success_count||0)+(c.fail_count||0); let statusBadge = c.status==='completed'?'badge-success':(c.status==='in_progress'?'badge-warning':(c.status==='cancelled'?'badge-danger':'badge-info')); html+=`<tr><td>${formatDateCameroon(c.created_at)}</span></td><td>${c.profiles?.username||'-'}</td><td>${c.subject.substring(0,50)}</span></td><td><span class="badge badge-primary">${c.template_type}</span></td><td>${c.total_recipients}</span></td><td><span class="badge badge-success">${c.success_count||0}</span></td><td><span class="badge badge-danger">${c.fail_count||0}</span></td><td><span class="badge ${statusBadge}">${c.status}</span></td><td>${c.status==='in_progress'?`<button class="action-btn delete" onclick="cancelCampaign('${c.id}')"><i class="fas fa-stop"></i></button>`:''}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('globalSuccessRate').textContent = totalSent>0?Math.round((totalSuccess/totalSent)*100)+'%':'0%'; } } catch(e) { console.error(e); } }
+        async function loadCampaignHistory() { try { let res = await fetch('/api/admin/email-campaigns', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let campaigns = data.campaigns||[]; let tbody = document.getElementById('campaignsTableBody'); if(!campaigns.length) { tbody.innerHTML='<tr><td colspan="9">Aucune campagne</td></tr>'; document.getElementById('globalSuccessRate').textContent='0%'; return; } let totalSuccess=0, totalSent=0; let html=''; campaigns.forEach(c=>{ totalSuccess+=c.success_count||0; totalSent+=(c.success_count||0)+(c.fail_count||0); let statusBadge = c.status==='completed'?'badge-success':(c.status==='in_progress'?'badge-warning':(c.status==='cancelled'?'badge-danger':'badge-info')); html+=`<tr><td>${formatDateCameroon(c.created_at)}</span></td><td>${c.profiles?.username||'-'}</td><td>${c.subject.substring(0,50)}</span></td><td><span class="badge badge-primary">${c.template_type}</span></td><td>${c.total_recipients}</span></td><td><span class="badge badge-success">${c.success_count||0}</span></td><td><span class="badge badge-danger">${c.fail_count||0}</span></td><td><span class="badge ${statusBadge}">${c.status}</span></td><td>${c.status==='in_progress'?`<button class="action-btn delete" onclick="cancelCampaign('${c.id}')"><i class="fas fa-stop"></i></button>`:''}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('globalSuccessRate').textContent = totalSent>0?Math.round((totalSuccess/totalSent)*100)+'%':'0%'; } } catch(e) { console.error(e); } }
         function cancelCurrentCampaign() { if(currentCampaignId) cancelCampaign(currentCampaignId); else showToast('error','Aucune campagne en cours'); }
         async function cancelCampaign(cid) { try { let res = await fetch(`/api/admin/email-campaigns/${cid}/cancel`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Campagne annulée'); loadCampaignHistory(); if(cid===currentCampaignId) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; } } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
         function startCampaignMonitoring(cid) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=cid; campaignPollingInterval = setInterval(async()=>{ try { let res = await fetch(`/api/admin/email-campaign/${cid}`, { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let c = data.campaign; let sent = (c.success_count||0)+(c.fail_count||0); let total = c.total_recipients||0; let percent = total>0? (sent/total)*100:0; document.getElementById('campaignStatus').textContent=`${sent}/${total}`; document.getElementById('campaignProgressBar').style.width=percent+'%'; if(c.status==='completed'||c.status==='failed'||c.status==='cancelled') { clearInterval(campaignPollingInterval); campaignPollingInterval=null; currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; loadCampaignHistory(); } } } catch(e){} },5000); }
 
-        // Pterodactyl Cleanup Modal
+        // PTERODACTYL CLEANUP
         function showPterodactylCleanupModal() { openModal('pteroCleanupModal'); }
         async function startPterodactylCleanup() {
             document.getElementById('cleanupInitial').style.display='none';
@@ -1816,7 +2004,7 @@
             } catch(e) { showToast('error','Erreur réseau'); document.getElementById('cleanupProgress').style.display='none'; document.getElementById('cleanupResult').innerHTML = '<div style="color:var(--danger);text-align:center;padding:20px;">❌ Erreur réseau</div>'; document.getElementById('cleanupResult').style.display='block'; document.getElementById('cleanupActions').innerHTML = '<button class="btn btn-outline" onclick="closeModal(\'pteroCleanupModal\')">Fermer</button>'; }
         }
 
-        // Bulk actions
+        // BULK ACTIONS
         function showDeleteAllServersModal() {
             document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
             document.getElementById('confirmTitle').textContent='Supprimer tous les serveurs';
@@ -1832,13 +2020,13 @@
             confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch('/api/admin/logs/delete-all', { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Logs supprimés'); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
         }
 
-        // Export
+        // EXPORT
         function exportUsers(format) { let data = filteredUsers.map(u=>({id:u.id,username:u.username,email:u.email,role:u.role,coins:u.coins,servers:u.servers_count,verified:u.email_verified,banned:u.banned,created_at:u.created_at})); if(format==='csv'){ let headers=Object.keys(data[0]).join(','); let rows=data.map(o=>Object.values(o).map(v=>`"${v}"`).join(',')).join('\n'); let blob=new Blob([headers+'\n'+rows],{type:'text/csv'}); let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`users_${new Date().toISOString().slice(0,10)}.csv`;a.click();} else { let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`users_${new Date().toISOString().slice(0,10)}.json`;a.click();} showToast('success','Export téléchargé'); }
 
-        // Refresh
+        // REFRESH
         function refreshAllData() { showToast('info','Actualisation...'); loadAdminData(); loadFapshiBalance(); if(document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions(); if(document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions(); if(document.getElementById('tab-bot-submissions').classList.contains('active')) loadBotSubmissions(); if(document.getElementById('tab-bot-templates').classList.contains('active')) loadBotTemplates(); if(document.getElementById('tab-deployed-bots').classList.contains('active')) loadDeployedBots(); if(document.getElementById('tab-heroku').classList.contains('active')) loadHerokuAccounts(); if(document.getElementById('tab-email').classList.contains('active')) { loadEmailTemplates(); loadCampaignHistory(); } }
 
-        // Tab switching
+        // TAB SWITCHING
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
             document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
@@ -1854,10 +2042,8 @@
             if(tabId==='email') { loadEmailTemplates(); loadCampaignHistory(); }
         }
 
-        // Responsive sidebar
         window.addEventListener('resize',()=>{ if(window.innerWidth>1024){ sidebar.classList.remove('active'); overlay.classList.remove('active'); } });
 
-        // Initialisation
         loadUserData();
 
         // Exports globaux
