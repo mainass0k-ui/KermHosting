@@ -7,20 +7,22 @@
     <meta name="description" content="Administration KermHosting - Gérez les utilisateurs, serveurs, bots, Heroku">
     <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
 
+    <!-- Favicon / Icônes Apple -->
     <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <title>Administration - KermHosting</title>
-    
+
     <style>
         :root {
             --primary: #7C3AED;
@@ -33,6 +35,8 @@
             --warning: #F59E0B;
             --success: #10B981;
             --info: #3B82F6;
+            --paypal: #0070BA;
+            --minipay: #00C4B3;
             --bg-dark: #0B1120;
             --bg-card: #1A2332;
             --bg-sidebar: #111827;
@@ -72,6 +76,7 @@
 
         .app-container { display: flex; min-height: 100vh; }
 
+        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
@@ -158,8 +163,8 @@
         }
 
         .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-name { font-weight: 600; font-size: 1rem; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); }
         .user-badge {
             background: var(--primary);
             color: white;
@@ -167,7 +172,6 @@
             font-weight: 600;
             padding: 2px 8px;
             border-radius: var(--radius-full);
-            white-space: nowrap;
         }
 
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
@@ -200,15 +204,16 @@
         .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
         .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
 
+        /* Main Content */
         .main-content { flex: 1; width: 100%; min-width: 0; }
 
         .top-bar {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: var(--bg-sidebar);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -223,10 +228,8 @@
             cursor: pointer;
             width: 44px;
             height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             border-radius: var(--radius-full);
+            display: none;
         }
 
         .menu-toggle:hover { background: var(--bg-hover); }
@@ -251,9 +254,6 @@
             cursor: pointer;
             width: 44px;
             height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             border-radius: var(--radius-full);
         }
 
@@ -295,11 +295,9 @@
             text-decoration: none;
             transition: all 0.3s;
             font-size: 0.9rem;
-            flex: 1;
-            min-width: 140px;
         }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 15px var(--primary-glow); }
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-warning { background: var(--warning); color: black; }
@@ -310,6 +308,7 @@
         .btn-outline:hover { border-color: var(--primary); background: var(--bg-hover); }
         .btn-small { padding: 8px 16px; font-size: 0.8rem; }
 
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -346,6 +345,7 @@
         .stat-label { color: var(--text-secondary); font-size: 0.8rem; }
         .stat-change { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 
+        /* Financial Stats */
         .financial-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -382,6 +382,7 @@
         .financial-amount { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; position: relative; z-index: 1; }
         .financial-sub { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; position: relative; z-index: 1; }
 
+        /* Charts */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -399,6 +400,7 @@
         .chart-card h3 { margin-bottom: 16px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
         canvas { max-height: 250px; width: 100% !important; }
 
+        /* Top Buyers */
         .top-buyers {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -434,6 +436,7 @@
         .buyer-email { font-size: 0.7rem; color: var(--text-secondary); }
         .buyer-total { font-weight: 700; color: var(--primary); font-size: 1rem; }
 
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 8px;
@@ -463,6 +466,7 @@
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
 
+        /* Search Bar */
         .search-bar {
             display: flex;
             flex-direction: column;
@@ -529,6 +533,7 @@
         }
         .export-btn:hover { background: var(--primary); color: white; }
 
+        /* Tables */
         .table-container {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -536,7 +541,7 @@
             overflow-x: auto;
             margin-bottom: 24px;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th {
             text-align: left;
             padding: 16px 12px;
@@ -594,6 +599,7 @@
         .action-btn.unsuspend:hover { background: var(--success); }
         .action-btn.confirm:hover { background: var(--success); }
         .action-btn.fail:hover { background: var(--danger); }
+        .action-btn.sync:hover { background: var(--primary); }
 
         .screenshot-preview {
             max-width: 60px;
@@ -626,6 +632,7 @@
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .page-info { color: var(--text-secondary); font-size: 0.9rem; }
 
+        /* Modals */
         .modal {
             position: fixed;
             top: 0;
@@ -645,16 +652,11 @@
             background: var(--bg-card);
             border-radius: var(--radius-xl);
             padding: 24px 20px;
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.3s ease-out;
-        }
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .modal-header {
             display: flex;
@@ -705,38 +707,23 @@
         .modal-textarea { min-height: 120px; resize: vertical; }
         .modal-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 
-        .server-mini-card {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .server-mini-info h4 { font-size: 1rem; margin-bottom: 4px; }
-        .server-mini-info p { font-size: 0.8rem; color: var(--text-secondary); }
-        .server-mini-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
         .loading-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .loading-state i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .toast {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            left: 20px;
-            padding: 16px 20px;
+            padding: 12px 20px;
             border-radius: var(--radius-md);
             color: white;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             z-index: 9999;
             animation: slideIn 0.3s ease-out;
-            max-width: 350px;
-            margin: 0 auto;
+            font-size: 0.85rem;
         }
         .toast.success { background: rgba(16, 185, 129, 0.95); }
         .toast.error { background: rgba(239, 68, 68, 0.95); }
@@ -745,17 +732,8 @@
             from { opacity: 0; transform: translateX(30px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        @keyframes slideOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(30px); }
-        }
 
-        .confirm-icon { text-align: center; font-size: 3.5rem; margin-bottom: 16px; }
-        .confirm-icon.warning { color: var(--warning); }
-        .confirm-icon.danger { color: var(--danger); }
-        .confirm-title { text-align: center; font-size: 1.3rem; margin-bottom: 8px; }
-        .confirm-message { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem; }
-
+        /* Maintenance */
         .maintenance-status {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -802,15 +780,6 @@
             border: 1px solid var(--border-color);
             margin-bottom: 24px;
         }
-        .email-campaign-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-        }
         .email-template-select { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
         .template-badge {
             background: var(--bg-hover);
@@ -827,23 +796,7 @@
         .template-badge:hover { border-color: var(--primary); background: var(--bg-input); }
         .template-badge.selected { border-color: var(--primary); background: rgba(124, 58, 237, 0.1); color: var(--primary); }
 
-        .campaign-stats {
-            background: var(--bg-hover);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            margin-top: 16px;
-            font-size: 0.85rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .campaign-progress { flex: 1; height: 8px; background: var(--border-color); border-radius: var(--radius-full); overflow: hidden; }
-        .campaign-progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s; }
-        .campaign-cancel-btn { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-md); cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
-        .campaign-cancel-btn:hover { background: #dc2626; }
-
+        /* Responsive */
         @media (min-width: 768px) {
             .page-content { padding: 24px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -852,9 +805,6 @@
             .search-bar { flex-direction: row; align-items: center; }
             .search-row { flex: 1; }
             .page-header { flex-direction: row; align-items: center; justify-content: space-between; }
-            .btn { flex: none; }
-            .server-mini-card { flex-direction: row; align-items: center; justify-content: space-between; }
-            .toast { left: auto; right: 20px; }
         }
         @media (min-width: 1024px) {
             .menu-toggle { display: none; }
@@ -863,6 +813,7 @@
             .top-bar-logo { display: none; }
         }
         @media (max-width: 767px) {
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
             .financial-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
         }
     </style>
@@ -870,13 +821,13 @@
 <body>
     <div class="app-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        
+
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
                 <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
             </div>
-            
+
             <div class="sidebar-user" id="sidebarUser">
                 <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
                 <div class="user-info">
@@ -885,7 +836,7 @@
                 </div>
                 <div class="user-badge" id="sidebarUserBadge">...</div>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
@@ -984,18 +935,14 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="userSearch" placeholder="Rechercher (nom, email, ID...)" onkeyup="filterUsers()">
                             <select class="filter-select" id="userFilter" onchange="filterUsers()">
-                                <option value="all">Tous</option>
-                                <option value="verified">Vérifiés</option>
-                                <option value="unverified">Non vérifiés</option>
-                                <option value="banned">Bannis</option>
-                                <option value="admin">Admins</option>
-                                <option value="superadmin">Super Admins</option>
+                                <option value="all">Tous</option><option value="verified">Vérifiés</option><option value="unverified">Non vérifiés</option>
+                                <option value="banned">Bannis</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-users"></i><span id="userCount">0</span> utilisateurs<button class="clear-search" onclick="clearUserSearch()"><i class="fas fa-times"></i></button></div>
                         <div class="export-btns"><button class="export-btn" onclick="exportUsers('csv')"><i class="fas fa-file-csv"></i> CSV</button><button class="export-btn" onclick="exportUsers('json')"><i class="fas fa-file-code"></i> JSON</button></div>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Coins</th><th>Serveurs</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead><tbody id="usersTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="usersTable"><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Coins</th><th>Serveurs</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead><tbody id="usersTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="userPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
@@ -1005,15 +952,12 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="serverSearch" placeholder="Rechercher..." onkeyup="filterServers()">
                             <select class="filter-select" id="serverFilter" onchange="filterServers()">
-                                <option value="all">Tous</option>
-                                <option value="active">Actifs</option>
-                                <option value="expired">Expirés</option>
-                                <option value="expiring">Expire bientôt</option>
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="expired">Expirés</option><option value="expiring">Expire bientôt</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-server"></i><span id="serverCount">0</span> serveurs</div>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>ID</th><th>Nom</th><th>Propriétaire</th><th>Plan</th><th>Statut</th><th>Création</th><th>Expiration</th><th>Actions</th></tr></thead><tbody id="serversTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="serversTable"><thead><tr><th>ID</th><th>Nom</th><th>Propriétaire</th><th>Plan</th><th>Statut</th><th>Création</th><th>Expiration</th><th>Actions</th></tr></thead><tbody id="serversTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeServerPage('prev')" id="serverPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="serverPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeServerPage('next')" id="serverNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
@@ -1023,15 +967,12 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher..." onkeyup="filterTransactions()">
                             <select class="filter-select" id="transactionFilter" onchange="filterTransactions()">
-                                <option value="all">Toutes</option>
-                                <option value="completed">Complétées</option>
-                                <option value="pending">En attente</option>
-                                <option value="failed">Échouées</option>
+                                <option value="all">Toutes</option><option value="completed">Complétées</option><option value="pending">En attente</option><option value="failed">Échouées</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-exchange-alt"></i><span id="transactionCount">0</span> transactions</div>
                     </div>
-                    <div class="table-container"><tr><thead><tr><th>ID</th><th>Utilisateur</th><th>Type</th><th>Montant</th><th>Statut</th><th>Moyen</th><th>Date</th><th>Actions</th></tr></thead><tbody id="transactionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="transactionsTable"><thead><tr><th>ID</th><th>Utilisateur</th><th>Type</th><th>Montant</th><th>Statut</th><th>Moyen</th><th>Date</th><th>Actions</th></tr></thead><tbody id="transactionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeTransactionPage('prev')" id="transactionPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="transactionPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeTransactionPage('next')" id="transactionNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
@@ -1051,17 +992,14 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="logSearch" placeholder="Rechercher..." onkeyup="filterLogs()">
                             <select class="filter-select" id="logFilter" onchange="filterLogs()">
-                                <option value="all">Toutes</option>
-                                <option value="ban">Bannissements</option>
-                                <option value="role">Changements rôle</option>
-                                <option value="coins">Ajouts/retraits coins</option>
-                                <option value="server">Actions serveurs</option>
+                                <option value="all">Toutes</option><option value="ban">Bannissements</option><option value="role">Changements rôle</option>
+                                <option value="coins">Ajouts/retraits coins</option><option value="server">Actions serveurs</option>
                             </select>
                             <button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left:auto;"><i class="fas fa-trash-alt"></i> Supprimer les logs</button>
                         </div>
                         <div class="search-badge"><i class="fas fa-history"></i><span id="logCount">0</span> logs</div>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th><th>Détails</th><th>IP</th></tr></thead><tbody id="logsTableBody"><tr><td colspan="6" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="logsTable"><thead><tr><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th><th>Détails</th><th>IP</th></tr></thead><tbody id="logsTableBody"><tr><td colspan="6" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                     <div class="pagination"><button class="page-btn" onclick="changeLogsPage('prev')" id="logsPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="logsPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeLogsPage('next')" id="logsNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
                 </div>
 
@@ -1071,16 +1009,13 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="paypalSearch" placeholder="Rechercher..." onkeyup="filterPaypalTransactions()">
                             <select class="filter-select" id="paypalFilter" onchange="filterPaypalTransactions()">
-                                <option value="all">Toutes</option>
-                                <option value="pending">En attente</option>
-                                <option value="successful">Confirmées</option>
-                                <option value="failed">Échouées</option>
+                                <option value="all">Toutes</option><option value="pending">En attente</option><option value="successful">Confirmées</option><option value="failed">Échouées</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fab fa-paypal"></i><span id="paypalCount">0</span> transactions PayPal<button class="clear-search" onclick="clearPaypalSearch()"><i class="fas fa-times"></i></button></div>
                         <button class="btn btn-primary" onclick="refreshPaypalTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Type</th><th>Montant FCFA</th><th>Montant devise</th><th>Email PayPal</th><th>Nom complet</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="paypalTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="paypalTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Type</th><th>Montant FCFA</th><th>Montant devise</th><th>Email PayPal</th><th>Nom complet</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="paypalTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: MINIPAY -->
@@ -1089,17 +1024,14 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="minipaySearch" placeholder="Rechercher..." onkeyup="filterMinipayTransactions()">
                             <select class="filter-select" id="minipayFilter" onchange="filterMinipayTransactions()">
-                                <option value="all">Toutes</option>
-                                <option value="pending_manual">En attente capture</option>
-                                <option value="pending_manual_with_proof">Capture reçue</option>
-                                <option value="successful">Confirmées</option>
-                                <option value="failed">Échouées</option>
+                                <option value="all">Toutes</option><option value="pending_manual">En attente capture</option><option value="pending_manual_with_proof">Capture reçue</option>
+                                <option value="successful">Confirmées</option><option value="failed">Échouées</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-mobile-alt"></i><span id="minipayCount">0</span> transactions Minipay<button class="clear-search" onclick="clearMinipaySearch()"><i class="fas fa-times"></i></button></div>
                         <button class="btn btn-primary" onclick="refreshMinipayTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Pack</th><th>Coins</th><th>Montant local</th><th>Pays</th><th>Téléphone</th><th>Statut</th><th>Capture</th><th>Actions</th></tr></thead><tbody id="minipayTableBody"><tr><td colspan="10" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="minipayTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Pack</th><th>Coins</th><th>Montant local</th><th>Pays</th><th>Téléphone</th><th>Statut</th><th>Capture</th><th>Actions</th></tr></thead><tbody id="minipayTableBody"><tr><td colspan="10" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: DEMANDES BOTS -->
@@ -1108,16 +1040,13 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="botSearch" placeholder="Rechercher..." onkeyup="filterBotSubmissions()">
                             <select class="filter-select" id="botFilter" onchange="filterBotSubmissions()">
-                                <option value="pending">En attente</option>
-                                <option value="approved">Approuvés</option>
-                                <option value="rejected">Rejetés</option>
-                                <option value="all">Tous</option>
+                                <option value="pending">En attente</option><option value="approved">Approuvés</option><option value="rejected">Rejetés</option><option value="all">Tous</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-clipboard-list"></i><span id="botSubmissionsCount">0</span> demandes<button class="clear-search" onclick="clearBotSearch()"><i class="fas fa-times"></i></button></div>
                         <button class="btn btn-primary" onclick="loadBotSubmissions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>Date</th><th>Utilisateur</th><th>Nom</th><th>Repository</th><th>Statut</th><th>Kh.json</th><th>Prix</th><th>Actions</th></tr></thead><tbody id="botSubmissionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="botSubmissionsTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Nom</th><th>Repository</th><th>Statut</th><th>Kh.json</th><th>Prix</th><th>Actions</th></tr></thead><tbody id="botSubmissionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: TEMPLATES BOTS -->
@@ -1126,16 +1055,13 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="botTemplateSearch" placeholder="Rechercher..." onkeyup="filterBotTemplates()">
                             <select class="filter-select" id="botTemplateFilter" onchange="filterBotTemplates()">
-                                <option value="all">Tous</option>
-                                <option value="approved">Approuvés</option>
-                                <option value="pending">En attente</option>
-                                <option value="rejected">Rejetés</option>
+                                <option value="all">Tous</option><option value="approved">Approuvés</option><option value="pending">En attente</option><option value="rejected">Rejetés</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-boxes"></i><span id="botTemplatesCount">0</span> templates<button class="clear-search" onclick="clearBotTemplateSearch()"><i class="fas fa-times"></i></button></div>
                         <button class="btn btn-primary" onclick="loadBotTemplates()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
                     </div>
-                    <div class="table-container"><tr><thead><tr><th>ID</th><th>Nom</th><th>Créateur</th><th>Repository</th><th>Prix</th><th>Déploiements</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="botTemplatesTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="botTemplatesTable"><thead><tr><th>ID</th><th>Nom</th><th>Créateur</th><th>Repository</th><th>Prix</th><th>Déploiements</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="botTemplatesTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: BOTS DÉPLOYÉS -->
@@ -1144,17 +1070,14 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="deployedBotSearch" placeholder="Rechercher..." onkeyup="filterDeployedBots()">
                             <select class="filter-select" id="deployedBotFilter" onchange="filterDeployedBots()">
-                                <option value="all">Tous</option>
-                                <option value="active">Actifs</option>
-                                <option value="deploying">En déploiement</option>
-                                <option value="stopped">Arrêtés</option>
-                                <option value="suspended">Suspendus</option>
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="deploying">En déploiement</option>
+                                <option value="stopped">Arrêtés</option><option value="suspended">Suspendus</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fas fa-rocket"></i><span id="deployedBotsCount">0</span> bots déployés<button class="clear-search" onclick="clearDeployedBotSearch()"><i class="fas fa-times"></i></button></div>
                         <button class="btn btn-primary" onclick="loadDeployedBots()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>Date déploiement</th><th>Nom Heroku</th><th>Template</th><th>Utilisateur</th><th>Durée</th><th>Expiration</th><th>Statut</th><th>Auto-renew</th><th>Actions</th></tr></thead><tbody id="deployedBotsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="deployedBotsTable"><thead><tr><th>Date déploiement</th><th>Nom Heroku</th><th>Template</th><th>Utilisateur</th><th>Durée</th><th>Expiration</th><th>Statut</th><th>Auto-renew</th><th>Actions</th></tr></thead><tbody id="deployedBotsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: COMPTES HEROKU -->
@@ -1163,9 +1086,7 @@
                         <div class="search-row">
                             <input type="text" class="search-input" id="herokuSearch" placeholder="Rechercher compte..." onkeyup="filterHerokuAccounts()">
                             <select class="filter-select" id="herokuFilter" onchange="filterHerokuAccounts()">
-                                <option value="all">Tous</option>
-                                <option value="active">Actifs</option>
-                                <option value="inactive">Inactifs</option>
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="inactive">Inactifs</option>
                             </select>
                         </div>
                         <div class="search-badge"><i class="fab fa-salesforce"></i><span id="herokuAccountsCount">0</span> comptes Heroku</div>
@@ -1178,7 +1099,7 @@
                         <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-microchip"></i></div></div><div class="stat-value" id="herokuTotalCapacity">0</div><div class="stat-label">Capacité totale</div></div>
                         <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-value" id="herokuAvailableCapacity">0</div><div class="stat-label">Disponible</div></div>
                     </div>
-                    <div class="table-container"><table><thead><tr><th>ID</th><th>Email</th><th>API Key</th><th>Max Bots</th><th>Bots actifs</th><th>Statut</th><th>Dernière utilisation</th><th>Actions</th></tr></thead><tbody id="herokuAccountsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="table-container"><table id="herokuAccountsTable"><thead><tr><th>ID</th><th>Email</th><th>API Key</th><th>Max Bots</th><th>Bots actifs</th><th>Statut</th><th>Dernière utilisation</th><th>Actions</th></tr></thead><tbody id="herokuAccountsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
                 </div>
 
                 <!-- TAB: MAINTENANCE -->
@@ -1195,7 +1116,7 @@
                             <div class="form-row"><label>WhatsApp</label><input type="text" id="maintenanceWhatsApp" placeholder="https://wa.me/..."></div>
                             <div class="form-row"><label>Discord</label><input type="text" id="maintenanceDiscord"></div>
                             <div class="form-row"><label>IPs autorisées (admin)</label><textarea id="maintenanceIPs" placeholder="192.168.1.1"></textarea></div>
-                            <div class="form-actions" style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;"><button class="btn btn-outline" onclick="loadMaintenanceConfig()"><i class="fas fa-sync-alt"></i> Recharger</button><button class="btn btn-primary" onclick="saveMaintenanceConfig()"><i class="fas fa-save"></i> Enregistrer</button></div>
+                            <div class="form-actions"><button class="btn btn-outline" onclick="loadMaintenanceConfig()"><i class="fas fa-sync-alt"></i> Recharger</button><button class="btn btn-primary" onclick="saveMaintenanceConfig()"><i class="fas fa-save"></i> Enregistrer</button></div>
                         </div>
                     </div>
                 </div>
@@ -1209,13 +1130,13 @@
                         <div class="modal-form-group"><label>Message personnalisé</label><textarea class="modal-textarea" id="emailMessage"></textarea></div>
                         <div class="modal-form-group"><label>Cible</label><select class="modal-select" id="emailTarget"><option value="all">Tous</option><option value="user">Utilisateurs</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option></select></div>
                         <div class="modal-form-group"><label>Email de test</label><input type="email" class="modal-input" id="testEmail"></div>
-                        <div class="modal-actions" style="justify-content:center; margin-top:20px;"><button class="btn btn-outline" onclick="sendTestEmail()"><i class="fas fa-flask"></i> Envoyer un test</button><button class="btn btn-primary" onclick="sendMassEmail()"><i class="fas fa-paper-plane"></i> Lancer la campagne</button></div>
-                        <div id="campaignProgress" style="display:none; margin-top:20px;"><div class="campaign-stats"><span><i class="fas fa-spinner fa-spin"></i> Envoi...</span><span id="campaignStatus">0 / 0</span><div class="campaign-progress"><div class="campaign-progress-bar" id="campaignProgressBar"></div></div><button class="campaign-cancel-btn" onclick="cancelCurrentCampaign()"><i class="fas fa-stop"></i> Annuler</button></div></div>
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="sendTestEmail()"><i class="fas fa-flask"></i> Envoyer un test</button><button class="btn btn-primary" onclick="sendMassEmail()"><i class="fas fa-paper-plane"></i> Lancer la campagne</button></div>
+                        <div id="campaignProgress" style="display:none;"><div class="campaign-stats"><span><i class="fas fa-spinner fa-spin"></i> Envoi...</span><span id="campaignStatus">0 / 0</span><div class="campaign-progress"><div class="campaign-progress-bar" id="campaignProgressBar"></div></div><button class="campaign-cancel-btn" onclick="cancelCurrentCampaign()"><i class="fas fa-stop"></i> Annuler</button></div></div>
                     </div>
                     <div class="email-campaign-card">
                         <div class="email-campaign-title"><i class="fas fa-history"></i> Historique</div>
-                        <div class="table-container"><table><thead><tr><th>Date</th><th>Admin</th><th>Sujet</th><th>Template</th><th>Destinataires</th><th>Succès</th><th>Échecs</th><th>Statut</th><th>Action</th></tr></thead><tbody id="campaignsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
-                        <div class="campaign-stats" style="margin-top:12px;"><span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span><button class="btn btn-small btn-outline" onclick="loadCampaignHistory()"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
+                        <div class="table-container"><table id="campaignsTable"><thead><tr><th>Date</th><th>Admin</th><th>Sujet</th><th>Template</th><th>Destinataires</th><th>Succès</th><th>Échecs</th><th>Statut</th><th>Action</th></tr></thead><tbody id="campaignsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                        <div class="campaign-stats"><span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span><button class="btn btn-small btn-outline" onclick="loadCampaignHistory()"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
                     </div>
                 </div>
             </div>
@@ -1289,7 +1210,6 @@
         document.getElementById('userMenu').addEventListener('click', () => { window.location.href = '/profile'; });
         document.getElementById('navLogout').addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('token'); window.location.href='/'; });
 
-        // Fonctions principales
         async function loadUserData() {
             try {
                 const res = await fetch('/api/user/me', { headers:{'Authorization':`Bearer ${token}`} });
@@ -1411,7 +1331,7 @@
         // AFFICHAGE USERS
         function displayUsers() {
             const tbody = document.getElementById('usersTableBody');
-            if(!filteredUsers.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucun utilisateur</td></tr>'; document.getElementById('userPagination').style.display='none'; return; }
+            if(!filteredUsers.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucun utilisateur</tbody></tr>'; document.getElementById('userPagination').style.display='none'; return; }
             document.getElementById('userPagination').style.display='flex';
             let totalPages = Math.ceil(filteredUsers.length/itemsPerPage), start = (currentUserPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredUsers.length);
             let paginated = filteredUsers.slice(start,end);
@@ -1423,7 +1343,7 @@
                 let statusClass = u.banned ? 'badge-danger' : (u.email_verified ? 'badge-success' : 'badge-warning');
                 let statusText = u.banned ? 'Banni' : (u.email_verified ? 'Actif' : 'Non vérifié');
                 let roleClass = u.role==='superadmin' ? 'badge-danger' : (u.role==='admin' ? 'badge-primary' : 'badge-info');
-                html += `<tr><td><code>${u.id.substring(0,8)}...</code></td><td><strong>${esc(u.username)}</strong></span></td><td>${esc(u.email)}</span></td><td><span class="badge ${roleClass}">${u.role}</span></span><td>${u.coins} coins</span><td>${u.servers_count||0}</span><td><span class="badge ${statusClass}">${statusText}</span></span><td>${new Date(u.created_at).toLocaleDateString()}</span><td><div class="action-group"><button class="action-btn edit" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="viewUserServers('${u.id}')"><i class="fas fa-server"></i></button><button class="action-btn ban" onclick="toggleBan('${u.id}',${u.banned})"><i class="fas fa-ban"></i></button><button class="action-btn delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button><button class="action-btn" onclick="viewUserTransactions('${u.id}')"><i class="fas fa-history"></i></button></div></td></tr>`;
+                html += `<tr><td><code>${u.id.substring(0,8)}...</code></td><td><strong>${esc(u.username)}</strong></td><td>${esc(u.email)}</td><td><span class="badge ${roleClass}">${u.role}</span></td><td>${u.coins} coins</td><td>${u.servers_count||0}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(u.created_at).toLocaleDateString()}</td><td><div class="action-group"><button class="action-btn edit" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" onclick="viewUserServers('${u.id}')"><i class="fas fa-server"></i></button><button class="action-btn ban" onclick="toggleBan('${u.id}',${u.banned})"><i class="fas fa-ban"></i></button><button class="action-btn delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button><button class="action-btn" onclick="viewUserTransactions('${u.id}')"><i class="fas fa-history"></i></button></div></td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1448,7 +1368,7 @@
         // AFFICHAGE SERVEURS
         function displayServers() {
             const tbody = document.getElementById('serversTableBody');
-            if(!filteredServers.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucun serveur</td></tr>'; document.getElementById('serverPagination').style.display='none'; return; }
+            if(!filteredServers.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucun serveur</tbody></td>'; document.getElementById('serverPagination').style.display='none'; return; }
             document.getElementById('serverPagination').style.display='flex';
             let totalPages = Math.ceil(filteredServers.length/itemsPerPage), start = (currentServerPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredServers.length), paginated = filteredServers.slice(start,end);
             document.getElementById('serverPageInfo').textContent = `Page ${currentServerPage} / ${totalPages}`;
@@ -1485,7 +1405,7 @@
         // AFFICHAGE TRANSACTIONS
         function displayTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
-            if(!filteredTransactions.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucune transaction</td></tr>'; document.getElementById('transactionPagination').style.display='none'; return; }
+            if(!filteredTransactions.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;">Aucune transaction</tbody></td>'; document.getElementById('transactionPagination').style.display='none'; return; }
             document.getElementById('transactionPagination').style.display='flex';
             let total = Math.ceil(filteredTransactions.length/itemsPerPage), start = (currentTransactionPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredTransactions.length), paginated = filteredTransactions.slice(start,end);
             document.getElementById('transactionPageInfo').textContent = `Page ${currentTransactionPage} / ${total}`;
@@ -1495,7 +1415,7 @@
             for(let t of paginated) {
                 let statusClass = t.status==='successful'?'badge-success':(t.status==='pending'?'badge-warning':'badge-danger');
                 let typeTxt = { 'coins_purchase':'Achat coins', 'server_purchase':'Achat serveur', 'server_renewal':'Renouvellement' }[t.type] || t.type;
-                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td>${esc(t.user_username||'Inconnu')}</td><td>${typeTxt}</td><td><strong>${t.amount.toLocaleString()} ${t.currency}</strong></td><td><span class="badge ${statusClass}">${t.status}</span></td><td>${t.medium||'N/A'}</td><td>${formatDateCameroon(t.created_at)}</td><td><div class="action-group"><button class="action-btn view" onclick="viewTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button></div></td></tr>`;
+                html += `<td><code>${t.id.substring(0,8)}...</code></td><td>${esc(t.user_username||'Inconnu')}</td><td>${typeTxt}</td><td><strong>${t.amount.toLocaleString()} ${t.currency}</strong></td><td><span class="badge ${statusClass}">${t.status}</span></td><td>${t.medium||'N/A'}</td><td>${formatDateCameroon(t.created_at)}</td><td><div class="action-group"><button class="action-btn view" onclick="viewTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button></div></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1517,7 +1437,7 @@
         // AFFICHAGE LOGS
         function displayLogs() {
             const tbody = document.getElementById('logsTableBody');
-            if(!filteredLogs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;">Aucun log</td></tr>'; document.getElementById('logsPagination').style.display='none'; return; }
+            if(!filteredLogs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;">Aucun log</tbody></td>'; document.getElementById('logsPagination').style.display='none'; return; }
             let total = Math.ceil(filteredLogs.length/itemsPerPage), start = (currentLogsPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredLogs.length), paginated = filteredLogs.slice(start,end);
             document.getElementById('logsPageInfo').textContent = `Page ${currentLogsPage} / ${total}`;
             document.getElementById('logsPrevBtn').disabled = currentLogsPage===1;
@@ -1739,7 +1659,7 @@
         function refreshPaypalTransactions() { loadPaypalTransactions(); }
         function displayPaypalTransactions() {
             let tbody = document.getElementById('paypalTableBody');
-            if(!filteredPaypalTransactions.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucune transaction PayPal</td><tr>'; return; }
+            if(!filteredPaypalTransactions.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">Aucune transaction PayPal</tbody></tr>'; return; }
             let start = (currentPaypalPage-1)*itemsPerPage, paginated = filteredPaypalTransactions.slice(start, start+itemsPerPage);
             let html = '';
             for(let t of paginated) {
@@ -1762,7 +1682,7 @@
         function refreshMinipayTransactions() { loadMinipayTransactions(); }
         function displayMinipayTransactions() {
             let tbody = document.getElementById('minipayTableBody');
-            if(!filteredMinipayTransactions.length) { tbody.innerHTML='<tr><td colspan="10" style="text-align:center;">Aucune transaction Minipay</tbody></tr>'; return; }
+            if(!filteredMinipayTransactions.length) { tbody.innerHTML='<tr><td colspan="10" style="text-align:center;">Aucune transaction Minipay</tbody></table>'; return; }
             let start = (currentMinipayPage-1)*itemsPerPage, paginated = filteredMinipayTransactions.slice(start, start+itemsPerPage);
             let html = '';
             for(let t of paginated) {
@@ -1812,7 +1732,7 @@
             let html = '';
             for(let t of paginated) {
                 let statusBadge = t.status==='approved'?'badge-success':(t.status==='pending'?'badge-warning':(t.status==='rejected'?'badge-danger':'badge-danger'));
-                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td><strong>${esc(t.name)}</strong></td><td>${t.profiles?.username||'Inconnu'}</td><td><a href="${t.repo_url}" target="_blank">Voir</a></td><td>${t.price_weekly||100} coins</span></td><td>${t.total_deploys||0}</span></td><td><span class="badge ${statusBadge}">${t.status}</span></td><td><div class="action-group"><button class="action-btn edit" onclick="editBotTemplate('${t.id}')"><i class="fas fa-edit"></i></button><button class="action-btn sync" onclick="syncBotTemplate('${t.id}')"><i class="fas fa-sync-alt"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteBotTemplate('${t.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
+                html += `<tr><td><code>${t.id.substring(0,8)}...</code></td><td><strong>${esc(t.name)}</strong></td><td>${t.profiles?.username||'Inconnu'}</td>.<a href="${t.repo_url}" target="_blank">Voir</a></td><td>${t.price_weekly||100} coins</span></td><td>${t.total_deploys||0}</span></td><td><span class="badge ${statusBadge}">${t.status}</span></td><td><div class="action-group"><button class="action-btn edit" onclick="editBotTemplate('${t.id}')"><i class="fas fa-edit"></i></button><button class="action-btn sync" onclick="syncBotTemplate('${t.id}')"><i class="fas fa-sync-alt"></i></button><button class="action-btn view" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteBotTemplate('${t.id}')"><i class="fas fa-trash"></i></button></div></span></td>`;
             }
             tbody.innerHTML = html;
         }
@@ -1889,7 +1809,7 @@
                 let statusBadge = b.status==='active'?(daysLeft<0?'badge-danger':(daysLeft<=3?'badge-warning':'badge-success')): (b.status==='deploying'?'badge-warning':(b.status==='stopped'?'badge-warning':(b.status==='suspended'?'badge-danger':'badge-danger')));
                 let statusText = b.status==='active'?(daysLeft<0?'Expiré':(daysLeft<=3?'Expire bientôt':'Actif')):b.status;
                 let actions = `<div class="action-group"><button class="action-btn edit" onclick="editDeployedBot('${b.id}')"><i class="fas fa-edit"></i></button>${b.status==='active'?`<button class="action-btn suspend" onclick="suspendDeployedBot('${b.id}')"><i class="fas fa-pause"></i></button>`:b.status==='suspended'?`<button class="action-btn unsuspend" onclick="unsuspendDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>`:b.status==='stopped'?`<button class="action-btn unsuspend" onclick="startDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>`:''}<button class="action-btn view" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" onclick="deleteDeployedBot('${b.id}')"><i class="fas fa-trash"></i></button></div>`;
-                html += `<tr><td>${formatDateCameroon(b.created_at)}</span></td><td><strong>${esc(b.heroku_app_name)}</strong></td><td>${b.bot_templates?.name||'-'}</td><td>${b.profiles?.username||'Inconnu'}</td><td>${b.duration_mode==='monthly'?'Mensuel':'Hebdo'}</td><td>${new Date(b.expires_at).toLocaleDateString()} (${daysLeft}j)</td><td><span class="badge ${statusBadge}">${statusText}</span></td><td>${b.auto_renew?'✅':'❌'}</td><td>${actions}</td></tr>`;
+                html += `</td><td>${formatDateCameroon(b.created_at)}</td></td><td><strong>${esc(b.heroku_app_name)}</strong></td></td><td>${b.bot_templates?.name||'-'}</td></td><td>${b.profiles?.username||'Inconnu'}</td></td><td>${b.duration_mode==='monthly'?'Mensuel':'Hebdo'}</td></td><td>${new Date(b.expires_at).toLocaleDateString()} (${daysLeft}j)</td></td><td><span class="badge ${statusBadge}">${statusText}</span></td></td><td>${b.auto_renew?'✅':'❌'}</td><td>${actions}</td></tr>`;
             }
             tbody.innerHTML = html;
         }
@@ -1914,7 +1834,7 @@
         function filterHerokuAccounts() { let search = document.getElementById('herokuSearch').value.toLowerCase(); let filter = document.getElementById('herokuFilter').value; filteredHerokuAccounts = allHerokuAccounts.filter(a => { let match = a.email.toLowerCase().includes(search); if(!match) return false; if(filter==='active') return a.is_active; if(filter==='inactive') return !a.is_active; return true; }); displayHerokuAccounts(); }
         function displayHerokuAccounts() {
             let tbody = document.getElementById('herokuAccountsTableBody');
-            if(!filteredHerokuAccounts.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun compte Heroku</tbody></tr>'; return; }
+            if(!filteredHerokuAccounts.length) { tbody.innerHTML='<tr><td colspan="8" class="loading-state">Aucun compte Heroku</tbody></td>'; return; }
             let html = '';
             for(let a of filteredHerokuAccounts) {
                 let statusBadge = a.is_active?'badge-success':'badge-danger';
@@ -1967,12 +1887,12 @@
         }
 
         // EMAILS MASSIFS
-        async function loadEmailTemplates() { try { let res = await fetch('/api/admin/email-templates', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { emailTemplates = data.templates; let html = ''; emailTemplates.forEach(t=>{ html += `<div class="template-badge" onclick="selectTemplate('${t.id}')" data-template="${t.id}">${t.icon} ${t.name}</div>`; }); document.getElementById('templateSelect').innerHTML = html; if(emailTemplates.length) selectTemplate(emailTemplates[0].id); } } catch(e) { showToast('error','Erreur templates email'); } }
+        async function loadEmailTemplates() { try { let res = await fetch('/api/admin/email-templates', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { emailTemplates = data.templates; let html = ''; emailTemplates.forEach(t=>{ html += `<div class="template-badge" onclick="selectTemplate('${t.id}')" data-template="${t.id}"><i class="fas ${t.icon==='📢'?'fa-bullhorn':t.icon==='🛠️'?'fa-tools':t.icon==='🎉'?'fa-gift':t.icon==='📰'?'fa-newspaper':t.icon==='⚠️'?'fa-exclamation-triangle':'fa-envelope'}"></i> ${t.name}</div>`; }); document.getElementById('templateSelect').innerHTML = html; if(emailTemplates.length) selectTemplate(emailTemplates[0].id); } } catch(e) { showToast('error','Erreur templates email'); } }
         let selectedTemplateId = null;
         function selectTemplate(id) { selectedTemplateId = id; document.querySelectorAll('.template-badge').forEach(el=>el.classList.remove('selected')); let sel = document.querySelector(`.template-badge[data-template="${id}"]`); if(sel) sel.classList.add('selected'); let tpl = emailTemplates.find(t=>t.id===id); if(tpl) { document.getElementById('emailSubject').value = tpl.default_subject; document.getElementById('emailMessage').value = tpl.default_message; } }
         async function sendTestEmail() { let testEmail = document.getElementById('testEmail').value; if(!testEmail) { showToast('error','Email de test requis'); return; } let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, test_email:testEmail, send_test_first:true}) }); let data = await res.json(); if(data.success) showToast('success','Test envoyé'); else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
         async function sendMassEmail() { let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, send_test_first:false}) }); let data = await res.json(); if(data.success) { showToast('success','Campagne lancée'); startCampaignMonitoring(data.campaign_id); loadCampaignHistory(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
-        async function loadCampaignHistory() { try { let res = await fetch('/api/admin/email-campaigns', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let campaigns = data.campaigns||[]; let tbody = document.getElementById('campaignsTableBody'); if(!campaigns.length) { tbody.innerHTML='<tr><td colspan="9">Aucune campagne</td></tr>'; document.getElementById('globalSuccessRate').textContent='0%'; return; } let totalSuccess=0, totalSent=0; let html=''; campaigns.forEach(c=>{ totalSuccess+=c.success_count||0; totalSent+=(c.success_count||0)+(c.fail_count||0); let statusBadge = c.status==='completed'?'badge-success':(c.status==='in_progress'?'badge-warning':(c.status==='cancelled'?'badge-danger':'badge-info')); html+=`<tr><td>${formatDateCameroon(c.created_at)}</span></td><td>${c.profiles?.username||'-'}</td><td>${c.subject.substring(0,50)}</span></td><td><span class="badge badge-primary">${c.template_type}</span></td><td>${c.total_recipients}</span></td><td><span class="badge badge-success">${c.success_count||0}</span></td><td><span class="badge badge-danger">${c.fail_count||0}</span></td><td><span class="badge ${statusBadge}">${c.status}</span></td><td>${c.status==='in_progress'?`<button class="action-btn delete" onclick="cancelCampaign('${c.id}')"><i class="fas fa-stop"></i></button>`:''}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('globalSuccessRate').textContent = totalSent>0?Math.round((totalSuccess/totalSent)*100)+'%':'0%'; } } catch(e) { console.error(e); } }
+        async function loadCampaignHistory() { try { let res = await fetch('/api/admin/email-campaigns', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let campaigns = data.campaigns||[]; let tbody = document.getElementById('campaignsTableBody'); if(!campaigns.length) { tbody.innerHTML='<tr><td colspan="9">Aucune campagne</tbody></td>'; document.getElementById('globalSuccessRate').textContent='0%'; return; } let totalSuccess=0, totalSent=0; let html=''; campaigns.forEach(c=>{ totalSuccess+=c.success_count||0; totalSent+=(c.success_count||0)+(c.fail_count||0); let statusBadge = c.status==='completed'?'badge-success':(c.status==='in_progress'?'badge-warning':(c.status==='cancelled'?'badge-danger':'badge-info')); html+=`<tr><td>${formatDateCameroon(c.created_at)}</span></td><td>${c.profiles?.username||'-'}</td><td>${c.subject.substring(0,50)}</span></td><td><span class="badge badge-primary">${c.template_type}</span></td><td>${c.total_recipients}</span></td><td><span class="badge badge-success">${c.success_count||0}</span></td><td><span class="badge badge-danger">${c.fail_count||0}</span></td><td><span class="badge ${statusBadge}">${c.status}</span></td><td>${c.status==='in_progress'?`<button class="action-btn delete" onclick="cancelCampaign('${c.id}')"><i class="fas fa-stop"></i></button>`:''}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('globalSuccessRate').textContent = totalSent>0?Math.round((totalSuccess/totalSent)*100)+'%':'0%'; } } catch(e) { console.error(e); } }
         function cancelCurrentCampaign() { if(currentCampaignId) cancelCampaign(currentCampaignId); else showToast('error','Aucune campagne en cours'); }
         async function cancelCampaign(cid) { try { let res = await fetch(`/api/admin/email-campaigns/${cid}/cancel`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Campagne annulée'); loadCampaignHistory(); if(cid===currentCampaignId) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; } } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
         function startCampaignMonitoring(cid) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=cid; campaignPollingInterval = setInterval(async()=>{ try { let res = await fetch(`/api/admin/email-campaign/${cid}`, { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let c = data.campaign; let sent = (c.success_count||0)+(c.fail_count||0); let total = c.total_recipients||0; let percent = total>0? (sent/total)*100:0; document.getElementById('campaignStatus').textContent=`${sent}/${total}`; document.getElementById('campaignProgressBar').style.width=percent+'%'; if(c.status==='completed'||c.status==='failed'||c.status==='cancelled') { clearInterval(campaignPollingInterval); campaignPollingInterval=null; currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; loadCampaignHistory(); } } } catch(e){} },5000); }
