@@ -9679,18 +9679,15 @@ app.put('/api/admin/bots/templates/:templateId', authenticateToken, requireAdmin
     }
 });
 
-// =============================================
-// SYNC AUTO DES KH.JSON (TOUTES LES 5 SECONDES)
-// =============================================
-
-// Route pour vérifier si le kh.json a changé
-app.get('/api/admin/bots/check-kh-changed/:templateId', authenticateToken, requireAdmin, async (req, res) => {
+// Route pour la synchro auto kh.json
+app.post('/api/admin/bots/templates/:templateId/sync-kh', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { templateId } = req.params;
+        const { repo_url } = req.body;
         
         const { data: template, error } = await supabase
             .from('bot_templates')
-            .select('id, repo_url, kh_json, synced_at, name, description, logo_url')
+            .select('kh_json, name')
             .eq('id', templateId)
             .single();
         
@@ -9698,69 +9695,42 @@ app.get('/api/admin/bots/check-kh-changed/:templateId', authenticateToken, requi
             return res.status(404).json({ success: false, error: 'Template non trouvé' });
         }
         
-        try {
-            let cleanRepo = template.repo_url.replace('https://github.com/', '').replace('.git', '');
-            const rawKhUrl = `https://raw.githubusercontent.com/${cleanRepo}/main/kh.json`;
-            
-            const response = await axios.get(rawKhUrl, { timeout: 5000 });
-            
-            if (response.status !== 200) {
-                return res.json({ success: true, changed: false, error: 'kh.json introuvable' });
-            }
-            
-            const newKhJson = response.data;
-            const oldKhJson = template.kh_json;
-            
-            // Vérifier si changé
-            const changed = JSON.stringify(oldKhJson) !== JSON.stringify(newKhJson);
-            
-            if (changed) {
-                // Mettre à jour le template
-                await supabase
-                    .from('bot_templates')
-                    .update({ 
-                        kh_json: newKhJson,
-                        name: newKhJson['bot-name'] || template.name,
-                        description: newKhJson.description || template.description,
-                        logo_url: newKhJson.logo || template.logo_url,
-                        synced_at: new Date().toISOString()
-                    })
-                    .eq('id', templateId);
-                
-                return res.json({ 
-                    success: true, 
-                    changed: true, 
-                    template: {
-                        ...template,
-                        kh_json: newKhJson,
-                        name: newKhJson['bot-name'] || template.name,
-                        description: newKhJson.description || template.description,
-                        logo_url: newKhJson.logo || template.logo_url
-                    }
-                });
-            }
-            
-            return res.json({ success: true, changed: false });
-            
-        } catch (fetchError) {
-            console.error(`Erreur fetch kh.json pour ${template.repo_url}:`, fetchError.message);
-            return res.json({ success: true, changed: false, error: 'Erreur de récupération' });
-        }
+        let cleanRepo = repo_url.replace('https://github.com/', '').replace('.git', '');
+        const rawUrl = `https://raw.githubusercontent.com/${cleanRepo}/main/kh.json`;
         
+        const response = await axios.get(rawUrl, { timeout: 5000 });
+        const newKhJson = response.data;
+        
+        const changed = JSON.stringify(template.kh_json) !== JSON.stringify(newKhJson);
+        
+        if (changed) {
+            await supabase
+                .from('bot_templates')
+                .update({ 
+                    kh_json: newKhJson, 
+                    name: newKhJson['bot-name'] || template.name,
+                    synced_at: new Date().toISOString()
+                })
+                .eq('id', templateId);
+            
+            res.json({ success: true, changed: true, changes: ['kh.json'] });
+        } else {
+            res.json({ success: true, changed: false });
+        }
     } catch (error) {
-        console.error('❌ Erreur check kh changed:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        console.error('Erreur sync kh.json:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// Route pour forcer la synchronisation d'un template
+// Route pour forcer la synchro (si pas déjà présente)
 app.post('/api/admin/bots/templates/:templateId/force-sync', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { templateId } = req.params;
         
         const { data: template, error } = await supabase
             .from('bot_templates')
-            .select('repo_url, kh_json, name, description, logo_url')
+            .select('repo_url')
             .eq('id', templateId)
             .single();
         
@@ -9769,39 +9739,22 @@ app.post('/api/admin/bots/templates/:templateId/force-sync', authenticateToken, 
         }
         
         let cleanRepo = template.repo_url.replace('https://github.com/', '').replace('.git', '');
-        const rawKhUrl = `https://raw.githubusercontent.com/${cleanRepo}/main/kh.json`;
+        const rawUrl = `https://raw.githubusercontent.com/${cleanRepo}/main/kh.json`;
         
-        const response = await axios.get(rawKhUrl, { timeout: 10000 });
-        
-        if (response.status !== 200) {
-            return res.status(400).json({ success: false, error: 'kh.json introuvable' });
-        }
-        
+        const response = await axios.get(rawUrl, { timeout: 10000 });
         const newKhJson = response.data;
         
         await supabase
             .from('bot_templates')
             .update({ 
                 kh_json: newKhJson,
-                name: newKhJson['bot-name'] || template.name,
-                description: newKhJson.description || template.description,
-                logo_url: newKhJson.logo || template.logo_url,
                 synced_at: new Date().toISOString()
             })
             .eq('id', templateId);
         
-        res.json({ 
-            success: true, 
-            message: 'Template synchronisé avec succès',
-            template: {
-                kh_json: newKhJson,
-                name: newKhJson['bot-name'] || template.name
-            }
-        });
-        
+        res.json({ success: true, message: 'Template synchronisé avec succès' });
     } catch (error) {
-        console.error('❌ Erreur force sync:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -10416,6 +10369,7 @@ server.listen(SITE_CONFIG.port, async () => {
     console.log(`================================\n`);
     
     await createDefaultSuperAdmin();
+    await initAllKhAutoSync();
     await setupAutoRenewTables();
 
     const balance = await fapshiBalance();
