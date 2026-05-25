@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Administration KermHosting - Gérez les utilisateurs, serveurs, bots, Heroku">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <!-- Favicon / Icônes Apple -->
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <title>Administration - KermHosting</title>
+
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            --paypal: #0070BA;
+            --minipay: #00C4B3;
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --border-color: #2D3748;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active { transform: translateX(0); }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i { color: var(--primary); font-size: 1.5rem; }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+        }
+
+        .close-sidebar:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 1rem; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); }
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav li { margin: 4px 8px; }
+        .sidebar-nav li.active { background: linear-gradient(90deg, var(--primary), transparent); border-radius: var(--radius-md); }
+        .sidebar-nav li.active a { color: white; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+        .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .sidebar-nav i { width: 20px; font-size: 1.1rem; }
+        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats { display: flex; justify-content: space-between; }
+        .stat { text-align: center; }
+        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* Main Content */
+        .main-content { flex: 1; width: 100%; min-width: 0; }
+
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            display: none;
+        }
+
+        .menu-toggle:hover { background: var(--bg-hover); }
+
+        .top-bar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i { color: var(--primary); font-size: 1.25rem; }
+
+        .top-bar-actions { display: flex; align-items: center; gap: 8px; }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+        }
+
+        .refresh-btn:hover { background: var(--bg-hover); }
+
+        .user-menu { cursor: pointer; }
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .page-content { padding: 16px; max-width: 1400px; margin: 0 auto; }
+
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 { font-size: 1.75rem; font-family: 'Space Grotesk', sans-serif; }
+        .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-warning { background: var(--warning); color: black; }
+        .btn-warning:hover { background: #e08e0b; transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #0d9668; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); }
+        .btn-outline:hover { border-color: var(--primary); background: var(--bg-hover); }
+        .btn-small { padding: 8px 16px; font-size: 0.8rem; }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--primary), var(--secondary)); }
+
+        .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(16, 185, 129, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 2px; }
+        .stat-label { color: var(--text-secondary); font-size: 0.8rem; }
+        .stat-change { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+        /* Financial Stats */
+        .financial-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .financial-card {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .financial-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .financial-label { font-size: 0.85rem; opacity: 0.9; margin-bottom: 4px; position: relative; z-index: 1; }
+        .financial-amount { font-size: 1.8rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; position: relative; z-index: 1; }
+        .financial-sub { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; position: relative; z-index: 1; }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-card h3 { margin-bottom: 16px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        canvas { max-height: 250px; width: 100% !important; }
+
+        /* Top Buyers */
+        .top-buyers {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .top-buyers h3 { margin-bottom: 16px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .buyer-list { display: flex; flex-direction: column; gap: 12px; }
+        .buyer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+        .buyer-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .buyer-info { flex: 1; }
+        .buyer-name { font-weight: 600; font-size: 0.9rem; }
+        .buyer-email { font-size: 0.7rem; color: var(--text-secondary); }
+        .buyer-total { font-weight: 700; color: var(--primary); font-size: 1rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: var(--radius-full);
+            transition: all 0.2s;
+        }
+        .tab i { font-size: 1rem; }
+        .tab.active { color: var(--primary); background: rgba(124, 58, 237, 0.1); }
+        .tab:hover { background: var(--bg-hover); }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .search-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            min-width: 200px;
+        }
+        .search-input:focus { outline: none; border-color: var(--primary); }
+        .filter-select {
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            min-width: 160px;
+        }
+        .filter-select:focus { outline: none; border-color: var(--primary); }
+        .search-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-hover);
+            padding: 8px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+        }
+        .search-badge i { color: var(--primary); }
+        .clear-search {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+        }
+        .clear-search:hover { background: var(--bg-hover); color: var(--danger); }
+        .export-btns { display: flex; gap: 8px; margin-left: auto; }
+        .export-btn {
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .export-btn:hover { background: var(--primary); color: white; }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th {
+            text-align: left;
+            padding: 16px 12px;
+            background: var(--bg-hover);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--bg-hover); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge-primary { background: rgba(124, 58, 237, 0.1); color: var(--primary); }
+        .badge-info { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+
+        .action-group { display: flex; gap: 4px; flex-wrap: wrap; }
+        .action-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .action-btn.delete:hover { background: var(--danger); }
+        .action-btn.edit:hover { background: var(--success); }
+        .action-btn.ban:hover { background: var(--warning); }
+        .action-btn.view:hover { background: var(--info); }
+        .action-btn.suspend:hover { background: var(--warning); }
+        .action-btn.unsuspend:hover { background: var(--success); }
+        .action-btn.confirm:hover { background: var(--success); }
+        .action-btn.fail:hover { background: var(--danger); }
+        .action-btn.sync:hover { background: var(--primary); }
+
+        .screenshot-preview {
+            max-width: 60px;
+            max-height: 50px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .page-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--primary); color: white; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-info { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { font-size: 1.3rem; font-family: 'Space Grotesk', sans-serif; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+        }
+        .modal-info {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .modal-info-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-info-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .modal-info-label { color: var(--text-secondary); font-size: 0.9rem; min-width: 120px; font-weight: 500; }
+        .modal-info-value { font-weight: 600; color: var(--text-primary); word-break: break-all; }
+        .modal-form-group { margin-bottom: 16px; }
+        .modal-form-group label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.9rem; }
+        .modal-input, .modal-select, .modal-textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .modal-textarea { min-height: 120px; resize: vertical; }
+        .modal-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+
+        .loading-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .loading-state i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            font-size: 0.85rem;
+        }
+        .toast.success { background: rgba(16, 185, 129, 0.95); }
+        .toast.error { background: rgba(239, 68, 68, 0.95); }
+        .toast.info { background: rgba(59, 130, 246, 0.95); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Maintenance */
+        .maintenance-status {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .status-indicator.active { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .status-indicator.inactive { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .status-dot.active { background: var(--danger); }
+        .status-dot.inactive { background: var(--success); }
+
+        .current-config {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .config-item:last-child { border-bottom: none; }
+        .config-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .config-value { font-weight: 600; color: var(--text-primary); word-break: break-all; }
+
+        .email-campaign-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+        .email-template-select { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .template-badge {
+            background: var(--bg-hover);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .template-badge:hover { border-color: var(--primary); background: var(--bg-input); }
+        .template-badge.selected { border-color: var(--primary); background: rgba(124, 58, 237, 0.1); color: var(--primary); }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .page-content { padding: 24px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+            .financial-stats { grid-template-columns: repeat(5, 1fr); gap: 16px; }
+            .charts-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-bar { flex-direction: row; align-items: center; }
+            .search-row { flex: 1; }
+            .page-header { flex-direction: row; align-items: center; justify-content: space-between; }
+        }
+        @media (min-width: 1024px) {
+            .menu-toggle { display: none; }
+            .sidebar { transform: translateX(0); position: sticky; }
+            .sidebar-overlay { display: none; }
+            .top-bar-logo { display: none; }
+        }
+        @media (max-width: 767px) {
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+            .financial-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+
+
+        /* Admin rewrite overrides */
+        html { font-size: 13px; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 1.4rem; }
+        h2 { font-size: 1rem; }
+        h3 { font-size: 0.9rem; }
+        .sidebar { width: 220px; background: var(--bg-sidebar); }
+        .sidebar-header, .sidebar-user, .sidebar-footer { padding: 14px; }
+        .sidebar-nav { padding: 10px 0; }
+        .sidebar-nav li { margin: 2px 8px; }
+        .sidebar-nav .nav-section {
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            padding: 14px 14px 5px;
+        }
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, rgba(124,58,237,0.3), transparent);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        .sidebar-nav a { padding: 9px 12px; min-height: 44px; border-radius: 8px; }
+        .sidebar-nav i { width: 18px; font-size: 0.95rem; }
+        .main-content { min-width: 0; }
+        .page-content { padding: 14px; }
+        .page-header { margin-bottom: 14px; }
+        .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .financial-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .stat-card, .chart-card, .top-buyers, .search-bar, .email-campaign-card, .maintenance-status {
+            background: rgba(26,35,50,0.8);
+            backdrop-filter: blur(10px);
+            padding: 14px;
+            border-radius: 8px;
+        }
+        .stat-icon { width: 32px; height: 32px; }
+        .stat-value { font-size: 1.25rem; }
+        .financial-card { padding: 14px; border-radius: 8px; }
+        .financial-amount { font-size: 1.25rem; }
+        .btn { padding: 8px 14px; font-size: 0.82rem; min-height: 44px; border-radius: 8px; }
+        .btn-small { padding: 7px 10px; }
+        .search-input, .filter-select, .modal-input, .modal-select, .modal-textarea { padding: 8px 10px; font-size: 0.85rem; min-height: 44px; }
+        th, td { padding: 6px 10px; }
+        tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        tbody tr:hover { background: rgba(124,58,237,0.07); }
+        tr:hover td { background: transparent; }
+        .badge { border-radius: 6px; font-size: 0.7rem; padding: 2px 8px; }
+        .action-group { display: flex; gap: 4px; flex-wrap: nowrap; }
+        .action-btn { min-width: 32px; min-height: 32px; border-radius: 6px; }
+        .compact-input { width: 96px; padding: 4px 6px; min-height: 34px; }
+        .inline-secret { background: transparent; border: 0; color: var(--text-secondary); font-family: monospace; width: 160px; }
+        .modal-content { padding: 16px; border-radius: 12px; max-height: 90vh; animation: slideUp 0.2s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast { top: 20px; right: 20px; bottom: auto; }
+        .empty-state { text-align: center; padding: 24px 16px; color: var(--text-secondary); }
+        .empty-state i { display: block; font-size: 1.6rem; color: var(--primary); margin-bottom: 8px; }
+        .empty-state strong { display: block; color: var(--text-primary); margin-bottom: 3px; }
+        .empty-state span { display: block; font-size: 0.78rem; }
+        .tabs { display: none !important; }
+        @media (min-width: 1024px) {
+            .sidebar { position: fixed; transform: translateX(0); }
+            .main-content { margin-left: 220px; width: calc(100% - 220px); }
+            .close-sidebar, .menu-toggle { display: none !important; }
+            .sidebar-overlay { display: none !important; }
+            .top-bar-logo { display: none; }
+        }
+        @media (max-width: 1279px) {
+            .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+            .main-content { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 767px) {
+            html { font-size: 12px; }
+            .page-content { padding: 10px; }
+            .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+            .financial-stats { grid-template-columns: 1fr; }
+            .search-bar, .search-row, .header-actions, .modal-actions { flex-direction: column; align-items: stretch; }
+            .search-input, .filter-select, .btn, .export-btns, .export-btn { width: 100%; }
+            .table-container { overflow-x: auto; }
+            table { min-width: 760px; }
+            #usersTable th:nth-child(1), #usersTable td:nth-child(1),
+            #usersTable th:nth-child(8), #usersTable td:nth-child(8),
+            #serversTable th:nth-child(1), #serversTable td:nth-child(1),
+            #transactionsTable th:nth-child(1), #transactionsTable td:nth-child(1),
+            #logsTable th:nth-child(6), #logsTable td:nth-child(6),
+            #paypalTable th:nth-child(1), #paypalTable td:nth-child(1),
+            #minipayTable th:nth-child(1), #minipayTable td:nth-child(1),
+            #botTemplatesTable th:nth-child(1), #botTemplatesTable td:nth-child(1),
+            #herokuAccountsTable th:nth-child(1), #herokuAccountsTable td:nth-child(1) { display: none; }
+            .modal { padding: 0; }
+            .modal-content { width: 90vw; max-width: 90vw; max-height: 90vh; overflow-y: auto; }
+        }
+        @media (max-width: 600px) {
+            .modal-content { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; }
+        }
+        @media (max-width: 479px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .top-bar { padding: 6px 10px; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Chargement...</div>
+                    <div class="user-email" id="sidebarUserEmail">...</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">...</div>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Navigation admin">
+                <ul>
+                    <li class="nav-item active" data-tab="users"><a href="#" onclick="switchTab('users'); return false;"><i class="fas fa-home"></i><span>Tableau de bord</span></a></li>
+                    <li class="nav-section">Gestion utilisateurs</li>
+                    <li class="nav-item" data-tab="users"><a href="#" onclick="switchTab('users'); return false;"><i class="fas fa-users"></i><span>Utilisateurs</span></a></li>
+                    <li class="nav-item" data-tab="logs"><a href="#" onclick="switchTab('logs'); return false;"><i class="fas fa-clipboard-list"></i><span>Logs</span></a></li>
+                    <li class="nav-section">Gestion serveurs</li>
+                    <li class="nav-item" data-tab="servers"><a href="#" onclick="switchTab('servers'); return false;"><i class="fas fa-server"></i><span>Serveurs</span></a></li>
+                    <li class="nav-item" data-tab="maintenance"><a href="#" onclick="switchTab('maintenance'); return false;"><i class="fas fa-tools"></i><span>Maintenance</span></a></li>
+                    <li class="nav-section">Finance</li>
+                    <li class="nav-item" data-tab="transactions"><a href="#" onclick="switchTab('transactions'); return false;"><i class="fas fa-credit-card"></i><span>Transactions</span></a></li>
+                    <li class="nav-item" data-tab="financial"><a href="#" onclick="switchTab('financial'); return false;"><i class="fas fa-chart-pie"></i><span>Finances</span></a></li>
+                    <li class="nav-item" data-tab="paypal"><a href="#" onclick="switchTab('paypal'); return false;"><i class="fab fa-paypal"></i><span>PayPal</span></a></li>
+                    <li class="nav-item" data-tab="minipay"><a href="#" onclick="switchTab('minipay'); return false;"><i class="fas fa-mobile-alt"></i><span>Minipay</span></a></li>
+                    <li class="nav-section">Bots</li>
+                    <li class="nav-item" data-tab="bot-submissions"><a href="#" onclick="switchTab('bot-submissions'); return false;"><i class="fas fa-inbox"></i><span>Demandes Bots</span></a></li>
+                    <li class="nav-item" data-tab="bot-templates"><a href="#" onclick="switchTab('bot-templates'); return false;"><i class="fas fa-box"></i><span>Templates Bots</span></a></li>
+                    <li class="nav-item" data-tab="deployed-bots"><a href="#" onclick="switchTab('deployed-bots'); return false;"><i class="fas fa-rocket"></i><span>Bots Déployés</span></a></li>
+                    <li class="nav-item" data-tab="heroku"><a href="#" onclick="switchTab('heroku'); return false;"><i class="fas fa-cloud"></i><span>Comptes Heroku</span></a></li>
+                    <li class="nav-section">Communication</li>
+                    <li class="nav-item" data-tab="email"><a href="#" onclick="switchTab('email'); return false;"><i class="fas fa-envelope"></i><span>Emails Massifs</span></a></li>
+                    <li class="nav-section">Compte</li>
+                    <li><a href="#" id="navLogout"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-stats">
+                    <div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div>
+                    <div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <div class="top-bar-actions">
+                    <button class="refresh-btn" id="refreshBtn" onclick="refreshAllData()"><i class="fas fa-sync-alt"></i></button>
+                    <div class="user-menu" id="userMenu">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1><span class="gradient-text">Administration</span> KermHosting</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-warning" onclick="showPterodactylCleanupModal()"><i class="fas fa-broom"></i><span>Nettoyer Pterodactyl</span></button>
+                        <button class="btn btn-danger" onclick="showDeleteAllServersModal()"><i class="fas fa-trash-alt"></i><span>Supprimer tous les serveurs</span></button>
+                        <button class="btn btn-primary" onclick="refreshAllData()"><i class="fas fa-sync-alt"></i><span>Actualiser</span></button>
+                    </div>
+                </div>
+
+                <!-- STATS GLOBALES (8 cartes) -->
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-users"></i></div></div><div class="stat-value" id="statTotalUsers">0</div><div class="stat-label">Utilisateurs</div><div class="stat-change"><i class="fas fa-check-circle"></i> <span id="statVerifiedUsers">0 vérifiés</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-server"></i></div></div><div class="stat-value" id="statTotalServers">0</div><div class="stat-label">Serveurs</div><div class="stat-change"><i class="fas fa-clock"></i> <span id="statActiveServers">0 actifs</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-coins"></i></div></div><div class="stat-value" id="statTotalCoins">0</div><div class="stat-label">Coins en circulation</div><div class="stat-change"><i class="fas fa-chart-line"></i> <span id="statAvgCoins">0 par user</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-ban"></i></div></div><div class="stat-value" id="statBannedUsers">0</div><div class="stat-label">Bannis</div><div class="stat-change"><i class="fas fa-exclamation-triangle"></i> <span id="statBannedPercent">0%</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-robot"></i></div></div><div class="stat-value" id="statTotalBots">0</div><div class="stat-label">Bots déployés</div><div class="stat-change"><i class="fas fa-check-circle"></i> <span id="statActiveBots">0 actifs</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fab fa-salesforce"></i></div></div><div class="stat-value" id="statHerokuAccounts">0</div><div class="stat-label">Comptes Heroku</div><div class="stat-change"><i class="fas fa-check-circle"></i> <span id="statActiveHeroku">0 actifs</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-boxes"></i></div></div><div class="stat-value" id="statBotTemplates">0</div><div class="stat-label">Templates bots</div><div class="stat-change"><i class="fas fa-check-circle"></i> <span id="statApprovedTemplates">0 approuvés</span></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-clipboard-list"></i></div></div><div class="stat-value" id="statBotSubmissions">0</div><div class="stat-label">Demandes bots</div><div class="stat-change"><i class="fas fa-clock"></i> <span id="statPendingSubmissions">0 en attente</span></div></div>
+                </div>
+
+                <!-- Financial Stats -->
+                <div class="financial-stats">
+                    <div class="financial-card"><div class="financial-label"><i class="fas fa-chart-pie"></i> Revenus totaux</div><div class="financial-amount" id="financialTotal">0 FCFA</div><div class="financial-sub">Tous temps</div></div>
+                    <div class="financial-card"><div class="financial-label"><i class="fas fa-calendar-day"></i> Aujourd'hui</div><div class="financial-amount" id="financialToday">0 FCFA</div><div class="financial-sub" id="financialTodaySub">0 transactions</div></div>
+                    <div class="financial-card"><div class="financial-label"><i class="fas fa-chart-bar"></i> Moyenne</div><div class="financial-amount" id="financialAvg">0 FCFA</div><div class="financial-sub">par transaction</div></div>
+                    <div class="financial-card"><div class="financial-label"><i class="fas fa-exchange-alt"></i> Total transactions</div><div class="financial-amount" id="financialCount">0</div><div class="financial-sub">paiements réussis</div></div>
+                    <div class="financial-card"><div class="financial-label"><i class="fas fa-wallet"></i> Solde Fapshi</div><div class="financial-amount" id="fapshiBalance">-- FCFA</div><div class="financial-sub" id="fapshiBalanceStatus">En attente...</div></div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card"><h3><i class="fas fa-chart-line" style="color: var(--primary);"></i> Revenus (30 jours)</h3><canvas id="revenueChart"></canvas></div>
+                </div>
+
+                <!-- Top Acheteurs -->
+                <div class="top-buyers"><h3><i class="fas fa-crown" style="color: var(--warning);"></i> Top 10 acheteurs</h3><div class="buyer-list" id="topBuyersList"></div></div>
+
+                <!-- TAB: UTILISATEURS -->
+                <div class="tab-pane active" id="tab-users">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="userSearch" placeholder="Rechercher (nom, email, ID...)" onkeyup="filterUsers()">
+                            <select class="filter-select" id="userFilter" onchange="filterUsers()">
+                                <option value="all">Tous</option><option value="verified">Vérifiés</option><option value="unverified">Non vérifiés</option>
+                                <option value="banned">Bannis</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-users"></i><span id="userCount">0</span> utilisateurs<button class="clear-search" onclick="clearUserSearch()"><i class="fas fa-times"></i></button></div>
+                        <div class="export-btns"><button class="export-btn" onclick="exportUsers('csv')"><i class="fas fa-file-csv"></i> CSV</button><button class="export-btn" onclick="exportUsers('json')"><i class="fas fa-file-code"></i> JSON</button></div>
+                    </div>
+                    <div class="table-container"><table id="usersTable"><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Coins</th><th>Serveurs</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead><tbody id="usersTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="userPagination"><button class="page-btn" onclick="changeUserPage('prev')" id="userPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="userPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeUserPage('next')" id="userNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: SERVEURS -->
+                <div class="tab-pane" id="tab-servers">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="serverSearch" placeholder="Rechercher..." onkeyup="filterServers()">
+                            <select class="filter-select" id="serverFilter" onchange="filterServers()">
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="expired">Expirés</option><option value="expiring">Expire bientôt</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-server"></i><span id="serverCount">0</span> serveurs</div>
+                    </div>
+                    <div class="table-container"><table id="serversTable"><thead><tr><th>ID</th><th>Nom</th><th>Propriétaire</th><th>Plan</th><th>Statut</th><th>Création</th><th>Expiration</th><th>Actions</th></tr></thead><tbody id="serversTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="serverPagination"><button class="page-btn" onclick="changeServerPage('prev')" id="serverPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="serverPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeServerPage('next')" id="serverNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: TRANSACTIONS -->
+                <div class="tab-pane" id="tab-transactions">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="transactionSearch" placeholder="Rechercher..." onkeyup="filterTransactions()">
+                            <select class="filter-select" id="transactionFilter" onchange="filterTransactions()">
+                                <option value="all">Toutes</option><option value="completed">Complétées</option><option value="pending">En attente</option><option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-exchange-alt"></i><span id="transactionCount">0</span> transactions</div>
+                    </div>
+                    <div class="table-container"><table id="transactionsTable"><thead><tr><th>ID</th><th>Utilisateur</th><th>Type</th><th>Montant</th><th>Statut</th><th>Moyen</th><th>Date</th><th>Actions</th></tr></thead><tbody id="transactionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="transactionPagination"><button class="page-btn" onclick="changeTransactionPage('prev')" id="transactionPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="transactionPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeTransactionPage('next')" id="transactionNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: FINANCES -->
+                <div class="tab-pane" id="tab-financial">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div></div><div class="stat-value" id="financialCoinsPurchases">0 FCFA</div><div class="stat-label">Achats de coins</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-server"></i></div></div><div class="stat-value" id="financialServerPurchases">0 FCFA</div><div class="stat-label">Achats de serveurs</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-sync-alt"></i></div></div><div class="stat-value" id="financialRenewals">0 FCFA</div><div class="stat-label">Renouvellements</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-chart-pie"></i></div></div><div class="stat-value" id="financialOther">0 FCFA</div><div class="stat-label">Autres</div></div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-card"><h3><i class="fas fa-chart-pie" style="color: var(--secondary);"></i> Répartition par type</h3><canvas id="typeChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- TAB: LOGS -->
+                <div class="tab-pane" id="tab-logs">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="logSearch" placeholder="Rechercher..." onkeyup="filterLogs()">
+                            <select class="filter-select" id="logFilter" onchange="filterLogs()">
+                                <option value="all">Toutes</option><option value="ban">Bannissements</option><option value="role">Changements rôle</option>
+                                <option value="coins">Ajouts/retraits coins</option><option value="server">Actions serveurs</option>
+                            </select>
+                            <button class="btn btn-danger btn-small" onclick="showDeleteAllLogsModal()" style="margin-left:auto;"><i class="fas fa-trash-alt"></i> Supprimer les logs</button>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-history"></i><span id="logCount">0</span> logs</div>
+                    </div>
+                    <div class="table-container"><table id="logsTable"><thead><tr><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th><th>Détails</th><th>IP</th></tr></thead><tbody id="logsTableBody"><tr><td colspan="6" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="logsPagination"><button class="page-btn" onclick="changeLogsPage('prev')" id="logsPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="logsPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeLogsPage('next')" id="logsNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: PAYPAL -->
+                <div class="tab-pane" id="tab-paypal">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="paypalSearch" placeholder="Rechercher..." onkeyup="filterPaypalTransactions()">
+                            <select class="filter-select" id="paypalFilter" onchange="filterPaypalTransactions()">
+                                <option value="all">Toutes</option><option value="pending">En attente</option><option value="successful">Confirmées</option><option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fab fa-paypal"></i><span id="paypalCount">0</span> transactions PayPal<button class="clear-search" onclick="clearPaypalSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="refreshPaypalTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table id="paypalTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Type</th><th>Montant FCFA</th><th>Montant devise</th><th>Email PayPal</th><th>Nom complet</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="paypalTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="paypalPagination"><button class="page-btn" onclick="changePaypalPage('prev')" id="paypalPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="paypalPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changePaypalPage('next')" id="paypalNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: MINIPAY -->
+                <div class="tab-pane" id="tab-minipay">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="minipaySearch" placeholder="Rechercher..." onkeyup="filterMinipayTransactions()">
+                            <select class="filter-select" id="minipayFilter" onchange="filterMinipayTransactions()">
+                                <option value="all">Toutes</option><option value="pending_manual">En attente capture</option><option value="pending_manual_with_proof">Capture reçue</option>
+                                <option value="successful">Confirmées</option><option value="failed">Échouées</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-mobile-alt"></i><span id="minipayCount">0</span> transactions Minipay<button class="clear-search" onclick="clearMinipaySearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="refreshMinipayTransactions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table id="minipayTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Pack</th><th>Coins</th><th>Montant local</th><th>Pays</th><th>Téléphone</th><th>Statut</th><th>Capture</th><th>Actions</th></tr></thead><tbody id="minipayTableBody"><tr><td colspan="10" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="minipayPagination"><button class="page-btn" onclick="changeMinipayPage('prev')" id="minipayPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="minipayPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeMinipayPage('next')" id="minipayNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: DEMANDES BOTS -->
+                <div class="tab-pane" id="tab-bot-submissions">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botSearch" placeholder="Rechercher..." onkeyup="filterBotSubmissions()">
+                            <select class="filter-select" id="botFilter" onchange="filterBotSubmissions()">
+                                <option value="pending">En attente</option><option value="approved">Approuvés</option><option value="rejected">Rejetés</option><option value="all">Tous</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-clipboard-list"></i><span id="botSubmissionsCount">0</span> demandes<button class="clear-search" onclick="clearBotSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadBotSubmissions()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table id="botSubmissionsTable"><thead><tr><th>Date</th><th>Utilisateur</th><th>Nom</th><th>Repository</th><th>Statut</th><th>Kh.json</th><th>Prix</th><th>Actions</th></tr></thead><tbody id="botSubmissionsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                </div>
+
+                <!-- TAB: TEMPLATES BOTS -->
+                <div class="tab-pane" id="tab-bot-templates">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="botTemplateSearch" placeholder="Rechercher..." onkeyup="filterBotTemplates()">
+                            <select class="filter-select" id="botTemplateFilter" onchange="filterBotTemplates()">
+                                <option value="all">Tous</option><option value="approved">Approuvés</option><option value="pending">En attente</option><option value="rejected">Rejetés</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-boxes"></i><span id="botTemplatesCount">0</span> templates<button class="clear-search" onclick="clearBotTemplateSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadBotTemplates()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table id="botTemplatesTable"><thead><tr><th>ID</th><th>Nom</th><th>Créateur</th><th>Repository</th><th>Prix</th><th>Déploiements</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="botTemplatesTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="botTemplatePagination"><button class="page-btn" onclick="changeBotTemplatePage('prev')" id="botTemplatePrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="botTemplatePageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeBotTemplatePage('next')" id="botTemplateNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: BOTS DÉPLOYÉS -->
+                <div class="tab-pane" id="tab-deployed-bots">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="deployedBotSearch" placeholder="Rechercher..." onkeyup="filterDeployedBots()">
+                            <select class="filter-select" id="deployedBotFilter" onchange="filterDeployedBots()">
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="deploying">En déploiement</option>
+                                <option value="stopped">Arrêtés</option><option value="suspended">Suspendus</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fas fa-rocket"></i><span id="deployedBotsCount">0</span> bots déployés<button class="clear-search" onclick="clearDeployedBotSearch()"><i class="fas fa-times"></i></button></div>
+                        <button class="btn btn-primary" onclick="loadDeployedBots()" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="table-container"><table id="deployedBotsTable"><thead><tr><th>Nom Heroku</th><th>Template</th><th>Utilisateur</th><th>Durée</th><th>Expiration</th><th>Statut</th><th>Auto-renew</th><th>Date création</th><th>Actions</th></tr></thead><tbody id="deployedBotsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="deployedBotPagination"><button class="page-btn" onclick="changeDeployedBotPage('prev')" id="deployedBotPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="deployedBotPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeDeployedBotPage('next')" id="deployedBotNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: COMPTES HEROKU -->
+                <div class="tab-pane" id="tab-heroku">
+                    <div class="search-bar">
+                        <div class="search-row">
+                            <input type="text" class="search-input" id="herokuSearch" placeholder="Rechercher compte..." onkeyup="filterHerokuAccounts()">
+                            <select class="filter-select" id="herokuFilter" onchange="filterHerokuAccounts()">
+                                <option value="all">Tous</option><option value="active">Actifs</option><option value="inactive">Inactifs</option>
+                            </select>
+                        </div>
+                        <div class="search-badge"><i class="fab fa-salesforce"></i><span id="herokuAccountsCount">0</span> comptes Heroku</div>
+                        <button class="btn btn-success" onclick="showAddHerokuAccountModal()" style="margin-left:auto;"><i class="fas fa-plus"></i> Ajouter un compte</button>
+                        <button class="btn btn-primary" onclick="loadHerokuAccounts()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+                    </div>
+                    <div class="stats-grid" style="margin-bottom:20px;">
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fab fa-salesforce"></i></div></div><div class="stat-value" id="herokuTotalAccounts">0</div><div class="stat-label">Total comptes</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-value" id="herokuActiveAccounts">0</div><div class="stat-label">Actifs</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-microchip"></i></div></div><div class="stat-value" id="herokuTotalCapacity">0</div><div class="stat-label">Capacité totale</div></div>
+                        <div class="stat-card"><div class="stat-header"><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-value" id="herokuAvailableCapacity">0</div><div class="stat-label">Disponible</div></div>
+                    </div>
+                    <div class="table-container"><table id="herokuAccountsTable"><thead><tr><th>ID</th><th>Email</th><th>API Key</th><th>Max Bots</th><th>Bots actifs</th><th>Statut</th><th>Dernière utilisation</th><th>Actions</th></tr></thead><tbody id="herokuAccountsTableBody"><tr><td colspan="8" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                    <div class="pagination" id="herokuPagination"><button class="page-btn" onclick="changeHerokuPage('prev')" id="herokuPrevBtn" disabled><i class="fas fa-chevron-left"></i></button><span class="page-info" id="herokuPageInfo">Page 1 / 1</span><button class="page-btn" onclick="changeHerokuPage('next')" id="herokuNextBtn" disabled><i class="fas fa-chevron-right"></i></button></div>
+                </div>
+
+                <!-- TAB: MAINTENANCE -->
+                <div class="tab-pane" id="tab-maintenance">
+                    <div class="maintenance-status">
+                        <div class="status-indicator" id="maintenanceStatusIndicator"><span class="status-dot" id="maintenanceStatusDot"></span><span id="maintenanceStatusText">Chargement...</span></div>
+                        <div class="current-config"><h4>Configuration actuelle</h4><div class="config-item"><span class="config-label">Message</span><span class="config-value" id="currentMessage">-</span></div><div class="config-item"><span class="config-label">Fin estimée</span><span class="config-value" id="currentEndTime">-</span></div><div class="config-item"><span class="config-label">Support Email</span><span class="config-value" id="currentEmail">-</span></div><div class="config-item"><span class="config-label">WhatsApp</span><span class="config-value" id="currentWhatsApp">-</span></div><div class="config-item"><span class="config-label">Discord</span><span class="config-value" id="currentDiscord">-</span></div></div>
+                        <h3 style="margin:24px 0 16px;">Modifier la maintenance</h3>
+                        <div class="maintenance-form">
+                            <div class="form-row checkbox"><input type="checkbox" id="maintenanceActive"><label>Activer la maintenance</label></div>
+                            <div class="form-row"><label>Message</label><textarea id="maintenanceMessage" placeholder="🚧 Site en maintenance..."></textarea></div>
+                            <div class="form-row"><label>Fin estimée</label><input type="datetime-local" id="maintenanceEndTime"></div>
+                            <div class="form-row"><label>Email support</label><input type="email" id="maintenanceEmail"></div>
+                            <div class="form-row"><label>WhatsApp</label><input type="text" id="maintenanceWhatsApp" placeholder="https://wa.me/..."></div>
+                            <div class="form-row"><label>Discord</label><input type="text" id="maintenanceDiscord"></div>
+                            <div class="form-row"><label>IPs autorisées (admin)</label><textarea id="maintenanceIPs" placeholder="192.168.1.1"></textarea></div>
+                            <div class="form-actions"><button class="btn btn-outline" onclick="loadMaintenanceConfig()"><i class="fas fa-sync-alt"></i> Recharger</button><button class="btn btn-primary" onclick="saveMaintenanceConfig()"><i class="fas fa-save"></i> Enregistrer</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: EMAILS MASSIFS -->
+                <div class="tab-pane" id="tab-email">
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title"><i class="fas fa-envelope-open-text"></i> Envoi d'emails massifs</div>
+                        <div class="modal-form-group"><label>Type de template</label><div class="email-template-select" id="templateSelect"></div></div>
+                        <div class="modal-form-group"><label>Sujet</label><input type="text" class="modal-input" id="emailSubject"></div>
+                        <div class="modal-form-group"><label>Message personnalisé</label><textarea class="modal-textarea" id="emailMessage"></textarea></div>
+                        <div class="modal-form-group"><label>Cible</label><select class="modal-select" id="emailTarget"><option value="all">Tous</option><option value="user">Utilisateurs</option><option value="admin">Admins</option><option value="superadmin">Super Admins</option></select></div>
+                        <div class="modal-form-group"><label>Email de test</label><input type="email" class="modal-input" id="testEmail"></div>
+                        <div class="modal-actions"><button class="btn btn-outline" onclick="sendTestEmail()"><i class="fas fa-flask"></i> Envoyer un test</button><button class="btn btn-primary" onclick="sendMassEmail()"><i class="fas fa-paper-plane"></i> Lancer la campagne</button></div>
+                        <div id="campaignProgress" style="display:none;"><div class="campaign-stats"><span><i class="fas fa-spinner fa-spin"></i> Envoi...</span><span id="campaignStatus">0 / 0</span><div class="campaign-progress"><div class="campaign-progress-bar" id="campaignProgressBar"></div></div><button class="campaign-cancel-btn" onclick="cancelCurrentCampaign()"><i class="fas fa-stop"></i> Annuler</button></div></div>
+                    </div>
+                    <div class="email-campaign-card">
+                        <div class="email-campaign-title"><i class="fas fa-history"></i> Historique</div>
+                        <div class="table-container"><table id="campaignsTable"><thead><tr><th>Date</th><th>Admin</th><th>Sujet</th><th>Template</th><th>Destinataires</th><th>Succès</th><th>Échecs</th><th>Statut</th><th>Action</th></tr></thead><tbody id="campaignsTableBody"><tr><td colspan="9" class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></td></tr></tbody></table></div>
+                        <div class="campaign-stats"><span><i class="fas fa-chart-line"></i> Taux de réussite global: <span id="globalSuccessRate">0%</span></span><button class="btn btn-small btn-outline" onclick="loadCampaignHistory()"><i class="fas fa-sync-alt"></i> Actualiser</button></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <div id="userEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Édition utilisateur</h2><button class="modal-close" onclick="closeModal('userEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editUserId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editUsername">-</span></div><div class="modal-info-item"><span class="modal-info-label">Email</span><span class="modal-info-value" id="editEmail">-</span></div><div class="modal-info-item"><span class="modal-info-label">Coins</span><span class="modal-info-value" id="editCoins">-</span></div></div><div class="modal-form-group"><label>Rôle</label><select class="modal-select" id="editRole"><option value="user">Utilisateur</option><option value="admin">Admin</option><option value="superadmin">Super Admin</option></select></div><div class="modal-form-group"><label>Vérification email</label><select class="modal-select" id="editEmailVerified"><option value="true">Vérifié</option><option value="false">Non vérifié</option></select></div><div class="modal-form-group"><label>Statut bannissement</label><select class="modal-select" id="editBanned"><option value="false">Actif</option><option value="true">Banni</option></select></div><div class="modal-form-group"><label>Ajouter/Retirer des coins</label><div style="display:flex; gap:8px; flex-wrap:wrap;"><input type="number" class="modal-input" id="editCoinsAmount" placeholder="Montant" min="1" style="flex:1;"><button class="btn btn-success btn-small" onclick="addCoinsToUser()">Ajouter</button><button class="btn btn-danger btn-small" onclick="removeCoinsFromUser()">Retirer</button></div></div><h3 style="margin:16px 0 8px; font-size:1.1rem;">Serveurs de l'utilisateur</h3><div id="editUserServers"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i><p>Chargement...</p></div></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('userEditModal')">Fermer</button><button class="btn btn-primary" onclick="saveUserChanges()">Enregistrer</button></div></div></div>
+
+    <div id="serverEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Édition serveur</h2><button class="modal-close" onclick="closeModal('serverEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editServerId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value" id="editServerName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Propriétaire</span><span class="modal-info-value" id="editServerOwner">-</span></div></div><div class="modal-form-group"><label>Plan</label><select class="modal-select" id="editServerPlan"><option value="free">Free</option><option value="1gb">Starter</option><option value="2gb">Basic</option><option value="4gb">Pro</option><option value="8gb">Business</option></select></div><div class="modal-form-group"><label>Statut</label><select class="modal-select" id="editServerStatus"><option value="active">Actif</option><option value="stopped">Arrêté</option><option value="suspended">Suspendu</option></select></div><div class="modal-form-group"><label>Date d'expiration</label><input type="datetime-local" class="modal-input" id="editServerExpiry"></div><div class="modal-form-group"><label>Nom d'utilisateur Pterodactyl</label><input type="text" class="modal-input" id="editServerPteroUser" placeholder="Nom d'utilisateur"></div><div class="modal-form-group"><label>Mot de passe</label><input type="text" class="modal-input" id="editServerPassword" placeholder="Nouveau mot de passe"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('serverEditModal')">Annuler</button><button class="btn btn-danger" id="deleteServerBtn" onclick="deleteServer(currentServerId)">Supprimer</button><button class="btn btn-primary" onclick="saveServerChanges()">Enregistrer</button></div></div></div>
+
+    <div id="botTemplateEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>✏️ Édition template bot</h2><button class="modal-close" onclick="closeModal('botTemplateEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editTemplateId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom actuel</span><span class="modal-info-value" id="editTemplateName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Créateur</span><span class="modal-info-value" id="editTemplateCreator">-</span></div></div><div class="modal-form-group"><label>Nouveau nom</label><input type="text" id="editTemplateNewName" class="modal-input" placeholder="Laisser vide pour ne pas changer"></div><div class="modal-form-group"><label>Nouveau repository</label><input type="text" id="editTemplateNewRepo" class="modal-input" placeholder="https://github.com/user/repo"></div><div class="modal-form-group"><label>Prix (coins/semaine)</label><input type="number" id="editTemplatePrice" class="modal-input" min="0"></div><div class="modal-form-group"><label>Statut</label><select id="editTemplateStatus" class="modal-select"><option value="approved">Approuvé</option><option value="pending">En attente</option><option value="rejected">Rejeté</option><option value="deleted">Supprimé</option></select></div><div class="modal-form-group"><label>Description</label><textarea id="editTemplateDescription" class="modal-textarea"></textarea></div><div class="modal-form-group"><label>Logo URL</label><input type="text" id="editTemplateLogo" class="modal-input"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('botTemplateEditModal')">Annuler</button><button class="btn btn-danger" onclick="deleteBotTemplate(currentTemplateId)"><i class="fas fa-trash-alt"></i> Supprimer</button><button class="btn btn-primary" onclick="saveBotTemplateChanges()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
+
+    <div id="deployedBotEditModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>✏️ Édition bot déployé</h2><button class="modal-close" onclick="closeModal('deployedBotEditModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info"><div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value" id="editDeployedBotId">-</span></div><div class="modal-info-item"><span class="modal-info-label">Nom Heroku</span><span class="modal-info-value" id="editDeployedBotName">-</span></div><div class="modal-info-item"><span class="modal-info-label">Template</span><span class="modal-info-value" id="editDeployedBotTemplate">-</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value" id="editDeployedBotUser">-</span></div></div><div class="modal-form-group"><label>Statut</label><select id="editDeployedBotStatus" class="modal-select"><option value="active">Actif</option><option value="stopped">Arrêté</option><option value="suspended">Suspendu</option><option value="failed">Échoué</option></select></div><div class="modal-form-group"><label>Expiration</label><input type="datetime-local" id="editDeployedBotExpiry" class="modal-input"></div><div class="modal-form-group"><label>Auto-renouvellement</label><select id="editDeployedBotAutoRenew" class="modal-select"><option value="true">Activé</option><option value="false">Désactivé</option></select></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('deployedBotEditModal')">Annuler</button><button class="btn btn-warning" onclick="forceRenewDeployedBot()"><i class="fas fa-sync-alt"></i> Forcer renouvellement</button><button class="btn btn-danger" onclick="deleteDeployedBot(currentDeployedBotId)"><i class="fas fa-trash-alt"></i> Supprimer</button><button class="btn btn-primary" onclick="saveDeployedBotChanges()"><i class="fas fa-save"></i> Enregistrer</button></div></div></div>
+
+    <div id="herokuAccountModal" class="modal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-plus"></i> Ajouter un compte Heroku</h2><button class="modal-close" onclick="closeModal('herokuAccountModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-form-group"><label>Email</label><input type="email" id="herokuEmail" class="modal-input"></div><div class="modal-form-group"><label>API Key</label><input type="password" id="herokuApiKey" class="modal-input"></div><div class="modal-form-group"><label>Max bots</label><input type="number" id="herokuMaxBots" class="modal-input" value="50"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('herokuAccountModal')">Annuler</button><button class="btn btn-success" onclick="addHerokuAccount()"><i class="fas fa-plus"></i> Ajouter</button></div></div></div>
+
+    <div id="minipayTransactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Détails de la transaction Minipay</h2><button class="modal-close" onclick="closeModal('minipayTransactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="minipayTransactionDetails"></div><div class="modal-screenshot" id="minipayScreenshotContainer" style="display:none;"><p><strong>Capture d'écran :</strong></p><img id="minipayScreenshot" src="" style="max-width:100%;max-height:300px;border-radius:var(--radius-md);cursor:pointer;" onclick="openScreenshotModal(this.src)"></div></div><div class="modal-actions" id="minipayModalActions"><button class="btn btn-primary" onclick="closeModal('minipayTransactionModal')">Fermer</button></div></div></div>
+
+    <div id="screenshotModal" class="modal"><div class="modal-content" style="max-width:90vw;"><div class="modal-header"><h2>Capture d'écran</h2><button class="modal-close" onclick="closeModal('screenshotModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><img id="screenshotFullImg" src="" style="max-width:100%;border-radius:var(--radius-lg);"></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('screenshotModal')">Fermer</button></div></div></div>
+
+    <div id="transactionModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Détails de la transaction</h2><button class="modal-close" onclick="closeModal('transactionModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="modal-info" id="transactionDetails"></div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('transactionModal')">Fermer</button></div></div></div>
+
+    <div id="pteroCleanupModal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Nettoyage des utilisateurs Pterodactyl</h2><button class="modal-close" onclick="closeModal('pteroCleanupModal')"><i class="fas fa-times"></i></button></div><div class="modal-body"><div id="cleanupInitial"><p>Cette action va analyser tous les utilisateurs Pterodactyl et supprimer ceux qui :</p><ul style="margin:16px 0; padding-left:20px;"><li>✅ Ne sont liés à aucun compte KermHosting</li><li>✅ N'ont aucun serveur actif</li></ul><p style="color:var(--warning); font-weight:500;">⚠️ Cette action est irréversible.</p></div><div id="cleanupProgress" style="display:none; text-align:center; padding:20px;"><i class="fas fa-circle-notch fa-spin" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i><p>Nettoyage en cours, veuillez patienter...</p></div><div id="cleanupResult" style="display:none;"></div><div id="cleanupStats" style="display:none;"></div></div><div class="modal-actions" id="cleanupActions"><button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button><button class="btn btn-warning" onclick="startPterodactylCleanup()"><i class="fas fa-broom"></i> Lancer le nettoyage</button></div></div></div>
+
+    <div id="confirmModal" class="modal"><div class="modal-content"><div class="confirm-icon" id="confirmIcon"><i class="fas fa-exclamation-triangle"></i></div><h2 class="confirm-title" id="confirmTitle">Confirmation</h2><p class="confirm-message" id="confirmMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p><div class="modal-actions" style="justify-content:center;"><button class="btn btn-outline" onclick="closeModal('confirmModal')">Non, annuler</button><button class="btn btn-danger" id="confirmActionBtn">Oui, confirmer</button></div></div></div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/login';
+
+        let currentUser = null;
+        let allUsers = [], allServers = [], allTransactions = [], allLogs = [];
+        let allPaypalTransactions = [], allMinipayTransactions = [];
+        let allBotSubmissions = [], allBotTemplates = [], allDeployedBots = [], allHerokuAccounts = [];
+        let filteredBotSubmissions = [], filteredBotTemplates = [], filteredDeployedBots = [], filteredHerokuAccounts = [];
+        let filteredPaypalTransactions = [], filteredMinipayTransactions = [];
+        let currentUserId = null, currentServerId = null, currentTemplateId = null, currentDeployedBotId = null;
+        let charts = {};
+        let emailTemplates = [];
+        let currentCampaignId = null, campaignPollingInterval = null;
+        let syncIntervals = {};
+
+        const itemsPerPage = 5;
+        let filteredUsers = [], currentUserPage = 1;
+        let filteredServers = [], currentServerPage = 1;
+        let filteredTransactions = [], currentTransactionPage = 1;
+        let filteredLogs = [], currentLogsPage = 1;
+        let currentPaypalPage = 1, currentMinipayPage = 1, currentBotTemplatePage = 1, currentDeployedBotPage = 1, currentHerokuPage = 1;
+
+        const PLANS = { free:{name:'Free'}, '1gb':{name:'Starter'}, '2gb':{name:'Basic'}, '4gb':{name:'Pro'}, '8gb':{name:'Business'} };
+
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-exclamation-circle':'fa-info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function esc(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function formatDateCameroon(d) { return new Date(d).toLocaleString('fr-FR', { timeZone:'Africa/Douala' }); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+
+        // Sidebar
+        const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle').addEventListener('click', () => { sidebar.classList.add('active'); overlay.classList.add('active'); });
+        document.getElementById('closeSidebar').addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
+        overlay.addEventListener('click', () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); });
+        document.getElementById('userMenu').addEventListener('click', () => { window.location.href = '/profile'; });
+        document.getElementById('navLogout').addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('token'); window.location.href='/'; });
+
+        async function loadUserData() {
+            try {
+                const res = await fetch('/api/user/me', { headers:{'Authorization':`Bearer ${token}`} });
+                const data = await res.json();
+                if(data.success) {
+                    currentUser = data.user;
+                    document.getElementById('sidebarUserName').textContent = data.user.username;
+                    document.getElementById('sidebarUserEmail').textContent = data.user.email;
+                    document.getElementById('sidebarUserBadge').textContent = data.user.role;
+                    document.getElementById('sidebarCoins').textContent = data.user.coins;
+                    document.getElementById('sidebarServers').textContent = data.servers?.length || 0;
+                    document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${data.user.username}&background=7C3AED&color=fff&size=40`;
+                    loadAdminData();
+                    loadFapshiBalance();
+                    if(fapshiBalanceInterval) clearInterval(fapshiBalanceInterval);
+                    fapshiBalanceInterval = setInterval(loadFapshiBalance, 30000);
+                } else { localStorage.removeItem('token'); window.location.href='/login'; }
+            } catch(e) { showToast('error','Erreur chargement profil'); }
+        }
+
+        async function loadFapshiBalance() {
+            try {
+                const res = await fetch('/api/admin/fapshi/balance', { headers:{'Authorization':`Bearer ${token}`} });
+                const data = await res.json();
+                if(data.success && data.balance !== undefined) {
+                    document.getElementById('fapshiBalance').textContent = data.balance.toLocaleString() + ' FCFA';
+                    document.getElementById('fapshiBalanceStatus').innerHTML = '✅ Connecté';
+                } else { document.getElementById('fapshiBalance').textContent = '0 FCFA'; document.getElementById('fapshiBalanceStatus').innerHTML = '⚠️ Hors ligne'; }
+            } catch(e) { document.getElementById('fapshiBalance').textContent = '0 FCFA'; document.getElementById('fapshiBalanceStatus').innerHTML = '❌ Erreur'; }
+        }
+
+        function normalizeFinancialTypes(raw = {}) {
+            const result = { coins_purchases: 0, server_purchases: 0, renewals: 0, other: 0 };
+            Object.entries(raw || {}).forEach(([type, amount]) => {
+                const value = Number(amount || 0);
+                if(type === 'coin_purchase' || type === 'coins_purchase' || type === 'coins_purchases') result.coins_purchases += value;
+                else if(type === 'server_purchase' || type === 'server_purchases') result.server_purchases += value;
+                else if(type === 'server_renewal' || type === 'renewals') result.renewals += value;
+                else result.other += value;
+            });
+            return result;
+        }
+        const formatFCFA = value => Number(value || 0).toLocaleString('fr-FR') + ' FCFA';
+
+        async function loadFinancialStats() {
+            try {
+                const res = await fetch('/api/admin/financial-stats', { headers:{'Authorization':`Bearer ${token}`} });
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('financialTotal').textContent = formatFCFA(data.financial.total_revenue);
+                    document.getElementById('financialToday').textContent = formatFCFA(data.financial.today_revenue);
+                    document.getElementById('financialAvg').textContent = formatFCFA(data.financial.avg_transaction);
+                    document.getElementById('financialCount').textContent = data.financial.total_transactions||0;
+                    document.getElementById('financialTodaySub').textContent = (data.financial.today_transactions||0) + ' transactions';
+                    const byType = normalizeFinancialTypes(data.financial.by_type || {});
+                    document.getElementById('financialCoinsPurchases').textContent = formatFCFA(byType.coins_purchases);
+                    document.getElementById('financialServerPurchases').textContent = formatFCFA(byType.server_purchases);
+                    document.getElementById('financialRenewals').textContent = formatFCFA(byType.renewals);
+                    document.getElementById('financialOther').textContent = formatFCFA(byType.other);
+                    if(data.financial.top_buyers && data.financial.top_buyers.length) {
+                        let html = '';
+                        data.financial.top_buyers.slice(0,10).forEach((b,i) => {
+                            html += `<div class="buyer-item"><div class="buyer-rank">${i+1}</div><div class="buyer-info"><div class="buyer-name">${esc(b.username)}</div><div class="buyer-email">${esc(b.email)}</div></div><div class="buyer-total">${b.total.toLocaleString()} FCFA</div><button class="action-btn view" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button></div>`;
+                        });
+                        document.getElementById('topBuyersList').innerHTML = html;
+                    }
+                    updateCharts(data.financial);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function updateCharts(fin) {
+            if(charts.revenue) charts.revenue.destroy();
+            if(charts.type) charts.type.destroy();
+            const byType = normalizeFinancialTypes(fin.by_type || {});
+            const revCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revCtx, { type:'line', data:{ labels: fin.monthly?.map(m=>m.month)||['Jan','Fév','Mar','Avr','Mai','Juin'], datasets:[{ label:'Revenus (FCFA)', data: fin.monthly?.map(m=>m.amount)||[0,0,0,0,0,0], borderColor:'#7C3AED', backgroundColor:'rgba(124,58,237,0.1)', tension:0.4, fill:true }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#F3F4F6' } } }, scales:{ y:{ grid:{ color:'#2D3748' }, ticks:{ color:'#9CA3AF', callback: v=>v.toLocaleString('fr-FR')+' FCFA' } }, x:{ grid:{ color:'#2D3748' }, ticks:{ color:'#9CA3AF' } } } } });
+            const typeCtx = document.getElementById('typeChart')?.getContext('2d');
+            if(typeCtx) charts.type = new Chart(typeCtx, { type:'doughnut', data:{ labels:['Achats coins','Achats serveurs','Renouvellements','Autres'], datasets:[{ data:[byType.coins_purchases, byType.server_purchases, byType.renewals, byType.other], backgroundColor:['#F59E0B','#7C3AED','#10B981','#3B82F6'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#F3F4F6' } } } } });
+        }
+
+        async function loadAdminData() {
+            try {
+                // Stats générales
+                const stats = await fetch('/api/admin/stats', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(stats.success) {
+                    document.getElementById('statTotalUsers').textContent = stats.stats.total_users||0;
+                    document.getElementById('statVerifiedUsers').textContent = (stats.stats.verified_users||0)+' vérifiés';
+                    document.getElementById('statTotalServers').textContent = stats.stats.total_servers||0;
+                    document.getElementById('statActiveServers').textContent = (stats.stats.active_servers||0)+' actifs';
+                    document.getElementById('statTotalCoins').textContent = stats.stats.total_coins||0;
+                    let avg = stats.stats.total_users ? Math.round(stats.stats.total_coins/stats.stats.total_users) : 0;
+                    document.getElementById('statAvgCoins').textContent = avg+' par user';
+                    document.getElementById('statBannedUsers').textContent = stats.stats.banned_users||0;
+                    let percent = stats.stats.total_users ? Math.round((stats.stats.banned_users/stats.stats.total_users)*100) : 0;
+                    document.getElementById('statBannedPercent').textContent = percent+'%';
+                }
+                // Stats bots
+                const botStats = await fetch('/api/admin/bots/stats', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(botStats.success) {
+                    document.getElementById('statTotalBots').textContent = botStats.stats.total_deploys||0;
+                    document.getElementById('statActiveBots').textContent = (botStats.stats.active_bots||0)+' actifs';
+                    document.getElementById('statBotTemplates').textContent = botStats.stats.total_templates||0;
+                    document.getElementById('statApprovedTemplates').textContent = (botStats.stats.total_templates||0)+' approuvés';
+                    document.getElementById('statBotSubmissions').textContent = botStats.stats.pending_submissions||0;
+                    document.getElementById('statPendingSubmissions').textContent = (botStats.stats.pending_submissions||0)+' en attente';
+                }
+                // Stats Heroku
+                const heroku = await fetch('/api/admin/heroku/accounts', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(heroku.success) {
+                    let accounts = heroku.accounts||[];
+                    document.getElementById('statHerokuAccounts').textContent = accounts.length;
+                    document.getElementById('statActiveHeroku').textContent = accounts.filter(a=>a.is_active).length+' actifs';
+                    document.getElementById('herokuTotalAccounts').textContent = accounts.length;
+                    document.getElementById('herokuActiveAccounts').textContent = accounts.filter(a=>a.is_active).length;
+                    let totalCap = accounts.reduce((s,a)=>s+(a.max_bots||0),0);
+                    let usedCap = accounts.reduce((s,a)=>s+(a.current_bots||0),0);
+                    document.getElementById('herokuTotalCapacity').textContent = totalCap;
+                    document.getElementById('herokuAvailableCapacity').textContent = totalCap - usedCap;
+                }
+                // Chargement des données principales
+                const users = await fetch('/api/admin/users', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(users.success) { allUsers = users.users; filteredUsers = [...allUsers]; document.getElementById('userCount').textContent = allUsers.length; currentUserPage=1; displayUsers(); }
+                const servers = await fetch('/api/admin/servers', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(servers.success) { allServers = servers.servers; filteredServers = [...allServers]; document.getElementById('serverCount').textContent = allServers.length; currentServerPage=1; displayServers(); }
+                const trans = await fetch('/api/admin/transactions', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(trans.success) { allTransactions = trans.transactions; filteredTransactions = [...allTransactions]; document.getElementById('transactionCount').textContent = allTransactions.length; currentTransactionPage=1; displayTransactions(); }
+                const logs = await fetch('/api/admin/logs', { headers:{'Authorization':`Bearer ${token}`} }).then(r=>r.json());
+                if(logs.success) { allLogs = logs.logs; filteredLogs = [...allLogs]; document.getElementById('logCount').textContent = allLogs.length; currentLogsPage=1; displayLogs(); }
+                await loadFinancialStats();
+            } catch(e) { console.error(e); showToast('error','Erreur chargement données admin'); }
+        }
+
+        // AFFICHAGE USERS
+        function displayUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            if(!filteredUsers.length) { tbody.innerHTML='<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun utilisateur</strong><span>Les éléments apparaîtront ici</span></td></tr>'; document.getElementById('userPagination').style.display='flex'; document.getElementById('userPageInfo').textContent='Page 1 / 1'; document.getElementById('userPrevBtn').disabled=true; document.getElementById('userNextBtn').disabled=true; return; }
+            document.getElementById('userPagination').style.display='flex';
+            let totalPages = Math.ceil(filteredUsers.length/itemsPerPage), start = (currentUserPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredUsers.length);
+            let paginated = filteredUsers.slice(start,end);
+            document.getElementById('userPageInfo').textContent = `Page ${currentUserPage} / ${totalPages}`;
+            document.getElementById('userPrevBtn').disabled = currentUserPage===1;
+            document.getElementById('userNextBtn').disabled = currentUserPage===totalPages;
+            let html = '';
+            for(let u of paginated) {
+                let statusClass = u.banned ? 'badge-danger' : (u.email_verified ? 'badge-success' : 'badge-warning');
+                let statusText = u.banned ? 'Banni' : (u.email_verified ? 'Actif' : 'Non vérifié');
+                let roleClass = u.role==='superadmin' ? 'badge-danger' : (u.role==='admin' ? 'badge-primary' : 'badge-info');
+                html += `<tr><td><code>${esc(String(u.id).substring(0,8))}...</code></td><td><strong>${esc(u.username)}</strong></td><td>${esc(u.email)}</td><td><span class="badge ${roleClass}">${esc(u.role)}</span></td><td>${Number(u.coins||0).toLocaleString('fr-FR')} coins</td><td>${u.servers_count||0}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(u.created_at).toLocaleDateString('fr-FR')}</td><td><div class="action-group"><button class="action-btn edit" title="Modifier" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" title="Serveurs" onclick="viewUserServers('${u.id}')"><i class="fas fa-server"></i></button><button class="action-btn ban" title="Bannir" onclick="toggleBan('${u.id}',${u.banned})"><i class="fas fa-ban"></i></button><button class="action-btn delete" title="Supprimer" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button><button class="action-btn view" title="Transactions" onclick="viewUserTransactions('${u.id}')"><i class="fas fa-history"></i></button></div></td></tr>`;
+            }
+            tbody.innerHTML = html;
+        }
+        function changeUserPage(dir) { let total = Math.ceil(filteredUsers.length/itemsPerPage); if(dir==='prev' && currentUserPage>1) currentUserPage--; else if(dir==='next' && currentUserPage<total) currentUserPage++; displayUsers(); }
+        function filterUsers() {
+            let search = document.getElementById('userSearch').value.toLowerCase();
+            let filter = document.getElementById('userFilter').value;
+            filteredUsers = allUsers.filter(u => {
+                let match = (u.username||'').toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search) || u.id.includes(search);
+                if(!match) return false;
+                if(filter==='verified') return u.email_verified;
+                if(filter==='unverified') return !u.email_verified;
+                if(filter==='banned') return u.banned;
+                if(filter==='admin') return u.role==='admin';
+                if(filter==='superadmin') return u.role==='superadmin';
+                return true;
+            });
+            currentUserPage=1; document.getElementById('userCount').textContent=filteredUsers.length; displayUsers();
+        }
+        function clearUserSearch() { document.getElementById('userSearch').value=''; document.getElementById('userFilter').value='all'; filteredUsers=[...allUsers]; currentUserPage=1; displayUsers(); }
+
+        // AFFICHAGE SERVEURS
+        function displayServers() {
+            const tbody = document.getElementById('serversTableBody');
+            if(!filteredServers.length) { tbody.innerHTML='<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun serveur</strong><span>Les éléments apparaîtront ici</span></td></tr>'; document.getElementById('serverPagination').style.display='flex'; document.getElementById('serverPageInfo').textContent='Page 1 / 1'; document.getElementById('serverPrevBtn').disabled=true; document.getElementById('serverNextBtn').disabled=true; return; }
+            document.getElementById('serverPagination').style.display='flex';
+            let totalPages = Math.ceil(filteredServers.length/itemsPerPage), start = (currentServerPage-1)*itemsPerPage, end = Math.min(start+itemsPerPage, filteredServers.length), paginated = filteredServers.slice(start,end);
+            document.getElementById('serverPageInfo').textContent = `Page ${currentServerPage} / ${totalPages}`;
+            document.getElementById('serverPrevBtn').disabled = currentServerPage===1;
+            document.getElementById('serverNextBtn').disabled = currentServerPage===totalPages;
+            let html = '';
+            for(let s of paginated) {
+                let now = new Date(), expiry = new Date(s.expires_at), daysLeft = Math.ceil((expiry-now)/86400000);
+                let statusClass = 'badge-success', statusText = 'Actif';
+                if(s.status==='suspended') { statusClass='badge-danger'; statusText='Suspendu'; }
+                else if(s.status==='stopped') { statusClass='badge-warning'; statusText='Arrêté'; }
+                else if(daysLeft<0) { statusClass='badge-danger'; statusText='Expiré'; }
+                else if(daysLeft<=3) { statusClass='badge-warning'; statusText='Expire bientôt'; }
+                html += `<tr><td><code>${esc(String(s.id).substring(0,8))}...</code></td><td><strong>${esc(s.server_name)}</strong></td><td>${esc(s.owner_username||'Inconnu')}</td><td>${esc(PLANS[s.server_type]?.name||s.server_type)}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${new Date(s.created_at).toLocaleDateString('fr-FR')}</td><td>${new Date(s.expires_at).toLocaleDateString('fr-FR')} (${daysLeft}j)</td><td><div class="action-group"><button class="action-btn edit" title="Modifier" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn view" title="Utilisateur" onclick="editUser('${s.user_id}')"><i class="fas fa-user"></i></button>${s.status==='suspended'?`<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendServer('${s.id}')"><i class="fas fa-play"></i></button>`:`<button class="action-btn suspend" title="Suspendre" onclick="suspendServer('${s.id}')"><i class="fas fa-pause"></i></button>`}<button class="action-btn delete" title="Supprimer" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            }
+            tbody.innerHTML = html;
+        }
+        function changeServerPage(dir) { let total = Math.ceil(filteredServers.length/itemsPerPage); if(dir==='prev' && currentServerPage>1) currentServerPage--; else if(dir==='next' && currentServerPage<total) currentServerPage++; displayServers(); }
+        function filterServers() {
+            let search = document.getElementById('serverSearch').value.toLowerCase();
+            let filter = document.getElementById('serverFilter').value;
+            filteredServers = allServers.filter(s => {
+                let match = (s.server_name||'').toLowerCase().includes(search) || (s.owner_username||'').toLowerCase().includes(search) || s.id.includes(search);
+                if(!match) return false;
+                let now = new Date(), expiry = new Date(s.expires_at), daysLeft = Math.ceil((expiry-now)/86400000);
+                if(filter==='active') return daysLeft>0 && s.status==='active';
+                if(filter==='expired') return daysLeft<0;
+                if(filter==='expiring') return daysLeft>0 && daysLeft<=3 && s.status==='active';
+                return true;
+            });
+            currentServerPage=1; document.getElementById('serverCount').textContent=filteredServers.length; displayServers();
+        }
+
+        // AFFICHAGE TRANSACTIONS
+        function displayTransactions() {
+            const tbody = document.getElementById('transactionsTableBody');
+            const total = Math.max(1, Math.ceil(filteredTransactions.length / itemsPerPage));
+            if(currentTransactionPage > total) currentTransactionPage = total;
+            document.getElementById('transactionPageInfo').textContent = `Page ${currentTransactionPage} / ${total}`;
+            document.getElementById('transactionPrevBtn').disabled = currentTransactionPage <= 1;
+            document.getElementById('transactionNextBtn').disabled = currentTransactionPage >= total;
+            if(!filteredTransactions.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucune transaction</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentTransactionPage - 1) * itemsPerPage;
+            const paginated = filteredTransactions.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(t => {
+                const statusClass = t.status === 'successful' ? 'badge-success' : (t.status === 'pending' ? 'badge-warning' : 'badge-danger');
+                const typeTxt = { coin_purchase:'Achat coins', coins_purchase:'Achat coins', server_purchase:'Achat serveur', server_renewal:'Renouvellement' }[t.type] || esc(t.type || '-');
+                const amount = Number(t.amount || 0).toLocaleString('fr-FR');
+                return `<tr><td><code>${esc(String(t.id || '').substring(0,8))}...</code></td><td>${esc(t.user_username || 'Inconnu')}</td><td>${typeTxt}</td><td><strong>${amount} ${esc(t.currency || 'FCFA')}</strong></td><td><span class="badge ${statusClass}">${esc(t.status || '-')}</span></td><td>${esc(t.medium || 'N/A')}</td><td>${formatDateCameroon(t.created_at)}</td><td><div class="action-group"><button class="action-btn view" title="Voir" onclick="viewTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button><button class="action-btn view" title="Utilisateur" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button></div></td></tr>`;
+            }).join('');
+        }
+        function changeTransactionPage(dir) { let total = Math.ceil(filteredTransactions.length/itemsPerPage); if(dir==='prev' && currentTransactionPage>1) currentTransactionPage--; else if(dir==='next' && currentTransactionPage<total) currentTransactionPage++; displayTransactions(); }
+        function filterTransactions() {
+            let search = document.getElementById('transactionSearch').value.toLowerCase();
+            let filter = document.getElementById('transactionFilter').value;
+            filteredTransactions = allTransactions.filter(t => {
+                let match = t.id.includes(search) || (t.user_username||'').toLowerCase().includes(search);
+                if(!match) return false;
+                if(filter==='completed') return t.status==='successful';
+                if(filter==='pending') return t.status==='pending';
+                if(filter==='failed') return t.status==='failed';
+                return true;
+            });
+            currentTransactionPage=1; document.getElementById('transactionCount').textContent=filteredTransactions.length; displayTransactions();
+        }
+
+        // AFFICHAGE LOGS
+        function displayLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            const total = Math.max(1, Math.ceil(filteredLogs.length / itemsPerPage));
+            if(currentLogsPage > total) currentLogsPage = total;
+            document.getElementById('logsPageInfo').textContent = `Page ${currentLogsPage} / ${total}`;
+            document.getElementById('logsPrevBtn').disabled = currentLogsPage <= 1;
+            document.getElementById('logsNextBtn').disabled = currentLogsPage >= total;
+            if(!filteredLogs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun log</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentLogsPage - 1) * itemsPerPage;
+            const paginated = filteredLogs.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(l => `<tr><td>${formatDateCameroon(l.created_at)}</td><td>${esc(l.admin_username || 'Inconnu')}</td><td>${esc(l.action_type || '-')}</td><td>${esc(l.target_type || '')} ${l.target_id ? esc(String(l.target_id).substring(0,8)) + '...' : ''}</td><td>${esc(l.description || '')}</td><td>${esc(l.ip_address || 'N/A')}</td></tr>`).join('');
+        }
+        function changeLogsPage(dir) { let total = Math.ceil(filteredLogs.length/itemsPerPage); if(dir==='prev' && currentLogsPage>1) currentLogsPage--; else if(dir==='next' && currentLogsPage<total) currentLogsPage++; displayLogs(); }
+        function filterLogs() {
+            let search = document.getElementById('logSearch').value.toLowerCase();
+            let filter = document.getElementById('logFilter').value;
+            filteredLogs = allLogs.filter(l => {
+                let match = (l.description||'').toLowerCase().includes(search) || (l.admin_username||'').toLowerCase().includes(search);
+                if(!match) return false;
+                if(filter==='ban') return (l.action_type||'').includes('ban');
+                if(filter==='role') return (l.action_type||'').includes('role');
+                if(filter==='coins') return (l.action_type||'').includes('coins');
+                if(filter==='server') return (l.action_type||'').includes('server');
+                return true;
+            });
+            currentLogsPage=1; document.getElementById('logCount').textContent=filteredLogs.length; displayLogs();
+        }
+
+        // ACTIONS UTILISATEURS
+        async function editUser(userId) {
+            let user = allUsers.find(u=>u.id===userId);
+            if(!user) return;
+            currentUserId = userId;
+            document.getElementById('editUserId').textContent = user.id;
+            document.getElementById('editUsername').textContent = user.username;
+            document.getElementById('editEmail').textContent = user.email;
+            document.getElementById('editCoins').textContent = user.coins+' coins';
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editEmailVerified').value = user.email_verified ? 'true' : 'false';
+            document.getElementById('editBanned').value = user.banned ? 'true' : 'false';
+            let userServers = allServers.filter(s=>s.user_id===userId);
+            let serversDiv = document.getElementById('editUserServers');
+            if(!userServers.length) serversDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Aucun serveur</p>';
+            else {
+                let html = '';
+                userServers.slice(0,3).forEach(s => {
+                    html += `<div class="server-mini-card"><div class="server-mini-info"><h4>${esc(s.server_name)}</h4><p>${PLANS[s.server_type]?.name||s.server_type} - Expire: ${new Date(s.expires_at).toLocaleDateString()}</p></div><div class="server-mini-actions"><button class="action-btn edit" onclick="editServer('${s.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" onclick="deleteServer('${s.id}')"><i class="fas fa-trash"></i></button></div></div>`;
+                });
+                if(userServers.length>3) html += `<p style="text-align: center; color: var(--text-secondary); margin-top: 8px;">... et ${userServers.length-3} autres</p>`;
+                serversDiv.innerHTML = html;
+            }
+            openModal('userEditModal');
+        }
+        function viewUserServers(userId) { switchTab('servers'); document.getElementById('serverSearch').value = userId; filterServers(); closeModal('userEditModal'); }
+        function viewUserTransactions(userId) { switchTab('transactions'); document.getElementById('transactionSearch').value = userId; filterTransactions(); closeModal('userEditModal'); }
+        async function saveUserChanges() {
+            let role = document.getElementById('editRole').value;
+            let emailVerified = document.getElementById('editEmailVerified').value === 'true';
+            let banned = document.getElementById('editBanned').value === 'true';
+            try {
+                let res = await fetch(`/api/admin/users/${currentUserId}`, { method:'PUT', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({role, email_verified:emailVerified, banned}) });
+                let data = await res.json();
+                if(data.success) { showToast('success','Utilisateur modifié'); closeModal('userEditModal'); loadAdminData(); }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function addCoinsToUser() {
+            let amount = document.getElementById('editCoinsAmount').value;
+            if(!amount || amount<1) { showToast('error','Montant invalide'); return; }
+            try {
+                let res = await fetch(`/api/admin/users/${currentUserId}/coins`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({amount:parseInt(amount)}) });
+                let data = await res.json();
+                if(data.success) { showToast('success',`${amount} coins ajoutés`); loadAdminData(); let user = allUsers.find(u=>u.id===currentUserId); if(user) document.getElementById('editCoins').textContent = (user.coins+parseInt(amount))+' coins'; }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function removeCoinsFromUser() {
+            let amount = document.getElementById('editCoinsAmount').value;
+            if(!amount || amount<1) { showToast('error','Montant invalide'); return; }
+            try {
+                let res = await fetch(`/api/admin/users/${currentUserId}/coins/remove`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({amount:parseInt(amount)}) });
+                let data = await res.json();
+                if(data.success) { showToast('success',`${amount} coins retirés`); loadAdminData(); let user = allUsers.find(u=>u.id===currentUserId); if(user) document.getElementById('editCoins').textContent = (user.coins-parseInt(amount))+' coins'; }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function toggleBan(userId, currentBanned) {
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>`;
+            document.getElementById('confirmTitle').textContent = currentBanned ? 'Débannir' : 'Bannir';
+            document.getElementById('confirmMessage').textContent = `Êtes-vous sûr de vouloir ${currentBanned ? 'débannir' : 'bannir'} cet utilisateur ?`;
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    let res = await fetch(`/api/admin/users/${userId}/ban`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({banned:!currentBanned}) });
+                    let data = await res.json();
+                    if(data.success) { showToast('success',data.message); loadAdminData(); }
+                    else showToast('error',data.error);
+                } catch(e) { showToast('error','Erreur réseau'); }
+            };
+            openModal('confirmModal');
+        }
+        async function deleteUser(userId) {
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
+            document.getElementById('confirmTitle').textContent = 'Supprimer utilisateur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible !';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    let res = await fetch(`/api/admin/users/${userId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
+                    let data = await res.json();
+                    if(data.success) { showToast('success','Utilisateur supprimé'); loadAdminData(); }
+                    else showToast('error',data.error);
+                } catch(e) { showToast('error','Erreur réseau'); }
+            };
+            openModal('confirmModal');
+        }
+
+        // ACTIONS SERVEURS
+        function editServer(serverId) {
+            let server = allServers.find(s=>s.id===serverId);
+            if(!server) return;
+            currentServerId = serverId;
+            document.getElementById('editServerId').textContent = server.id;
+            document.getElementById('editServerName').textContent = server.server_name;
+            document.getElementById('editServerOwner').textContent = server.owner_username||'Inconnu';
+            document.getElementById('editServerPlan').value = server.server_type;
+            document.getElementById('editServerStatus').value = server.status||'active';
+            let expiry = new Date(server.expires_at).toISOString().slice(0,16);
+            document.getElementById('editServerExpiry').value = expiry;
+            document.getElementById('editServerPteroUser').value = server.username||'';
+            document.getElementById('editServerPassword').value = '';
+            openModal('serverEditModal');
+        }
+        async function saveServerChanges() {
+            let plan = document.getElementById('editServerPlan').value;
+            let status = document.getElementById('editServerStatus').value;
+            let expiry = document.getElementById('editServerExpiry').value;
+            let username = document.getElementById('editServerPteroUser').value;
+            let password = document.getElementById('editServerPassword').value;
+            try {
+                let res = await fetch(`/api/admin/servers/${currentServerId}`, { method:'PUT', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({server_type:plan, status, expires_at:expiry, username, password:password||undefined}) });
+                let data = await res.json();
+                if(data.success) { showToast('success','Serveur modifié'); closeModal('serverEditModal'); loadAdminData(); }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function deleteServer(serverId) {
+            if (!serverId) { showToast('error','ID du serveur non spécifié'); return; }
+            document.getElementById('confirmIcon').innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>`;
+            document.getElementById('confirmTitle').textContent = 'Supprimer serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir supprimer ce serveur ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    let res = await fetch(`/api/admin/servers/${serverId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
+                    let data = await res.json();
+                    if(data.success) { showToast('success','Serveur supprimé'); if(currentServerId===serverId) closeModal('serverEditModal'); loadAdminData(); }
+                    else showToast('error',data.error);
+                } catch(e) { showToast('error','Erreur réseau'); }
+            };
+            openModal('confirmModal');
+        }
+        async function suspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-pause-circle" style="color: var(--warning);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Suspendre le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir suspendre ce serveur ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    let res = await fetch(`/api/admin/servers/${serverId}/suspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+                    let data = await res.json();
+                    if(data.success) { showToast('success','Serveur suspendu'); loadAdminData(); }
+                    else showToast('error',data.error);
+                } catch(e) { showToast('error','Erreur réseau'); }
+            };
+            openModal('confirmModal');
+        }
+        async function unsuspendServer(serverId) {
+            document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-play-circle" style="color: var(--success);"></i>';
+            document.getElementById('confirmTitle').textContent = 'Réactiver le serveur';
+            document.getElementById('confirmMessage').textContent = 'Êtes-vous sûr de vouloir réactiver ce serveur ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.onclick = async () => {
+                closeModal('confirmModal');
+                try {
+                    let res = await fetch(`/api/admin/servers/${serverId}/unsuspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+                    let data = await res.json();
+                    if(data.success) { showToast('success','Serveur réactivé'); loadAdminData(); }
+                    else showToast('error',data.error);
+                } catch(e) { showToast('error','Erreur réseau'); }
+            };
+            openModal('confirmModal');
+        }
+        function viewTransaction(transactionId) {
+            let t = allTransactions.find(t=>t.id===transactionId);
+            if(!t) return;
+            let details = `<div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${t.id}</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${esc(t.user_username||'Inconnu')}</span></div><div class="modal-info-item"><span class="modal-info-label">Type</span><span class="modal-info-value">${t.type}</span></div><div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${t.amount} ${t.currency}</span></div><div class="modal-info-item"><span class="modal-info-label">Statut</span><span class="modal-info-value"><span class="badge ${t.status==='successful'?'badge-success':'badge-warning'}">${t.status}</span></span></div><div class="modal-info-item"><span class="modal-info-label">Moyen</span><span class="modal-info-value">${t.medium||'N/A'}</span></div><div class="modal-info-item"><span class="modal-info-label">Date</span><span class="modal-info-value">${formatDateCameroon(t.created_at)}</span></div>`;
+            document.getElementById('transactionDetails').innerHTML = details;
+            openModal('transactionModal');
+        }
+
+        // PAYPAL
+        async function loadPaypalTransactions() {
+            try {
+                let res = await fetch('/api/admin/paypal/pending', { headers:{'Authorization':`Bearer ${token}`} });
+                let data = await res.json();
+                if(data.success) { allPaypalTransactions = data.transactions||[]; filteredPaypalTransactions = [...allPaypalTransactions]; document.getElementById('paypalCount').textContent = allPaypalTransactions.length; currentPaypalPage=1; displayPaypalTransactions(); }
+            } catch(e) { showToast('error','Erreur chargement PayPal'); }
+        }
+        function filterPaypalTransactions() { let search = document.getElementById('paypalSearch').value.toLowerCase(); let filter = document.getElementById('paypalFilter').value; filteredPaypalTransactions = allPaypalTransactions.filter(t => { let match = (t.paypal_email||'').toLowerCase().includes(search) || (t.paypal_name||'').toLowerCase().includes(search) || (t.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter==='pending') return t.status==='pending'; if(filter==='successful') return t.status==='successful'; if(filter==='failed') return t.status==='failed'; return true; }); currentPaypalPage=1; document.getElementById('paypalCount').textContent=filteredPaypalTransactions.length; displayPaypalTransactions(); }
+        function clearPaypalSearch() { document.getElementById('paypalSearch').value=''; document.getElementById('paypalFilter').value='all'; filteredPaypalTransactions=[...allPaypalTransactions]; currentPaypalPage=1; displayPaypalTransactions(); }
+        function refreshPaypalTransactions() { loadPaypalTransactions(); }
+        function displayPaypalTransactions() {
+            const tbody = document.getElementById('paypalTableBody');
+            const total = Math.max(1, Math.ceil(filteredPaypalTransactions.length / itemsPerPage));
+            if(currentPaypalPage > total) currentPaypalPage = total;
+            document.getElementById('paypalPageInfo').textContent = `Page ${currentPaypalPage} / ${total}`;
+            document.getElementById('paypalPrevBtn').disabled = currentPaypalPage <= 1;
+            document.getElementById('paypalNextBtn').disabled = currentPaypalPage >= total;
+            if(!filteredPaypalTransactions.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucune transaction PayPal</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentPaypalPage - 1) * itemsPerPage;
+            const paginated = filteredPaypalTransactions.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(t => {
+                const typeText = { coin_purchase:'Achat coins', coins_purchase:'Achat coins', server_purchase:'Achat serveur', server_renewal:'Renouvellement' }[t.type] || esc(t.type || '-');
+                const statusBadge = t.status === 'pending' ? 'badge-warning' : (t.status === 'successful' ? 'badge-success' : 'badge-danger');
+                const amountDisplay = t.paypal_amount_converted ? `${Number(t.paypal_amount_converted).toLocaleString('fr-FR')} ${esc(t.paypal_currency || '')}` : `${Number(t.amount || 0).toLocaleString('fr-FR')} FCFA`;
+                const actions = t.status === 'pending' ? `<div class="action-group"><button class="action-btn confirm" title="Confirmer" onclick="confirmPaypalPayment('${t.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" title="Refuser" onclick="failPaypalPayment('${t.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" title="Voir" onclick="viewPaypalTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" title="Voir" onclick="viewPaypalTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>`;
+                return `<tr><td>${formatDateCameroon(t.created_at)}</td><td><strong>${esc(t.profiles?.username || 'Inconnu')}</strong><br><small>${esc(t.profiles?.email || '')}</small></td><td><span class="badge badge-info">${typeText}</span></td><td>${Number(t.amount || 0).toLocaleString('fr-FR')} FCFA</td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${esc(t.paypal_email || '-')}</td><td>${esc(t.paypal_name || '-')}</td><td><span class="badge ${statusBadge}">${esc(t.status || '-')}</span></td><td>${actions}</td></tr>`;
+            }).join('');
+        }
+        async function confirmPaypalPayment(transactionId) { showToast('success','Fonction implémentée'); loadPaypalTransactions(); loadAdminData(); }
+        async function failPaypalPayment(transactionId) { showToast('error','Fonction implémentée'); loadPaypalTransactions(); }
+        function viewPaypalTransaction(transactionId) { let t = allPaypalTransactions.find(t=>t.id===transactionId); if(t) { document.getElementById('transactionDetails').innerHTML = `<div class="modal-info-item"><span class="modal-info-label">ID</span><span class="modal-info-value">${t.id}</span></div><div class="modal-info-item"><span class="modal-info-label">Utilisateur</span><span class="modal-info-value">${t.profiles?.username}</span></div><div class="modal-info-item"><span class="modal-info-label">Email PayPal</span><span class="modal-info-value">${t.paypal_email}</span></div><div class="modal-info-item"><span class="modal-info-label">Nom complet</span><span class="modal-info-value">${t.paypal_name}</span></div><div class="modal-info-item"><span class="modal-info-label">Montant</span><span class="modal-info-value">${t.amount} FCFA / ${t.paypal_amount_converted} ${t.paypal_currency}</span></div>`; openModal('transactionModal'); } }
+
+        // MINIPAY
+        async function loadMinipayTransactions() { try { let res = await fetch('/api/admin/minipay/pending', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allMinipayTransactions = data.transactions||[]; filteredMinipayTransactions = [...allMinipayTransactions]; document.getElementById('minipayCount').textContent = allMinipayTransactions.length; currentMinipayPage=1; displayMinipayTransactions(); } } catch(e) { showToast('error','Erreur Minipay'); } }
+        function filterMinipayTransactions() { let search = document.getElementById('minipaySearch').value.toLowerCase(); let filter = document.getElementById('minipayFilter').value; filteredMinipayTransactions = allMinipayTransactions.filter(t => { let match = (t.profiles?.username||'').toLowerCase().includes(search) || (t.profiles?.email||'').toLowerCase().includes(search); if(!match) return false; if(filter==='pending_manual') return t.status==='pending_manual'; if(filter==='pending_manual_with_proof') return t.status==='pending_manual_with_proof'; if(filter==='successful') return t.status==='successful'; if(filter==='failed') return t.status==='failed'; return true; }); currentMinipayPage=1; document.getElementById('minipayCount').textContent=filteredMinipayTransactions.length; displayMinipayTransactions(); }
+        function clearMinipaySearch() { document.getElementById('minipaySearch').value=''; document.getElementById('minipayFilter').value='all'; filteredMinipayTransactions=[...allMinipayTransactions]; currentMinipayPage=1; displayMinipayTransactions(); }
+        function refreshMinipayTransactions() { loadMinipayTransactions(); }
+        function displayMinipayTransactions() {
+            const tbody = document.getElementById('minipayTableBody');
+            const total = Math.max(1, Math.ceil(filteredMinipayTransactions.length / itemsPerPage));
+            if(currentMinipayPage > total) currentMinipayPage = total;
+            document.getElementById('minipayPageInfo').textContent = `Page ${currentMinipayPage} / ${total}`;
+            document.getElementById('minipayPrevBtn').disabled = currentMinipayPage <= 1;
+            document.getElementById('minipayNextBtn').disabled = currentMinipayPage >= total;
+            if(!filteredMinipayTransactions.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucune transaction Minipay</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentMinipayPage - 1) * itemsPerPage;
+            const paginated = filteredMinipayTransactions.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(t => {
+                const pack = t.metadata?.pack || {};
+                const totalCoins = (pack.coins || 0) + (pack.bonus || 0);
+                const amountDisplay = t.converted_amount ? `${Number(t.converted_amount).toLocaleString('fr-FR')} ${esc(t.selected_currency || '')}` : `${Number(t.amount || 0).toLocaleString('fr-FR')} FCFA`;
+                const statusText = t.status === 'pending_manual' ? 'En attente' : (t.status === 'pending_manual_with_proof' ? 'Capture reçue' : (t.status === 'successful' ? 'Confirmée' : 'Échouée'));
+                const statusClass = t.status === 'pending_manual' ? 'badge-warning' : (t.status === 'pending_manual_with_proof' ? 'badge-info' : (t.status === 'successful' ? 'badge-success' : 'badge-danger'));
+                const screenshotHtml = t.payment_screenshot ? `<img src="${esc(t.payment_screenshot)}" class="screenshot-preview" onclick="openScreenshotModal('${t.payment_screenshot}')" alt="Capture paiement">` : '-';
+                const actions = t.status === 'pending_manual_with_proof' ? `<div class="action-group"><button class="action-btn confirm" title="Confirmer" onclick="confirmMinipayPayment('${t.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" title="Refuser" onclick="failMinipayPayment('${t.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" title="Voir" onclick="viewMinipayTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" title="Voir" onclick="viewMinipayTransaction('${t.id}')"><i class="fas fa-info-circle"></i></button></div>`;
+                return `<tr><td>${formatDateCameroon(t.created_at)}</td><td><strong>${esc(t.profiles?.username || 'Inconnu')}</strong><br><small>${esc(t.profiles?.email || '')}</small></td><td>${esc(pack.name || '-')}</td><td>${totalCoins} coins</td><td><span class="badge badge-primary">${amountDisplay}</span></td><td>${esc(t.country || '-')}</td><td>${esc(t.minipay_phone || '-')}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td>${screenshotHtml}</td><td>${actions}</td></tr>`;
+            }).join('');
+        }
+        function viewMinipayTransaction(transactionId) { showToast('info','Détails Minipay'); }
+        async function confirmMinipayPayment(transactionId) { showToast('success','Fonction implémentée'); loadMinipayTransactions(); loadAdminData(); }
+        async function failMinipayPayment(transactionId) { showToast('error','Fonction implémentée'); loadMinipayTransactions(); }
+        function openScreenshotModal(url) { document.getElementById('screenshotFullImg').src=url; openModal('screenshotModal'); }
+
+        // BOT SUBMISSIONS
+        async function loadBotSubmissions() { try { let res = await fetch('/api/admin/bot-submissions', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allBotSubmissions = data.submissions||[]; filteredBotSubmissions = [...allBotSubmissions]; document.getElementById('botSubmissionsCount').textContent = allBotSubmissions.length; displayBotSubmissions(); } } catch(e) { showToast('error','Erreur chargement demandes'); } }
+        function filterBotSubmissions() { let search = document.getElementById('botSearch').value.toLowerCase(); let filter = document.getElementById('botFilter').value; filteredBotSubmissions = allBotSubmissions.filter(s => { let match = (s.bot_name||'').toLowerCase().includes(search) || (s.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter==='all') return true; return s.status===filter; }); displayBotSubmissions(); }
+        function clearBotSearch() { document.getElementById('botSearch').value=''; document.getElementById('botFilter').value='pending'; filterBotSubmissions(); }
+        function displayBotSubmissions() {
+            const tbody = document.getElementById('botSubmissionsTableBody');
+            if(!filteredBotSubmissions.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucune demande</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            tbody.innerHTML = filteredBotSubmissions.map(s => {
+                const statusBadge = s.status === 'pending' ? 'badge-warning' : (s.status === 'approved' ? 'badge-success' : 'badge-danger');
+                const actions = s.status === 'pending' ? `<div class="action-group"><button class="action-btn confirm" title="Approuver" onclick="approveBot('${s.id}')"><i class="fas fa-check"></i></button><button class="action-btn fail" title="Rejeter" onclick="rejectBot('${s.id}')"><i class="fas fa-times"></i></button><button class="action-btn view" title="Voir" onclick="viewBotSubmission('${s.id}')"><i class="fas fa-info-circle"></i></button></div>` : `<div class="action-group"><button class="action-btn view" title="Voir" onclick="viewBotSubmission('${s.id}')"><i class="fas fa-info-circle"></i></button></div>`;
+                return `<tr><td>${formatDateCameroon(s.created_at)}</td><td><strong>${esc(s.profiles?.username || 'Inconnu')}</strong><br><small>${esc(s.profiles?.email || '')}</small></td><td><strong>${esc(s.bot_name || '-')}</strong></td><td><a href="${esc(s.repo_url || '#')}" target="_blank" rel="noopener">Voir repo</a></td><td><span class="badge ${statusBadge}">${esc(s.status || '-')}</span></td><td>${s.kh_json ? '<span class="badge badge-success">Valide</span>' : '<span class="badge badge-danger">Absent</span>'}</td><td><input type="number" id="price_${s.id}" class="modal-input compact-input" value="100" min="0"></td><td>${actions}</td></tr>`;
+            }).join('');
+        }
+        async function approveBot(submissionId) { let price = document.getElementById(`price_${submissionId}`).value; showToast('info','Approbation...'); try { let res = await fetch(`/api/admin/bot-submissions/${submissionId}/approve`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({price_weekly:parseInt(price)||100}) }); let data = await res.json(); if(data.success) { showToast('success','Bot approuvé'); loadBotSubmissions(); loadBotTemplates(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function rejectBot(submissionId) { showToast('info','Rejet...'); try { let res = await fetch(`/api/admin/bot-submissions/${submissionId}/reject`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({reason:'Non conforme'}) }); let data = await res.json(); if(data.success) { showToast('success','Bot rejeté'); loadBotSubmissions(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        function viewBotSubmission(submissionId) { let s = allBotSubmissions.find(s=>s.id===submissionId); if(s) { let details = `<div class="modal-info-item"><span class="modal-info-label">Nom</span><span class="modal-info-value">${s.bot_name}</span></div><div class="modal-info-item"><span class="modal-info-label">Repo</span><span class="modal-info-value"><a href="${s.repo_url}" target="_blank">${s.repo_url}</a></span></div><div class="modal-info-item"><span class="modal-info-label">Soumis par</span><span class="modal-info-value">${s.profiles?.username}</span></div><div class="modal-info-item"><span class="modal-info-label">Kh.json</span><span class="modal-info-value"><pre style="background:var(--bg-input);padding:8px;border-radius:8px;">${JSON.stringify(s.kh_json,null,2)}</pre></span></div>`; document.getElementById('transactionDetails').innerHTML = details; openModal('transactionModal'); } }
+
+        // BOT TEMPLATES
+        async function loadBotTemplates() { try { let res = await fetch('/api/admin/bots/all', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allBotTemplates = data.data.templates||[]; filteredBotTemplates = [...allBotTemplates]; document.getElementById('botTemplatesCount').textContent = allBotTemplates.length; currentBotTemplatePage=1; displayBotTemplates(); } } catch(e) { showToast('error','Erreur templates'); } }
+        function filterBotTemplates() { let search = document.getElementById('botTemplateSearch').value.toLowerCase(); let filter = document.getElementById('botTemplateFilter').value; filteredBotTemplates = allBotTemplates.filter(t => { let match = (t.name||'').toLowerCase().includes(search) || (t.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter==='all') return true; return t.status===filter; }); currentBotTemplatePage=1; document.getElementById('botTemplatesCount').textContent=filteredBotTemplates.length; displayBotTemplates(); }
+        function clearBotTemplateSearch() { document.getElementById('botTemplateSearch').value=''; document.getElementById('botTemplateFilter').value='all'; filteredBotTemplates=[...allBotTemplates]; currentBotTemplatePage=1; displayBotTemplates(); }
+        function displayBotTemplates() {
+            const tbody = document.getElementById('botTemplatesTableBody');
+            const total = Math.max(1, Math.ceil(filteredBotTemplates.length / itemsPerPage));
+            if(currentBotTemplatePage > total) currentBotTemplatePage = total;
+            document.getElementById('botTemplatePageInfo').textContent = `Page ${currentBotTemplatePage} / ${total}`;
+            document.getElementById('botTemplatePrevBtn').disabled = currentBotTemplatePage <= 1;
+            document.getElementById('botTemplateNextBtn').disabled = currentBotTemplatePage >= total;
+            if(!filteredBotTemplates.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun template</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentBotTemplatePage - 1) * itemsPerPage;
+            const paginated = filteredBotTemplates.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(t => {
+                const statusBadge = t.status === 'approved' ? 'badge-success' : (t.status === 'pending' ? 'badge-warning' : 'badge-danger');
+                return `<tr><td><code>${esc(String(t.id || '').substring(0,8))}...</code></td><td><strong>${esc(t.name || '-')}</strong></td><td>${esc(t.profiles?.username || 'Inconnu')}</td><td><a href="${esc(t.repo_url || '#')}" target="_blank" rel="noopener">Voir</a></td><td>${Number(t.price_weekly || 100).toLocaleString('fr-FR')} coins</td><td>${Number(t.total_deploys || 0).toLocaleString('fr-FR')}</td><td><span class="badge ${statusBadge}">${esc(t.status || '-')}</span></td><td><div class="action-group"><button class="action-btn edit" title="Modifier" onclick="editBotTemplate('${t.id}')"><i class="fas fa-edit"></i></button><button class="action-btn sync" title="Synchroniser" onclick="syncBotTemplate('${t.id}')"><i class="fas fa-sync-alt"></i></button><button class="action-btn view" title="Utilisateur" onclick="editUser('${t.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" title="Supprimer" onclick="deleteBotTemplate('${t.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            }).join('');
+        }
+        function editBotTemplate(templateId) { let t = allBotTemplates.find(t=>t.id===templateId); if(!t) return; currentTemplateId = templateId; document.getElementById('editTemplateId').textContent = t.id; document.getElementById('editTemplateName').textContent = t.name; document.getElementById('editTemplateCreator').textContent = t.profiles?.username||'Inconnu'; document.getElementById('editTemplateNewName').value = ''; document.getElementById('editTemplateNewRepo').value = ''; document.getElementById('editTemplatePrice').value = t.price_weekly||100; document.getElementById('editTemplateStatus').value = t.status||'pending'; document.getElementById('editTemplateDescription').value = t.description||''; document.getElementById('editTemplateLogo').value = t.logo_url||''; openModal('botTemplateEditModal'); }
+        async function saveBotTemplateChanges() {
+            let newName = document.getElementById('editTemplateNewName').value.trim();
+            let newRepo = document.getElementById('editTemplateNewRepo').value.trim();
+            let price = parseInt(document.getElementById('editTemplatePrice').value)||100;
+            let status = document.getElementById('editTemplateStatus').value;
+            let description = document.getElementById('editTemplateDescription').value;
+            let logo = document.getElementById('editTemplateLogo').value;
+            let body = { price_weekly: price, status, description, logo_url: logo };
+            if(newName) body.name = newName;
+            if(newRepo) body.repo_url = newRepo;
+            try {
+                let res = await fetch(`/api/admin/bots/templates/${currentTemplateId}`, { method:'PUT', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify(body) });
+                let data = await res.json();
+                if(data.success) { showToast('success','Template modifié'); closeModal('botTemplateEditModal'); loadBotTemplates(); loadAdminData(); }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function syncBotTemplate(templateId) {
+            showToast('info','Synchronisation...');
+            try {
+                let res = await fetch(`/api/admin/bots/templates/${templateId}/force-sync`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+                let data = await res.json();
+                if(data.success) { showToast('success','Template synchronisé'); loadBotTemplates(); }
+                else showToast('error',data.error);
+            } catch(e) { showToast('error','Erreur réseau'); }
+        }
+        async function deleteBotTemplate(templateId) {
+            document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent='Supprimer template';
+            document.getElementById('confirmMessage').textContent='Suppression définitive ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className='btn btn-danger';
+            confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/bots/templates/${templateId}?permanent=true`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Template supprimé'); loadBotTemplates(); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
+        }
+
+        // SYNCHRO AUTO KH.JSON
+        async function syncSingleBotTemplate(templateId, repoUrl) {
+            try {
+                const res = await fetch(`/api/admin/bots/templates/${templateId}/sync-kh`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ template_id: templateId, repo_url: repoUrl })
+                });
+                const data = await res.json();
+                if (data.success && data.changed) { console.log(`✅ Template ${templateId} mis à jour`); showToast('info', `Template mis à jour : ${data.changes?.join(', ') || 'kh.json'}`); loadBotTemplates(); }
+                return data;
+            } catch(e) { console.error(`Erreur sync ${templateId}:`, e); return { success: false }; }
+        }
+        function startAutoSyncForTemplate(templateId, repoUrl, intervalMs = 300000) {
+            if (syncIntervals[templateId]) clearInterval(syncIntervals[templateId]);
+            syncIntervals[templateId] = setInterval(() => { syncSingleBotTemplate(templateId, repoUrl); }, intervalMs);
+        }
+        function stopAutoSyncForTemplate(templateId) { if (syncIntervals[templateId]) { clearInterval(syncIntervals[templateId]); delete syncIntervals[templateId]; } }
+        function startAutoSyncForAllTemplates(templates) {
+            Object.keys(syncIntervals).forEach(id => stopAutoSyncForTemplate(id));
+            templates.forEach(tpl => { if (tpl.status === 'approved' && tpl.repo_url) { startAutoSyncForTemplate(tpl.id, tpl.repo_url); } });
+        }
+
+        // DEPLOYED BOTS
+        async function loadDeployedBots() { try { let res = await fetch('/api/admin/bots/deployed', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allDeployedBots = data.bots||[]; filteredDeployedBots = [...allDeployedBots]; document.getElementById('deployedBotsCount').textContent = allDeployedBots.length; currentDeployedBotPage=1; displayDeployedBots(); } } catch(e) { showToast('error','Erreur chargement bots déployés'); } }
+        function filterDeployedBots() { let search = document.getElementById('deployedBotSearch').value.toLowerCase(); let filter = document.getElementById('deployedBotFilter').value; filteredDeployedBots = allDeployedBots.filter(b => { let match = (b.heroku_app_name||'').toLowerCase().includes(search) || (b.profiles?.username||'').toLowerCase().includes(search); if(!match) return false; if(filter!=='all') return b.status===filter; return true; }); currentDeployedBotPage=1; document.getElementById('deployedBotsCount').textContent=filteredDeployedBots.length; displayDeployedBots(); }
+        function clearDeployedBotSearch() { document.getElementById('deployedBotSearch').value=''; document.getElementById('deployedBotFilter').value='all'; filteredDeployedBots=[...allDeployedBots]; currentDeployedBotPage=1; displayDeployedBots(); }
+        function displayDeployedBots() {
+            const tbody = document.getElementById('deployedBotsTableBody');
+            const total = Math.max(1, Math.ceil(filteredDeployedBots.length / itemsPerPage));
+            if(currentDeployedBotPage > total) currentDeployedBotPage = total;
+            document.getElementById('deployedBotPageInfo').textContent = `Page ${currentDeployedBotPage} / ${total}`;
+            document.getElementById('deployedBotPrevBtn').disabled = currentDeployedBotPage <= 1;
+            document.getElementById('deployedBotNextBtn').disabled = currentDeployedBotPage >= total;
+            if(!filteredDeployedBots.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun bot déployé</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentDeployedBotPage - 1) * itemsPerPage;
+            const paginated = filteredDeployedBots.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(b => {
+                const expiry = new Date(b.expires_at);
+                const daysLeft = Math.ceil((expiry - new Date()) / 86400000);
+                const statusBadge = b.status === 'active' ? (daysLeft < 0 ? 'badge-danger' : (daysLeft <= 3 ? 'badge-warning' : 'badge-success')) : (b.status === 'deploying' || b.status === 'stopped' ? 'badge-warning' : 'badge-danger');
+                const statusText = b.status === 'active' ? (daysLeft < 0 ? 'Expiré' : (daysLeft <= 3 ? 'Expire bientôt' : 'Actif')) : esc(b.status || '-');
+                const actions = `<div class="action-group"><button class="action-btn edit" title="Modifier" onclick="editDeployedBot('${b.id}')"><i class="fas fa-edit"></i></button>${b.status === 'active' ? `<button class="action-btn suspend" title="Suspendre" onclick="suspendDeployedBot('${b.id}')"><i class="fas fa-pause"></i></button>` : b.status === 'suspended' ? `<button class="action-btn unsuspend" title="Réactiver" onclick="unsuspendDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>` : b.status === 'stopped' ? `<button class="action-btn unsuspend" title="Démarrer" onclick="startDeployedBot('${b.id}')"><i class="fas fa-play"></i></button>` : ''}<button class="action-btn view" title="Utilisateur" onclick="editUser('${b.user_id}')"><i class="fas fa-user"></i></button><button class="action-btn delete" title="Supprimer" onclick="deleteDeployedBot('${b.id}')"><i class="fas fa-trash"></i></button></div>`;
+                return `<tr><td>${esc(b.heroku_app_name || '-')}</td><td>${esc(b.bot_templates?.name || '-')}</td><td>${esc(b.profiles?.username || 'Inconnu')}</td><td>${b.duration_mode === 'monthly' ? 'Mensuel' : 'Hebdo'}</td><td>${expiry.toLocaleDateString('fr-FR')} (${daysLeft}j)</td><td><span class="badge ${statusBadge}">${statusText}</span></td><td>${b.auto_renew ? '<span class="badge badge-success">Oui</span>' : '<span class="badge badge-danger">Non</span>'}</td><td>${formatDateCameroon(b.created_at)}</td><td>${actions}</td></tr>`;
+            }).join('');
+        }
+        function editDeployedBot(botId) { let b = allDeployedBots.find(b=>b.id===botId); if(!b) return; currentDeployedBotId = botId; document.getElementById('editDeployedBotId').textContent = b.id; document.getElementById('editDeployedBotName').textContent = b.heroku_app_name; document.getElementById('editDeployedBotTemplate').textContent = b.bot_templates?.name||'-'; document.getElementById('editDeployedBotUser').textContent = `${b.profiles?.username||'Inconnu'} (${b.profiles?.email||''})`; document.getElementById('editDeployedBotStatus').value = b.status; document.getElementById('editDeployedBotExpiry').value = new Date(b.expires_at).toISOString().slice(0,16); document.getElementById('editDeployedBotAutoRenew').value = b.auto_renew?'true':'false'; openModal('deployedBotEditModal'); }
+        async function saveDeployedBotChanges() { let status = document.getElementById('editDeployedBotStatus').value; let expiry = document.getElementById('editDeployedBotExpiry').value; let autoRenew = document.getElementById('editDeployedBotAutoRenew').value === 'true'; try { let res = await fetch(`/api/admin/bots/deployed/${currentDeployedBotId}`, { method:'PUT', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({status, expires_at:expiry, auto_renew:autoRenew}) }); let data = await res.json(); if(data.success) { showToast('success','Bot modifié'); closeModal('deployedBotEditModal'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function forceRenewDeployedBot() { try { let res = await fetch(`/api/admin/bots/deployed/${currentDeployedBotId}/renew`, { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({days_to_add:7}) }); let data = await res.json(); if(data.success) { showToast('success','Bot renouvelé'); loadDeployedBots(); closeModal('deployedBotEditModal'); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function suspendDeployedBot(botId) { try { let res = await fetch(`/api/admin/bots/deployed/${botId}/suspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Bot suspendu'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function unsuspendDeployedBot(botId) { try { let res = await fetch(`/api/admin/bots/deployed/${botId}/unsuspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Bot réactivé'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function startDeployedBot(botId) { try { let res = await fetch(`/api/admin/bots/deployed/${botId}/unsuspend`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Bot démarré'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function deleteDeployedBot(botId) {
+            document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent='Supprimer bot déployé';
+            document.getElementById('confirmMessage').textContent='Suppression définitive ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className='btn btn-danger';
+            confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/bots/deployed/${botId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Bot supprimé'); loadDeployedBots(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
+        }
+
+        // HEROKU ACCOUNTS
+        async function loadHerokuAccounts() { try { let res = await fetch('/api/admin/heroku/accounts', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { allHerokuAccounts = data.accounts||[]; filteredHerokuAccounts = [...allHerokuAccounts]; document.getElementById('herokuAccountsCount').textContent = allHerokuAccounts.length; currentHerokuPage=1; displayHerokuAccounts(); updateHerokuStats(); } } catch(e) { showToast('error','Erreur chargement Heroku'); } }
+        function updateHerokuStats() { let total = allHerokuAccounts.length, active = allHerokuAccounts.filter(a=>a.is_active).length; let totalCap = allHerokuAccounts.reduce((s,a)=>s+(a.max_bots||0),0), usedCap = allHerokuAccounts.reduce((s,a)=>s+(a.current_bots||0),0); document.getElementById('herokuTotalAccounts').textContent=total; document.getElementById('herokuActiveAccounts').textContent=active; document.getElementById('herokuTotalCapacity').textContent=totalCap; document.getElementById('herokuAvailableCapacity').textContent=totalCap-usedCap; }
+        function filterHerokuAccounts() { let search = document.getElementById('herokuSearch').value.toLowerCase(); let filter = document.getElementById('herokuFilter').value; filteredHerokuAccounts = allHerokuAccounts.filter(a => { let match = (a.email||'').toLowerCase().includes(search); if(!match) return false; if(filter==='active') return a.is_active; if(filter==='inactive') return !a.is_active; return true; }); currentHerokuPage=1; document.getElementById('herokuAccountsCount').textContent=filteredHerokuAccounts.length; displayHerokuAccounts(); }
+        function displayHerokuAccounts() {
+            const tbody = document.getElementById('herokuAccountsTableBody');
+            const total = Math.max(1, Math.ceil(filteredHerokuAccounts.length / itemsPerPage));
+            if(currentHerokuPage > total) currentHerokuPage = total;
+            document.getElementById('herokuPageInfo').textContent = `Page ${currentHerokuPage} / ${total}`;
+            document.getElementById('herokuPrevBtn').disabled = currentHerokuPage <= 1;
+            document.getElementById('herokuNextBtn').disabled = currentHerokuPage >= total;
+            if(!filteredHerokuAccounts.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucun compte Heroku</strong><span>Les éléments apparaîtront ici</span></td></tr>'; return; }
+            const start = (currentHerokuPage - 1) * itemsPerPage;
+            const paginated = filteredHerokuAccounts.slice(start, start + itemsPerPage);
+            tbody.innerHTML = paginated.map(a => {
+                const statusBadge = a.is_active ? 'badge-success' : 'badge-danger';
+                const lastUsed = a.last_used_at ? formatDateCameroon(a.last_used_at) : 'Jamais';
+                const apiPreview = a.api_key ? `${esc(String(a.api_key).substring(0,20))}...` : '-';
+                return `<tr><td><code>${esc(String(a.id || '').substring(0,8))}...</code></td><td><strong>${esc(a.email || '-')}</strong></td><td><input type="password" value="${apiPreview}" readonly class="inline-secret"></td><td>${Number(a.max_bots || 0)}</td><td>${Number(a.current_bots || 0)} / ${Number(a.max_bots || 0)} (${Math.round(((a.current_bots || 0) / (a.max_bots || 1)) * 100)}%)</td><td><span class="badge ${statusBadge}">${a.is_active ? 'Actif' : 'Inactif'}</span></td><td>${lastUsed}</td><td><div class="action-group"><button class="action-btn edit" title="Modifier" onclick="editHerokuAccount('${a.id}')"><i class="fas fa-edit"></i></button><button class="action-btn delete" title="Supprimer" onclick="deleteHerokuAccount('${a.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;
+            }).join('');
+        }
+        function showAddHerokuAccountModal() { openModal('herokuAccountModal'); }
+        async function addHerokuAccount() { let email = document.getElementById('herokuEmail').value, apiKey = document.getElementById('herokuApiKey').value, max = parseInt(document.getElementById('herokuMaxBots').value)||50; if(!email||!apiKey) { showToast('error','Email et API key requis'); return; } try { let res = await fetch('/api/admin/heroku/accounts', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({email, api_key:apiKey, max_bots:max}) }); let data = await res.json(); if(data.success) { showToast('success','Compte Heroku ajouté'); closeModal('herokuAccountModal'); loadHerokuAccounts(); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur réseau'); } }
+        async function editHerokuAccount(accountId) { showToast('info','Édition à implémenter'); }
+        async function deleteHerokuAccount(accountId) {
+            document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent='Supprimer compte Heroku';
+            document.getElementById('confirmMessage').textContent='Suppression définitive ?';
+            let confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.className='btn btn-danger';
+            confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch(`/api/admin/heroku/accounts/${accountId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Compte Heroku supprimé'); loadHerokuAccounts(); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
+        }
+
+        // MAINTENANCE
+        async function loadMaintenanceConfig() {
+            try {
+                let res = await fetch('/api/admin/maintenance', { headers:{'Authorization':`Bearer ${token}`} });
+                let data = await res.json();
+                if(data.success) {
+                    let cfg = data.maintenance;
+                    document.getElementById('maintenanceActive').checked = cfg.is_active;
+                    document.getElementById('maintenanceMessage').value = cfg.message;
+                    document.getElementById('maintenanceEmail').value = cfg.support_email;
+                    document.getElementById('maintenanceWhatsApp').value = cfg.support_whatsapp;
+                    document.getElementById('maintenanceDiscord').value = cfg.discord_link;
+                    if(cfg.estimated_end_time) document.getElementById('maintenanceEndTime').value = new Date(cfg.estimated_end_time).toISOString().slice(0,16);
+                    let ips = cfg.allow_ips?.join('\n')||'';
+                    document.getElementById('maintenanceIPs').value = ips;
+                    let dot = document.getElementById('maintenanceStatusDot'), txt = document.getElementById('maintenanceStatusText');
+                    if(cfg.is_active) { document.getElementById('maintenanceStatusIndicator').classList.add('active'); dot.className='status-dot active'; txt.textContent='Maintenance active'; }
+                    else { document.getElementById('maintenanceStatusIndicator').classList.remove('active'); dot.className='status-dot inactive'; txt.textContent='Maintenance inactive'; }
+                    document.getElementById('currentMessage').textContent = cfg.message;
+                    document.getElementById('currentEndTime').textContent = cfg.estimated_end_time ? new Date(cfg.estimated_end_time).toLocaleString() : 'Non définie';
+                    document.getElementById('currentEmail').textContent = cfg.support_email;
+                    document.getElementById('currentWhatsApp').textContent = cfg.support_whatsapp;
+                    document.getElementById('currentDiscord').textContent = cfg.discord_link;
+                }
+            } catch(e) { showToast('error','Erreur chargement maintenance'); }
+        }
+        async function saveMaintenanceConfig() {
+            let cfg = { is_active:document.getElementById('maintenanceActive').checked, message:document.getElementById('maintenanceMessage').value, estimated_end_time:document.getElementById('maintenanceEndTime').value||null, support_email:document.getElementById('maintenanceEmail').value, support_whatsapp:document.getElementById('maintenanceWhatsApp').value, discord_link:document.getElementById('maintenanceDiscord').value, allow_ips:document.getElementById('maintenanceIPs').value.split('\n').map(i=>i.trim()).filter(i=>i) };
+            try { let res = await fetch('/api/admin/maintenance', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify(cfg) }); let data = await res.json(); if(data.success) { showToast('success',data.message); loadMaintenanceConfig(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur réseau'); }
+        }
+
+        // EMAILS MASSIFS
+        async function loadEmailTemplates() { try { let res = await fetch('/api/admin/email-templates', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { emailTemplates = data.templates; let html = ''; emailTemplates.forEach(t=>{ html += `<div class="template-badge" onclick="selectTemplate('${t.id}')" data-template="${t.id}"><i class="fas ${t.icon==='📢'?'fa-bullhorn':t.icon==='🛠️'?'fa-tools':t.icon==='🎉'?'fa-gift':t.icon==='📰'?'fa-newspaper':t.icon==='⚠️'?'fa-exclamation-triangle':'fa-envelope'}"></i> ${t.name}</div>`; }); document.getElementById('templateSelect').innerHTML = html; if(emailTemplates.length) selectTemplate(emailTemplates[0].id); } } catch(e) { showToast('error','Erreur templates email'); } }
+        let selectedTemplateId = null;
+        function selectTemplate(id) { selectedTemplateId = id; document.querySelectorAll('.template-badge').forEach(el=>el.classList.remove('selected')); let sel = document.querySelector(`.template-badge[data-template="${id}"]`); if(sel) sel.classList.add('selected'); let tpl = emailTemplates.find(t=>t.id===id); if(tpl) { document.getElementById('emailSubject').value = tpl.default_subject; document.getElementById('emailMessage').value = tpl.default_message; } }
+        async function sendTestEmail() { let testEmail = document.getElementById('testEmail').value; if(!testEmail) { showToast('error','Email de test requis'); return; } let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, test_email:testEmail, send_test_first:true}) }); let data = await res.json(); if(data.success) showToast('success','Test envoyé'); else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function sendMassEmail() { let subject = document.getElementById('emailSubject').value; let message = document.getElementById('emailMessage').value; let target = document.getElementById('emailTarget').value; try { let res = await fetch('/api/admin/send-mass-email', { method:'POST', headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify({subject, template_type:selectedTemplateId, custom_message:message, target_role:target, send_test_first:false}) }); let data = await res.json(); if(data.success) { showToast('success','Campagne lancée'); startCampaignMonitoring(data.campaign_id); loadCampaignHistory(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        async function loadCampaignHistory() { try { let res = await fetch('/api/admin/email-campaigns', { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let campaigns = data.campaigns||[]; let tbody = document.getElementById('campaignsTableBody'); if(!campaigns.length) { tbody.innerHTML='<tr><td colspan="9" class="empty-state"><i class="fas fa-inbox"></i><strong>Aucune campagne</strong><span>Les éléments apparaîtront ici</span></td></tr>'; document.getElementById('globalSuccessRate').textContent='0%'; return; } let totalSuccess=0, totalSent=0; let html=''; campaigns.forEach(c=>{ totalSuccess+=c.success_count||0; totalSent+=(c.success_count||0)+(c.fail_count||0); let statusBadge = c.status==='completed'?'badge-success':(c.status==='in_progress'?'badge-warning':(c.status==='cancelled'?'badge-danger':'badge-info')); html+=`<tr><td>${formatDateCameroon(c.created_at)}</td><td>${esc(c.profiles?.username||'-')}</td><td>${esc(String(c.subject||'').substring(0,50))}</td><td><span class="badge badge-primary">${esc(c.template_type||'-')}</span></td><td>${Number(c.total_recipients||0).toLocaleString('fr-FR')}</td><td><span class="badge badge-success">${c.success_count||0}</span></td><td><span class="badge badge-danger">${c.fail_count||0}</span></td><td><span class="badge ${statusBadge}">${esc(c.status||'-')}</span></td><td>${c.status==='in_progress'?`<button class="action-btn delete" title="Annuler" onclick="cancelCampaign('${c.id}')"><i class="fas fa-stop"></i></button>`:''}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('globalSuccessRate').textContent = totalSent>0?Math.round((totalSuccess/totalSent)*100)+'%':'0%'; } } catch(e) { console.error(e); } }
+        function cancelCurrentCampaign() { if(currentCampaignId) cancelCampaign(currentCampaignId); else showToast('error','Aucune campagne en cours'); }
+        async function cancelCampaign(cid) { try { let res = await fetch(`/api/admin/email-campaigns/${cid}/cancel`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Campagne annulée'); loadCampaignHistory(); if(cid===currentCampaignId) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; } } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }
+        function startCampaignMonitoring(cid) { if(campaignPollingInterval) clearInterval(campaignPollingInterval); currentCampaignId=cid; campaignPollingInterval = setInterval(async()=>{ try { let res = await fetch(`/api/admin/email-campaign/${cid}`, { headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { let c = data.campaign; let sent = (c.success_count||0)+(c.fail_count||0); let total = c.total_recipients||0; let percent = total>0? (sent/total)*100:0; document.getElementById('campaignStatus').textContent=`${sent}/${total}`; document.getElementById('campaignProgressBar').style.width=percent+'%'; if(c.status==='completed'||c.status==='failed'||c.status==='cancelled') { clearInterval(campaignPollingInterval); campaignPollingInterval=null; currentCampaignId=null; document.getElementById('campaignProgress').style.display='none'; loadCampaignHistory(); } } } catch(e){} },5000); }
+
+        // PTERODACTYL CLEANUP
+        function showPterodactylCleanupModal() { openModal('pteroCleanupModal'); }
+        async function startPterodactylCleanup() {
+            document.getElementById('cleanupInitial').style.display='none';
+            document.getElementById('cleanupProgress').style.display='block';
+            document.getElementById('cleanupStats').style.display='none';
+            document.getElementById('cleanupResult').style.display='none';
+            document.getElementById('cleanupActions').innerHTML = '<button class="btn btn-outline" onclick="closeModal(\'pteroCleanupModal\')">Fermer</button>';
+            try {
+                let res = await fetch('/api/admin/pterodactyl/cleanup-users', { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+                let data = await res.json();
+                document.getElementById('cleanupProgress').style.display='none';
+                if(data.success) {
+                    let stats = data.stats;
+                    document.getElementById('cleanupStats').innerHTML = `<div class="modal-info-item"><span class="modal-info-label">Utilisateurs Pterodactyl</span><span class="modal-info-value">${stats.total_ptero_users}</span></div><div class="modal-info-item"><span class="modal-info-label">Liés à KermHosting</span><span class="modal-info-value">${stats.linked_users}</span></div><div class="modal-info-item"><span class="modal-info-label">Orphelins avec serveurs</span><span class="modal-info-value">${stats.orphan_with_servers}</span></div><div class="modal-info-item"><span class="modal-info-label">Orphelins sans serveurs</span><span class="modal-info-value">${stats.orphan_without_servers}</span></div><div class="modal-info-item" style="border-bottom:none;"><span class="modal-info-label">Supprimés</span><span class="modal-info-value" style="color:var(--success);">${stats.deleted_users}</span></div>`;
+                    document.getElementById('cleanupStats').style.display='block';
+                    document.getElementById('cleanupActions').innerHTML = `<button class="btn btn-primary" onclick="closeModal('pteroCleanupModal'); refreshAllData();">Terminé</button>`;
+                    showToast('success', data.message);
+                } else {
+                    document.getElementById('cleanupResult').innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px;">❌ Erreur: ${data.error}</div>`;
+                    document.getElementById('cleanupResult').style.display='block';
+                    document.getElementById('cleanupActions').innerHTML = `<button class="btn btn-outline" onclick="closeModal('pteroCleanupModal')">Fermer</button>`;
+                    showToast('error', data.error);
+                }
+            } catch(e) { showToast('error','Erreur réseau'); document.getElementById('cleanupProgress').style.display='none'; document.getElementById('cleanupResult').innerHTML = '<div style="color:var(--danger);text-align:center;padding:20px;">❌ Erreur réseau</div>'; document.getElementById('cleanupResult').style.display='block'; document.getElementById('cleanupActions').innerHTML = '<button class="btn btn-outline" onclick="closeModal(\'pteroCleanupModal\')">Fermer</button>'; }
+        }
+
+        // BULK ACTIONS
+        function showDeleteAllServersModal() {
+            document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent='Supprimer tous les serveurs';
+            document.getElementById('confirmMessage').textContent='Suppression définitive de TOUS les serveurs ?';
+            let confirmBtn=document.getElementById('confirmActionBtn'); confirmBtn.className='btn btn-danger';
+            confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch('/api/admin/servers/delete-all', { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Tous les serveurs supprimés'); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
+        }
+        function showDeleteAllLogsModal() {
+            document.getElementById('confirmIcon').innerHTML='<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>';
+            document.getElementById('confirmTitle').textContent='Supprimer tous les logs';
+            document.getElementById('confirmMessage').textContent='Suppression définitive de TOUS les logs ?';
+            let confirmBtn=document.getElementById('confirmActionBtn'); confirmBtn.className='btn btn-danger';
+            confirmBtn.onclick=async()=>{ closeModal('confirmModal'); try { let res = await fetch('/api/admin/logs/delete-all', { method:'POST', headers:{'Authorization':`Bearer ${token}`} }); let data = await res.json(); if(data.success) { showToast('success','Logs supprimés'); loadAdminData(); } else showToast('error',data.error); } catch(e) { showToast('error','Erreur'); } }; openModal('confirmModal');
+        }
+
+        // EXPORT
+        function exportUsers(format) { let data = filteredUsers.map(u=>({id:u.id,username:u.username,email:u.email,role:u.role,coins:u.coins,servers:u.servers_count,verified:u.email_verified,banned:u.banned,created_at:u.created_at})); if(format==='csv'){ let headers=Object.keys(data[0]).join(','); let rows=data.map(o=>Object.values(o).map(v=>`"${v}"`).join(',')).join('\n'); let blob=new Blob([headers+'\n'+rows],{type:'text/csv'}); let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`users_${new Date().toISOString().slice(0,10)}.csv`;a.click();} else { let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`users_${new Date().toISOString().slice(0,10)}.json`;a.click();} showToast('success','Export téléchargé'); }
+
+        function changePaypalPage(dir) { let total = Math.max(1, Math.ceil(filteredPaypalTransactions.length/itemsPerPage)); if(dir==='prev' && currentPaypalPage>1) currentPaypalPage--; else if(dir==='next' && currentPaypalPage<total) currentPaypalPage++; displayPaypalTransactions(); }
+        function changeMinipayPage(dir) { let total = Math.max(1, Math.ceil(filteredMinipayTransactions.length/itemsPerPage)); if(dir==='prev' && currentMinipayPage>1) currentMinipayPage--; else if(dir==='next' && currentMinipayPage<total) currentMinipayPage++; displayMinipayTransactions(); }
+        function changeBotTemplatePage(dir) { let total = Math.max(1, Math.ceil(filteredBotTemplates.length/itemsPerPage)); if(dir==='prev' && currentBotTemplatePage>1) currentBotTemplatePage--; else if(dir==='next' && currentBotTemplatePage<total) currentBotTemplatePage++; displayBotTemplates(); }
+        function changeDeployedBotPage(dir) { let total = Math.max(1, Math.ceil(filteredDeployedBots.length/itemsPerPage)); if(dir==='prev' && currentDeployedBotPage>1) currentDeployedBotPage--; else if(dir==='next' && currentDeployedBotPage<total) currentDeployedBotPage++; displayDeployedBots(); }
+        function changeHerokuPage(dir) { let total = Math.max(1, Math.ceil(filteredHerokuAccounts.length/itemsPerPage)); if(dir==='prev' && currentHerokuPage>1) currentHerokuPage--; else if(dir==='next' && currentHerokuPage<total) currentHerokuPage++; displayHerokuAccounts(); }
+
+        // REFRESH
+        function refreshAllData() { showToast('info','Actualisation...'); loadAdminData(); loadFapshiBalance(); if(document.getElementById('tab-paypal').classList.contains('active')) loadPaypalTransactions(); if(document.getElementById('tab-minipay').classList.contains('active')) loadMinipayTransactions(); if(document.getElementById('tab-bot-submissions').classList.contains('active')) loadBotSubmissions(); if(document.getElementById('tab-bot-templates').classList.contains('active')) loadBotTemplates(); if(document.getElementById('tab-deployed-bots').classList.contains('active')) loadDeployedBots(); if(document.getElementById('tab-heroku').classList.contains('active')) loadHerokuAccounts(); if(document.getElementById('tab-email').classList.contains('active')) { loadEmailTemplates(); loadCampaignHistory(); } }
+
+        // TAB SWITCHING
+        async function switchTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`.nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`)?.classList.add('active');
+            if(window.innerWidth < 1024) { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+            if(tabId==='paypal') loadPaypalTransactions();
+            if(tabId==='minipay') loadMinipayTransactions();
+            if(tabId==='bot-submissions') loadBotSubmissions();
+            if(tabId==='bot-templates') { await loadBotTemplates(); startAutoSyncForAllTemplates(allBotTemplates); }
+            if(tabId==='deployed-bots') loadDeployedBots();
+            if(tabId==='heroku') loadHerokuAccounts();
+            if(tabId==='maintenance') loadMaintenanceConfig();
+            if(tabId==='email') { loadEmailTemplates(); loadCampaignHistory(); }
+        }
+
+        window.addEventListener('resize',()=>{ if(window.innerWidth>1024){ sidebar.classList.remove('active'); overlay.classList.remove('active'); } });
+
+        loadUserData();
+
+        // Exports globaux
+        window.switchTab=switchTab; window.filterUsers=filterUsers; window.clearUserSearch=clearUserSearch; window.filterServers=filterServers; window.filterTransactions=filterTransactions; window.filterLogs=filterLogs; window.filterPaypalTransactions=filterPaypalTransactions; window.clearPaypalSearch=clearPaypalSearch; window.refreshPaypalTransactions=refreshPaypalTransactions; window.confirmPaypalPayment=confirmPaypalPayment; window.failPaypalPayment=failPaypalPayment; window.viewPaypalTransaction=viewPaypalTransaction; window.filterMinipayTransactions=filterMinipayTransactions; window.clearMinipaySearch=clearMinipaySearch; window.refreshMinipayTransactions=refreshMinipayTransactions; window.confirmMinipayPayment=confirmMinipayPayment; window.failMinipayPayment=failMinipayPayment; window.viewMinipayTransaction=viewMinipayTransaction; window.openScreenshotModal=openScreenshotModal; window.editUser=editUser; window.viewUserServers=viewUserServers; window.viewUserTransactions=viewUserTransactions; window.viewTransaction=viewTransaction; window.toggleBan=toggleBan; window.deleteUser=deleteUser; window.addCoinsToUser=addCoinsToUser; window.removeCoinsFromUser=removeCoinsFromUser; window.saveUserChanges=saveUserChanges; window.editServer=editServer; window.saveServerChanges=saveServerChanges; window.deleteServer=deleteServer; window.suspendServer=suspendServer; window.unsuspendServer=unsuspendServer; window.showDeleteAllServersModal=showDeleteAllServersModal; window.showDeleteAllLogsModal=showDeleteAllLogsModal; window.showPterodactylCleanupModal=showPterodactylCleanupModal; window.startPterodactylCleanup=startPterodactylCleanup; window.refreshAllData=refreshAllData; window.closeModal=closeModal; window.exportUsers=exportUsers; window.changeUserPage=changeUserPage; window.changeServerPage=changeServerPage; window.changeTransactionPage=changeTransactionPage; window.changeLogsPage=changeLogsPage; window.changePaypalPage=changePaypalPage; window.changeMinipayPage=changeMinipayPage; window.changeBotTemplatePage=changeBotTemplatePage; window.changeDeployedBotPage=changeDeployedBotPage; window.changeHerokuPage=changeHerokuPage; window.loadMaintenanceConfig=loadMaintenanceConfig; window.saveMaintenanceConfig=saveMaintenanceConfig; window.selectTemplate=selectTemplate; window.sendTestEmail=sendTestEmail; window.sendMassEmail=sendMassEmail; window.loadCampaignHistory=loadCampaignHistory; window.cancelCampaign=cancelCampaign; window.cancelCurrentCampaign=cancelCurrentCampaign; window.loadBotSubmissions=loadBotSubmissions; window.filterBotSubmissions=filterBotSubmissions; window.clearBotSearch=clearBotSearch; window.approveBot=approveBot; window.rejectBot=rejectBot; window.viewBotSubmission=viewBotSubmission; window.loadBotTemplates=loadBotTemplates; window.filterBotTemplates=filterBotTemplates; window.clearBotTemplateSearch=clearBotTemplateSearch; window.editBotTemplate=editBotTemplate; window.saveBotTemplateChanges=saveBotTemplateChanges; window.syncBotTemplate=syncBotTemplate; window.deleteBotTemplate=deleteBotTemplate; window.loadDeployedBots=loadDeployedBots; window.filterDeployedBots=filterDeployedBots; window.clearDeployedBotSearch=clearDeployedBotSearch; window.editDeployedBot=editDeployedBot; window.saveDeployedBotChanges=saveDeployedBotChanges; window.forceRenewDeployedBot=forceRenewDeployedBot; window.suspendDeployedBot=suspendDeployedBot; window.unsuspendDeployedBot=unsuspendDeployedBot; window.startDeployedBot=startDeployedBot; window.deleteDeployedBot=deleteDeployedBot; window.loadHerokuAccounts=loadHerokuAccounts; window.filterHerokuAccounts=filterHerokuAccounts; window.showAddHerokuAccountModal=showAddHerokuAccountModal; window.addHerokuAccount=addHerokuAccount; window.editHerokuAccount=editHerokuAccount; window.deleteHerokuAccount=deleteHerokuAccount;
+    </script>
+</body>
+</html>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Gérez vos bots WhatsApp déployés sur KermHosting">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Mes bots - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED; --primary-light: #9D6CFF; --primary-dark: #5B2AB0; --primary-glow: rgba(124,58,237,0.3);
+            --secondary: #10B981; --secondary-light: #34D399; --accent: #F59E0B; --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6;
+            --bg-dark: #0B1120; --bg-card: #1A2332; --bg-sidebar: #111827; --bg-hover: #1F2937; --bg-input: #1E293B;
+            --text-primary: #F3F4F6; --text-secondary: #9CA3AF; --text-muted: #6B7280; --border-color: #2D3748;
+            --shadow-glow: 0 0 15px var(--primary-glow); --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(124,58,237,0.1) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(16,185,129,0.1) 0%, transparent 40%); pointer-events: none; z-index: -1; }
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+        .sidebar-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+        .logo i { color: var(--primary); font-size: 1.5rem; }
+        .close-sidebar { background: none; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); }
+        .sidebar-user { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .sidebar-user:hover { background: var(--bg-hover); }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-badge { background: var(--primary); color: white; font-size: 0.625rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav li { margin: 4px 8px; }
+        .sidebar-nav li.active { background: linear-gradient(90deg, var(--primary), transparent); border-radius: var(--radius-md); }
+        .sidebar-nav li.active a { color: white; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-secondary); text-decoration: none; font-weight: 500; border-radius: var(--radius-md); transition: all 0.2s; font-size: 0.95rem; }
+        .sidebar-nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .sidebar-nav i { width: 20px; font-size: 1.1rem; }
+        .sidebar-nav .divider { height: 1px; background: var(--border-color); margin: 16px 8px; }
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); }
+        .sidebar-stats { display: flex; justify-content: space-between; }
+        .stat { text-align: center; }
+        .stat-value { display: block; font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .stat-label { font-size: 0.625rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        .main-content { flex: 1; width: 100%; min-width: 0; }
+
+        /* TOP BAR */
+        .top-bar { position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: var(--radius-full); flex-shrink: 0; }
+        .top-bar-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .top-bar-center i { color: var(--primary); font-size: 1.3rem; }
+        .top-bar-center span { font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .top-bar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .user-avatar-small { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+
+        /* PAGE */
+        .page-content { padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
+        .page-header { margin-bottom: 16px; }
+        .page-title { font-size: 1.6rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
+        .gradient-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .page-subtitle { color: var(--text-secondary); font-size: 0.85rem; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 14px 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
+        .stat-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(16,185,129,0.1)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--primary); }
+        .stat-info h3 { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .stat-info p { font-size: 0.7rem; color: var(--text-secondary); }
+
+        /* TABS */
+        .tabs { display: flex; gap: 6px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .tab { padding: 6px 16px; border-radius: var(--radius-full); cursor: pointer; transition: all 0.2s; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; }
+        .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+
+        /* BOTS GRID */
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+        .bot-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; transition: all 0.3s; }
+        .bot-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 8px 25px -8px rgba(124,58,237,0.3); }
+        .bot-card-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent); }
+        .bot-status { margin-left: auto; padding: 3px 10px; border-radius: var(--radius-full); font-size: 0.65rem; font-weight: 600; }
+        .bot-status.active { background: rgba(16,185,129,0.2); color: var(--success); }
+        .bot-status.deploying { background: rgba(245,158,11,0.2); color: var(--warning); }
+        .bot-status.stopped { background: rgba(107,114,128,0.2); color: var(--text-muted); }
+        .bot-status.suspended { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .bot-status.failed { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .bot-card-logo { width: 42px; height: 42px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; overflow: hidden; flex-shrink: 0; }
+        .bot-card-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .bot-card-info { flex: 1; }
+        .bot-card-name { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+        .bot-card-app { font-size: 0.65rem; color: var(--text-muted); font-family: monospace; }
+        .bot-card-body { padding: 12px 16px; }
+        .bot-expiry { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 7px 10px; background: var(--bg-hover); border-radius: var(--radius-md); font-size: 0.8rem; }
+        .expiry-label { font-size: 0.7rem; color: var(--text-secondary); }
+        .expiry-date { font-weight: 600; font-size: 0.8rem; }
+        .expiry-warning { color: var(--warning); font-weight: 700; }
+        .expiry-critical { color: var(--danger); font-weight: 700; }
+        .bot-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .action-btn { padding: 6px 10px; border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 4px; }
+        .action-btn.start { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+        .action-btn.start:hover { background: var(--success); color: white; }
+        .action-btn.stop { background: rgba(107,114,128,0.15); color: var(--text-secondary); border: 1px solid rgba(107,114,128,0.3); }
+        .action-btn.stop:hover { background: var(--text-secondary); color: white; }
+        .action-btn.restart { background: rgba(59,130,246,0.15); color: var(--info); border: 1px solid rgba(59,130,246,0.3); }
+        .action-btn.restart:hover { background: var(--info); color: white; }
+        .action-btn.env { background: rgba(124,58,237,0.15); color: var(--primary); border: 1px solid rgba(124,58,237,0.3); }
+        .action-btn.env:hover { background: var(--primary); color: white; }
+        .action-btn.renew { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+        .action-btn.renew:hover { background: var(--warning); color: white; }
+        .action-btn.delete { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+        .action-btn.delete:hover { background: var(--danger); color: white; }
+        .action-btn.logs { background: rgba(16,185,129,0.15); color: var(--secondary); border: 1px solid rgba(16,185,129,0.3); }
+        .action-btn.logs:hover { background: var(--secondary); color: white; }
+        .auto-renew-toggle { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+        .auto-renew-label { font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; }
+        .toggle-switch { position: relative; width: 36px; height: 18px; background: var(--bg-input); border-radius: var(--radius-full); cursor: pointer; transition: all 0.3s; border: 1.5px solid var(--border-color); flex-shrink: 0; }
+        .toggle-switch.active { background: var(--primary); border-color: var(--primary); }
+        .toggle-switch::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s; }
+        .toggle-switch.active::after { left: 17px; }
+        .toggle-switch.disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* MODAL - VERSION NORMALE */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 20px; }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-xl); border: 1px solid var(--border-color); transform: scale(0.95); transition: transform 0.3s; }
+        
+        /* MODALE ENVIRONNEMENT - PLEIN ÉCRAN */
+        .modal.env-modal .modal-content,
+        .modal#envModal .modal-content {
+            max-width: 90vw;
+            width: 90vw;
+            height: 85vh;
+            max-height: 85vh;
+        }
+        
+        /* MODALE LOGS - GRAND ÉCRAN */
+        .logs-modal .modal-content { max-width: 90vw; width: 90vw; height: 85vh; max-height: 85vh; }
+        
+        .modal.active .modal-content { transform: scale(1); }
+        .modal-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--bg-card); z-index: 10; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+        .modal-header h2 { font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: var(--radius-full); transition: all 0.2s; }
+        .modal-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .modal-body { padding: 20px; }
+
+        /* LOGS CONTAINER */
+        .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .logs-header-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .logs-refresh-btn, .logs-copy-btn, .logs-clear-btn { border: none; padding: 8px 14px; border-radius: var(--radius-full); color: white; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .logs-refresh-btn { background: var(--primary); }
+        .logs-refresh-btn:hover { background: var(--primary-light); transform: scale(1.02); }
+        .logs-copy-btn { background: var(--info); }
+        .logs-copy-btn:hover { background: #2563eb; transform: scale(1.02); }
+        .logs-clear-btn { background: var(--danger); }
+        .logs-clear-btn:hover { background: #dc2626; transform: scale(1.02); }
+        .logs-auto-status { font-size: 0.7rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; }
+        .logs-auto-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .logs-container { background: #0a0e17; border-radius: var(--radius-md); padding: 16px; height: 60vh; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); }
+        .log-line { color: #a0aec0; border-bottom: 1px solid rgba(45,55,72,0.3); padding: 6px 0; white-space: pre-wrap; word-break: break-all; font-weight: 500; font-family: 'Courier New', monospace; }
+        .log-line.error { color: var(--danger); font-weight: 700; background: rgba(239,68,68,0.1); }
+        .log-line.success { color: var(--success); font-weight: 700; }
+        .log-line.warning { color: var(--warning); font-weight: 700; }
+        .log-line.info { color: var(--info); font-weight: 600; }
+        .log-line .timestamp { color: var(--text-muted); font-weight: 400; margin-right: 10px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; }
+        .form-label i { color: var(--primary); margin-right: 6px; width: 18px; }
+        .form-input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; color: var(--text-primary); font-size: 0.85rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+        .env-item { background: var(--bg-hover); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .env-key { font-family: 'Space Grotesk', monospace; font-weight: 700; color: var(--primary-light); margin-bottom: 4px; font-size: 0.85rem; }
+        .env-desc { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+        .env-value input { width: 100%; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-primary); font-family: monospace; font-size: 0.8rem; }
+        .env-value input:focus { outline: none; border-color: var(--primary); }
+        .env-required { color: var(--danger); font-size: 0.65rem; margin-left: 6px; font-weight: normal; }
+        .btn-outline { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { border-color: var(--primary); background: rgba(124,58,237,0.08); }
+        .deploy-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 16px; }
+        .deploy-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .deploy-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* RENEW MODAL */
+        .renew-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .renew-option { background: var(--bg-hover); border-radius: var(--radius-lg); padding: 16px; border: 2px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; }
+        .renew-option:hover { border-color: var(--primary); background: rgba(124,58,237,0.05); }
+        .renew-option.selected { border-color: var(--primary); background: rgba(124,58,237,0.1); }
+        .renew-option-info { flex: 1; }
+        .renew-option-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+        .renew-option-desc { font-size: 0.7rem; color: var(--text-muted); }
+        .renew-option-price { text-align: right; }
+        .renew-price-amount { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+        .renew-price-label { font-size: 0.7rem; color: var(--text-muted); }
+        .renew-price-warning { margin-top: 16px; padding: 12px; background: rgba(245,158,11,0.1); border-radius: var(--radius-md); text-align: center; font-size: 0.8rem; color: var(--warning); }
+        
+        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); grid-column: 1/-1; }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: var(--radius-md); color: white; display: flex; align-items: center; gap: 10px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 350px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .toast.success { background: rgba(16,185,129,0.95); }
+        .toast.error { background: rgba(239,68,68,0.95); }
+        .toast.info { background: rgba(59,130,246,0.95); }
+        .toast.warning { background: rgba(245,158,11,0.95); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
+
+        @media (max-width: 1024px) { .menu-toggle { display: flex; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .bots-grid { grid-template-columns: 1fr; } .logs-modal .modal-content, .modal.env-modal .modal-content { max-width: 95vw; width: 95vw; } }
+        @media (max-width: 768px) { .page-content { padding: 12px; } .page-title { font-size: 1.3rem; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .top-bar { padding: 8px 12px; } .top-bar-center span { font-size: 1rem; } .modal-content { max-width: 95%; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="logo"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div><button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button></div>
+            <div class="sidebar-user" id="sidebarUser"><div class="user-avatar" id="sidebarAvatar"><i class="fas fa-user-circle"></i></div><div class="user-info"><div class="user-name" id="sidebarUserName">Invité</div><div class="user-email" id="sidebarUserEmail">Non connecté</div></div><div class="user-badge" id="sidebarUserBadge">Visiteur</div></div>
+            <nav class="sidebar-nav"><ul>
+                <li id="navDashboard" style="display:none;"><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
+                <li><a href="/pricing"><i class="fas fa-tags"></i><span>Tarifs</span></a></li>
+                <li><a href="/buy-coins"><i class="fas fa-coins"></i><span>Acheter des coins</span></a></li>
+                <li id="navProfile" style="display:none;"><a href="/profile"><i class="fas fa-user"></i><span>Profil</span></a></li>
+                <li><a href="/transactions"><i class="fas fa-history"></i><span>Transactions</span></a></li>
+                <li><a href="/bot"><i class="fab fa-whatsapp"></i><span>Template bot</span></a></li>
+                <li class="active"><a href="/my-bots"><i class="fas fa-robot"></i><span>Mes bots</span></a></li>
+                <li><a href="/support"><i class="fas fa-headset"></i><span>Support</span></a></li>
+                <li class="divider"></li>
+                <li id="navLogout" style="display:none;"><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a></li>
+            </ul></nav>
+            <div class="sidebar-footer"><div class="sidebar-stats"><div class="stat"><span class="stat-value" id="sidebarCoins">0</span><span class="stat-label">Coins</span></div><div class="stat"><span class="stat-value" id="sidebarServers">0</span><span class="stat-label">Serveurs</span></div></div></div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-center"><i class="fas fa-cloud-upload-alt"></i><span>KermHosting</span></div>
+                <div class="top-bar-actions"><a href="/profile" id="userMenu"><img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40" alt="User" class="user-avatar-small" id="userAvatarSmall"></a></div>
+            </header>
+
+            <div class="page-content">
+                <div class="page-header"><h1 class="page-title">Mes <span class="gradient-text">bots</span></h1><p class="page-subtitle">Gérez tous vos bots WhatsApp déployés</p></div>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-robot"></i></div><div class="stat-info"><h3 id="totalBots">0</h3><p>Total bots</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-play-circle"></i></div><div class="stat-info"><h3 id="activeBots">0</h3><p>Actifs</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-info"><h3 id="expiringBots">0</h3><p>Expire bientôt</p></div></div>
+                </div>
+                <div class="tabs"><div class="tab active" data-tab="all">Tous</div><div class="tab" data-tab="active">Actifs</div><div class="tab" data-tab="expired">Expirés/Suspendus</div></div>
+                <div id="botsContainer" class="bots-grid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Chargement...</p></div></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ENV MODAL - PLEIN ÉCRAN -->
+    <div class="modal env-modal" id="envModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-code-branch"></i> Variables d'environnement</h2><button class="modal-close" id="closeEnvModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="envModalBody"></div></div></div>
+
+    <!-- LOGS MODAL -->
+    <div class="modal logs-modal" id="logsModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-terminal"></i> Logs du bot</h2><button class="modal-close" id="closeLogsModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="logsModalBody"></div></div></div>
+
+    <!-- RENEW MODAL -->
+    <div class="modal" id="renewModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-sync-alt"></i> Renouveler le bot</h2><button class="modal-close" id="closeRenewModal"><i class="fas fa-times"></i></button></div><div class="modal-body" id="renewModalBody"></div></div></div>
+
+    <script>
+        const AvatarManager = {
+            getAvatar: function(u) { return localStorage.getItem('user_avatar') || sessionStorage.getItem('user_avatar') || `https://ui-avatars.com/api/?name=${encodeURIComponent(u||'User')}&background=7C3AED&color=fff&size=40`; },
+            applyToPage: function(u) { const a=this.getAvatar(u); const s=document.getElementById('userAvatarSmall'); if(s){s.src=a;s.style.objectFit='cover';} const b=document.getElementById('sidebarAvatar'); if(b)b.innerHTML=`<img src="${a}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; }
+        };
+        
+        function showToast(t,m){ const o=document.createElement('div'); o.className=`toast ${t}`; o.innerHTML=`<i class="fas fa-${t==='success'?'check-circle':t==='error'?'exclamation-circle':t==='warning'?'exclamation-triangle':'info-circle'}"></i><span>${m}</span>`; document.body.appendChild(o); setTimeout(()=>{o.style.animation='slideOut 0.3s ease-out';setTimeout(()=>o.remove(),300)},3000); }
+        function esc(s){ if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function trunc(s,l){ if(!s)return''; return s.length>l?s.substring(0,l)+'…':s; }
+
+        const sidebar=document.getElementById('sidebar'), overlay=document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.add('active');overlay.classList.add('active')});
+        document.getElementById('closeSidebar').addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
+        overlay.addEventListener('click',()=>{sidebar.classList.remove('active');overlay.classList.remove('active')});
+
+        const token=localStorage.getItem('token'); if(!token) location.href='/login';
+        let currentUser=null, allBots=[], currentLogsBotId=null, logsRefreshInterval=null, isLogsAutoRefresh=true;
+
+        function checkAuth(){
+            fetch('/api/user/me',{headers:{'Authorization':`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
+                if(d.success){ currentUser=d.user; document.getElementById('sidebarUserName').textContent=d.user.username; document.getElementById('sidebarUserEmail').textContent=trunc(d.user.email,24); document.getElementById('sidebarUserBadge').textContent=d.user.role; document.getElementById('sidebarCoins').textContent=d.user.coins||0; document.getElementById('sidebarServers').textContent=d.servers?.length||0; ['navDashboard','navProfile','navLogout'].forEach(i=>document.getElementById(i).style.display='block'); AvatarManager.applyToPage(d.user.username); loadMyBots(); }
+                else { localStorage.removeItem('token'); location.href='/login'; }
+            }).catch(()=>{localStorage.removeItem('token');location.href='/login'});
+        }
+        document.getElementById('logoutLink')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('token');location.href='/'});
+        document.getElementById('userMenu')?.addEventListener('click',e=>{e.preventDefault();location.href='/profile'});
+
+        async function loadMyBots(){
+            const c=document.getElementById('botsContainer');
+            try{ const r=await fetch('/api/bots/my-bots',{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json();
+                if(!d.success) throw new Error('Erreur'); allBots=d.bots||[]; updateStats(); renderBots('all');
+            }catch(e){ c.innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erreur de chargement</p></div>'; }
+        }
+        
+        function updateStats(){
+            document.getElementById('totalBots').textContent=allBots.length;
+            document.getElementById('activeBots').textContent=allBots.filter(b=>b.status==='active').length;
+            document.getElementById('expiringBots').textContent=allBots.filter(b=>{if(b.status!=='active')return false;const d=Math.ceil((new Date(b.expires_at)-new Date())/86400000);return d<=3&&d>0;}).length;
+        }
+        
+        function getTimeRemaining(expiryDate){
+            const now=new Date(), exp=new Date(expiryDate);
+            const diffMs=exp-now;
+            if(diffMs<=0) return { text:'Expiré', class:'expiry-critical', icon:'fa-skull-crossbones' };
+            const days=Math.floor(diffMs/(1000*60*60*24));
+            const hours=Math.floor((diffMs%(1000*60*60*24))/(1000*60*60));
+            if(days>7) return { text:`${days}j restant`, class:'', icon:'fa-calendar-day' };
+            if(days>=3) return { text:`J-${days}`, class:'expiry-warning', icon:'fa-hourglass-half' };
+            if(days>=1) return { text:`J-${days}`, class:'expiry-critical', icon:'fa-hourglass-end' };
+            if(hours>0) return { text:`${hours}h restant`, class:'expiry-critical', icon:'fa-clock' };
+            return { text:'Expire bientôt', class:'expiry-critical', icon:'fa-exclamation-triangle' };
+        }
+        
+        function renderBots(filter){
+            const c=document.getElementById('botsContainer');
+            let fb=allBots;
+            if(filter==='active') fb=allBots.filter(b=>b.status==='active');
+            else if(filter==='expired') fb=allBots.filter(b=>['suspended','failed'].includes(b.status));
+            if(!fb.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-robot"></i><p>Aucun bot trouvé</p></div>'; return; }
+            c.innerHTML=fb.map(b=>{
+                const ed=new Date(b.expires_at);
+                const tr=getTimeRemaining(b.expires_at);
+                const st={active:'Actif',deploying:'Déploiement...',stopped:'Arrêté',suspended:'Suspendu',failed:'Échec'}[b.status]||b.status;
+                const logo=b.bot_templates?.kh_json?.logo||b.bot_templates?.logo_url||'';
+                return `<div class="bot-card" data-bot-id="${b.id}">
+                    <div class="bot-card-header">
+                        <div class="bot-card-logo">${logo?`<img src="${logo}" alt="logo">`:'<i class="fab fa-whatsapp"></i>'}</div>
+                        <div class="bot-card-info">
+                            <div class="bot-card-name">${esc(b.bot_templates?.name||'Bot')}</div>
+                            <div class="bot-card-app">${esc(b.heroku_app_name)}</div>
+                        </div>
+                        <div class="bot-status ${b.status}">${st}</div>
+                    </div>
+                    <div class="bot-card-body">
+                        <div class="bot-expiry">
+                            <span class="expiry-label"><i class="fas fa-calendar-alt"></i> Expiration</span>
+                            <span class="expiry-date ${tr.class}">
+                                <i class="fas ${tr.icon}"></i> ${ed.toLocaleDateString('fr-FR')} ${tr.text!=='Expiré'&&b.status==='active'?`(${tr.text})`:''}
+                            </span>
+                        </div>
+                        <div class="bot-actions">
+                            ${b.status==='stopped'?`<button onclick="startBot('${b.id}')" class="action-btn start"><i class="fas fa-play"></i> Démarrer</button>`:''}
+                            ${b.status==='active'?`<button onclick="stopBot('${b.id}')" class="action-btn stop"><i class="fas fa-stop"></i> Arrêter</button><button onclick="restartBot('${b.id}')" class="action-btn restart"><i class="fas fa-sync-alt"></i> Redémarrer</button>`:''}
+                            <button onclick="openEnvModal('${b.id}')" class="action-btn env"><i class="fas fa-cog"></i> Env</button>
+                            <button onclick="openLogsModal('${b.id}')" class="action-btn logs"><i class="fas fa-terminal"></i> Logs</button>
+                            ${b.status!=='active'&&b.status!=='deploying'?`<button onclick="openRenewModal('${b.id}')" class="action-btn renew"><i class="fas fa-coins"></i> Renouveler</button>`:''}
+                            <button onclick="deleteBot('${b.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="auto-renew-toggle">
+                            <span class="auto-renew-label"><i class="fas fa-sync-alt"></i> Auto-renouvellement</span>
+                            <div class="toggle-switch ${b.auto_renew?'active':''}" data-bot-id="${b.id}" data-enabled="${b.auto_renew}"></div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.removeEventListener('click', handleToggleClick);
+                toggle.addEventListener('click', handleToggleClick);
+            });
+        }
+        
+        async function handleToggleClick(event) {
+            event.stopPropagation();
+            const toggle = event.currentTarget;
+            const botId = toggle.getAttribute('data-bot-id');
+            const currentlyEnabled = toggle.classList.contains('active');
+            const newEnabled = !currentlyEnabled;
+            
+            toggle.style.pointerEvents = 'none';
+            toggle.classList.add('disabled');
+            
+            try {
+                const response = await fetch(`/api/bots/my-bots/${botId}/auto-renew`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ enabled: newEnabled })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (newEnabled) {
+                        toggle.classList.add('active');
+                        toggle.setAttribute('data-enabled', 'true');
+                    } else {
+                        toggle.classList.remove('active');
+                        toggle.setAttribute('data-enabled', 'false');
+                    }
+                    showToast('success', `Auto-renouvellement ${newEnabled ? 'activé' : 'désactivé'}`);
+                    const bot = allBots.find(b => b.id === botId);
+                    if (bot) bot.auto_renew = newEnabled;
+                } else {
+                    showToast('error', data.error || `Erreur`);
+                }
+            } catch (error) {
+                showToast('error', 'Erreur de connexion');
+            } finally {
+                toggle.style.pointerEvents = '';
+                toggle.classList.remove('disabled');
+            }
+        }
+
+        async function startBot(id){ 
+            showToast('info', 'Démarrage...');
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/start`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot démarré'),setTimeout(()=>loadMyBots(),500)):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function stopBot(id){ 
+            showToast('info', 'Arrêt...');
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/stop`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot arrêté'),setTimeout(()=>loadMyBots(),500)):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function restartBot(id){ 
+            showToast('info','Redémarrage...'); 
+            try{ const r=await fetch(`/api/bots/my-bots/${id}/restart`,{method:'POST',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?showToast('success','Bot redémarré'):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+        
+        async function deleteBot(id){ 
+            if(!confirm('⚠️ Supprimer ce bot ? Irréversible.')) return; 
+            try{ const r=await fetch(`/api/bots/my-bots/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                d.success?(showToast('success','Bot supprimé'),loadMyBots()):showToast('error',d.error||'Erreur'); 
+            }catch(e){showToast('error','Erreur')} 
+        }
+
+        async function openEnvModal(botId){
+            try{ const r=await fetch(`/api/bots/my-bots/${botId}`,{headers:{'Authorization':`Bearer ${token}`}}); const d=await r.json(); 
+                if(!d.success)throw new Error('Bot non trouvé');
+                const bot=d.bot, env=bot.env_vars||{}, khJson=bot.bot_templates?.kh_json||{}, envConfig=khJson.env||{};
+                let html=`<p style="margin-bottom:16px;color:var(--text-secondary);font-size:0.85rem;">Modifiez les variables d'environnement. Le bot redémarrera automatiquement.</p><div id="envList">`;
+                for(const[k,c]of Object.entries(envConfig)) html+=`<div class="env-item"><div class="env-key">${esc(k)} ${c.required?'<span class="env-required">(requis)</span>':''}</div><div class="env-desc">${esc(c.description||'')}</div><div class="env-value"><input type="text" id="env_${k}" value="${esc(env[k]||c.value||'')}" placeholder="${c.required?'Requis':'Optionnel'}"></div></div>`;
+                html+=`</div><div style="margin-top:16px;"><button class="btn-outline" id="addEnvBtn"><i class="fas fa-plus"></i> Ajouter une variable</button></div><div style="margin-top:12px;display:none;" id="addEnvForm"><input type="text" id="newEnvKey" class="form-input" placeholder="NOM_DE_LA_VARIABLE" style="margin-bottom:8px;"><input type="text" id="newEnvValue" class="form-input" placeholder="Valeur"><button class="action-btn env" onclick="addEnvVar('${botId}')" style="margin-top:8px;width:100%;"><i class="fas fa-check"></i> Ajouter</button></div><button class="deploy-btn" id="saveEnvBtn"><i class="fas fa-save"></i> Sauvegarder et redémarrer</button>`;
+                document.getElementById('envModalBody').innerHTML=html;
+                document.getElementById('addEnvBtn').addEventListener('click',()=>{document.getElementById('addEnvForm').style.display='block';document.getElementById('addEnvBtn').style.display='none'});
+                document.getElementById('saveEnvBtn').onclick=async()=>{const nev={};for(const k of Object.keys(envConfig)){const i=document.getElementById(`env_${k}`);if(i?.value.trim())nev[k]=i.value.trim()}try{const sr=await fetch(`/api/bots/my-bots/${botId}/update-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({env_vars:nev})});const sd=await sr.json();sd.success?(showToast('success','Variables mises à jour'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',sd.error||'Erreur')}catch(e){showToast('error','Erreur')}};
+                document.getElementById('envModal').classList.add('active');
+            }catch(e){showToast('error','Erreur chargement variables')}
+        }
+        
+        async function addEnvVar(botId){const key=document.getElementById('newEnvKey').value.trim().toUpperCase(),val=document.getElementById('newEnvValue').value.trim();if(!key){showToast('error','Clé requise');return}try{const r=await fetch(`/api/bots/my-bots/${botId}/add-env`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({key,value:val})});const d=await r.json();d.success?(showToast('success','Variable ajoutée'),document.getElementById('envModal').classList.remove('active'),loadMyBots()):showToast('error',d.error||'Erreur')}catch(e){showToast('error','Erreur')}}
+
+        // LOGS
+        async function loadLogs(botId, showLoading = true) {
+            if (!botId) return;
+            const logsContainer = document.getElementById('logsContainer');
+            if (showLoading && logsContainer) logsContainer.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+            try {
+                const r = await fetch(`/api/bots/my-bots/${botId}/logs?lines=200`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const d = await r.json();
+                if (!logsContainer) return;
+                if (d.success && d.logs) {
+                    const logsArray = Array.isArray(d.logs) ? d.logs : (d.logs.lines || []);
+                    if (logsArray.length === 0) {
+                        logsContainer.innerHTML = '<div class="log-line">📭 Aucun log disponible</div>';
+                    } else {
+                        logsContainer.innerHTML = logsArray.map(log => {
+                            let logClass = 'log-line';
+                            const lowerLog = String(log).toLowerCase();
+                            if (lowerLog.includes('error') || lowerLog.includes('fail') || lowerLog.includes('crash')) logClass += ' error';
+                            else if (lowerLog.includes('success') || lowerLog.includes('started')) logClass += ' success';
+                            else if (lowerLog.includes('warn')) logClass += ' warning';
+                            else if (lowerLog.includes('info')) logClass += ' info';
+                            return `<div class="${logClass}">${esc(log)}</div>`;
+                        }).join('');
+                    }
+                } else logsContainer.innerHTML = '<div class="log-line error">❌ Impossible de récupérer les logs</div>';
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            } catch(e) { if (logsContainer) logsContainer.innerHTML = '<div class="log-line error">⚡ Erreur de connexion</div>'; }
+        }
+
+        function copyLogs() {
+            const logsContainer = document.getElementById('logsContainer');
+            if (!logsContainer) return;
+            navigator.clipboard.writeText(logsContainer.innerText).then(() => showToast('success', '📋 Logs copiés !')).catch(() => showToast('error', '❌ Erreur'));
+        }
+
+        function clearLogs() {
+            const logsContainer = document.getElementById('logsContainer');
+            if (!logsContainer) return;
+            logsContainer.innerHTML = '<div class="log-line info">🧹 Logs effacés</div>';
+            showToast('info', 'Logs effacés');
+        }
+
+        function startLogsAutoRefresh(botId) { if (logsRefreshInterval) clearInterval(logsRefreshInterval); logsRefreshInterval = setInterval(() => { if (currentLogsBotId && isLogsAutoRefresh) loadLogs(currentLogsBotId, false); }, 5000); }
+        function stopLogsAutoRefresh() { if (logsRefreshInterval) { clearInterval(logsRefreshInterval); logsRefreshInterval = null; } }
+
+        async function openLogsModal(botId) {
+            currentLogsBotId = botId; isLogsAutoRefresh = true;
+            document.getElementById('logsModalBody').innerHTML = `
+                <div class="logs-header">
+                    <div class="logs-header-left">
+                        <button class="logs-refresh-btn" id="manualRefreshLogsBtn"><i class="fas fa-sync-alt"></i> Rafraîchir</button>
+                        <button class="logs-copy-btn" id="copyLogsBtn"><i class="fas fa-copy"></i> Copier</button>
+                        <button class="logs-clear-btn" id="clearLogsBtn"><i class="fas fa-eraser"></i> Effacer</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="logs-auto-status" id="autoRefreshStatus"><span class="dot"></span> Auto (5s)</span>
+                        <button class="btn-outline" id="toggleAutoRefreshBtn" style="padding:4px 12px;font-size:0.7rem;"><i class="fas fa-pause"></i> Pause</button>
+                    </div>
+                </div>
+                <div class="logs-container" id="logsContainer"><div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div></div>`;
+            document.getElementById('logsModal').classList.add('active');
+            await loadLogs(botId, true);
+            startLogsAutoRefresh(botId);
+            document.getElementById('manualRefreshLogsBtn').onclick = async () => { await loadLogs(botId, true); showToast('info', 'Logs rafraîchis'); };
+            document.getElementById('copyLogsBtn').onclick = copyLogs;
+            document.getElementById('clearLogsBtn').onclick = clearLogs;
+            document.getElementById('toggleAutoRefreshBtn').onclick = () => {
+                isLogsAutoRefresh = !isLogsAutoRefresh;
+                const btn = document.getElementById('toggleAutoRefreshBtn'), statusSpan = document.getElementById('autoRefreshStatus');
+                if (isLogsAutoRefresh) { btn.innerHTML = '<i class="fas fa-pause"></i> Pause'; statusSpan.innerHTML = '<span class="dot"></span> Auto (5s)'; startLogsAutoRefresh(botId); }
+                else { btn.innerHTML = '<i class="fas fa-play"></i> Reprendre'; statusSpan.innerHTML = '<span style="color:#6B7280;">⏸ Auto off</span>'; stopLogsAutoRefresh(); }
+            };
+        }
+
+        // RENEW MODAL
+        let selectedRenewMode = 'weekly';
+        let currentRenewBot = null;
+        
+        async function openRenewModal(botId){
+            currentRenewBot = allBots.find(b => b.id === botId);
+            if(!currentRenewBot){ showToast('error','Bot non trouvé'); return; }
+            
+            const weeklyPrice = currentRenewBot.bot_templates?.price_weekly || 100;
+            const monthlyPrice = weeklyPrice * 4;
+            const userCoins = currentUser?.coins || 0;
+            selectedRenewMode = 'weekly';
+            
+            const modalBody = document.getElementById('renewModalBody');
+            modalBody.innerHTML = `
+                <div style="margin-bottom:20px;">
+                    <div style="background:var(--bg-hover);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span><i class="fas fa-robot"></i> Bot</span>
+                            <span style="font-weight:700;">${esc(currentRenewBot.bot_templates?.name||'Bot')}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                            <span><i class="fas fa-coins"></i> Vos coins</span>
+                            <span style="font-weight:700;color:var(--primary);">${userCoins} coins</span>
+                        </div>
+                    </div>
+                    
+                    <div class="renew-options">
+                        <div class="renew-option ${selectedRenewMode==='weekly'?'selected':''}" data-mode="weekly">
+                            <div class="renew-option-info">
+                                <div class="renew-option-title"><i class="fas fa-calendar-week"></i> Hebdomadaire</div>
+                                <div class="renew-option-desc">7 jours supplémentaires</div>
+                            </div>
+                            <div class="renew-option-price">
+                                <div class="renew-price-amount">${weeklyPrice}</div>
+                                <div class="renew-price-label">coins</div>
+                            </div>
+                        </div>
+                        <div class="renew-option ${selectedRenewMode==='monthly'?'selected':''}" data-mode="monthly">
+                            <div class="renew-option-info">
+                                <div class="renew-option-title"><i class="fas fa-calendar-alt"></i> Mensuel</div>
+                                <div class="renew-option-desc">28 jours <span style="color:var(--success);">(Économie)</span></div>
+                            </div>
+                            <div class="renew-option-price">
+                                <div class="renew-price-amount">${monthlyPrice}</div>
+                                <div class="renew-price-label">coins</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="renew-price-warning" id="renewWarning">
+                        <i class="fas fa-info-circle"></i> Sélectionnez une durée
+                    </div>
+                </div>
+                
+                <button class="deploy-btn" id="confirmRenewBtn">
+                    <i class="fas fa-sync-alt"></i> Renouveler maintenant
+                </button>
+            `;
+            
+            document.querySelectorAll('.renew-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.renew-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedRenewMode = opt.getAttribute('data-mode');
+                    const price = selectedRenewMode === 'weekly' ? weeklyPrice : monthlyPrice;
+                    const warningDiv = document.getElementById('renewWarning');
+                    if(userCoins >= price){
+                        warningDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${price} coins seront déduits`;
+                        warningDiv.style.background = 'rgba(16,185,129,0.1)';
+                        warningDiv.style.color = 'var(--success)';
+                    } else {
+                        warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Solde insuffisant ! Besoin de ${price} coins, vous avez ${userCoins}`;
+                        warningDiv.style.background = 'rgba(239,68,68,0.1)';
+                        warningDiv.style.color = 'var(--danger)';
+                    }
+                });
+            });
+            
+            document.getElementById('confirmRenewBtn').onclick = async () => {
+                const price = selectedRenewMode === 'weekly' ? weeklyPrice : monthlyPrice;
+                if(userCoins < price){
+                    showToast('error', `❌ Solde insuffisant ! Besoin de ${price} coins`);
+                    return;
+                }
+                
+                showToast('info', '🔄 Renouvellement...');
+                document.getElementById('confirmRenewBtn').disabled = true;
+                document.getElementById('confirmRenewBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
+                
+                try {
+                    const response = await fetch(`/api/bots/my-bots/${botId}/renew`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ duration_mode: selectedRenewMode })
+                    });
+                    const data = await response.json();
+                    
+                    if(data.success){
+                        showToast('success', '✅ Bot renouvelé avec succès !');
+                        document.getElementById('renewModal').classList.remove('active');
+                        loadMyBots();
+                        const userResp = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                        const userData = await userResp.json();
+                        if(userData.success){
+                            currentUser = userData.user;
+                            document.getElementById('sidebarCoins').textContent = currentUser.coins || 0;
+                        }
+                    } else {
+                        showToast('error', data.error || '❌ Erreur');
+                    }
+                } catch(error) {
+                    showToast('error', '❌ Erreur de connexion');
+                } finally {
+                    document.getElementById('confirmRenewBtn').disabled = false;
+                    document.getElementById('confirmRenewBtn').innerHTML = '<i class="fas fa-sync-alt"></i> Renouveler maintenant';
+                }
+            };
+            
+            document.getElementById('renewModal').classList.add('active');
+        }
+
+        const closeModal = (modalId) => { 
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('active'); 
+            if (modalId === 'logsModal') { stopLogsAutoRefresh(); currentLogsBotId = null; }
+            if (modalId === 'renewModal') { selectedRenewMode = 'weekly'; currentRenewBot = null; }
+        };
+        
+        ['closeEnvModal','closeLogsModal','closeRenewModal'].forEach((id,i)=>{
+            const modals = ['envModal','logsModal','renewModal'];
+            document.getElementById(id).addEventListener('click',()=>closeModal(modals[i]));
+        });
+        
+        ['envModal','logsModal','renewModal'].forEach(m=>{
+            const modal = document.getElementById(m);
+            if(modal) modal.addEventListener('click',e=>{if(e.target===modal)closeModal(m)});
+        });
+
+        document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+            document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+            t.classList.add('active');
+            renderBots(t.dataset.tab);
+        }));
+
+        window.startBot=startBot; window.stopBot=stopBot; window.restartBot=restartBot; window.deleteBot=deleteBot;
+        window.openEnvModal=openEnvModal; window.openLogsModal=openLogsModal; window.openRenewModal=openRenewModal;
+        window.addEnvVar=addEnvVar;
+
+        checkAuth();
+        window.addEventListener('resize',()=>{if(window.innerWidth>1024){sidebar.classList.remove('active');overlay.classList.remove('active')}});
+        setInterval(()=>{if(document.visibilityState==='visible')loadMyBots()},15000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Maintenance - KermHosting">
+    
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Maintenance - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            
+            --bg-dark: #0B1120;
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* ===== OUTILS ANIMÉS EN BACKGROUND ===== */
+        .tools-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-tool {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.06;
+            color: var(--primary-light);
+            animation: toolFloat 15s ease-in-out infinite;
+        }
+
+        .floating-tool:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; font-size: 2.5rem; }
+        .floating-tool:nth-child(2) { top: 20%; right: 8%; animation-delay: -2s; font-size: 3rem; }
+        .floating-tool:nth-child(3) { top: 60%; left: 10%; animation-delay: -4s; font-size: 2rem; }
+        .floating-tool:nth-child(4) { top: 75%; right: 5%; animation-delay: -6s; font-size: 2.8rem; }
+        .floating-tool:nth-child(5) { top: 35%; left: 50%; animation-delay: -8s; font-size: 2.2rem; }
+        .floating-tool:nth-child(6) { top: 5%; right: 30%; animation-delay: -10s; font-size: 3.2rem; }
+        .floating-tool:nth-child(7) { top: 85%; left: 40%; animation-delay: -12s; font-size: 2.4rem; }
+        .floating-tool:nth-child(8) { top: 45%; right: 20%; animation-delay: -14s; font-size: 2.6rem; }
+        .floating-tool:nth-child(9) { top: 15%; left: 70%; animation-delay: -3s; font-size: 1.8rem; }
+        .floating-tool:nth-child(10) { top: 90%; right: 50%; animation-delay: -5s; font-size: 2rem; }
+        .floating-tool:nth-child(11) { top: 50%; left: 25%; animation-delay: -7s; font-size: 3rem; }
+        .floating-tool:nth-child(12) { top: 30%; right: 60%; animation-delay: -9s; font-size: 2.2rem; }
+        .floating-tool:nth-child(13) { top: 70%; left: 80%; animation-delay: -11s; font-size: 2.5rem; }
+        .floating-tool:nth-child(14) { top: 55%; right: 40%; animation-delay: -13s; font-size: 2.8rem; }
+        .floating-tool:nth-child(15) { top: 25%; left: 35%; animation-delay: -1s; font-size: 2rem; }
+
+        @keyframes toolFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.04;
+            }
+            25% {
+                transform: translateY(-40px) translateX(30px) rotate(10deg);
+                opacity: 0.08;
+            }
+            50% {
+                transform: translateY(-20px) translateX(-20px) rotate(-5deg);
+                opacity: 0.05;
+            }
+            75% {
+                transform: translateY(-50px) translateX(-30px) rotate(15deg);
+                opacity: 0.07;
+            }
+        }
+
+        /* Particules */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 30%; left: 70%; animation-delay: -1s; }
+        .particle:nth-child(3) { top: 55%; left: 10%; animation-delay: -2s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: -4s; }
+        .particle:nth-child(6) { top: 40%; left: 40%; animation-delay: -5s; }
+        .particle:nth-child(7) { top: 60%; left: 60%; animation-delay: -2.5s; }
+        .particle:nth-child(8) { top: 80%; left: 30%; animation-delay: -3.5s; }
+        .particle:nth-child(9) { top: 20%; left: 90%; animation-delay: -1.5s; }
+        .particle:nth-child(10) { top: 50%; left: 85%; animation-delay: -4.5s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { transform: translateY(-60px) translateX(20px) scale(2); opacity: 0.3; }
+            80% { opacity: 0.6; }
+        }
+
+        /* Grille subtile */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== CONTENU PRINCIPAL ===== */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo */
+        .logo-section {
+            margin-bottom: 40px;
+        }
+
+        .kerm-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .kerm-logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: cloudBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Icône maintenance avec orbite */
+        .maintenance-icon-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .maintenance-icon-circle {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(245, 158, 11, 0.1));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .maintenance-icon-circle i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Orbite tournante autour de l'icône */
+        .orbit-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 1px dashed rgba(124, 58, 237, 0.12);
+            animation: orbitSpin 20s linear infinite;
+            pointer-events: none;
+        }
+
+        .orbit-icon {
+            position: absolute;
+            font-size: 1.3rem;
+            color: var(--primary-light);
+            opacity: 0.5;
+        }
+
+        .orbit-icon:nth-child(1) { top: -8px; left: 50%; transform: translateX(-50%); animation: orbitFloat1 4s ease-in-out infinite; }
+        .orbit-icon:nth-child(2) { top: 50%; right: -8px; transform: translateY(-50%); animation: orbitFloat2 4s ease-in-out infinite; animation-delay: -1s; }
+        .orbit-icon:nth-child(3) { bottom: -8px; left: 50%; transform: translateX(-50%); animation: orbitFloat3 4s ease-in-out infinite; animation-delay: -2s; }
+        .orbit-icon:nth-child(4) { top: 50%; left: -8px; transform: translateY(-50%); animation: orbitFloat4 4s ease-in-out infinite; animation-delay: -3s; }
+
+        @keyframes orbitSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes orbitFloat1 { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
+        @keyframes orbitFloat2 { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(8px); } }
+        @keyframes orbitFloat3 { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+        @keyframes orbitFloat4 { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(-8px); } }
+
+        /* Message */
+        .title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Statut */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(124, 58, 237, 0.06);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            border-radius: var(--radius-full);
+            margin-bottom: 32px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: dotBlink 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            animation: none;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--warning); }
+            50% { opacity: 0.3; box-shadow: 0 0 2px var(--warning); }
+        }
+
+        /* Compte à rebours */
+        .countdown-container {
+            margin-bottom: 32px;
+        }
+
+        .countdown-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .countdown-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .countdown-separator {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-top: -10px;
+        }
+
+        .countdown-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Barre de progression */
+        .progress-section {
+            margin-bottom: 28px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .progress-header span:last-child {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: var(--radius-full);
+            transition: width 1s linear;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: progressShine 2s linear infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Boutons médias */
+        .social-mini {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .social-mini-btn {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 1.1rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .social-mini-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-mini-btn.whatsapp:hover {
+            background: #25D366;
+            border-color: #25D366;
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .social-mini-btn.email:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .social-mini-btn.discord:hover {
+            background: #5865F2;
+            border-color: #5865F2;
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
+        }
+
+        /* Footer */
+        .footer-text {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .footer-text a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-text a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-icon-circle {
+                width: 100px; height: 100px;
+            }
+            .maintenance-icon-circle i {
+                font-size: 2.5rem;
+            }
+            .orbit-ring {
+                width: 160px; height: 160px;
+            }
+            .countdown-value {
+                font-size: 1.3rem;
+            }
+            .countdown-item {
+                min-width: 40px;
+            }
+            .title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé d'outils -->
+    <div class="tools-bg">
+        <i class="fas fa-wrench floating-tool"></i>
+        <i class="fas fa-screwdriver floating-tool"></i>
+        <i class="fas fa-hammer floating-tool"></i>
+        <i class="fas fa-tools floating-tool"></i>
+        <i class="fas fa-cog floating-tool"></i>
+        <i class="fas fa-pencil-ruler floating-tool"></i>
+        <i class="fas fa-code floating-tool"></i>
+        <i class="fas fa-terminal floating-tool"></i>
+        <i class="fas fa-server floating-tool"></i>
+        <i class="fas fa-database floating-tool"></i>
+        <i class="fas fa-shield-alt floating-tool"></i>
+        <i class="fas fa-key floating-tool"></i>
+        <i class="fas fa-plug floating-tool"></i>
+        <i class="fas fa-microchip floating-tool"></i>
+        <i class="fas fa-bug floating-tool"></i>
+    </div>
+
+    <!-- Grille -->
+    <div class="grid-bg"></div>
+
+    <!-- Particules -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <!-- Logo KermHosting -->
+        <div class="logo-section">
+            <div class="kerm-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+        </div>
+
+        <!-- Icône maintenance avec orbite -->
+        <div class="maintenance-icon-wrapper">
+            <div class="orbit-ring">
+                <i class="fas fa-wrench orbit-icon"></i>
+                <i class="fas fa-cog orbit-icon"></i>
+                <i class="fas fa-code orbit-icon"></i>
+                <i class="fas fa-server orbit-icon"></i>
+            </div>
+            <div class="maintenance-icon-circle">
+                <i class="fas fa-tools"></i>
+            </div>
+        </div>
+
+        <!-- Message -->
+        <h1 class="title" id="maintenanceTitle">Maintenance en cours</h1>
+        <p class="subtitle" id="maintenanceMessage">Nous améliorons votre expérience</p>
+
+        <!-- Statut -->
+        <div class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Maintenance en cours</span>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="progress-section" id="progressSection" style="display: none;">
+            <div class="progress-header">
+                <span id="progressStart">Début</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Compte à rebours -->
+        <div class="countdown-container" id="countdownContainer" style="display: none;">
+            <div class="countdown-title">Temps restant estimé</div>
+            <div class="countdown" id="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-value" id="days">00</div>
+                    <div class="countdown-label">jours</div>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="hours">00</div>
+                    <div class="countdown-label">heures</div>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="minutes">00</div>
+                    <div class="countdown-label">min</div>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="seconds">00</div>
+                    <div class="countdown-label">sec</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons médias -->
+        <div class="social-mini">
+            <a href="#" class="social-mini-btn whatsapp" id="whatsappLink" target="_blank" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="#" class="social-mini-btn email" id="emailLink" title="Email">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="#" class="social-mini-btn discord" id="discordLink" target="_blank" title="Discord">
+                <i class="fab fa-discord"></i>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <p class="footer-text">KermHosting © 2026 · <a href="#" onclick="checkBeforeRedirect(event)">Réessayer</a></p>
+    </div>
+
+    <script>
+        let checkInterval = null;
+        let countdownInterval = null;
+        let wasActive = true;
+        let maintenanceStartTime = null;
+        let maintenanceEndTime = null;
+
+        async function checkMaintenanceStatus() {
+            try {
+                const response = await fetch('/api/maintenance-status');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('maintenanceMessage').textContent = 
+                        data.message || 'Nous améliorons votre expérience';
+
+                    if (data.support_whatsapp) {
+                        document.getElementById('whatsappLink').href = `https://wa.me/${data.support_whatsapp.replace(/[^0-9]/g, '')}`;
+                    }
+                    if (data.support_email) {
+                        document.getElementById('emailLink').href = `mailto:${data.support_email}`;
+                    }
+                    if (data.discord_link) {
+                        document.getElementById('discordLink').href = data.discord_link;
+                    }
+
+                    if (data.estimated_start_time && data.estimated_end_time) {
+                        maintenanceStartTime = new Date(data.estimated_start_time).getTime();
+                        maintenanceEndTime = new Date(data.estimated_end_time).getTime();
+                        
+                        document.getElementById('progressSection').style.display = 'block';
+                        document.getElementById('countdownContainer').style.display = 'block';
+                        
+                        const startDate = new Date(data.estimated_start_time);
+                        document.getElementById('progressStart').textContent = 
+    `Début : ${startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Douala' })}`;
+                        
+                        updateProgressBar();
+                        startCountdown(data.estimated_end_time);
+                    } else if (data.estimated_end_time) {
+                        maintenanceEndTime = new Date(data.estimated_end_time).getTime();
+                        document.getElementById('progressSection').style.display = 'none';
+                        document.getElementById('countdownContainer').style.display = 'block';
+                        startCountdown(data.estimated_end_time);
+                    }
+
+                    if (!data.is_active) {
+                        if (wasActive) {
+                            wasActive = false;
+                            document.getElementById('maintenanceTitle').textContent = 'C\'est prêt !';
+                            document.getElementById('maintenanceMessage').textContent = 'Le site est de nouveau accessible';
+                            document.getElementById('statusDot').classList.add('online');
+                            document.getElementById('statusText').textContent = 'En ligne';
+                            document.getElementById('countdownContainer').style.display = 'none';
+                            document.getElementById('progressSection').style.display = 'none';
+                            
+                            if (checkInterval) clearInterval(checkInterval);
+                            if (countdownInterval) clearInterval(countdownInterval);
+                            
+                            setTimeout(() => redirectAfterMaintenance(), 1500);
+                        }
+                    } else {
+                        wasActive = true;
+                        document.getElementById('statusDot').classList.remove('online');
+                        document.getElementById('statusText').textContent = 'Maintenance en cours';
+                    }
+                }
+            } catch (error) {
+                document.getElementById('statusText').textContent = 'Connexion en attente...';
+            }
+        }
+
+        function updateProgressBar() {
+            if (!maintenanceStartTime || !maintenanceEndTime) return;
+            const now = Date.now();
+            const totalDuration = maintenanceEndTime - maintenanceStartTime;
+            const elapsed = now - maintenanceStartTime;
+            if (totalDuration <= 0) return;
+            let percent = Math.min((elapsed / totalDuration) * 100, 100);
+            percent = Math.max(percent, 0);
+            document.getElementById('progressBarFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
+        }
+
+        function redirectAfterMaintenance() {
+            const token = localStorage.getItem('token');
+            window.location.href = token ? '/dashboard' : '/';
+        }
+
+        async function checkBeforeRedirect(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/maintenance-status');
+                const data = await response.json();
+                if (data.success && !data.is_active) redirectAfterMaintenance();
+            } catch (error) { redirectAfterMaintenance(); }
+        }
+
+        function startCountdown(endTime) {
+            const endDate = new Date(endTime).getTime();
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            function update() {
+                const now = Date.now();
+                const distance = endDate - now;
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdownContainer').style.display = 'none';
+                    if (maintenanceStartTime && maintenanceEndTime) {
+                        document.getElementById('progressBarFill').style.width = '100%';
+                        document.getElementById('progressPercent').textContent = '100%';
+                    }
+                    return;
+                }
+                const days = Math.floor(distance / 86400000);
+                const hours = Math.floor((distance % 86400000) / 3600000);
+                const minutes = Math.floor((distance % 3600000) / 60000);
+                const seconds = Math.floor((distance % 60000) / 1000);
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+                if (maintenanceStartTime && maintenanceEndTime) updateProgressBar();
+                if (distance > 0) countdownInterval = setTimeout(update, 1000);
+            }
+            countdownInterval = setTimeout(update, 0);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkMaintenanceStatus();
+            checkInterval = setInterval(checkMaintenanceStatus, 1000);
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (checkInterval) clearInterval(checkInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+        });
+
+        window.checkBeforeRedirect = checkBeforeRedirect;
+    </script>
+</body>
+</html>

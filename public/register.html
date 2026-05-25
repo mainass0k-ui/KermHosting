@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Inscrivez-vous à KermHosting - Hébergement Node.js en FCFA">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
+    
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <title>Inscription - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* ===== ICÔNES REGISTER EN BACKGROUND ===== */
+        .register-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.05;
+            color: var(--primary-light);
+            animation: iconFloat 15s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; font-size: 2.8rem; }
+        .floating-icon:nth-child(2) { top: 18%; right: 10%; animation-delay: -2s; font-size: 2.2rem; }
+        .floating-icon:nth-child(3) { top: 55%; left: 8%; animation-delay: -4s; font-size: 3rem; }
+        .floating-icon:nth-child(4) { top: 70%; right: 6%; animation-delay: -6s; font-size: 2.5rem; }
+        .floating-icon:nth-child(5) { top: 30%; left: 55%; animation-delay: -8s; font-size: 2rem; }
+        .floating-icon:nth-child(6) { top: 8%; right: 35%; animation-delay: -10s; font-size: 3.2rem; }
+        .floating-icon:nth-child(7) { top: 80%; left: 45%; animation-delay: -12s; font-size: 2.4rem; }
+        .floating-icon:nth-child(8) { top: 40%; right: 25%; animation-delay: -14s; font-size: 2.6rem; }
+        .floating-icon:nth-child(9) { top: 15%; left: 75%; animation-delay: -3s; font-size: 2rem; }
+        .floating-icon:nth-child(10) { top: 85%; right: 55%; animation-delay: -5s; font-size: 2.3rem; }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.03; }
+            25% { transform: translateY(-30px) translateX(25px) rotate(8deg); opacity: 0.07; }
+            50% { transform: translateY(-15px) translateX(-15px) rotate(-4deg); opacity: 0.04; }
+            75% { transform: translateY(-40px) translateX(-25px) rotate(12deg); opacity: 0.06; }
+        }
+
+        /* Particules */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 30%; left: 70%; animation-delay: -1s; }
+        .particle:nth-child(3) { top: 55%; left: 10%; animation-delay: -2s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: -4s; }
+        .particle:nth-child(6) { top: 40%; left: 40%; animation-delay: -5s; }
+        .particle:nth-child(7) { top: 60%; left: 60%; animation-delay: -2.5s; }
+        .particle:nth-child(8) { top: 80%; left: 30%; animation-delay: -3.5s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { transform: translateY(-60px) translateX(20px) scale(2); opacity: 0.3; }
+            80% { opacity: 0.6; }
+        }
+
+        /* Grille subtile */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== CONTAINER ===== */
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo KermHosting */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .kerm-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .kerm-logo i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: cloudBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Carte transparente */
+        .auth-card {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Header */
+        .auth-header {
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .auth-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 6px;
+        }
+
+        .login-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .login-link:hover { color: var(--primary-light); }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Promo badge */
+        .promo-badge {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(124, 58, 237, 0.08));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        .promo-badge i { font-size: 1rem; }
+
+        /* Formulaire */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 11px 14px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+        }
+
+        .form-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+        .form-input.error { border-color: var(--danger); }
+        .form-input.valid { border-color: var(--success); }
+
+        .username-feedback {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .username-feedback.valid { color: var(--success); }
+        .username-feedback.error { color: var(--danger); }
+        .username-feedback.info { color: var(--primary); }
+
+        .email-hint {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            color: var(--text-secondary);
+        }
+        .email-hint i { margin-right: 4px; color: var(--primary); }
+
+        .password-wrapper { position: relative; }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .password-strength {
+            margin-top: 4px;
+            height: 3px;
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .strength-text {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            text-align: right;
+        }
+
+        .cf-turnstile {
+            display: flex;
+            justify-content: center;
+            margin: 4px 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 2px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        .checkbox-group a { color: var(--primary); text-decoration: none; }
+        .checkbox-group a:hover { color: var(--primary-light); }
+
+        /* Bouton */
+        .auth-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 13px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Footer */
+        .auth-links {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .auth-links a:hover { color: var(--primary-light); }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .legal-notice {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .legal-notice a { color: var(--text-secondary); text-decoration: underline; }
+
+        /* Message */
+        .message {
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message i { font-size: 1rem; }
+        .message.error { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+        .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .message.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--primary); color: var(--primary); }
+
+        .loader {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 480px) {
+            .auth-title { font-size: 1.3rem; }
+            .auth-btn { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé d'icônes register -->
+    <div class="register-bg">
+        <i class="fas fa-user-plus floating-icon"></i>
+        <i class="fas fa-gift floating-icon"></i>
+        <i class="fas fa-envelope-open-text floating-icon"></i>
+        <i class="fas fa-user-check floating-icon"></i>
+        <i class="fas fa-id-badge floating-icon"></i>
+        <i class="fas fa-star floating-icon"></i>
+        <i class="fas fa-rocket floating-icon"></i>
+        <i class="fas fa-crown floating-icon"></i>
+        <i class="fas fa-certificate floating-icon"></i>
+        <i class="fas fa-ticket-alt floating-icon"></i>
+    </div>
+
+    <!-- Grille -->
+    <div class="grid-bg"></div>
+
+    <!-- Particules -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Contenu -->
+    <div class="auth-container">
+        <!-- Logo KermHosting -->
+        <div class="logo-section">
+            <div class="kerm-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-header-top">
+                    <a href="/login" class="login-link">Se connecter</a>
+                </div>
+                <h1 class="auth-title">Rejoignez l'aventure</h1>
+                <p class="auth-subtitle">Créez votre compte et obtenez 5 coins gratuits</p>
+            </div>
+
+            <div class="promo-badge">
+                <i class="fas fa-gift"></i>
+                <span>🎁 5 coins offerts + 5 coins après vérification email</span>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label class="form-label">Nom d'utilisateur</label>
+                    <input type="text" class="form-input" id="username" 
+                           placeholder="kermrayan" required 
+                           minlength="3" maxlength="20"
+                           pattern="[a-zA-Z0-9_]+"
+                           title="Lettres, chiffres et underscore uniquement">
+                    <div class="username-feedback" id="username-feedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Adresse email</label>
+                    <input type="email" class="form-input" id="email" 
+                           placeholder="exemple@gmail.com" required>
+                    <div class="email-hint" id="emailHint">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mot de passe</label>
+                    <div class="password-wrapper">
+                        <input type="password" class="form-input" id="password" 
+                               placeholder="••••••••" required 
+                               minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Code de parrainage (optionnel)</label>
+                    <input type="text" class="form-input" id="referral" 
+                           placeholder="KERMXXXXXX">
+                </div>
+
+                <!-- Cloudflare Turnstile -->
+                <div class="form-group">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        J'accepte les <a href="#">conditions d'utilisation</a> 
+                        et la <a href="#">politique de confidentialité</a>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="newsletter" checked>
+                    <label for="newsletter">
+                        Recevoir les offres promotionnelles par email
+                    </label>
+                </div>
+
+                <button type="submit" class="auth-btn" id="submitBtn" disabled>
+                    <span>Créer mon compte</span>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                Déjà un compte ? <a href="/login">Se connecter</a>
+            </div>
+
+            <div class="auth-footer">
+                <div class="legal-notice">
+                    En cliquant sur Créer mon compte, j'accepte les 
+                    <a href="#">conditions</a>, la 
+                    <a href="#">politique de confidentialité</a> et la 
+                    <a href="#">politique relative aux cookies</a> de KermHosting.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ALLOWED_EMAIL_DOMAINS = [
+            'gmail.com', 'googlemail.com',
+            'outlook.com', 'outlook.fr', 'hotmail.com', 'hotmail.fr', 'live.com', 'live.fr', 'msn.com',
+            'icloud.com', 'me.com', 'mac.com',
+            'yahoo.com', 'yahoo.fr', 'ymail.com', 'rocketmail.com',
+            'protonmail.com', 'proton.me', 'pm.me',
+            'aol.com', 'aim.com',
+            'zoho.com', 'zohomail.com',
+            'mail.com', 'email.com',
+            'yandex.com', 'yandex.ru',
+            'gmx.com', 'gmx.fr', 'gmx.de',
+            'tutanota.com', 'tutamail.com', 'tuta.io',
+            'fastmail.com', 'fastmail.fm', 'hey.com',
+            'laposte.net', 'orange.fr', 'wanadoo.fr', 'free.fr',
+            'sfr.fr', 'neuf.fr', 'cegetel.net', 'bbox.fr', 'bouyguestelecom.fr',
+            'harvard.edu', 'stanford.edu', 'mit.edu', 'berkeley.edu', 'yale.edu', 'princeton.edu', 'columbia.edu',
+            'sorbonne-universite.fr', 'univ-paris.fr', 'univ-lyon.fr',
+            'polytechnique.edu', 'hec.edu', 'essec.edu', 'escp.eu', 'epfl.ch', 'ethz.ch'
+        ];
+
+        const BLOCKED_EMAIL_PATTERNS = [
+            'temp', 'tmp', 'disposable', 'throwaway', 'trash', 'fake', 'spam', '10min', 'guerrilla', 
+            'mailinator', 'yopmail', 'jetable', 'courrieljetable', 'trashmail', 'wegwerf', 'spambog', 
+            'spamex', 'mytemp', 'temp-mail', 'temporary', 'fake-mail', 'fakemail', 'shitmail', 
+            'dispostable', 'maildrop', 'mailnesia', 'mintemail', 'mytrashmail', 'nwytg', 'objectmail',
+            'obobbo', 'oneoffemail', 'owlymail', 'pookmail', 'safetymail', 'sendspam', 'sharklasers',
+            'spam4', 'spamgourmet', 'spamhole', 'spamify', 'spaminator', 'spammotel', 'techemail',
+            'tempemail', 'tempmail', 'throwawaymail', 'veryrealemail', 'vomoto', 'yopmail.fr', 'yopmail.net', 'arol.com'
+        ];
+
+        let emailValid = false;
+        let usernameCheckTimeout = null;
+        let usernameAvailable = false;
+        let usernameValidFormat = false;
+        let turnstileVerified = false;
+        let turnstileToken = null;
+
+        async function checkUsernameAvailability(username) {
+            const usernameInput = document.getElementById('username');
+            const feedbackDiv = document.getElementById('username-feedback');
+            
+            if (!username || username.length === 0) {
+                usernameAvailable = false;
+                usernameValidFormat = false;
+                updateUsernameFeedback('', false);
+                updateSubmitButton();
+                return;
+            }
+            
+            const usernameRegex = /^[a-zA-Z0-9_]+$/;
+            if (username.length < 3) {
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Minimum 3 caractères', false);
+                updateSubmitButton(); return;
+            }
+            if (username.length > 20) {
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Maximum 20 caractères', false);
+                updateSubmitButton(); return;
+            }
+            if (!usernameRegex.test(username)) {
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Lettres, chiffres et underscore (_) uniquement', false);
+                updateSubmitButton(); return;
+            }
+            
+            usernameValidFormat = true;
+            updateUsernameFeedback('Vérification...', false, 'info');
+            
+            try {
+                const response = await fetch(`/api/username/available?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+                if (data.available) {
+                    usernameAvailable = true;
+                    updateUsernameFeedback('✓ Disponible', true);
+                } else {
+                    usernameAvailable = false;
+                    updateUsernameFeedback(data.message || '✗ Déjà pris', false);
+                }
+            } catch (error) {
+                usernameAvailable = false;
+                updateUsernameFeedback('Erreur de vérification', false);
+            }
+            updateSubmitButton();
+        }
+
+        function updateUsernameFeedback(message, isValid, type = '') {
+            const usernameInput = document.getElementById('username');
+            const feedbackDiv = document.getElementById('username-feedback');
+            if (!message) {
+                feedbackDiv.innerHTML = '';
+                feedbackDiv.className = 'username-feedback';
+                usernameInput.classList.remove('valid', 'error');
+                return;
+            }
+            feedbackDiv.innerHTML = message;
+            if (isValid) {
+                feedbackDiv.className = 'username-feedback valid';
+                usernameInput.classList.remove('error'); usernameInput.classList.add('valid');
+            } else if (type === 'info') {
+                feedbackDiv.className = 'username-feedback info';
+                usernameInput.classList.remove('valid', 'error');
+            } else {
+                feedbackDiv.className = 'username-feedback error';
+                usernameInput.classList.remove('valid'); usernameInput.classList.add('error');
+            }
+        }
+
+        function validateEmail(email) {
+            const emailInput = document.getElementById('email');
+            const emailHint = document.getElementById('emailHint');
+            if (!email || email.length === 0) {
+                emailValid = false;
+                emailInput.classList.remove('valid', 'error');
+                emailHint.innerHTML = `<i class="fas fa-info-circle"></i><span>Gmail, iCloud, Yahoo, Outlook, Proton ou autre fournisseur reconnu</span>`;
+                emailHint.style.color = 'var(--text-secondary)';
+                return false;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailValid = false;
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Format d'email invalide</span>`;
+                emailHint.style.color = 'var(--danger)';
+                return false;
+            }
+            const domain = email.split('@')[1]?.toLowerCase() || '';
+            const isBlocked = BLOCKED_EMAIL_PATTERNS.some(pattern => domain.includes(pattern) || email.toLowerCase().includes(pattern));
+            if (isBlocked) {
+                emailValid = false;
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-times-circle"></i><span>Les adresses email jetables ne sont pas autorisées</span>`;
+                emailHint.style.color = 'var(--danger)';
+                return false;
+            }
+            const isAllowed = ALLOWED_EMAIL_DOMAINS.includes(domain);
+            if (isAllowed) {
+                emailValid = true;
+                emailInput.classList.remove('error'); emailInput.classList.add('valid');
+                emailHint.innerHTML = `<i class="fas fa-check-circle"></i><span>Email valide</span>`;
+                emailHint.style.color = 'var(--success)';
+                return true;
+            } else {
+                emailValid = false;
+                emailInput.classList.remove('valid'); emailInput.classList.add('error');
+                emailHint.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Domaine non reconnu. Utilisez Gmail, iCloud, Yahoo, Outlook, etc.</span>`;
+                emailHint.style.color = 'var(--warning)';
+                return false;
+            }
+        }
+
+        window.onTurnstileSuccess = function(token) {
+            turnstileVerified = true;
+            turnstileToken = token;
+            updateSubmitButton();
+        };
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const terms = document.getElementById('terms').checked;
+            const username = document.getElementById('username').value;
+            const usernameIsValid = usernameAvailable && usernameValidFormat && username.length >= 3;
+            if (turnstileVerified && terms && usernameIsValid && emailValid) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Créer mon compte</span>';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = turnstileVerified ? '<span>Créer mon compte</span>' : '<span>Vérification en cours...</span>';
+            }
+        }
+
+        async function checkAlreadyLoggedIn() {
+            const token = localStorage.getItem('token');
+            if (!token) return false;
+            try {
+                const response = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) { window.location.href = '/dashboard'; return true; }
+                }
+            } catch (error) { localStorage.removeItem('token'); }
+            return false;
+        }
+
+        function togglePassword() {
+            const password = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye');
+            }
+        }
+
+        document.getElementById('username').addEventListener('input', function(e) {
+            clearTimeout(usernameCheckTimeout);
+            const username = e.target.value;
+            const usernameRegex = /^[a-zA-Z0-9_]*$/;
+            if (username && !usernameRegex.test(username)) {
+                usernameAvailable = false; usernameValidFormat = false;
+                updateUsernameFeedback('Lettres, chiffres et underscore (_) uniquement', false);
+                updateSubmitButton(); return;
+            }
+            updateUsernameFeedback('', false);
+            usernameCheckTimeout = setTimeout(() => checkUsernameAvailability(username), 300);
+            updateSubmitButton();
+        });
+
+        document.getElementById('email').addEventListener('input', function(e) {
+            validateEmail(e.target.value);
+            updateSubmitButton();
+        });
+        document.getElementById('email').addEventListener('blur', function(e) { validateEmail(e.target.value); });
+        document.getElementById('terms').addEventListener('change', updateSubmitButton);
+
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            if (password.length === 0) { strengthBar.style.width = '0'; strengthText.textContent = ''; return; }
+            let strength = 0, color = '#EF4444', message = 'Très faible';
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            switch(strength) {
+                case 0: case 1: strength = 20; color = '#EF4444'; message = 'Très faible'; break;
+                case 2: strength = 40; color = '#F59E0B'; message = 'Faible'; break;
+                case 3: strength = 60; color = '#3B82F6'; message = 'Moyen'; break;
+                case 4: strength = 80; color = '#10B981'; message = 'Fort'; break;
+                case 5: strength = 100; color = '#10B981'; message = 'Très fort'; break;
+            }
+            strengthBar.style.width = strength + '%';
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = message;
+            strengthText.style.color = color;
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) document.getElementById('referral').value = ref;
+
+        function showMessage(type, text) {
+            const container = document.getElementById('messageContainer');
+            const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
+            container.innerHTML = `<div class="message ${type}"><i class="fas ${icons[type]}"></i><span>${text}</span></div>`;
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const referral = document.getElementById('referral').value;
+            const terms = document.getElementById('terms').checked;
+            const newsletter = document.getElementById('newsletter').checked;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!terms) { showMessage('error', 'Vous devez accepter les conditions d\'utilisation'); return; }
+            if (!usernameAvailable || !usernameValidFormat) { showMessage('error', 'Nom d\'utilisateur invalide ou déjà pris'); return; }
+            if (!validateEmail(email)) { showMessage('error', 'Adresse email non valide'); return; }
+            if (!turnstileVerified) { showMessage('error', 'Veuillez compléter la vérification'); return; }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Création du compte</span><span class="loader"></span>';
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, referral_code: referral, newsletter, 'cf-turnstile-response': turnstileToken })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showMessage('success', 'Compte créé ! Redirection...');
+                    setTimeout(() => { window.location.href = `/email-verification?email=${encodeURIComponent(email)}`; }, 1500);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Créer mon compte</span>';
+                    showMessage('error', data.error || 'Erreur lors de l\'inscription');
+                    turnstileVerified = false; turnstileToken = null;
+                    document.getElementById('submitBtn').disabled = true;
+                    if (window.turnstile) turnstile.reset();
+                }
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Créer mon compte</span>';
+                showMessage('error', 'Erreur de connexion au serveur');
+            }
+        });
+
+        window.addEventListener('load', async () => {
+            await checkAlreadyLoggedIn();
+            const emailParam = new URLSearchParams(window.location.search).get('email');
+            if (emailParam) {
+                document.getElementById('email').value = emailParam;
+                validateEmail(emailParam);
+                updateSubmitButton();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="KermHosting - Hébergement de serveurs Node.js haute performance au Cameroun et en Afrique. Paiement en FCFA, PayPal et Minipay.">
+    <meta name="keywords" content="hébergement, serveur, nodejs, pterodactyl, hosting, cameroun, afrique, fcfa, paypal, minipay">
+    <meta name="author" content="KermHosting">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kermhosting.site">
+    <meta property="og:title" content="KermHosting - Hébergement Node.js en FCFA, PayPal & Minipay">
+    <meta property="og:description" content="Créez votre serveur Node.js en 1 minute. Paiement en FCFA, PayPal ou Minipay. Interface mobile intuitive.">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <!-- Favicon / Icônes -->
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+   
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>KermHosting - Hébergement Node.js en FCFA, PayPal & Minipay</title>
+    
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --paypal: #0070BA;
+            --minipay: #00C4B3;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 40% 80%, rgba(0, 196, 179, 0.1) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+        }
+
+        /* ===== SIDEBAR OPTIMISÉE MOBILE ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            transition: all 0.2s;
+        }
+
+        .close-sidebar:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-user {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 4px 8px;
+        }
+
+        .sidebar-nav li.active {
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-nav li.active a {
+            color: white;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-nav .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .sidebar-social {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .sidebar-social a {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-social a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* ===== SÉLECTEUR DE LANGUE ===== */
+        .lang-switcher {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lang-current {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: var(--radius-full);
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 60px;
+        }
+
+        .lang-current:hover {
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            min-width: 70px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .lang-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .lang-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .lang-option.active {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
+        }
+
+        /* ===== TOP BAR OPTIMISÉE MOBILE ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-hover);
+        }
+
+        .top-bar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .top-bar-logo i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            min-width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-sidebar);
+        }
+
+        .user-menu {
+            cursor: pointer;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        /* ===== NOTIFICATIONS PANEL ===== */
+        .notifications-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notifications-panel.active {
+            transform: translateX(0);
+        }
+
+        .notifications-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notifications-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .notifications-header button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .notifications-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .notification-item.unread {
+            border-left-color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-glow), transparent);
+        }
+
+        .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 20px 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: var(--radius-full);
+            position: relative;
+        }
+
+        .badge-pulse::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--primary);
+            border-radius: var(--radius-full);
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            70% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .btn-link {
+            background: none;
+            color: var(--primary);
+            padding: 8px 16px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 1rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* ===== FEATURES ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== PRICING PREVIEW ===== */
+        .pricing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border: 2px solid var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .pricing-price {
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .currency {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pricing-features li i {
+            width: 20px;
+        }
+
+        .pricing-features li i.fa-check {
+            color: var(--success);
+        }
+
+        .pricing-features li i.fa-times {
+            color: var(--danger);
+        }
+
+        .pricing-features li.disabled {
+            opacity: 0.5;
+        }
+
+        .pricing-btn {
+            width: 100%;
+        }
+
+        .pricing-note {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .pricing-note i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .pricing-cta {
+            text-align: center;
+        }
+
+        /* ===== HOW IT WORKS ===== */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials-slider {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 4px 0 16px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .testimonials-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .testimonial-card {
+            flex: 0 0 280px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            scroll-snap-align: start;
+        }
+
+        .testimonial-rating {
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+
+        .testimonial-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-author img {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+        }
+
+        .testimonial-author div {
+            flex: 1;
+        }
+
+        .testimonial-author strong {
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .testimonial-author span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== FAQ ===== */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 16px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 16px 16px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-cta {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius-xl);
+            padding: 40px 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-content h2 {
+            font-size: 1.75rem;
+            margin-bottom: 12px;
+        }
+
+        .cta-content p {
+            margin-bottom: 24px;
+            opacity: 0.9;
+        }
+
+        .cta-actions .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            padding: 40px 16px 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .footer-logo i {
+            color: var(--primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 8px;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .page-content {
+                max-width: 800px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pricing-cards {
+                flex-direction: row;
+                gap: 20px;
+            }
+            
+            .pricing-card {
+                flex: 1;
+            }
+            
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .footer-links {
+                gap: 48px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+                position: sticky;
+            }
+            
+            .sidebar-overlay {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+            
+            .top-bar-logo {
+                display: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-section, .features-section, .pricing-preview, 
+        .how-it-works, .testimonials, .faq-preview, .cta-section {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar dynamique -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">Invité</div>
+                    <div class="user-email" id="sidebarUserEmail">Non connecté</div>
+                </div>
+                <div class="user-badge" id="sidebarUserBadge">Visiteur</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul id="sidebarMenu">
+                    <!-- Le menu sera généré dynamiquement par JavaScript -->
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <!-- Sélecteur de langue -->
+                <div class="lang-switcher" data-lang-switcher style="margin-bottom: 16px; text-align: center;">
+                    <button class="lang-current" data-lang-toggle data-lang-current>
+                        🇫🇷
+                    </button>
+                    <div class="lang-dropdown" data-lang-dropdown></div>
+                </div>
+                
+                <div class="sidebar-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="statUsers">1K+</span>
+                        <span class="stat-label" id="statUsersLabel">Utilisateurs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="statServers">500+</span>
+                        <span class="stat-label" id="statServersLabel">Serveurs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="statUptime">99.9%</span>
+                        <span class="stat-label" id="statUptimeLabel">Uptime</span>
+                    </div>
+                </div>
+                <div class="sidebar-social">
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="https://github.com/hostt11"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>KermHosting</span>
+                </div>
+                <div class="top-bar-actions">
+                    <!-- Sélecteur de langue mobile -->
+                    <div class="lang-switcher" data-lang-switcher>
+                        <button class="lang-current" data-lang-toggle data-lang-current>
+                            🇫🇷
+                        </button>
+                        <div class="lang-dropdown" data-lang-dropdown></div>
+                    </div>
+                    
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge">3</span>
+                    </button>
+                    <div class="user-menu" id="userMenu">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=32" alt="User" class="user-avatar-small" id="userAvatarSmall">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Notifications Panel -->
+            <div class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-header">
+                    <h3 id="notificationsTitle">Notifications</h3>
+                    <button id="closeNotifications"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="hero-badge">
+                        <span class="badge-pulse"></span>
+                        🇨🇲 <span id="badgeFcfa">Paiement FCFA</span> | 🌍 <span id="badgePaypal">PayPal</span> | 📱 <span id="badgeMinipay">Minipay</span>
+                    </div>
+                    <h1 class="hero-title" id="heroTitle">
+                        Hébergement <span class="gradient-text">Node.js</span> en FCFA, PayPal & Minipay
+                    </h1>
+                    <p class="hero-subtitle" id="heroSubtitle">
+                        Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" id="getStartedBtn">
+                            <span id="heroCta">Commencer maintenant</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="btn btn-outline" id="viewPricingBtn">
+                            <span id="viewPricingText">Voir les tarifs</span>
+                        </button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1K+</span>
+                            <span class="stat-text" id="statUsersText">Utilisateurs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-text" id="statServersText">Serveurs actifs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">99.9%</span>
+                            <span class="stat-text" id="statUptimeText">Uptime</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="features-section">
+                    <h2 class="section-title">
+                        <span id="whyUsTitle">Pourquoi choisir</span> <span class="gradient-text">KermHosting</span> ?
+                    </h2>
+                    <p class="section-subtitle" id="whyUsSubtitle">L'hébergement adapté aux besoins africains et internationaux</p>
+                    
+                    <div class="features-grid" id="featuresGrid"></div>
+                </section>
+
+                <!-- Pricing Preview -->
+                <section class="pricing-preview">
+                    <h2 class="section-title">
+                        <span id="plansTitle">Des plans à partir de</span> <span class="gradient-text">500 FCFA</span> <span style="font-size: 0.9rem;" id="plansSubtitleOr">(ou via PayPal / Minipay)</span>
+                    </h2>
+                    <p class="section-subtitle" id="plansSubtitle">Du simple bot Discord à l'application d'entreprise</p>
+                    
+                    <div class="pricing-cards" id="pricingCards"></div>
+                    
+                    <div class="pricing-note">
+                        <i class="fas fa-credit-card"></i>
+                        <span id="paymentAcceptedText">💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)</span>
+                    </div>
+                    
+                    <div class="pricing-cta">
+                        <a href="/pricing" class="btn btn-link">
+                            <span id="viewAllPlansText">Voir tous les plans</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- How It Works -->
+                <section class="how-it-works">
+                    <h2 class="section-title">
+                        <span id="howItWorksTitle">Comment ça</span> <span class="gradient-text">marche</span> ?
+                    </h2>
+                    
+                    <div class="steps" id="stepsContainer"></div>
+                </section>
+
+                <!-- Testimonials -->
+                <section class="testimonials">
+                    <h2 class="section-title">
+                        <span id="testimonialsTitle">Ce que disent</span> <span class="gradient-text">nos utilisateurs</span>
+                    </h2>
+                    
+                    <div class="testimonials-slider" id="testimonialsSlider"></div>
+                </section>
+
+                <!-- FAQ Preview -->
+                <section class="faq-preview">
+                    <h2 class="section-title">
+                        <span id="faqTitle">Questions</span> <span class="gradient-text">fréquentes</span>
+                    </h2>
+                    
+                    <div class="faq-list" id="faqList"></div>
+                    
+                    <div class="faq-cta">
+                        <a href="/support" class="btn btn-link">
+                            <span id="viewAllFaqText">Voir toutes les FAQs</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="cta-section">
+                    <div class="cta-content">
+                        <h2>
+                            <span id="ctaTitle">Prêt à lancer</span> <span class="gradient-text">votre projet</span> ?
+                        </h2>
+                        <p id="ctaSubtitle">Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance</p>
+                        <div class="cta-actions">
+                            <button class="btn btn-primary btn-large" id="finalCtaBtn">
+                                <span id="ctaButtonText">Créer mon compte gratuit</span>
+                                <i class="fas fa-rocket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <div class="footer-logo">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>KermHosting</span>
+                        </div>
+                        <p id="footerDescription">Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.</p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <div class="footer-column">
+                            <h4 id="footerProduct">Produit</h4>
+                            <ul>
+                                <li><a href="/pricing" id="footerPricing">Tarifs</a></li>
+                                <li><a href="/buy-coins" id="footerBuyCoins">Acheter des coins</a></li>
+                                <li><a href="#">Fonctionnalités</a></li>
+                                <li><a href="#">Statut</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-column">
+                            <h4 id="footerResources">Ressources</h4>
+                            <ul>
+                                <li><a href="/support">FAQ & Support</a></li>
+                                <li><a href="#">Documentation</a></li>
+                                <li><a href="#">Blog</a></li>
+                                <li><a href="#">Communauté</a></li>
+                                <li><a href="/support">Support WhatsApp</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-column">
+                            <h4 id="footerLegal">Légal</h4>
+                            <ul>
+                                <li><a href="#">CGU</a></li>
+                                <li><a href="#">Confidentialité</a></li>
+                                <li><a href="#">Mentions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2026 KermHosting. <span id="footerRights">Tous droits réservés.</span></p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="https://github.com/hostt11"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // ===== TRADUCTIONS =====
+        const translations = {
+            fr: {
+                siteName: 'KermHosting',
+                badgeFcfa: 'Paiement FCFA',
+                badgePaypal: 'PayPal',
+                badgeMinipay: 'Minipay',
+                heroTitle: 'Hébergement <span class="gradient-text">Node.js</span> en FCFA, PayPal & Minipay',
+                heroSubtitle: 'Créez votre serveur en 1 minute. Payez en FCFA par Mobile Money, en devises internationales via PayPal, ou en devises locales africaines via Minipay. Interface mobile intuitive, gestion complète.',
+                heroCta: 'Commencer maintenant',
+                viewPricingText: 'Voir les tarifs',
+                statUsersText: 'Utilisateurs',
+                statServersText: 'Serveurs actifs',
+                statUptimeText: 'Uptime',
+                whyUsTitle: 'Pourquoi choisir',
+                whyUsSubtitle: 'L\'hébergement adapté aux besoins africains et internationaux',
+                plansTitle: 'Des plans à partir de',
+                plansSubtitleOr: '(ou via PayPal / Minipay)',
+                plansSubtitle: 'Du simple bot Discord à l\'application d\'entreprise',
+                paymentAcceptedText: '💳 Paiement accepté : Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (devises locales africaines)',
+                viewAllPlansText: 'Voir tous les plans',
+                howItWorksTitle: 'Comment ça',
+                testimonialsTitle: 'Ce que disent',
+                faqTitle: 'Questions',
+                viewAllFaqText: 'Voir toutes les FAQs',
+                ctaTitle: 'Prêt à lancer',
+                ctaSubtitle: 'Rejoignez des centaines de développeurs africains et internationaux qui nous font confiance',
+                ctaButtonText: 'Créer mon compte gratuit',
+                footerDescription: 'Hébergement Node.js nouvelle génération, avec paiement en FCFA, PayPal et Minipay.',
+                footerProduct: 'Produit',
+                footerResources: 'Ressources',
+                footerLegal: 'Légal',
+                footerPricing: 'Tarifs',
+                footerBuyCoins: 'Acheter des coins',
+                footerRights: 'Tous droits réservés.',
+                notificationsTitle: 'Notifications',
+                notif1title: 'Nouveau ! Paiement PayPal',
+                notif1msg: 'Payez désormais en Euro, Dollar, Livre ou FCFA via PayPal',
+                notif2title: 'Nouveau ! Paiement Minipay',
+                notif2msg: 'Payez en devises locales africaines via Minipay. Pays supportés : 🇨🇲 Cameroun, 🇨🇮 Côte d\'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie et plus encore !',
+                notif3title: 'Bienvenue sur KermHosting !',
+                notif3msg: 'Créez votre premier serveur et obtenez 10 coins gratuits',
+                notif4title: 'Promotion -20%',
+                notif4msg: 'Sur tous les packs de coins cette semaine',
+                notif5title: 'Paiement FCFA, PayPal & Minipay',
+                notif5msg: 'Paiement en Franc CFA, en devises internationales via PayPal ou en devises locales africaines via Minipay !',
+                justNow: 'À l\'instant',
+                minutesAgo: 'Il y a 5 minutes',
+                hoursAgo: 'Il y a 2 heures',
+                yesterday: 'Hier',
+                free: 'GRATUIT',
+                popular: 'POPULAIRE',
+                pro: 'PRO',
+                try: 'Essayer',
+                choose: 'Choisir',
+                feature1title: 'Paiement en FCFA',
+                feature1desc: 'Payez en Franc CFA par Orange Money, MTN Mobile Money. Pas de frais cachés.',
+                feature2title: 'Paiement PayPal',
+                feature2desc: 'Payez en Euro, Dollar US, Livre Sterling ou Dollar Canadien via PayPal. Transactions sécurisées.',
+                feature3title: 'Paiement Minipay',
+                feature3desc: 'Payez en devises locales africaines via Minipay. Support pour plus de 40 pays africains.',
+                feature4title: 'Démarrage instantané',
+                feature4desc: 'Créez votre serveur en moins d\'une minute après paiement. Tout est automatisé.',
+                feature5title: 'Système de coins',
+                feature5desc: 'Gagnez des coins chaque jour et parrainez vos amis pour payer moins cher.',
+                feature6title: 'Gestion de fichiers',
+                feature6desc: 'Éditeur de code intégré, upload de fichiers, gestion des variables d\'environnement.',
+                feature7title: 'Support WhatsApp',
+                feature7desc: 'Support réactif sur WhatsApp et email. Une équipe à l\'écoute de vos besoins.',
+                step1title: 'Créez votre compte',
+                step1desc: 'Inscription gratuite en 30 secondes. Vérification email requise pour activer votre compte.',
+                step2title: 'Achetez des coins ou payez directement',
+                step2desc: 'Payez en FCFA par Mobile Money (Orange, MTN), en devises internationales via PayPal, ou en devises locales africaines via Minipay.',
+                step3title: 'Créez votre serveur',
+                step3desc: 'Choisissez un plan, nommez votre serveur et lancez-le instantanément.',
+                step4title: 'Déployez votre code',
+                step4desc: 'Upload, éditez, gérez vos variables d\'env et lancez votre application.',
+                testimonial1text: '"Enfin un hébergeur qui accepte le FCFA et Minipay ! Je paye avec Orange Money ou Minipay, c\'est super pratique. Et le support est génial !"',
+                testimonial1author: 'Jean P.',
+                testimonial1location: 'Client à Yaoundé',
+                testimonial2text: '"Je vis en Europe et pouvoir payer mes serveurs en Euro via PayPal c\'est top ! Interface super intuitive."',
+                testimonial2author: 'Sarah K.',
+                testimonial2location: 'Développeuse à Paris',
+                testimonial3text: '"Le support est super réactif sur WhatsApp. J\'ai payé avec Minipay depuis le Nigeria, ça a marché parfaitement !"',
+                testimonial3author: 'Alex R.',
+                testimonial3location: 'Hébergeur à Lagos',
+                faq1q: 'Comment payer en FCFA ?',
+                faq1a: 'Nous acceptons Orange Money, MTN Mobile Money. Le paiement est instantané et sécurisé via Fapshi.',
+                faq2q: 'Comment payer avec PayPal ?',
+                faq2a: 'Nous acceptons PayPal en Euro (€), Dollar US ($), Livre Sterling (£) et Dollar Canadien (CA$). Le paiement est sécurisé et les devises sont automatiquement converties. La transaction est validée manuellement par notre équipe après réception du virement.',
+                faq3q: 'Qu\'est-ce que Minipay et quels pays sont supportés ?',
+                faq3a: 'Minipay est une solution de paiement mobile accessible dans plus de 40 pays africains. Chez KermHosting, nous supportons actuellement les pays suivants : <strong>🇨🇲 Cameroun, 🇨🇮 Côte d\'Ivoire, 🇸🇳 Sénégal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Bénin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Tchad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzanie, 🇺🇬 Ouganda, 🇷🇼 Rwanda, 🇿🇦 Afrique du Sud, 🇲🇦 Maroc, 🇩🇿 Algérie, 🇹🇳 Tunisie</strong> et d\'autres à venir ! Vous payez dans votre devise locale avec un simple téléchargement de capture d\'écran.',
+                faq4q: 'Qu\'est-ce que les coins ?',
+                faq4a: 'Les coins sont notre monnaie virtuelle. Vous pouvez en acheter en FCFA, via PayPal ou Minipay et bénéficier de réductions. 100 coins = 500 FCFA, avec des bonus selon les packs.',
+                faq5q: 'Puis-je utiliser mon propre nom de domaine ?',
+                faq5a: 'Oui ! Vous pouvez configurer vos propres noms de domaine pour vos serveurs. Nous fournissons également des sous-domaines gratuits.',
+                faq6q: 'Que se passe-t-il quand mon serveur expire ?',
+                faq6a: 'Vous recevez un email 3 jours avant l\'expiration. Si vous ne renouvelez pas, le serveur est automatiquement supprimé après 7 jours.',
+                dashboard: 'Tableau de bord',
+                pricing: 'Tarifs',
+                buyCoins: 'Acheter des coins',
+                profile: 'Profil',
+                support: 'Support',
+                admin: 'Administration',
+                logout: 'Déconnexion',
+                home: 'Accueil',
+                login: 'Connexion',
+                register: 'Inscription'
+            },
+            en: {
+                siteName: 'KermHosting',
+                badgeFcfa: 'FCFA Payment',
+                badgePaypal: 'PayPal',
+                badgeMinipay: 'Minipay',
+                heroTitle: '<span class="gradient-text">Node.js</span> Hosting in FCFA, PayPal & Minipay',
+                heroSubtitle: 'Create your server in 1 minute. Pay in FCFA via Mobile Money, in international currencies via PayPal, or in local African currencies via Minipay. Mobile-friendly interface, complete management.',
+                heroCta: 'Get Started',
+                viewPricingText: 'View Pricing',
+                statUsersText: 'Users',
+                statServersText: 'Active Servers',
+                statUptimeText: 'Uptime',
+                whyUsTitle: 'Why choose',
+                whyUsSubtitle: 'Hosting tailored to African and international needs',
+                plansTitle: 'Plans starting from',
+                plansSubtitleOr: '(or via PayPal / Minipay)',
+                plansSubtitle: 'From simple Discord bot to enterprise application',
+                paymentAcceptedText: '💳 Accepted payment: Orange Money, MTN Mobile Money, PayPal (EUR, USD, GBP, CAD), Minipay (local African currencies)',
+                viewAllPlansText: 'View all plans',
+                howItWorksTitle: 'How it',
+                testimonialsTitle: 'What our',
+                faqTitle: 'Frequently asked',
+                viewAllFaqText: 'View all FAQs',
+                ctaTitle: 'Ready to launch',
+                ctaSubtitle: 'Join hundreds of African and international developers who trust us',
+                ctaButtonText: 'Create free account',
+                footerDescription: 'Next generation Node.js hosting, with payment in FCFA, PayPal and Minipay.',
+                footerProduct: 'Product',
+                footerResources: 'Resources',
+                footerLegal: 'Legal',
+                footerPricing: 'Pricing',
+                footerBuyCoins: 'Buy Coins',
+                footerRights: 'All rights reserved.',
+                notificationsTitle: 'Notifications',
+                notif1title: 'New! PayPal Payment',
+                notif1msg: 'Now pay in Euro, Dollar, Pound or FCFA via PayPal',
+                notif2title: 'New! Minipay Payment',
+                notif2msg: 'Pay in local African currencies via Minipay. Supported countries: 🇨🇲 Cameroon, 🇨🇮 Ivory Coast, 🇸🇳 Senegal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Benin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Chad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzania, 🇺🇬 Uganda, 🇷🇼 Rwanda, 🇿🇦 South Africa, 🇲🇦 Morocco, 🇩🇿 Algeria, 🇹🇳 Tunisia and more!',
+                notif3title: 'Welcome to KermHosting!',
+                notif3msg: 'Create your first server and get 10 free coins',
+                notif4title: 'Promotion -20%',
+                notif4msg: 'On all coin packs this week',
+                notif5title: 'FCFA, PayPal & Minipay Payment',
+                notif5msg: 'Pay in CFA Franc, in international currencies via PayPal or in local African currencies via Minipay!',
+                justNow: 'Just now',
+                minutesAgo: '5 minutes ago',
+                hoursAgo: '2 hours ago',
+                yesterday: 'Yesterday',
+                free: 'FREE',
+                popular: 'POPULAR',
+                pro: 'PRO',
+                try: 'Try',
+                choose: 'Choose',
+                feature1title: 'FCFA Payment',
+                feature1desc: 'Pay in CFA Franc via Orange Money, MTN Mobile Money. No hidden fees.',
+                feature2title: 'PayPal Payment',
+                feature2desc: 'Pay in Euro, US Dollar, British Pound or Canadian Dollar via PayPal. Secure transactions.',
+                feature3title: 'Minipay Payment',
+                feature3desc: 'Pay in local African currencies via Minipay. Support for over 40 African countries.',
+                feature4title: 'Instant Deployment',
+                feature4desc: 'Create your server in less than a minute after payment. Fully automated.',
+                feature5title: 'Coins System',
+                feature5desc: 'Earn coins daily and refer friends to pay less.',
+                feature6title: 'File Management',
+                feature6desc: 'Built-in code editor, file upload, environment variables management.',
+                feature7title: 'WhatsApp Support',
+                feature7desc: 'Responsive support on WhatsApp and email. A team that listens to your needs.',
+                step1title: 'Create your account',
+                step1desc: 'Free registration in 30 seconds. Email verification required to activate your account.',
+                step2title: 'Buy coins or pay directly',
+                step2desc: 'Pay in FCFA via Mobile Money (Orange, MTN), in international currencies via PayPal, or in local African currencies via Minipay.',
+                step3title: 'Create your server',
+                step3desc: 'Choose a plan, name your server and launch it instantly.',
+                step4title: 'Deploy your code',
+                step4desc: 'Upload, edit, manage your env variables and launch your application.',
+                testimonial1text: '"Finally a host that accepts FCFA and Minipay! I pay with Orange Money or Minipay, it\'s super convenient. And support is great!"',
+                testimonial1author: 'Jean P.',
+                testimonial1location: 'Customer in Yaoundé',
+                testimonial2text: '"I live in Europe and being able to pay for my servers in Euro via PayPal is great! Super intuitive interface."',
+                testimonial2author: 'Sarah K.',
+                testimonial2location: 'Developer in Paris',
+                testimonial3text: '"Support is super responsive on WhatsApp. I paid with Minipay from Nigeria, it worked perfectly!"',
+                testimonial3author: 'Alex R.',
+                testimonial3location: 'Hosting provider in Lagos',
+                faq1q: 'How to pay in FCFA?',
+                faq1a: 'We accept Orange Money, MTN Mobile Money. Payment is instant and secure via Fapshi.',
+                faq2q: 'How to pay with PayPal?',
+                faq2a: 'We accept PayPal in Euro (€), US Dollar ($), British Pound (£) and Canadian Dollar (CA$). Payment is secure and currencies are automatically converted. The transaction is manually validated by our team after receiving the transfer.',
+                faq3q: 'What is Minipay and which countries are supported?',
+                faq3a: 'Minipay is a mobile payment solution available in over 40 African countries. At KermHosting, we currently support: <strong>🇨🇲 Cameroon, 🇨🇮 Ivory Coast, 🇸🇳 Senegal, 🇲🇱 Mali, 🇧🇫 Burkina Faso, 🇧🇯 Benin, 🇳🇪 Niger, 🇹🇬 Togo, 🇬🇦 Gabon, 🇨🇬 Congo, 🇹🇩 Chad, 🇳🇬 Nigeria, 🇬🇭 Ghana, 🇰🇪 Kenya, 🇹🇿 Tanzania, 🇺🇬 Uganda, 🇷🇼 Rwanda, 🇿🇦 South Africa, 🇲🇦 Morocco, 🇩🇿 Algeria, 🇹🇳 Tunisia</strong> and more to come! You pay in your local currency with a simple screenshot upload.',
+                faq4q: 'What are coins?',
+                faq4a: 'Coins are our virtual currency. You can buy them in FCFA, via PayPal or Minipay and get discounts. 100 coins = 500 FCFA, with bonuses depending on the packs.',
+                faq5q: 'Can I use my own domain name?',
+                faq5a: 'Yes! You can configure your own domain names for your servers. We also provide free subdomains.',
+                faq6q: 'What happens when my server expires?',
+                faq6a: 'You receive an email 3 days before expiration. If you don\'t renew, the server is automatically deleted after 7 days.',
+                dashboard: 'Dashboard',
+                pricing: 'Pricing',
+                buyCoins: 'Buy Coins',
+                profile: 'Profile',
+                support: 'Support',
+                admin: 'Administration',
+                logout: 'Logout',
+                home: 'Home',
+                login: 'Login',
+                register: 'Register'
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'fr';
+
+        function t(key) {
+            return translations[currentLang]?.[key] || key;
+        }
+
+        function updateUITexts() {
+            document.getElementById('badgeFcfa').textContent = t('badgeFcfa');
+            document.getElementById('badgePaypal').textContent = t('badgePaypal');
+            document.getElementById('badgeMinipay').textContent = t('badgeMinipay');
+            document.getElementById('heroTitle').innerHTML = t('heroTitle');
+            document.getElementById('heroSubtitle').textContent = t('heroSubtitle');
+            document.getElementById('heroCta').textContent = t('heroCta');
+            document.getElementById('viewPricingText').textContent = t('viewPricingText');
+            document.getElementById('statUsersText').textContent = t('statUsersText');
+            document.getElementById('statServersText').textContent = t('statServersText');
+            document.getElementById('statUptimeText').textContent = t('statUptimeText');
+            document.getElementById('statUsersLabel').textContent = t('statUsersText');
+            document.getElementById('statServersLabel').textContent = t('statServersText');
+            document.getElementById('statUptimeLabel').textContent = t('statUptimeText');
+            document.getElementById('whyUsTitle').textContent = t('whyUsTitle');
+            document.getElementById('whyUsSubtitle').textContent = t('whyUsSubtitle');
+            document.getElementById('plansTitle').textContent = t('plansTitle');
+            document.getElementById('plansSubtitleOr').textContent = t('plansSubtitleOr');
+            document.getElementById('plansSubtitle').textContent = t('plansSubtitle');
+            document.getElementById('paymentAcceptedText').textContent = t('paymentAcceptedText');
+            document.getElementById('viewAllPlansText').textContent = t('viewAllPlansText');
+            document.getElementById('howItWorksTitle').textContent = t('howItWorksTitle');
+            document.getElementById('testimonialsTitle').textContent = t('testimonialsTitle');
+            document.getElementById('faqTitle').textContent = t('faqTitle');
+            document.getElementById('viewAllFaqText').textContent = t('viewAllFaqText');
+            document.getElementById('ctaTitle').textContent = t('ctaTitle');
+            document.getElementById('ctaSubtitle').textContent = t('ctaSubtitle');
+            document.getElementById('ctaButtonText').textContent = t('ctaButtonText');
+            document.getElementById('footerDescription').textContent = t('footerDescription');
+            document.getElementById('footerProduct').textContent = t('footerProduct');
+            document.getElementById('footerResources').textContent = t('footerResources');
+            document.getElementById('footerLegal').textContent = t('footerLegal');
+            document.getElementById('footerPricing').textContent = t('footerPricing');
+            document.getElementById('footerBuyCoins').textContent = t('footerBuyCoins');
+            document.getElementById('footerRights').textContent = t('footerRights');
+            document.getElementById('notificationsTitle').textContent = t('notificationsTitle');
+
+            generateAllContent();
+            updateSidebarMenu();
+        }
+
+        function updateLangButtons(lang) {
+            document.querySelectorAll('[data-lang-current]').forEach(btn => {
+                btn.innerHTML = lang === 'fr' ? '🇫🇷' : '🇬🇧';
+            });
+        }
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.setAttribute('lang', lang);
+            updateLangButtons(lang);
+            updateUITexts();
+            document.querySelectorAll('[data-lang-dropdown]').forEach(d => d.classList.remove('show'));
+        }
+
+        function initLangSwitchers() {
+            document.querySelectorAll('[data-lang-dropdown]').forEach(dropdown => {
+                dropdown.innerHTML = `
+                    <button type="button" class="lang-option" data-lang="fr">🇫🇷</button>
+                    <button type="button" class="lang-option" data-lang="en">🇬🇧</button>
+                `;
+                dropdown.querySelectorAll('[data-lang]').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        switchLanguage(opt.getAttribute('data-lang'));
+                    });
+                });
+            });
+
+            document.querySelectorAll('[data-lang-toggle]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const dropdown = btn.closest('[data-lang-switcher]').querySelector('[data-lang-dropdown]');
+                    document.querySelectorAll('[data-lang-dropdown]').forEach(d => {
+                        if (d !== dropdown) d.classList.remove('show');
+                    });
+                    dropdown.classList.toggle('show');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('[data-lang-dropdown]').forEach(d => d.classList.remove('show'));
+            });
+
+            updateLangButtons(currentLang);
+        }
+
+        // ===== SIDEBAR TOGGLE =====
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        sidebarOverlay.addEventListener('click', closeSidebarFunc);
+
+        // ===== NOTIFICATIONS TOGGLE =====
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const closeNotifications = document.getElementById('closeNotifications');
+
+        function generateNotifications() {
+            const container = document.getElementById('notificationsList');
+            container.innerHTML = `
+                <div class="notification-item unread">
+                    <i class="fab fa-paypal notification-icon" style="color: #0070BA;"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif1title')}</div>
+                        <div class="notification-message">${t('notif1msg')}</div>
+                        <div class="notification-time">${t('justNow')}</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <i class="fas fa-credit-card notification-icon" style="color: #00C4B3;"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif2title')}</div>
+                        <div class="notification-message">${t('notif2msg')}</div>
+                        <div class="notification-time">${t('justNow')}</div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <i class="fas fa-gift notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif3title')}</div>
+                        <div class="notification-message">${t('notif3msg')}</div>
+                        <div class="notification-time">${t('minutesAgo')}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <i class="fas fa-percent notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif4title')}</div>
+                        <div class="notification-message">${t('notif4msg')}</div>
+                        <div class="notification-time">${t('hoursAgo')}</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <i class="fas fa-shield-alt notification-icon"></i>
+                    <div class="notification-content">
+                        <div class="notification-title">${t('notif5title')}</div>
+                        <div class="notification-message">${t('notif5msg')}</div>
+                        <div class="notification-time">${t('yesterday')}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        notificationBtn.addEventListener('click', () => {
+            generateNotifications();
+            notificationsPanel.classList.toggle('active');
+        });
+
+        closeNotifications.addEventListener('click', () => {
+            notificationsPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationsPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationsPanel.classList.remove('active');
+            }
+        });
+
+        // ===== FAQ TOGGLE =====
+        function initFAQ() {
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const faqItem = button.closest('.faq-item');
+                    faqItem.classList.toggle('active');
+                });
+            });
+        }
+
+        // ===== AUTH STATE MANAGEMENT =====
+        let isAuthenticated = false;
+        let userData = null;
+
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch('/api/user/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        isAuthenticated = true;
+                        userData = data.user;
+                    } else {
+                        localStorage.removeItem('token');
+                        isAuthenticated = false;
+                    }
+                } catch (error) {
+                    console.error('Erreur auth:', error);
+                    isAuthenticated = false;
+                }
+            } else {
+                isAuthenticated = false;
+            }
+            updateUIForAuthState();
+        }
+
+        function updateUIForAuthState() {
+            if (isAuthenticated && userData) {
+                document.getElementById('sidebarUserName').textContent = userData.username;
+                document.getElementById('sidebarUserEmail').textContent = userData.email;
+                document.getElementById('sidebarUserBadge').textContent = userData.role;
+                document.getElementById('userAvatarSmall').src = `https://ui-avatars.com/api/?name=${userData.username}&background=7C3AED&color=fff&size=40`;
+            } else {
+                document.getElementById('sidebarUserName').textContent = 'Invité';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserBadge').textContent = 'Visiteur';
+                document.getElementById('userAvatarSmall').src = 'https://ui-avatars.com/api/?name=Guest&background=7C3AED&color=fff&size=40';
+            }
+            updateSidebarMenu();
+        }
+
+        function updateSidebarMenu() {
+            const menu = document.getElementById('sidebarMenu');
+            
+            if (isAuthenticated && userData) {
+                menu.innerHTML = `
+                    <li>
+                        <a href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>${t('dashboard')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>${t('pricing')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>${t('buyCoins')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/profile">
+                            <i class="fas fa-user"></i>
+                            <span>${t('profile')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>${t('support')}</span>
+                        </a>
+                    </li>
+                    ${userData.role === 'admin' || userData.role === 'superadmin' ? `
+                    <li>
+                        <a href="/admin">
+                            <i class="fas fa-crown"></i>
+                            <span>${t('admin')}</span>
+                        </a>
+                    </li>
+                    ` : ''}
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#" id="navLogout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>${t('logout')}</span>
+                        </a>
+                    </li>
+                `;
+                document.getElementById('navLogout')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    window.location.reload();
+                });
+            } else {
+                menu.innerHTML = `
+                    <li class="active">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            <span>${t('home')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing">
+                            <i class="fas fa-tags"></i>
+                            <span>${t('pricing')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/buy-coins">
+                            <i class="fas fa-coins"></i>
+                            <span>${t('buyCoins')}</span>
+                        </a>
+                    </li>
+                    <li>
+                       <a href="/bot">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>KERM MD V1</span>
+                        </a>
+                   </li>
+                    <li>
+                        <a href="/support">
+                            <i class="fas fa-headset"></i>
+                            <span>${t('support')}</span>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>${t('login')}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>${t('register')}</span>
+                        </a>
+                    </li>
+                `;
+            }
+        }
+
+        // ===== CONTENU DYNAMIQUE =====
+        function generateAllContent() {
+            // Features
+            const features = [
+                { icon: 'fa-money-bill-wave', color: '#7C3AED', title: t('feature1title'), desc: t('feature1desc') },
+                { icon: 'fab fa-paypal', color: '#0070BA', title: t('feature2title'), desc: t('feature2desc') },
+                { icon: 'fa-mobile-alt', color: '#00C4B3', title: t('feature3title'), desc: t('feature3desc') },
+                { icon: 'fa-bolt', color: '#3B82F6', title: t('feature4title'), desc: t('feature4desc') },
+                { icon: 'fa-coins', color: '#10B981', title: t('feature5title'), desc: t('feature5desc') },
+                { icon: 'fa-code', color: '#EC4899', title: t('feature6title'), desc: t('feature6desc') },
+                { icon: 'fa-headset', color: '#8B5CF6', title: t('feature7title'), desc: t('feature7desc') }
+            ];
+            
+            document.getElementById('featuresGrid').innerHTML = features.map(f => `
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, ${f.color}20, ${f.color}40)">
+                        <i class="fas ${f.icon}" style="color: ${f.color}"></i>
+                    </div>
+                    <h3 class="feature-title">${f.title}</h3>
+                    <p class="feature-description">${f.desc}</p>
+                </div>
+            `).join('');
+
+            // Pricing
+            const plans = [
+                { badge: t('free'), name: 'Free', price: '0', features: ['256 MB RAM', '5 GB Stockage', '50% CPU', '24h d\'essai'], disabled: ['Support prioritaire'] },
+                { badge: t('popular'), name: 'Starter', price: '500', popular: true, features: ['1 GB RAM', '10 GB Stockage', '100% CPU', '7 jours', 'Support standard'] },
+                { badge: t('pro'), name: 'Pro', price: '1 300', features: ['4 GB RAM', '40 GB Stockage', '400% CPU', '7 jours', 'Support prioritaire'] }
+            ];
+            
+            document.getElementById('pricingCards').innerHTML = plans.map(p => `
+                <div class="pricing-card ${p.popular ? 'popular' : ''}">
+                    <div class="pricing-badge">${p.badge}</div>
+                    <h3 class="pricing-name">${p.name}</h3>
+                    <div class="pricing-price">
+                        <span class="price">${p.price}</span>
+                        <span class="currency">FCFA</span>
+                    </div>
+                    <ul class="pricing-features">
+                        ${p.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
+                        ${p.disabled ? p.disabled.map(f => `<li class="disabled"><i class="fas fa-times"></i> ${f}</li>`).join('') : ''}
+                    </ul>
+                    <button class="btn ${p.popular ? 'btn-primary' : 'btn-outline'} pricing-btn" onclick="location.href='/register'">
+                        ${p.name === 'Free' ? t('try') : t('choose')}
+                    </button>
+                </div>
+            `).join('');
+
+            // Steps
+            const steps = [
+                { title: t('step1title'), desc: t('step1desc') },
+                { title: t('step2title'), desc: t('step2desc') },
+                { title: t('step3title'), desc: t('step3desc') },
+                { title: t('step4title'), desc: t('step4desc') }
+            ];
+            
+            document.getElementById('stepsContainer').innerHTML = steps.map((s, i) => `
+                <div class="step">
+                    <div class="step-number">${i + 1}</div>
+                    <div class="step-content">
+                        <h3>${s.title}</h3>
+                        <p>${s.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Testimonials
+            const testimonials = [
+                { text: t('testimonial1text'), author: t('testimonial1author'), location: t('testimonial1location') },
+                { text: t('testimonial2text'), author: t('testimonial2author'), location: t('testimonial2location') },
+                { text: t('testimonial3text'), author: t('testimonial3author'), location: t('testimonial3location') }
+            ];
+            
+            document.getElementById('testimonialsSlider').innerHTML = testimonials.map(t => `
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        ${'<i class="fas fa-star"></i>'.repeat(5)}
+                    </div>
+                    <p class="testimonial-text">${t.text}</p>
+                    <div class="testimonial-author">
+                        <img src="https://ui-avatars.com/api/?name=${t.author.replace(' ', '+')}&background=7C3AED&color=fff&size=40" alt="${t.author}">
+                        <div>
+                            <strong>${t.author}</strong>
+                            <span>${t.location}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // FAQ
+            const faqs = [
+                { q: t('faq1q'), a: t('faq1a') },
+                { q: t('faq2q'), a: t('faq2a') },
+                { q: t('faq3q'), a: t('faq3a') },
+                { q: t('faq4q'), a: t('faq4a') },
+                { q: t('faq5q'), a: t('faq5a') },
+                { q: t('faq6q'), a: t('faq6a') }
+            ];
+            
+            document.getElementById('faqList').innerHTML = faqs.map(f => `
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>${f.q}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">${f.a}</div>
+                </div>
+            `).join('');
+
+            initFAQ();
+        }
+
+        // ===== NAVIGATION INTELLIGENTE =====
+        document.getElementById('getStartedBtn').addEventListener('click', () => {
+            if (isAuthenticated) {
+                window.location.href = '/dashboard';
+            } else {
+                window.location.href = '/register';
+            }
+        });
+
+        document.getElementById('finalCtaBtn').addEventListener('click', () => {
+            if (isAuthenticated) {
+                window.location.href = '/dashboard';
+            } else {
+                window.location.href = '/register';
+            }
+        });
+
+        document.getElementById('viewPricingBtn').addEventListener('click', () => {
+            window.location.href = '/pricing';
+        });
+
+        // ===== INIT =====
+        async function init() {
+            initLangSwitchers();
+            await checkAuth();
+            updateUITexts();
+        }
+
+        init();
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebarFunc();
+            }
+        });
+    </script>
+</body>
+</html>

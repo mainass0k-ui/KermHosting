@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="description" content="Connectez-vous à KermHosting - Hébergement Node.js en FCFA">
+    <meta property="og:image" content="https://files.catbox.moe/d66qx0.jpeg">
+
+    <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://files.catbox.moe/d66qx0.jpeg">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/d66qx0.jpeg">
+    
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237C3AED'/><text x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>K</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <title>Connexion - KermHosting</title>
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #9D6CFF;
+            --primary-dark: #5B2AB0;
+            --primary-glow: rgba(124, 58, 237, 0.3);
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            
+            --bg-dark: #0B1120;
+            --bg-card: #1A2332;
+            --bg-sidebar: #111827;
+            --bg-hover: #1F2937;
+            --bg-input: #1E293B;
+            
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --border-color: #2D3748;
+            --border-light: #374151;
+            
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* ===== ICÔNES LOGIN EN BACKGROUND ===== */
+        .login-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.05;
+            color: var(--primary-light);
+            animation: iconFloat 15s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; font-size: 2.8rem; }
+        .floating-icon:nth-child(2) { top: 18%; right: 10%; animation-delay: -2s; font-size: 2.2rem; }
+        .floating-icon:nth-child(3) { top: 55%; left: 8%; animation-delay: -4s; font-size: 3rem; }
+        .floating-icon:nth-child(4) { top: 70%; right: 6%; animation-delay: -6s; font-size: 2.5rem; }
+        .floating-icon:nth-child(5) { top: 30%; left: 55%; animation-delay: -8s; font-size: 2rem; }
+        .floating-icon:nth-child(6) { top: 8%; right: 35%; animation-delay: -10s; font-size: 3.2rem; }
+        .floating-icon:nth-child(7) { top: 80%; left: 45%; animation-delay: -12s; font-size: 2.4rem; }
+        .floating-icon:nth-child(8) { top: 40%; right: 25%; animation-delay: -14s; font-size: 2.6rem; }
+        .floating-icon:nth-child(9) { top: 15%; left: 75%; animation-delay: -3s; font-size: 2rem; }
+        .floating-icon:nth-child(10) { top: 85%; right: 55%; animation-delay: -5s; font-size: 2.3rem; }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.03; }
+            25% { transform: translateY(-30px) translateX(25px) rotate(8deg); opacity: 0.07; }
+            50% { transform: translateY(-15px) translateX(-15px) rotate(-4deg); opacity: 0.04; }
+            75% { transform: translateY(-40px) translateX(-25px) rotate(12deg); opacity: 0.06; }
+        }
+
+        /* Particules */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 30%; left: 70%; animation-delay: -1s; }
+        .particle:nth-child(3) { top: 55%; left: 10%; animation-delay: -2s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: -4s; }
+        .particle:nth-child(6) { top: 40%; left: 40%; animation-delay: -5s; }
+        .particle:nth-child(7) { top: 60%; left: 60%; animation-delay: -2.5s; }
+        .particle:nth-child(8) { top: 80%; left: 30%; animation-delay: -3.5s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { transform: translateY(-60px) translateX(20px) scale(2); opacity: 0.3; }
+            80% { opacity: 0.6; }
+        }
+
+        /* Grille subtile */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            background-image: 
+                linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== CONTAINER ===== */
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo KermHosting */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .kerm-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .kerm-logo i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+            animation: cloudBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes cloudBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Carte transparente */
+        .auth-card {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            border: none;
+            backdrop-filter: none;
+            box-shadow: none;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Header */
+        .auth-header {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .auth-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .signup-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .signup-link:hover { color: var(--primary-light); }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Formulaire */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .forgot-link:hover { color: var(--primary-light); }
+
+        .form-input {
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 11px 14px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+        }
+
+        .form-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+        .password-wrapper { position: relative; }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .cf-turnstile {
+            display: flex;
+            justify-content: center;
+            margin: 4px 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 2px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Bouton */
+        .auth-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 13px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Footer */
+        .auth-links {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-links a:hover { color: var(--primary-light); }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .legal-notice {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .legal-notice a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+        }
+
+        /* Message */
+        .message {
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message i { font-size: 1rem; }
+
+        .message.error { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+        .message.success { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); }
+        .message.info { background: rgba(124, 58, 237, 0.1); border: 1px solid var(--primary); color: var(--primary); }
+
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 17, 32, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-overlay.active { opacity: 1; visibility: visible; }
+
+        .loading-content { text-align: center; }
+
+        .loading-icon-wrapper {
+            position: relative;
+            width: 90px; height: 90px;
+            margin: 0 auto 20px;
+        }
+
+        .loading-icon-circle {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(16, 185, 129, 0.15));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-icon-circle i {
+            font-size: 2.2rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 20px var(--primary-glow));
+            animation: cloudPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes cloudPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+        }
+
+        .loading-orbit {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 1px dashed rgba(124, 58, 237, 0.2);
+            animation: orbitSpin 3s linear infinite;
+        }
+
+        @keyframes orbitSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .loading-dots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .loading-dots span {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--secondary); }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; background: var(--accent); }
+
+        @keyframes dotPulse {
+            0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
+            30% { opacity: 1; transform: scale(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background animé d'icônes login -->
+    <div class="login-bg">
+        <i class="fas fa-user-lock floating-icon"></i>
+        <i class="fas fa-fingerprint floating-icon"></i>
+        <i class="fas fa-shield-alt floating-icon"></i>
+        <i class="fas fa-key floating-icon"></i>
+        <i class="fas fa-lock floating-icon"></i>
+        <i class="fas fa-user-shield floating-icon"></i>
+        <i class="fas fa-passport floating-icon"></i>
+        <i class="fas fa-id-card floating-icon"></i>
+        <i class="fas fa-sign-in-alt floating-icon"></i>
+        <i class="fas fa-unlock-alt floating-icon"></i>
+    </div>
+
+    <!-- Grille -->
+    <div class="grid-bg"></div>
+
+    <!-- Particules -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-icon-wrapper">
+                <div class="loading-orbit"></div>
+                <div class="loading-icon-circle">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+            </div>
+            <div class="loading-text" id="loadingText">Connexion en cours...</div>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu -->
+    <div class="auth-container">
+        <!-- Logo KermHosting -->
+        <div class="logo-section">
+            <div class="kerm-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>KermHosting</span>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-header-top">
+                    <a href="/register" class="signup-link">S'inscrire</a>
+                </div>
+                <h1 class="auth-title">Content de vous revoir !</h1>
+                <p class="auth-subtitle">Connectez-vous pour gérer vos serveurs</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label">E-mail ou Nom d'utilisateur</label>
+                        <a href="/forgot-password" class="forgot-link">E-mail oublié ?</a>
+                    </div>
+                    <input type="text" class="form-input" id="loginIdentifier" 
+                           placeholder="exemple@email.com ou kermrayan" required 
+                           autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label">Mot de passe</label>
+                        <a href="/forgot-password" class="forgot-link">Mot de passe oublié ?</a>
+                    </div>
+                    <div class="password-wrapper">
+                        <input type="password" class="form-input" id="password" 
+                               placeholder="••••••••" required 
+                               autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cloudflare Turnstile -->
+                <div class="form-group">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAC0PPHCORga2nzPW" data-callback="onTurnstileSuccess"></div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Se souvenir de moi</label>
+                </div>
+
+                <button type="submit" class="auth-btn" id="submitBtn" disabled>
+                    <span>Se connecter</span>
+                </button>
+            </form>
+
+            <div class="auth-links">
+                Vous ne possédez pas de compte ? <a href="/register">S'inscrire</a>
+            </div>
+
+            <div class="auth-footer">
+                <div class="legal-notice">
+                    En cliquant sur Continuer, j'accepte les 
+                    <a href="#">conditions</a>, la 
+                    <a href="#">politique de confidentialité</a> et la 
+                    <a href="#">politique relative aux cookies</a> de KermHosting.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let turnstileVerified = false;
+        let turnstileToken = null;
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function updateLoadingText(text) {
+            document.getElementById('loadingText').textContent = text;
+        }
+
+        async function checkMaintenance() {
+            try {
+                const response = await fetch('/api/maintenance/status');
+                const data = await response.json();
+                if (data.maintenance === true) { window.location.href = '/maintenance'; return true; }
+                return false;
+            } catch (error) { return false; }
+        }
+
+        window.onTurnstileSuccess = function(token) {
+            turnstileVerified = true;
+            turnstileToken = token;
+            document.getElementById('submitBtn').disabled = false;
+        };
+
+        async function checkAlreadyLoggedIn() {
+            const token = localStorage.getItem('token');
+            if (!token) return false;
+            try {
+                const response = await fetch('/api/user/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) { window.location.href = '/dashboard'; return true; }
+                }
+            } catch (error) { localStorage.removeItem('token'); }
+            return false;
+        }
+
+        function togglePassword() {
+            const password = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function showMessage(type, text) {
+            const container = document.getElementById('messageContainer');
+            const icons = { error: 'fa-exclamation-circle', success: 'fa-check-circle', info: 'fa-info-circle' };
+            container.innerHTML = `<div class="message ${type}"><i class="fas ${icons[type]}"></i><span>${text}</span></div>`;
+        }
+
+        function loadSavedCredentials() {
+            const savedIdentifier = localStorage.getItem('savedIdentifier');
+            const savedPassword = localStorage.getItem('savedPassword');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            if (rememberMe && savedIdentifier) {
+                document.getElementById('loginIdentifier').value = savedIdentifier;
+                if (savedPassword) document.getElementById('password').value = savedPassword;
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
+
+        function saveCredentials(identifier, password, remember) {
+            if (remember) {
+                localStorage.setItem('savedIdentifier', identifier);
+                localStorage.setItem('savedPassword', password);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.removeItem('savedIdentifier');
+                localStorage.removeItem('savedPassword');
+                localStorage.setItem('rememberMe', 'false');
+            }
+        }
+
+        function isEmail(identifier) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+        }
+
+        async function attemptLogin(identifier, password, turnstileToken) {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier, password, 'cf-turnstile-response': turnstileToken })
+            });
+            return await response.json();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const rawIdentifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!rawIdentifier) { showMessage('error', 'Veuillez entrer votre email ou nom d\'utilisateur'); return; }
+            if (!turnstileVerified) { showMessage('error', 'Veuillez compléter la vérification'); return; }
+            
+            showLoading('Connexion en cours...');
+            submitBtn.disabled = true;
+            
+            try {
+                let data;
+                let successfulIdentifier = rawIdentifier;
+                
+                setTimeout(() => updateLoadingText('Vérification des identifiants...'), 800);
+                
+                if (isEmail(rawIdentifier)) {
+                    const lowerCaseEmail = rawIdentifier.toLowerCase();
+                    data = await attemptLogin(lowerCaseEmail, password, turnstileToken);
+                    
+                    if (!data.success && rawIdentifier !== lowerCaseEmail) {
+                        updateLoadingText('Tentative avec la casse originale...');
+                        const secondAttempt = await attemptLogin(rawIdentifier, password, turnstileToken);
+                        if (secondAttempt.success) { data = secondAttempt; successfulIdentifier = rawIdentifier; }
+                    } else if (data.success) { successfulIdentifier = lowerCaseEmail; }
+                } else {
+                    data = await attemptLogin(rawIdentifier, password, turnstileToken);
+                }
+                
+                if (data.success) {
+                    saveCredentials(successfulIdentifier, password, rememberMe);
+                    localStorage.setItem('token', data.token);
+                    updateLoadingText('Chargement de votre session...');
+                    setTimeout(() => updateLoadingText('Préparation de votre espace...'), 800);
+                    setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
+                } else {
+                    hideLoading();
+                    submitBtn.disabled = false;
+                    if (data.requiresVerification) {
+                        showMessage('info', 'Email non vérifié. Redirection...');
+                        setTimeout(() => { window.location.href = `/email-verification?email=${encodeURIComponent(rawIdentifier)}`; }, 1500);
+                    } else {
+                        showMessage('error', data.error || 'Identifiant ou mot de passe incorrect');
+                        turnstileVerified = false;
+                        turnstileToken = null;
+                        document.getElementById('submitBtn').disabled = true;
+                        if (window.turnstile) turnstile.reset();
+                    }
+                }
+            } catch (error) {
+                hideLoading();
+                submitBtn.disabled = false;
+                showMessage('error', 'Erreur de connexion au serveur');
+            }
+        });
+
+        window.addEventListener('load', async () => {
+            const isMaintenance = await checkMaintenance();
+            if (isMaintenance) return;
+            const isLoggedIn = await checkAlreadyLoggedIn();
+            if (!isLoggedIn) loadSavedCredentials();
+        });
+    </script>
+</body>
+</html>
